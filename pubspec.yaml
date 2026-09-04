@@ -37,6 +37,7 @@ flutter:
     - assets/pawns/
     - assets/questions.json
     - assets/word_hunt/
+    - assets/word_hunt/gokyuzu_adalari/
     - assets/word_hunt/baslangic_limani/
     - assets/word_hunt/v5_reference_assets/
 

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'word_hunt_models.dart';
+import 'word_hunt_gokyuzu_route_screen.dart';
 import 'word_hunt_progress.dart';
 import 'word_hunt_progress_codec.dart';
 import 'word_hunt_reference_route_screen.dart';
@@ -99,10 +100,11 @@ class _WordHuntProductionEntryScreenState
     final level = widget.route.levels[levelIndex - 1];
     final result = await Navigator.of(context).push<WordHuntLevelPlayResult>(
       MaterialPageRoute<WordHuntLevelPlayResult>(
-        builder: (_) => WordHuntLevelProductionScreen(
-          level: level,
-          infoCards: widget.infoCards,
-        ),
+        builder:
+            (_) => WordHuntLevelProductionScreen(
+              level: level,
+              infoCards: widget.infoCards,
+            ),
       ),
     );
 
@@ -120,20 +122,21 @@ class _WordHuntProductionEntryScreenState
   void _showInfo() {
     showDialog<void>(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('Kelime Avı'),
-        content: const Text(
-          'Hedef kelimeleri yatay, dikey veya çapraz olarak bul. '
-          'Bölümü tamamladıkça yeni duraklar açılır; bonus kelimeler de '
-          'bilgi kartlarını keşfetmene yardımcı olur.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(),
-            child: const Text('Tamam'),
+      builder:
+          (dialogContext) => AlertDialog(
+            title: const Text('Kelime Avı'),
+            content: const Text(
+              'Hedef kelimeleri yatay, dikey veya çapraz olarak bul. '
+              'Bölümü tamamladıkça yeni duraklar açılır; bonus kelimeler de '
+              'bilgi kartlarını keşfetmene yardımcı olur.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(dialogContext).pop(),
+                child: const Text('Tamam'),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 
@@ -142,10 +145,11 @@ class _WordHuntProductionEntryScreenState
       widget.route,
       _progress,
     );
-    final message = complete
-        ? '${widget.route.title} tamamlandı.'
-        : 'Sıradaki durak: Bölüm '
-              '${WordHuntRouteProgressEngine.nextPlayableLevelIndex(widget.route, _progress)}';
+    final message =
+        complete
+            ? '${widget.route.title} tamamlandı.'
+            : 'Sıradaki durak: Bölüm '
+                '${WordHuntRouteProgressEngine.nextPlayableLevelIndex(widget.route, _progress)}';
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(SnackBar(content: Text(message)));
@@ -166,25 +170,28 @@ class _WordHuntProductionEntryScreenState
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
-      builder: (sheetContext) => SafeArea(
-        child: ListView.separated(
-          key: const Key('word_hunt_unlocked_info_cards'),
-          shrinkWrap: true,
-          padding: const EdgeInsets.fromLTRB(18, 18, 18, 28),
-          itemCount: unlocked.length,
-          separatorBuilder: (_, __) => const Divider(height: 24),
-          itemBuilder: (_, index) {
-            final card = unlocked[index];
-            return ListTile(
-              contentPadding: EdgeInsets.zero,
-              title: Text(card.title),
-              subtitle: Text('${card.shortFact}\n${card.category}'),
-              isThreeLine: true,
-              leading: CircleAvatar(child: Text(card.word.characters.first)),
-            );
-          },
-        ),
-      ),
+      builder:
+          (sheetContext) => SafeArea(
+            child: ListView.separated(
+              key: const Key('word_hunt_unlocked_info_cards'),
+              shrinkWrap: true,
+              padding: const EdgeInsets.fromLTRB(18, 18, 18, 28),
+              itemCount: unlocked.length,
+              separatorBuilder: (_, __) => const Divider(height: 24),
+              itemBuilder: (_, index) {
+                final card = unlocked[index];
+                return ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: Text(card.title),
+                  subtitle: Text('${card.shortFact}\n${card.category}'),
+                  isThreeLine: true,
+                  leading: CircleAvatar(
+                    child: Text(card.word.characters.first),
+                  ),
+                );
+              },
+            ),
+          ),
     );
   }
 
@@ -195,6 +202,19 @@ class _WordHuntProductionEntryScreenState
         key: Key('word_hunt_production_entry_loading'),
         backgroundColor: Colors.black,
         body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    if (widget.route.id == 'gokyuzu-adalari') {
+      return WordHuntGokyuzuRouteScreen(
+        key: const Key('word_hunt_production_entry_route'),
+        route: widget.route,
+        progress: _progress,
+        onBack: () => Navigator.of(context).maybePop(),
+        onInfo: _showInfo,
+        onCompass: _showCompassHint,
+        onBook: _showBook,
+        onLevelTap: _openLevel,
       );
     }
 
