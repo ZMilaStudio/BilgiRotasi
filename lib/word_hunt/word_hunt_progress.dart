@@ -65,10 +65,11 @@ class WordHuntRouteProgressEngine {
       return true;
     }
 
-    // Başlangıç Limanı'nda bonus durak 8 zorunlu bir geçiş kapısı değildir.
-    // Normal durak 9, bonus 8 ile birlikte 7 tamamlandığında açılır. Final 10
-    // ise aşağıdaki genel kural gereği hâlâ 9 tamamlanmadan açılmaz.
-    if (route.id == 'baslangic-limani' && levelIndex == 9) {
+    // Başlangıç Limanı ve Gökyüzü Adaları'nda bonus durak 8 zorunlu geçiş
+    // kapısı değildir. Normal durak 9, bonus 8 ile birlikte 7 tamamlandığında
+    // açılır. Final 10 ise genel kural gereği 9 tamamlanmadan açılmaz.
+    if ((route.id == 'baslangic-limani' || route.id == 'gokyuzu-adalari') &&
+        levelIndex == 9) {
       final levelBeforeBonus = route.levels[levelIndex - 3];
       return isLevelCompleted(levelBeforeBonus, progress);
     }

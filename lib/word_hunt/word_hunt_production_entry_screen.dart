@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'word_hunt_gokyuzu_master_art_screen.dart';
 import 'word_hunt_models.dart';
 import 'word_hunt_progress.dart';
 import 'word_hunt_progress_codec.dart';
@@ -10,7 +11,8 @@ import 'word_hunt_starter_content.dart';
 
 /// Ana Bilgi Rotası uygulamasından Kelime Avı production akışına girilen ekran.
 ///
-/// - Başlangıç Limanı MASTER ART rota ekranını kullanır.
+/// - Başlangıç Limanı onaylı MASTER ART rota ekranını kullanır.
+/// - Gökyüzü Adaları, onaylı V2 MASTER ART rota ekranını kullanır.
 /// - İlerlemeyi hesap/misafir scope'una göre cihazda saklar.
 /// - Açık node'u canonical production gameplay ekranına bağlar.
 /// - BoardMap, soru bankası, reklam veya diğer oyun modlarına dokunmaz.
@@ -195,6 +197,19 @@ class _WordHuntProductionEntryScreenState
         key: Key('word_hunt_production_entry_loading'),
         backgroundColor: Colors.black,
         body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    if (widget.route.id == 'gokyuzu-adalari') {
+      return WordHuntGokyuzuMasterArtScreen(
+        key: const Key('word_hunt_production_entry_route'),
+        route: widget.route,
+        progress: _progress,
+        onBack: () => Navigator.of(context).maybePop(),
+        onInfo: _showInfo,
+        onCompass: _showCompassHint,
+        onBook: _showBook,
+        onLevelTap: _openLevel,
       );
     }
 
