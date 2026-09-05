@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'word_hunt_gokyuzu_master_art_screen.dart';
 import 'word_hunt_models.dart';
 import 'word_hunt_progress.dart';
 import 'word_hunt_progress_codec.dart';
@@ -195,6 +196,19 @@ class _WordHuntProductionEntryScreenState
         key: Key('word_hunt_production_entry_loading'),
         backgroundColor: Colors.black,
         body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    if (widget.route.id == WordHuntGokyuzuMasterArtScreen.routeId) {
+      return WordHuntGokyuzuMasterArtScreen(
+        key: const Key('word_hunt_production_entry_gokyuzu_route'),
+        route: widget.route,
+        progress: _progress,
+        onBack: () => Navigator.of(context).maybePop(),
+        onInfo: _showInfo,
+        onCompass: _showCompassHint,
+        onBook: _showBook,
+        onLevelTap: _openLevel,
       );
     }
 
