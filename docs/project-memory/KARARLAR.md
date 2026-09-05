@@ -1,3 +1,24 @@
+<!-- GOKYUZU_R7_ANDROID16_START -->
+## 5 Eylül 2026 — Gökyüzü Adaları görünür rota mimarisi / CURRENT
+- Gökyüzü Adaları için önceki **modüler görünür renderer** kararı supersede edilmiştir.
+- Bağlayıcı production görünür mimari: **telefon oranına hazırlanmış tek MASTER ART raster + şeffaf hitbox'lar + yalnız gerçek state farklarında minimum lokal Flutter override**.
+- Onaylı V2 / `C — Neşeli & Parlak` kompozisyon dili bağlayıcı kalır; ada/landmark/rota/plaque/dekor sanatı Flutter ile ikinci kez komple çizilmez.
+- Current R7 MASTER ART: `941×1672`, `510998` bayt, SHA256 `913ee19df9fcb1eba2ac6ca3a500979c960d31dd369e204d2f79064be9664b1d`; exact ürün HEAD `f35082c44e637cb7e6e3815c7d54d38a58b776df`.
+- 8/9/10 alt rota bölgesindeki eski bağımsız **merkez kilit + üç yıldız** görsel işareti kaldırılmıştır ve geri getirilmez. Bu, runtime'daki node bazlı dinamik lock badge'lerden ayrıdır.
+- Progression değişmez: 7 tamamlanınca 8 ve 9 birlikte açılır; 8, 9 için gate değildir; 10 yalnız 9 tamamlanınca açılır.
+- Build/test başarısı görsel kabul değildir. Human visual PASS yalnız exact raw Android screenshot üzerinden Levent tarafından verilir.
+<!-- GOKYUZU_R7_ANDROID16_END -->
+
+<!-- GOKYUZU_MASTER_ART_DECISION_20260905_START -->
+## 5 Eylül 2026 — Gökyüzü Adaları V2 production MASTER ART kararı
+- Levent'in açık ürün onayıyla Gökyüzü Adaları rota ekranının görünür production tabanı, 3 Eylül'de onaylanan V2 görselinin **MASTER ART raster** sürümüdür.
+- Flutter bu görünür sahneyi yeniden sentetik/modüler olarak çizmez; yalnız gerçek etkileşim/progression için minimum lokal overlay ve şeffaf hitbox kullanır.
+- Bu karar, Gökyüzü rota ekranı için önceki “flattened MASTER ART kopyalanmaz / yalnız modüler görünür renderer” şartını **supersede eder**.
+- PR #172'deki 48 modüler asset teknik olarak korunur ancak #175 MASTER ART renderer'ının dependency'si değildir; tarihsel/opsiyonel üretim varlığıdır.
+- Approved V2 merkez kompozisyonu crop/germe/yeniden çizimle değiştirilmez. Tall-device uyarlaması yalnız MASTER ART dışındaki viewport alanında çözülür.
+- Android visual PASS yalnız raw Android screenshot/artifact ile verilir; statik proof veya ImageGen çıktısı kanıt değildir.
+<!-- GOKYUZU_MASTER_ART_DECISION_20260905_END -->
+
 # Bilgi Rotası — Kesinleşen Kararlar
 
 > Bu dosya aktif/kanonik karar özetidir. 26 Ağustos 2026 release entegrasyonu öncesindeki iki tam karar dosyası `docs/project-memory/archive/` altında birebir korunur. Burada yazılmayan eski kararlar, açıkça supersede edilmedikçe geçerliliğini korur.
@@ -186,7 +207,7 @@ Bu bölüm, 31 Ağustos kayıtlarındaki `ERROR_STATE_VISUAL = DOĞRULANACAK` du
 - Exact tested compact blob PR #163 ürün branch’ine QA-only dosya taşınmadan productize edildi: commit `9a6fede2c4aed4fdbaa6c9ba427fa84e0ce418da`; branch `fix/kelime-avi-v6-found-path-connector-product-20260901`; blob exact `6ce2830...`.
 - İnsan süre-zorluk playtesti scripted QA’dan ayrı tutulur: Levent B5’i **115 sn / 2 hata** ile tamamladı; 60 sn soft challenge hedefi karşılanmadı. B10’u **109 sn / 4 hata** ile tamamladı; 120 sn soft challenge hedefi karşılandı. Overall timing sonucu **MIXED**; B5 tuning kararı ayrıca verilecektir.
 - Soft challenge hard-fail değildir; yalnız bu ölçüm nedeniyle timer/gameplay otomatik değiştirilmez.
-- PR #163 **Draft/Open** kalır; görsel PASS Ready veya merge onayı değildir. Merge için Levent’in ayrıca açık onayı zorunludur.
+- PR #163 **Draft/Open** kalır; görsel PASS Ready veya merge onayı değildir. Merge için Levent’in ayrıca açık onay zorunludur.
 
 ---
 
@@ -209,7 +230,7 @@ Bu bölüm, 31 Ağustos kayıtlarındaki `ERROR_STATE_VISUAL = DOĞRULANACAK` du
 - Seçim yalnız son hücresi çıkarıldığında exact target, bonus veya zaten bulunmuş kelime oluyorsa tek trailing hücre kırpılır; daha geniş yakın-kelime tahmini yapılmaz.
 - Gesture boyunca ilk aktif pointer kilitlenir, diğer temaslar seçim yolunu değiştirmez.
 - Yeterince uzun gerçek yanlış düz seçimlerin hata sayımı korunur; canonical path engine, scoring, timer ve yıldız eşikleri değiştirilmez.
-- Düzeltme hedefli unit/widget testleriyle doğrulanır; merge yine Levent’in ayrı açık onayını gerektirir.
+- Düzeltme hedefli unit/widget testleriyle doğrulanır; merge yine Levent'in ayrı açık onayını gerektirir.
 
 ## 14. 3 Eylül 2026 — WORK V2 hızlı otonom üretim kararı
 
@@ -219,3 +240,40 @@ Bu bölüm, 31 Ağustos kayıtlarındaki `ERROR_STATE_VISUAL = DOĞRULANACAK` du
 - Kelime Avı ilgili PR push'ları otomatik focused analyze/test/diff fast gate'inden geçer; kullanıcı workflow başlatan test operatörü olarak kullanılmaz.
 - Canonical 8×8, kabul edilmiş görsel durumlar, engine/path/scoring/timer/progression ve korunan ürün alanları hız uğruna değiştirilmez.
 - Ayrıntılı çalışma sözleşmesi `docs/project-memory/KELIME_AVI_WORK_V2.md` dosyasında tutulur.
+
+## 15. 3 Eylül 2026 — Gökyüzü Adaları tema ve görsel yön kararı
+
+- Kelime Avı ikinci 10 bölümlük rota/paket adı **Gökyüzü Adaları** olarak Levent tarafından onaylandı ve **LOCKED** kabul edilir.
+- Kullanıcıya sunulan üç görsel yön arasından **Konsept C — Neşeli & Parlak** seçildi ve bağlayıcı sanat yönü olarak **LOCKED** kabul edilir.
+- Atmosfer neşeli, renkli, pozitif, eğlenceli, çocuk dostu, hafif ve canlı olacaktır.
+- Palet yönü: açık gök mavisi / camgöbeği / turkuaz ana zemin; yeşil yüzen adalar; sarı-turuncu sıcak vurgu; gerektiğinde pembe/mercan destek ayrıntıları; parlak beyaz bulutlar.
+- Dünya öğeleri: yüzen çimenli adalar, bulut köprüleri/geçişleri, renkli balon ve hava gemileri, rüzgâr yapıları, masalsı kuleler ve sıcak-altın final sarayı hissi.
+- Bu karar **görsel sanat yönü** kararıdır. Onaylanan konsept görsel final production MASTER ART, exact node geometrisi veya raw Android kullanıcı kabulü değildir.
+- 10 bölümün adları, rota/node sıralaması ve exact görsel kompozisyon ayrıca ürün kararıyla kilitlenecektir.
+- Başlangıç Limanı için kullanılan `MASTER ART raster + transparent hitbox + minimum local override` mimarisi Gökyüzü Adaları’na otomatik genellenmez. MASTER ART / katmanlı Flutter / modüler asset teknik yaklaşımı ayrıca seçilecektir.
+- Canonical **8×8 / 64 hücre**, 10 bölüm / 30 yıldız, exactly-one occurrence, reverse gesture ve paket bazlı QA kararları korunur.
+- Bu aşamada Flutter, production asset veya APK üretimine geçilmez; önce rota/bölüm yapısı ve ardından görsel teknik mimari kilitlenir.
+
+## 16. 3 Eylül 2026 — Gökyüzü Adaları rota ve modüler asset mimarisi
+
+- Levent aşağıdaki 10 bölüm sırasını onayladı ve **LOCKED** kabul edilir: `Rüzgâr Kapısı`, `Bulut Bahçesi`, `Kuş Geçidi`, `Gökkuşağı Köprüsü`, `Fırtına Kulesi`, `Hava Gemisi Limanı`, `Ay İskelesi`, `Gizli Ada`, `Yıldız Gözlemevi`, `Güneş Sarayı`.
+- Bölüm/node 8 **Gizli Ada bonus node** olarak kalır. Bölüm 7 sonrası bonus 8 ve normal 9 birlikte erişilebilir; bonus 8, node 9 için zorunlu kapı değildir. Node 10, node 9 tamamlanmadan kilitli kalır.
+- Gökyüzü Adaları görsel teknik mimarisi Levent tarafından **modüler asset yaklaşımı** olarak onaylandı ve **LOCKED** kabul edilir.
+- Başlangıç Limanı gibi tek flatten edilmiş MASTER ART rota ekranı kullanılmaz. Büyük renk/gradient alanları Flutter ile çizilebilir; yüzen adalar, bulutlar, yollar, landmarklar, node/state ve dekorlar bağımsız modüler raster asset'lerdir.
+- Dinamik bölüm numarası, yıldız, kilit/progression state'i veya kullanıcıya göre değişen metin asset içine bake edilmez; runtime tarafından üretilir.
+- V1 üretim sözleşmesi **48 atomik asset** ve stil tutarlılığı için **5 sprite sheet** üretim birimidir. Ayrıntılı dosya listesi `docs/project-memory/GOKYUZU_ADALARI_ASSET_PLANI.md` içinde tutulur.
+- Referans tasarım tuvali **1080×1920 dikey**dir. Assetler bağımsız taşınabilir ve ölçeklenebilir olmalıdır.
+- WORK V2 gereği 48 ayrı görsel üretim döngüsü yapılmaz; beş toplu sheet üretilir, parçalanır, toplu QA yapılır ve yalnız başarısız parçalar yeniden üretilir.
+- Flutter/production entegrasyonuna geçmeden önce 48 atomik asset ile hazırlanmış 1080×1920 statik rota mock'ı Levent'in görsel kabulüne sunulur.
+- Bu karar canonical 8×8 gameplay engine/path/scoring/timer/progression sözleşmesini değiştirmez; yalnız Gökyüzü Adaları rota görsel üretim mimarisini tanımlar.
+
+## 17. 3 Eylül 2026 — Gökyüzü Adaları rota mock V2 kullanıcı görsel kabulü
+
+- Levent, Başlangıç Limanı ekranıyla karşılaştırarak ilk Gökyüzü Adaları mock'ındaki `Mağaza / Başarılar / Oyna / Sıralama / Rozetler` genel alt menü barının rota ekranına ait olmadığını belirtti; bu alt bar **REJECTED** ve superseded kabul edilir.
+- Düzeltilmiş V2 rota mock'ı Başlangıç Limanı rota kabuğuna uyumlu olacak şekilde alt genel menüsüz, sol üst geri + sağ üst bilgi + alt köşelerde yalnız rota içi kontroller yaklaşımıyla üretildi.
+- Levent düzeltilmiş V2 mock'ı 3 Eylül 2026'da açıkça **onayladı**; bu nedenle Gökyüzü Adaları statik rota görsel yönü **PASS / LOCKED** kabul edilir.
+- 10 bölüm tamamen ayrı UI kullanmayacaktır. Ortak node/plaque/star/progression kabuğu korunur; bölüm farkı landmark, ada dekoru ve lokal atmosfer ile verilir.
+- Bölüm görsel kimlikleri: Rüzgâr Kapısı giriş/değirmen; Bulut Bahçesi çiçek/pembe ağaç; Kuş Geçidi kuş/kemer; Gökkuşağı Köprüsü gökkuşağı; Fırtına Kulesi dramatik fırtına; Hava Gemisi Limanı hava gemisi; Ay İskelesi ay; Gizli Ada bonus/gizli ada; Yıldız Gözlemevi gözlemevi; Güneş Sarayı altın final sarayı.
+- V2 kabulü **statik tasarım kabulüdür**; raw Android runtime acceptance değildir.
+- V2 kabulünden sonra gerçek production asset aşaması açılır: 5 şeffaf, yazısız/etiketsiz sprite sheet → 48 atomik asset → şeffaflık/kenar/ölçek/stil QA → ardından Flutter entegrasyonu.
+- Production raster assetlere bölüm numarası, yıldız durumu, kilit/progression veya değişken metin bake edilmeyeceği kararı aynen korunur.
