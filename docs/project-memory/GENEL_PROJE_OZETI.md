@@ -1,30 +1,33 @@
 # Bilgi Rotası — Genel Proje Özeti
 
-**Son güncelleme:** 3 Eylül 2026 — Kelime Avı V8 devir noktası. Canonical 8×8 Başlangıç Limanı; V5 asset, found/error/compact completion, B5 denge ve swipe toleransı PASS. PR #167, #163, #162, #161, #158 ve production ana navigasyon PR #169 merge edildi. Canonical release HEAD artık `0c84aefd8a5ef591aaaab9eaa30bed2e044190cf`. PR #169 exact full-suite/release APK/Android16/MASTER ART kanıtları PASS. Docs-only PR #168 READY+mergeable; Play yükleme/yayınlama yapılmadı. WORK V2 aktif.
+**Son güncelleme:** 7 Eylül 2026 — Kelime Avı V9 devir noktası. V8/V9 gameplay ve görsel kabul zinciri korunuyor. Gökyüzü Adaları görsel yönü Levent tarafından PASS kabul edildi; runtime entegrasyonu sonrası Android16 raw screenshot/crash/ANR ve gerçek cihaz görsel kabulü zorunlu. 1.68.20+110 production AAB üretildi ancak **Kelime Avı içerdiği için Play Console'a yüklenmeyecek**. Kelime Avı için yeni yayın eşiği **minimum 200 hazır/doğrulanmış bölüm** olarak kilitlendi. PR #180, 20 bölümden minimum 200 bölüme ölçeklenebilir içerik üretim hattını eklemek üzere OPEN/DRAFT durumda. WORK V2 aktif.
 
-> Teknik doğrulukta tek kanonik kaynak canlı `ZMilaStudio/BilgiRotasi` deposu ve ilgili canlı servislerdir. Bu dosya canlı branch/PR/CI/pubspec doğrulamasının yerine geçmez. Ayrıntılı eski üretim günlükları Git geçmişinde ve `docs/project-memory/archive/` altında korunur.
+> Teknik doğrulukta tek kanonik kaynak canlı `ZMilaStudio/BilgiRotasi` deposu ve ilgili canlı servislerdir. Bu dosya canlı branch/PR/CI/pubspec doğrulamasının yerine geçmez. Ayrıntılı eski üretim günlükleri Git geçmişinde ve `docs/project-memory/archive/` altında korunur.
 
 ## Kalıcı Çalışma Kuralı
 
 - Her görev başında canlı hedef branch, `pubspec.yaml`, son commit, PR ve CI yeniden doğrulanır.
 - `main` güncel/yayın kaynağı varsayılmaz.
 - Sıra: branch → test → commit → push → PR → inceleme → merge.
-- Kritik merge/release yalnız Levent’in açık onayıyla yapılır.
+- Kritik merge/release yalnız Levent'in açık onayıyla yapılır.
 - Build PASS tek başına kanıt değildir; diff, test, workflow, log, Git geçmişi ve gerçek runtime kanıtı birlikte değerlendirilir.
 - Görsel kabul yalnız gerçek/raw Android runtime üzerinden verilir; ImageGen/mockup/QA selector kabul kanıtı değildir.
 - `assets/questions.json` kontrolsüz değiştirilmez; ilgisiz değişiklikler silinmez.
 - Codex yalnız mevcut araçlarla yapılamayan zorunlu yerel kod/test işi olduğunda kullanılır; gereksiz Codex kredisi harcanmaz.
+- Kullanıcı açıkça dur dediğinde üretim/merge/release adımı başlatılmaz; durum özeti ve sohbet devri hazırlanır.
 
 ## Canlı Release Hattı
 
 - Repo: `ZMilaStudio/BilgiRotasi`.
 - Canonical release branch: `release/final-closed-test-aab-1.68.8`.
-- Canonical release HEAD: **`0c84aefd8a5ef591aaaab9eaa30bed2e044190cf`**.
-- Aktif ürün sürümü: **1.68.19+109**.
+- Son doğrulanmış canonical release HEAD: **`a43d85eae86eac335c7e09a832152667ba608c53`**.
+- Son production sürümü: **1.68.20+110**.
 - Paket: `com.leventua.bilgirotasi`.
-- PR #158 canonical gameplay paketini release’e taşıdı; merge commit `189864c92a605e7bb960460300714049c730ea39`.
-- PR #169 production ana navigasyon entegrasyonunu release’e taşıdı; merge commit `0c84aefd8a5ef591aaaab9eaa30bed2e044190cf`.
-- Play Console’a yükleme veya yayınlama yapılmadı.
+- PR #179 sürüm/AppBuildInfo senkronizasyonunu canonical release'e taşıdı.
+- Production workflow run `34050183031`: **SUCCESS**; gerçek production AAB + universal APK üretildi ve GitHub Release `v1.68.20+110` oluşturuldu.
+- AAB SHA256: `2bfac3fb5642ba10c57d5f58acb158fdb2eede9210b9a8777d786f884d9cb66d`.
+- APK SHA256: `710e3c1025a41c6ca2a2c930dede4794ac9ef77ef7cf6e25fea6313b1323c8e3`.
+- **Play Console'a yükleme/yayınlama yapılmadı.** Kullanıcı kararı: Kelime Avı içeren bu AAB kesinlikle Play'e yüklenmeyecek.
 
 ## Başlangıç Limanı — Bağlayıcı Mimari
 
@@ -47,113 +50,123 @@
 
 ## V5 / V6 Ürün Kabulü — PASS
 
-### V5 reference asset
-- Production mimarisi: approved raster reference assets + dinamik Flutter text/state + canonical 8×8 engine.
-- V5 integration run `33379341765`: **SUCCESS**.
-
-### Found-state
-- Exact tested commit `4dddf00178ef9f14b8edb3fc706114be72f477a4`.
-- Android16 run `33486609120`: **SUCCESS**; raw Android kullanıcı PASS.
-
-### Error-state
-- Fill `0xB35A1F2B`, border `0xFFFF6B57`, transient 280 ms.
-- Android16 run `33524578623`: **SUCCESS**; raw Android kullanıcı PASS.
-
-### Completion/result
-- Targetlar tamam, bonus eksik → otomatik popup yok; bonus aranabilir.
-- Tüm target+bonus tamam → popup otomatik açılır; fresh/replay’de tekrar açılabilir.
-- Static/productize `33629855060`: SUCCESS, Word Hunt 139/139 PASS.
-- Android16 `33655562508`: SUCCESS; raw Android B5/B10 kullanıcı PASS.
-
-### B5 denge
-- İlk insan testi: 115 sn / 2 hata → 60 sn hedef karşılanmadı.
-- B10 insan testi: 109 sn / 4 hata → 120 sn hedef PASS.
-- B5 tuning sonrası: **32 sn** → süre PASS.
-- Android16 tuning run `33670657723`: SUCCESS.
-- B5 targetları `ANKARA`, `ŞEHİR`, `TÜRKİYE`, `BAŞKENT`, `MECLİS`, `KULE`, `KALE`; bonus `ANIT`.
-
-### Swipe false-positive toleransı
-- Kelime olamayacak kadar kısa gesture cezasız iptal edilir.
-- Yalnız son hücre çıkarıldığında exact target/bonus/already-found oluşuyorsa tek trailing hücre kırpılır.
-- İlk aktif pointer gesture boyunca kilitlenir; ek temas seçime karışmaz.
-- İki hücre taşma ve anlamlı gerçek yanlış seçim hata kalır; autocomplete yoktur.
-- Ürün commit `749c678b885d6cefec428c603c55a83a4190152c`.
-- Fast `33724552713`: SUCCESS.
-- Android16 `33724549202`: SUCCESS; gerçek `ANKARA + 1 trailing hücre` → `1/7`, hata `0`.
+- V5 approved raster + dinamik Flutter text/state + canonical 8×8 engine mimarisi korunur.
+- Found-state Android16: **PASS**.
+- Error-state Android16: **PASS**.
+- Completion/result davranışı: **PASS**.
+- B5 tuning sonrası insan testi: **32 sn**, süre PASS.
+- Swipe false-positive toleransı Android16: gerçek `ANKARA + 1 trailing hücre` → `1/7`, hata `0`, PASS.
 
 ## Release Merge Zinciri — TAMAMLANDI
 
-- PR #167 — **MERGED** → `c5d57e98866e244fdf36d5e7b6ad4684c5f935f4`.
-- PR #163 — **MERGED** → `806c4bfc01f2ab9211a2684bff36f76a82e4ac8d`.
-- PR #162 — **MERGED** → `929bb13177e03a0962464e21f6c174d4b3439349`.
-- PR #161 — **MERGED** → `4aa490e7c2d5e7547dc95f9463dbbb9adeb85e5a`.
-- PR #158 — **MERGED** → `189864c92a605e7bb960460300714049c730ea39`.
-- PR #169 — **MERGED** → `0c84aefd8a5ef591aaaab9eaa30bed2e044190cf`.
+- PR #167 — MERGED → `c5d57e98866e244fdf36d5e7b6ad4684c5f935f4`.
+- PR #163 — MERGED → `806c4bfc01f2ab9211a2684bff36f76a82e4ac8d`.
+- PR #162 — MERGED → `929bb13177e03a0962464e21f6c174d4b3439349`.
+- PR #161 — MERGED → `4aa490e7c2d5e7547dc95f9463dbbb9adeb85e5a`.
+- PR #158 — MERGED → `189864c92a605e7bb960460300714049c730ea39`.
+- PR #169 — MERGED → `0c84aefd8a5ef591aaaab9eaa30bed2e044190cf`.
+- PR #179 — MERGED → `a43d85eae86eac335c7e09a832152667ba608c53`.
 - PR #166 tarihsel geliştirme/QA hattıdır; merge edilmeyecektir.
 
-## PR #158 Exact Release-context Kanıtı — PASS
+## Production Ana Navigasyon — CANONICAL
 
-- Exact test edilmiş ürün HEAD: `2ae95df70b452f735a8db9c5bd0d88827a2ec40a`.
-- Kelime Avı Android16 visual proof run `33745646184`: **SUCCESS**, artifact `9887953917`.
-- Release APK / AdMob run `33745646210`: **SUCCESS**, artifact `9889920696`.
-- Merge commit `189864c9...` için otomatik workflow tetiklenmedi (`0` run); pre-merge exact release-context CI kanıtları final teknik kanıttır.
-
-## Production Ana Navigasyon Entegrasyonu — PR #169 MERGED
-
-### Amaç / davranış
 - Bilgi Rotası production **Oyna** menüsüne `Kelime Avı` kartı eklendi.
-- Kart `WordHuntProductionEntryScreen` üzerinden MASTER ART kullanan `WordHuntReferenceRouteScreen` production rotasına açılır.
-- Açık rota node’u canonical `WordHuntLevelProductionScreen` gameplay ekranını açar.
-- İlerleme `WordHuntProgressCodec` ile Firebase UID / guest scope’una göre `SharedPreferencesAsync` üzerinde cihazda saklanır.
-- Başka hesap scope’una ait veri fail-closed reddedilir; bozuk/eski veri oyunun açılmasını engellemez.
+- Kart `WordHuntProductionEntryScreen` üzerinden `WordHuntReferenceRouteScreen` production rotasına açılır.
+- Açık rota node'u `WordHuntLevelProductionScreen` gameplay ekranını açar.
+- İlerleme `WordHuntProgressCodec` ile Firebase UID / guest scope'una göre `SharedPreferencesAsync` üzerinde cihazda saklanır.
+- Başka hesap scope'una ait veri fail-closed reddedilir; bozuk/eski veri oyunun açılmasını engellemez.
 - Bölüm sonucu mevcut `WordHuntProgressSnapshot` sözleşmesiyle best yıldız ve açılan bilgi kartlarını kaydeder.
 - Geri / bilgi / pusula / kitap callbackleri production davranışına bağlıdır.
 
-### Branch / PR / diff
-- Branch: `feat/kelime-avi-production-navigation-20260903`.
-- PR #169: **CLOSED / MERGED**.
-- Merge öncesi base: `release/final-closed-test-aab-1.68.8` @ `189864c92a605e7bb960460300714049c730ea39`.
-- Exact merged HEAD: **`ffa1454ba8fb47da21ca6caa50b0a5495e0149c1`**.
-- Merge commit: **`0c84aefd8a5ef591aaaab9eaa30bed2e044190cf`**.
-- Final ürün farkı yalnız **4 dosya / +259 / -0**:
-  - `lib/main.dart` — yalnız production entry importu (+1),
-  - `lib/main_navigation.dart` — Kelime Avı Oyna kartı (+21),
-  - `lib/word_hunt/word_hunt_production_entry_screen.dart` — production route/persistence glue,
-  - `test/word_hunt_menu_entry_test.dart` — menü entry testi.
-- Geçici one-shot üretim workflow’u final PR diff’inden kaldırıldı.
-- `assets/questions.json`, BoardMap/67 node, canonical 8×8 content, Firebase rules/model, AdMob/signing/Android config, package/version değişmedi.
+## Gökyüzü Adaları — V9 GÖRSEL YÖNÜ LOCKED/PASS
 
-### Üretim / test kanıtları
-- Focused üretim run `33754274810`: **SUCCESS**; 62 focused test PASS.
-- Minimum-diff run `33754621892`: **SUCCESS**; formatter kaynaklı gereksiz `main_navigation.dart` churn kaldırıldı; minimum-diff commit `2d9fd0b63e3891d52c0e7376a8c0e5702dfb2dff`.
-- Normal PR full-suite/release APK/Android16 run `33754851284`: **SUCCESS**; job `100646698982` SUCCESS.
-  - analyze + tüm testler PASS,
-  - kalıcı signing setup PASS,
-  - test Ad ID’li release APK PASS,
-  - package/merged manifest PASS,
-  - Android 16 cold-start + AdMob process gate PASS,
-  - kanıt artifact’i yüklendi.
-- Kelime Avı Android16 görsel run `33754851205`: **SUCCESS**; job `100646698474` SUCCESS.
-  - exact PR HEAD checkout `ffa1454...`,
-  - `dart analyze lib/word_hunt`: **No issues found**,
-  - focused suite **126/126 PASS**,
-  - MASTER ART source/package byte+SHA karşılaştırması `SOURCE_EQUALS_PACKAGED=YES count=2`,
-  - visual proof APK SHA256 `679a4be8d5766498f4c6b531d1766e7da604aadabd1f4bd9ee1405ccc3d2ad9e`,
-  - Android API 36 emulator install/open/real screencap/activity/process/crash/ANR gate PASS,
-  - MASTER ART side-by-side/diff/geometry kanıtları üretildi,
-  - artifact `9893332600`, digest `sha256:2d0fa14825f59a735a9606be809025b2f69d4daa09121bb065bb622d25e30001`.
-- Açık review/review thread blocker yoktu.
-- Ready kapısı Levent’in 3 Eylül 2026 `Devam et` onayıyla geçildi.
-- Merge kapısı Levent’in 3 Eylül 2026 ayrı `Merge et` onayıyla geçildi.
-- Merge commitinde otomatik PR workflow’u tetiklenmedi (`0` run); exact PR HEAD’deki iki SUCCESS hattı final teknik kanıt olarak korunur.
+- Paket adı: **Gökyüzü Adaları**.
+- Görsel yön: **C — Neşeli & Parlak**.
+- Rota: 10 bölüm.
+- Modüler asset mimarisi ve rota mock V2 statik görsel yönü: **LOCKED/PASS**.
+- Levent'in son görsel kabulü: adacıklar için yalnız tema ile uyumlu boş/tematik arka plan kullanılacak; arka plan gameplay/UI yerine geçmeyecek.
+- Telefon ekranına göre kompozisyon yapılacak; üst/alt gereksiz boşluk bırakılmayacak, yalnız altta banner reklam için gereken alan bırakılacak.
+- Rota ekranında 8–9–10 arasında kullanıcı tarafından fark edilen gereksiz kilit + 3 yıldız işareti kaldırıldı; son kabul bu düzeltmeyi içeriyor.
+- **Raw Android runtime görsel PASS henüz yok.** Flutter entegrasyonu sonrası Android16 raw screenshot + crash/ANR/log kanıtı ve gerçek cihaz görsel kabulü zorunlu.
 
-## Docs-only Checkpoint PR #168
+## Gökyüzü Adaları Runtime Asset Paketi
 
-- Branch: `docs/kelime-avi-v8-post-release-merge-20260903`.
-- PR #168: **OPEN / READY / mergeable=true / merged=false**.
-- PR #169 merge’i sonrası ilk kısa `mergeable=false` görünümü GitHub yeniden hesaplamasında `mergeable=true` oldu; teknik blocker yok.
-- Current release `0c84aefd...` ile docs branch diverged; merge base `189864c9...`dir. Current PR changed-file listesi yine yalnız dört checkpoint belgesidir: `ACIK_SORULAR_VE_DOGRULAMALAR.md`, `BILGI_ROTASI_DURUM.md`, `GOREV_HAVUZU.md`, `docs/project-memory/GENEL_PROJE_OZETI.md`.
-- PR #168 ayrı açık Levent onayı olmadan merge edilmeyecek.
+- Runtime sözleşmesi: **41 core + 7 opsiyonel island variant = 48 WebP**.
+- ZIP boyutu: **557.120 bayt**.
+- Zorunlu SHA256: `d219c6233fa27f5e3e04687ec5fd15dab1f24500584e78d6a7c80036ee68f5ca`.
+- Alpha/file QA: **PASS**.
+- Bu QA, raw Android görsel PASS değildir.
+- Firestorage aktarım dosyası: `gokyuzu_transfer_chunks18_native`.
+- Firestorage public/share bilgileri tarihsel aktarım kanıtıdır; retention süreli olduğundan final ürün kaynağı değildir.
+- Eski `.transfer`, raw8, v5 ve eski materialize yöntemleri final ürün geçmişi olarak kullanılmayacak.
+
+## Gökyüzü Adaları İçerik Paketi
+
+- 10 bölüm / toplam 80 target+bonus canonical 8×8 içerik hazır.
+- PR #171 `feat(kelime-avi): add Gokyuzu 8x8 content pack` **OPEN/DRAFT** olarak tarihsel içerik paketi hattıdır; merge/Ready yapılmayacak.
+- Exact içerik HEAD: `4ec33de7438fcbd15ed63b1ae2adda127da3be8c`.
+- Bu paket mevcut 20 bölümlük yayın stoğunun parçasıdır; yeni 200-bölüm üretim hattıyla karıştırılmamalıdır.
+
+## Kelime Avı V9 — 200 BÖLÜM YAYIN EŞİĞİ
+
+### Kalıcı karar
+
+- Mevcut Kelime Avı stoğu: **20 bölüm**.
+- Kullanıcı kararı: 20 bölüm yayın için yetersiz; kullanıcıların bir günde bitirmesi olası.
+- **Minimum yayın stoğu: 200 hazır/doğrulanmış bölüm.**
+- Tercih edilen güvenli yayın stoğu: 200–300 bölüm.
+- Kelime Avı, bu 200 bölüm eşiği oluşmadan Play'e çıkarılmayacak.
+- 1.68.20+110 AAB Kelime Avı içerdiği için Play'e yüklenmeyecek.
+
+### PR #180 — ölçeklenebilir üretim hattı
+
+- PR: **#180 — `feat(kelime-avi): add 200-level content production pipeline`**.
+- Durum: **OPEN / DRAFT / mergeable=true / merged=false**.
+- Base: `release/final-closed-test-aab-1.68.8` @ `a43d85eae86eac335c7e09a832152667ba608c53`.
+- Current PR HEAD: **`618404e281bca91cdd2e9eb03761f47784690353`**.
+- PR merge edilmedi.
+- Amaç: bölüm-bölüm el işçiliğini bırakıp deterministik toplu üretim + otomatik doğrulama hattına geçmek.
+
+### PR #180 kapsamı
+
+- `tools/word_hunt_batch_generator.py`
+  - canonical 8×8 grid,
+  - yatay/dikey/çapraz + ters yön,
+  - deterministic seed,
+  - target/bonus validation,
+  - exact-one physical occurrence gate,
+  - 200 bölüm release-stock gate.
+- `tools/word_hunt_content_factory.sample.json`.
+- `.github/workflows/word-hunt-content-factory.yml`.
+- `docs/project-memory/KELIME_AVI_200_BOLUM_URETIM_HATTI_2026-09-06.md`.
+- Protected scope: `assets/questions.json`, BoardMap/67 node, Firebase, AdMob, signing, package/version, Play release.
+- PR #180 Play yüklemez, runtime katalog eklemez ve production sürüm değiştirmez.
+
+### 200 bölüm üretim hedefi
+
+- Mevcut: **20 bölüm**.
+- Yeni hedef: **18 yeni rota × 10 bölüm = 180 bölüm**.
+- Toplam hedef: **200 bölüm minimum**.
+- Üretim birimi: 10 bölümlük rota/paket.
+- Bölüm başına ayrı branch/Android Action/APK/insan testi yapılmayacak.
+- Her bölüm otomatik 8×8, kelime sayısı, exactly-one occurrence, yön, reverse gesture, timer/yıldız ve render kapılarından geçecek.
+- İnsan denge örneklemesi varsayılan B1 + B5 + B10; otomatik outlier varsa yalnız ilgili ek bölüm oynanacak.
+- Android16 tam runtime paket tamamlanınca, engine/ortak UI değişiminde ve release entegrasyonu öncesinde çalışacak.
+
+### Üretim hattında son durum
+
+- PR #180'un ilk altyapı CI turu yeşil kabul edildi ve 180 yeni bölüm için toplu manifest üretimi hazırlığına geçildi.
+- Son çalışma HEAD'i `618404e281bca91cdd2e9eb03761f47784690353`.
+- Exact HEAD için CI durumları sohbet durdurulduğu anda takip ediliyordu; **yeni sohbette canlı GitHub'dan yeniden doğrulanmalı**.
+- Üretim manifestinde 18 temalı rota için 10'ar bölüm hedeflendi: Orman Yolu, Deniz Koyu, Dağ Geçidi, Çöl Vahası, Kış Ülkesi, Bahar Bahçesi, Gece Şehri, Uzay Üssü, Antik Kent, Gizemli Laboratuvar, Müzik Adası, Spor Vadisi, Mutfak Sokağı, Masal Ormanı, Teknoloji Kenti, Tarih Yolu, Bilim Koyu, Hazine Adası.
+- Bu isimler/kelime havuzları üretim taslağıdır; **oyuna veya canonical içerik dosyasına merge edilmiş değillerdir**.
+- Yeni sohbette önce PR #180 exact HEAD, CI ve değişen dosyalar doğrulanmalı; yeşil olmayan/eksik kapı varsa üretim commit'i veya merge yapılmamalı.
+
+## Docs-only / eski checkpoint PR'ları
+
+- PR #168 tarihsel docs-only checkpoint olarak kalmıştır; eski release-context bilgileri yeni V9 durumuyla karşılaştırılmadan kanonik kabul edilmez.
+- PR #171 Gökyüzü Adaları 8×8 içerik paketi: OPEN/DRAFT; Ready/merge yok.
+- PR #175 Gökyüzü Adaları runtime asset hattının tarihsel görsel kabul checkpoint'idir; raw Android fiziksel kabul kapısı ayrı kalır.
 
 ## Ölçeklenebilir Üretim/Test — KALICI KARAR
 
@@ -162,6 +175,7 @@
 - Her bölüm otomatik 8×8, kelime sayısı, exactly-one occurrence, yön, reverse gesture, timer/yıldız ve render kapılarından geçer.
 - İnsan denge örneklemesi varsayılan B1 + B5 + B10; otomatik outlier varsa yalnız ilgili ek bölüm oynanır.
 - Android16 tam runtime paket tamamlanınca, engine/ortak UI değişiminde ve release entegrasyonu öncesinde çalışır.
+- Amaç, 10 bölüm/hafta gibi ölçeklenmeyen manuel üretim yerine tek üretim bloğunda çoklu rota/bölüm üretip makinece doğrulamaktır.
 
 ## WORK V2 — AKTİF
 
@@ -182,17 +196,20 @@
 - BoardMap / 67 node değiştirilmez.
 - Canonical 8×8 / 64 hücre sözleşmesi korunur.
 - Firebase / AdMob / release signing değişiklikleri ayrı scope gerektirir.
-- package name / version değişmedi.
+- Package name korunur.
+- Play yükleme/yayınlama, Kelime Avı yayın stoğu ve kullanıcı onayı olmadan yapılmaz.
 
-## Kalan Aktif Sıra — V8 BURADAN DEVAM ETSİN
+## Kalan Aktif Sıra — V9 BURADAN DEVAM ETSİN
 
-1. Her görev başında canonical release branch, `pubspec.yaml`, son commit ve ilgili açık PR/CI durumunu canlı doğrula.
-2. Found/error/completion/B5/swipe kabul kapıları yeni belirti yoksa yeniden açılmaz.
-3. PR #167/#163/#162/#161/#158/#169 merge zinciri — **PASS / TAMAMLANDI**.
-4. Canonical release HEAD — `0c84aefd8a5ef591aaaab9eaa30bed2e044190cf`.
-5. Production ana navigasyon entegrasyonu — **PASS / CANONICAL RELEASE İÇİNDE**.
-6. Docs-only PR #168 — **READY / mergeable=true / merge kararı ayrıca açık Levent onayı gerektirir**.
-7. `REFERENCE_FONT` — **DOĞRULANACAK / DEFERRED**.
-8. Play yükleme/yayınlama — **ayrı açık Levent onayı gerektirir**.
+1. Yeni sohbette canlı GitHub'dan canonical release branch, HEAD, `pubspec.yaml`, açık PR'lar ve CI yeniden doğrula.
+2. PR #180 exact HEAD `618404e...` ve CI durumunu kontrol et.
+3. PR #180'un 200-bölüm üretim hattını güvenli biçimde tamamla; mevcut 20 bölümü koru.
+4. 18 yeni rota × 10 bölüm = 180 yeni bölümü deterministik üretim + otomatik QA ile hazırla.
+5. 200/200 release-stock gate PASS olmadan Kelime Avı runtime katalog/release entegrasyonuna geçme.
+6. Yeni içeriklerin görsel/runtime entegrasyonu gerekiyorsa önce ürün içi görsel kabul, sonra Android16 raw runtime, sonra gerçek cihaz kabulü yap.
+7. Gökyüzü Adaları runtime asset entegrasyonu için 48 WebP gate'lerini ve exact SHA'yı koru; raw Android görsel PASS'i ayrıca al.
+8. Kelime Avı içeren `1.68.20+110` AAB **Play'e yüklenmeyecek**.
+9. Yeni Kelime Avı production AAB ancak minimum 200 doğrulanmış bölüm ve gerekli runtime/fiziksel kabul kapıları tamamlandıktan sonra üretilecek.
+10. Play Console yükleme/yayınlama için ayrıca Levent'in açık onayı gerekecek.
 
-**SON DURUM: 8×8 LOCKED / V5 ASSET PASS / FOUND PASS / ERROR PASS / COMPACT COMPLETION PASS / B5 SÜRE PASS / SWIPE ANDROID16 PASS / PR #167+#163+#162+#161+#158+#169 MERGED / PRODUCTION ANA NAVİGASYON CANONICAL RELEASE İÇİNDE / CANONICAL RELEASE HEAD `0c84aefd...` / PR #168 DOCS-ONLY READY+MERGEABLE / WORK V2 AKTİF / PLAY YAYINI YOK.**
+**SON DURUM:** Başlangıç Limanı 8×8 LOCKED / V5-V6 gameplay PASS / Gökyüzü Adaları görsel yönü PASS + raw Android DEFERRED / production navigasyon canonical / `1.68.20+110` AAB üretildi ama Kelime Avı nedeniyle Play'e YÜKLENMEYECEK / minimum yayın stoğu 200 bölüm / PR #180 OPEN+DRAFT / current PR HEAD `618404e281bca91cdd2e9eb03761f47784690353` / 20 mevcut + 180 yeni hedef / WORK V2 AKTİF / Play YAYINI YOK.
