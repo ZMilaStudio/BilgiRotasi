@@ -83,7 +83,7 @@ void main() {
             final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
             expect(bytes, isNotNull);
             File(
-              'reports/ADMOB_ANDROID16_TEST_WIDGET_REUSABLE_MAP_$safeTheme.png',
+              'reports/WORD_HUNT_REUSABLE_MAP_WIDGET_$safeTheme.png',
             ).writeAsBytesSync(bytes!.buffer.asUint8List());
           } finally {
             image.dispose();
@@ -96,7 +96,7 @@ void main() {
     expect(centersByTheme['forest-proof'], centersByTheme['harbor-proof']);
 
     if (writeEvidence) {
-      File('reports/ADMOB_ANDROID16_TEST_WIDGET_REUSABLE_MAP.txt').writeAsStringSync(
+      File('reports/WORD_HUNT_REUSABLE_MAP_WIDGET.txt').writeAsStringSync(
         'EVIDENCE_KIND=FLUTTER_WIDGET_TEST_RENDER\n'
         'DEVICE_SCREENSHOT=NO\n'
         'SURFACE=390x844@1.0\n'
