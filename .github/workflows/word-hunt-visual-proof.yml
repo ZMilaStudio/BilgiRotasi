@@ -93,6 +93,22 @@ jobs:
           if-no-files-found: error
           retention-days: 30
 
+      - name: Reusable Orman Yolu Android proof APK'sını üret
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p reports
+          flutter build apk --debug \
+            -t lib/word_hunt/word_hunt_reusable_route_map_visual_proof_main.dart \
+            --dart-define=ADMOB_ENVIRONMENT=test
+          test -s build/app/outputs/flutter-apk/app-debug.apk
+          cp build/app/outputs/flutter-apk/app-debug.apk \
+            reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_PROOF.apk
+          sha256sum reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_PROOF.apk \
+            | tee reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_APK_SHA256.txt
+          git rev-parse HEAD \
+            | tee reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_HEAD_SHA.txt
+
       - name: İzole görsel kanıt APK'sını üret ve asset'i doğrula
         shell: bash
         run: |
@@ -142,7 +158,7 @@ jobs:
           test -r /dev/kvm
           test -w /dev/kvm
 
-      - name: Android 16'da gerçek Flutter ekranını çek
+      - name: Android 16'da gerçek Flutter ekranlarını çek
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 36
@@ -157,6 +173,21 @@ jobs:
           script: |
             mkdir -p reports
             if adb shell pm path com.leventua.bilgirotasi 2>/dev/null | grep -q '^package:'; then adb uninstall com.leventua.bilgirotasi; fi
+
+            adb install reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_PROOF.apk
+            adb logcat -c
+            adb shell am force-stop com.leventua.bilgirotasi
+            adb shell monkey -p com.leventua.bilgirotasi -c android.intent.category.LAUNCHER 1 >/dev/null
+            sleep 5
+            adb shell dumpsys activity activities > reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_ACTIVITY.txt
+            adb exec-out screencap -p > reports/WORD_HUNT_REUSABLE_MAP_ANDROID16.png
+            adb logcat -d > reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_LOGCAT.txt
+            test -s reports/WORD_HUNT_REUSABLE_MAP_ANDROID16.png
+            grep -Fq 'com.leventua.bilgirotasi/.MainActivity' reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_ACTIVITY.txt
+            grep -Eq 'mResumedActivity.*com\.leventua\.bilgirotasi|topResumedActivity=.*com\.leventua\.bilgirotasi|mCurrentFocus=.*com\.leventua\.bilgirotasi' reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_ACTIVITY.txt
+            if grep -E 'FATAL EXCEPTION|ANR in com\.leventua\.bilgirotasi|am_crash.*com\.leventua\.bilgirotasi|am_proc_died.*com\.leventua\.bilgirotasi' reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_LOGCAT.txt; then echo 'Reusable map Android proof process failure detected.' >&2; exit 1; fi
+            adb uninstall com.leventua.bilgirotasi
+
             adb install build/app/outputs/flutter-apk/app-debug.apk
             adb logcat -c
             adb shell am force-stop com.leventua.bilgirotasi
@@ -173,6 +204,19 @@ jobs:
             if grep -Fq '[WORD_HUNT_PIXEL_PROOF_ASSET_ERROR]' reports/WORD_HUNT_VISUAL_PROOF_ASSET_RUNTIME.txt; then cat reports/WORD_HUNT_VISUAL_PROOF_ASSET_RUNTIME.txt >&2; exit 1; fi
             grep -Fq '[WORD_HUNT_PIXEL_PROOF_ASSET_LOADED]' reports/WORD_HUNT_VISUAL_PROOF_ASSET_RUNTIME.txt
             test "$(grep -Fc '[WORD_HUNT_PIXEL_PROOF_ASSET_LOADED]' reports/WORD_HUNT_VISUAL_PROOF_ASSET_RUNTIME.txt)" -eq 2
+
+      - name: Reusable harita gerçek Android kanıtını yükle
+        uses: actions/upload-artifact@v4
+        with:
+          name: BilgiRotasi-KelimeAvi-ReusableMap-Android16-${{ env.PROOF_SHA }}
+          path: |
+            reports/WORD_HUNT_REUSABLE_MAP_ANDROID16.png
+            reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_ACTIVITY.txt
+            reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_LOGCAT.txt
+            reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_HEAD_SHA.txt
+            reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_APK_SHA256.txt
+          if-no-files-found: error
+          retention-days: 30
 
       - name: MASTER ART karşılaştırma kanıtlarını üret
         shell: bash
