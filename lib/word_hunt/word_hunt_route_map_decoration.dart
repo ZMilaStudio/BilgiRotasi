@@ -31,6 +31,19 @@ class WordHuntRouteDecorationMark {
   final double rotationTurns;
 }
 
+@immutable
+class WordHuntRouteDecorationPalette {
+  const WordHuntRouteDecorationPalette({
+    required this.primary,
+    required this.secondary,
+    required this.accent,
+  });
+
+  final Color primary;
+  final Color secondary;
+  final Color accent;
+}
+
 /// Rota dekorlarını piksel veya rota-id özel koordinat listesi olmadan üretir.
 ///
 /// Bütün konumlar 0..1 normalize yüzeydedir. Aynı seed + aynı reserved noktalar
@@ -98,5 +111,134 @@ abstract final class WordHuntRouteDecorationLayout {
       }
     }
     return false;
+  }
+}
+
+/// Proof/skin katmanında kullanılan ortak motif painter'ı.
+///
+/// Konumları kendisi seçmez; `WordHuntRouteDecorationLayout` tarafından üretilen
+/// normalize işaretleri boyar. Böylece motif türü değişse bile node/path
+/// geometrisi veya rota başına elle koordinat yazma ihtiyacı oluşmaz.
+class WordHuntRouteDecorationPainter extends CustomPainter {
+  const WordHuntRouteDecorationPainter({
+    required this.spec,
+    required this.reservedPoints,
+    required this.palette,
+    this.opacity = 0.42,
+  });
+
+  final WordHuntRouteDecorationSpec spec;
+  final List<Offset> reservedPoints;
+  final WordHuntRouteDecorationPalette palette;
+  final double opacity;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final marks = WordHuntRouteDecorationLayout.generate(
+      spec: spec,
+      reservedPoints: reservedPoints,
+    );
+
+    for (final mark in marks) {
+      final center = Offset(
+        mark.center.dx * size.width,
+        mark.center.dy * size.height,
+      );
+      canvas.save();
+      canvas.translate(center.dx, center.dy);
+      canvas.rotate(mark.rotationTurns * math.pi * 2);
+
+      switch (spec.kind) {
+        case WordHuntRouteDecorationKind.forest:
+          _paintForest(canvas, mark.scale);
+        case WordHuntRouteDecorationKind.sky:
+          _paintSky(canvas, mark.scale);
+        case WordHuntRouteDecorationKind.harbor:
+          _paintHarbor(canvas, mark.scale);
+      }
+
+      canvas.restore();
+    }
+  }
+
+  void _paintForest(Canvas canvas, double scale) {
+    final trunkPaint = Paint()
+      ..color = palette.secondary.withValues(alpha: opacity * 0.82);
+    final leafPaint = Paint()
+      ..color = palette.primary.withValues(alpha: opacity);
+    final highlightPaint = Paint()
+      ..color = palette.accent.withValues(alpha: opacity * 0.52);
+
+    final trunk = RRect.fromRectAndRadius(
+      Rect.fromCenter(
+        center: Offset(0, 9 * scale),
+        width: 5.5 * scale,
+        height: 22 * scale,
+      ),
+      Radius.circular(2.5 * scale),
+    );
+    canvas.drawRRect(trunk, trunkPaint);
+    canvas.drawCircle(Offset(0, -6 * scale), 13 * scale, leafPaint);
+    canvas.drawCircle(Offset(-8 * scale, 1 * scale), 9 * scale, leafPaint);
+    canvas.drawCircle(Offset(8 * scale, 1 * scale), 9 * scale, leafPaint);
+    canvas.drawCircle(
+      Offset(-4 * scale, -10 * scale),
+      3.3 * scale,
+      highlightPaint,
+    );
+  }
+
+  void _paintSky(Canvas canvas, double scale) {
+    final cloudPaint = Paint()
+      ..color = palette.primary.withValues(alpha: opacity * 0.72);
+    final starPaint = Paint()
+      ..color = palette.accent.withValues(alpha: opacity);
+
+    canvas.drawOval(
+      Rect.fromCenter(
+        center: Offset.zero,
+        width: 28 * scale,
+        height: 12 * scale,
+      ),
+      cloudPaint,
+    );
+    canvas.drawCircle(Offset(-7 * scale, -4 * scale), 7 * scale, cloudPaint);
+    canvas.drawCircle(Offset(4 * scale, -6 * scale), 9 * scale, cloudPaint);
+    canvas.drawCircle(Offset(13 * scale, -13 * scale), 2.3 * scale, starPaint);
+  }
+
+  void _paintHarbor(Canvas canvas, double scale) {
+    final waterPaint = Paint()
+      ..color = palette.primary.withValues(alpha: opacity)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 3 * scale
+      ..strokeCap = StrokeCap.round;
+    final buoyPaint = Paint()
+      ..color = palette.accent.withValues(alpha: opacity * 0.92);
+
+    final wave = Path()
+      ..moveTo(-16 * scale, 2 * scale)
+      ..quadraticBezierTo(
+        -8 * scale,
+        -5 * scale,
+        0,
+        2 * scale,
+      )
+      ..quadraticBezierTo(
+        8 * scale,
+        9 * scale,
+        16 * scale,
+        2 * scale,
+      );
+    canvas.drawPath(wave, waterPaint);
+    canvas.drawCircle(Offset(0, -8 * scale), 4.2 * scale, buoyPaint);
+  }
+
+  @override
+  bool shouldRepaint(covariant WordHuntRouteDecorationPainter oldDelegate) {
+    return oldDelegate.spec != spec ||
+        oldDelegate.reservedPoints != reservedPoints ||
+        oldDelegate.palette != palette ||
+        oldDelegate.opacity != opacity;
   }
 }
