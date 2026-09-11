@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import 'word_hunt_models.dart';
 import 'word_hunt_progress.dart';
+import 'word_hunt_route_map_decoration.dart';
 
 /// Kelime Avı'nın bütün 10-bölümlük rotaları için tek geometri sözleşmesi.
 ///
@@ -112,7 +113,7 @@ class WordHuntRouteMapTheme {
 /// 20 rota için ortak 10-bölümlük harita iskeleti.
 ///
 /// Bu ekran henüz production kataloğuna bağlı değildir. İlk kabul aşamasında
-/// yalnız yol, 1-10 düğümleri ve başlangıç/bitiş işaretlerini gösterir.
+/// yol, 1-10 düğümleri ve opsiyonel deterministik tema dekorunu gösterir.
 class WordHuntReusableRouteMapScreen extends StatelessWidget {
   const WordHuntReusableRouteMapScreen({
     super.key,
@@ -120,12 +121,21 @@ class WordHuntReusableRouteMapScreen extends StatelessWidget {
     required this.theme,
     this.progress = const WordHuntProgressSnapshot(),
     this.onLevelTap,
-  });
+    this.decorationSpec,
+    this.decorationPalette,
+    this.decorationOpacity = 0.42,
+  }) : assert(
+         (decorationSpec == null) == (decorationPalette == null),
+         'Decoration spec ve palette birlikte verilmelidir.',
+       );
 
   final WordHuntRouteDefinition route;
   final WordHuntRouteMapTheme theme;
   final WordHuntProgressSnapshot progress;
   final ValueChanged<int>? onLevelTap;
+  final WordHuntRouteDecorationSpec? decorationSpec;
+  final WordHuntRouteDecorationPalette? decorationPalette;
+  final double decorationOpacity;
 
   static const double _nodeDiameter = 54;
   static const double _nodeBoxWidth = 86;
@@ -205,9 +215,32 @@ class WordHuntReusableRouteMapScreen extends StatelessWidget {
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(23),
                         child: Stack(
+                          key: const Key('word_hunt_reusable_layer_stack'),
                           fit: StackFit.expand,
                           children: <Widget>[
+                            if (decorationSpec != null &&
+                                decorationPalette != null)
+                              Positioned.fill(
+                                key: const Key(
+                                  'word_hunt_reusable_decoration_layer',
+                                ),
+                                child: IgnorePointer(
+                                  child: CustomPaint(
+                                    key: const Key(
+                                      'word_hunt_reusable_route_decoration',
+                                    ),
+                                    painter: WordHuntRouteDecorationPainter(
+                                      spec: decorationSpec!,
+                                      reservedPoints: WordHuntRouteMapGeometry
+                                          .normalizedStops,
+                                      palette: decorationPalette!,
+                                      opacity: decorationOpacity,
+                                    ),
+                                  ),
+                                ),
+                              ),
                             Positioned.fill(
+                              key: const Key('word_hunt_reusable_path_layer'),
                               child: CustomPaint(
                                 key: const Key(
                                   'word_hunt_reusable_route_path',
