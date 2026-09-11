@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 import 'word_hunt_models.dart';
 import 'word_hunt_progress.dart';
 import 'word_hunt_reusable_route_map_screen.dart';
-import 'word_hunt_route_map_decoration.dart';
+import 'word_hunt_route_visual_theme.dart';
 import 'word_hunt_starter_content.dart';
 
 /// Yalnız reusable 10-bölümlük harita motorunun gerçek Flutter/Android görsel
@@ -35,26 +35,15 @@ class _ReusableRouteMapVisualProofApp extends StatelessWidget {
         },
       );
 
-  static const WordHuntRouteDecorationSpec _forestDecoration =
-      WordHuntRouteDecorationSpec(
-        kind: WordHuntRouteDecorationKind.forest,
-        seed: 20260912,
-        count: 18,
-      );
-
-  static const WordHuntRouteDecorationPalette _forestPalette =
-      WordHuntRouteDecorationPalette(
-        primary: Color(0xFF4F8D62),
-        secondary: Color(0xFF72533A),
-        accent: Color(0xFFF3D47A),
-      );
+  static const WordHuntRouteVisualTheme _visualTheme =
+      WordHuntRouteVisualThemeProofs.forest;
 
   WordHuntRouteDefinition get _proofRoute {
     final source = WordHuntStarterContent.baslangicLimani;
     return WordHuntRouteDefinition(
       id: source.id,
       title: 'Orman Yolu',
-      theme: 'forest-proof',
+      theme: _visualTheme.id,
       unlockStarsRequired: source.unlockStarsRequired,
       levels: source.levels,
       routeRewardId: 'proof-only-forest-route',
@@ -68,11 +57,11 @@ class _ReusableRouteMapVisualProofApp extends StatelessWidget {
       title: 'Kelime Avı Reusable Route Map Proof',
       home: WordHuntReusableRouteMapScreen(
         route: _proofRoute,
-        theme: WordHuntRouteMapTheme.forestProof,
+        theme: _visualTheme.mapTheme,
         progress: _proofProgress,
-        decorationSpec: _forestDecoration,
-        decorationPalette: _forestPalette,
-        decorationOpacity: 0.38,
+        decorationSpec: _visualTheme.decorationSpec,
+        decorationPalette: _visualTheme.decorationPalette,
+        decorationOpacity: _visualTheme.decorationOpacity,
       ),
     );
   }
