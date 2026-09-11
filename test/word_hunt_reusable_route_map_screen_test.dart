@@ -1,3 +1,4 @@
+import 'package:bilgi_rotasi/word_hunt/word_hunt_models.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_progress.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_reusable_route_map_screen.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_starter_content.dart';
@@ -44,6 +45,42 @@ void main() {
     expect(WordHuntRouteMapGeometry.connections, contains((7, 9)));
     expect(WordHuntRouteMapGeometry.connections, isNot(contains((8, 9))));
     expect(WordHuntRouteMapGeometry.connections, contains((9, 10)));
+  });
+
+  test('bonus progression works for a future route id without special cases', () {
+    const futureRoute = WordHuntRouteDefinition(
+      id: 'orman-yolu-proof',
+      title: 'Orman Yolu Proof',
+      theme: 'orman',
+      unlockStarsRequired: 18,
+      levels: WordHuntStarterContent.baslangicLimani.levels,
+      routeRewardId: 'proof-only',
+    );
+
+    expect(
+      WordHuntRouteProgressEngine.isLevelUnlocked(
+        futureRoute,
+        progressThroughSeven,
+        8,
+      ),
+      isTrue,
+    );
+    expect(
+      WordHuntRouteProgressEngine.isLevelUnlocked(
+        futureRoute,
+        progressThroughSeven,
+        9,
+      ),
+      isTrue,
+    );
+    expect(
+      WordHuntRouteProgressEngine.isLevelUnlocked(
+        futureRoute,
+        progressThroughSeven,
+        10,
+      ),
+      isFalse,
+    );
   });
 
   test('proof themes are visually distinct but cannot carry geometry', () {
