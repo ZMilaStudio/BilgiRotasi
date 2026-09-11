@@ -24,8 +24,8 @@ abstract final class WordHuntRouteMapGeometry {
     Offset(0.60, 0.91),
   ];
 
-  /// Bonus bölüm 8 ana ilerleme kapısı değildir. Bu nedenle yol 7'den hem 8'e
-  /// hem 9'a ayrılır; final 10 ise yalnız 9 üzerinden devam eder.
+  /// 7 tamamlandığında 8 ve 9 paralel olarak açılır. 8 normal bir bölümdür;
+  /// 9 için geçiş kapısı değildir. Final 10 ise yalnız 9 üzerinden devam eder.
   static const List<(int, int)> connections = <(int, int)>[
     (1, 2),
     (2, 3),
