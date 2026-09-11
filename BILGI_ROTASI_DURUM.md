@@ -74,7 +74,25 @@ AdMob çalışma kuralı korunur:
 - Kullanıcı kabulü olmadan görsel yön değiştirilemez.
 - Gökyüzü Adaları scenic gameplay görsel yönü kullanıcı tarafından PASS edilmiştir.
 
-## 5. Soru bankası
+## 5. KRİTİK KARAR — Kelime Avı 200 bölüm harita mimarisi
+
+**Karar tarihi: 11 Eylül 2026. Bu karar, yeni runtime bölüm entegrasyonundan önce uygulanacak mimari kapıdır.**
+
+- Ürün yapısı **20 rota × 10 bölüm = 200 bölüm** olarak ele alınır.
+- Amaç tek tek üçüncü, dördüncü veya sonraki haritaları yapmak değil; **20 rotanın tamamını taşıyabilecek tek bir yeniden kullanılabilir 10-bölümlük harita motoru** kurmaktır.
+- Bölüm 1–10 düğüm geometrisi tek ve normalize edilmiş bir şablondan üretilir. Rota başına elle piksel/koordinat ayarı yapılmaz.
+- Rotalar arasındaki farklar kod kopyasıyla değil **veri/config/assets/theme** katmanından gelir: rota adı, tema, renk, arka plan, dekor ve içerik.
+- Rota özel Widget/Painter/layout dalı, rota özel koordinat listesi ve her yeni rota için yeniden elle hizalama **kabul edilmez**.
+- Unlock/progression kuralları tek merkezde tutulur; harita görseli bu kuralları tekrar tanımlamaz.
+- İlk kabul çıktısı yalnızca **yol + 1–10 numaralı düğümler + başlangıç/bitiş iskeleti** olacaktır. Dekor, ağaç, ada, efekt, karakter, animasyon ve sanat katmanı bu geometri onayından önce eklenmez.
+- Aynı motor, kod/layout değişikliği olmadan **en az 3 görsel olarak farklı rota** ile kanıtlanır. Üçüncü rota için özel koordinat veya özel layout kodu gerekirse mimari **başarısız** kabul edilir ve ölçeklemeye geçilmez.
+- Mevcut ilk iki 10-bölümlük rota uzun vadede aynı motora taşınmalıdır; ayrı/eski one-off harita sistemleri kalıcı mimari olarak korunmaz.
+- **200 düğümlük tek sonsuz harita yapılmaz.** Kullanıcı rota seçer ve rotanın 10 bölümlük haritasına girer.
+- Bu çalışma korunan **BoardMap / 67 node** oyunundan tamamen ayrıdır; BoardMap/67 node'a dokunulmaz.
+- **Orman Yolu Bölüm 1 dahil yeni 180 bölüm runtime kataloğuna bu harita motorunun geometri/mimari kapısı kabul edilmeden bağlanmaz.**
+- Başarı ölçütü: yeni bir rota eklemek günlerce Flutter harita/layout çalışması değil, doğrulanmış rota verisi + tema/assets ekleme işi olmalıdır.
+
+## 6. Soru bankası
 
 Canlı release zincirinde Türkiye özel 2.000 kolay soru paketi **merge edilmiştir**.
 
@@ -90,7 +108,7 @@ Canlı release zincirinde Türkiye özel 2.000 kolay soru paketi **merge edilmi�
 
 `assets/questions.json` kontrolsüz biçimde değiştirilmez. Soru düzeltmesi yapılacaksa metin + seçenekler + doğru indeks + açıklama + kategori + zorluk birlikte kontrol edilir.
 
-## 6. Production AAB / GitHub Release / Play ayrımı
+## 7. Production AAB / GitHub Release / Play ayrımı
 
 - GitHub Release `v1.68.20+110` mevcuttur.
 - Bu production AAB'nin kaynak commit'i: `a43d85eae86eac335c7e09a832152667ba608c53`.
@@ -101,7 +119,7 @@ Canlı release zincirinde Türkiye özel 2.000 kolay soru paketi **merge edilmi�
 - **Play Console'daki mevcut production/candidate sürümün gerçek durumu GitHub verisiyle tek başına doğrulanamaz: DOĞRULANACAK.**
 - Play yükleme/yayınlama, build/release üretiminden ayrı bir karar ve açık onay kapısıdır.
 
-## 7. 3B tahta
+## 8. 3B tahta
 
 - Oynanışa, BoardMap'e ve **67 node** düzenine dokunulmaz.
 - Önce numaralı deterministik geometri.
@@ -109,7 +127,7 @@ Canlı release zincirinde Türkiye özel 2.000 kolay soru paketi **merge edilmi�
 - Tek Matrix4 ile bütün 2B sahne eğilmez.
 - 8 rozet / 6 pozisyon eşlemesi çözülmeden ilerlenmez.
 
-## 8. CI / GitHub çalışma standardı
+## 9. CI / GitHub çalışma standardı
 
 - Canlı GitHub > durum dosyası > karar/görev kayıtları > eski sohbetler.
 - `main` güncel ürün tabanı varsayılmaz.
@@ -122,7 +140,7 @@ Canlı release zincirinde Türkiye özel 2.000 kolay soru paketi **merge edilmi�
 - APK/AAB yalnız test/release ihtiyacında üretilir.
 - Artifact kalıcı sürüm çıktısı olarak gerekiyorsa GitHub Release tercih edilir.
 
-## 9. Şu anki açık işler
+## 10. Şu anki açık işler
 
 Tamamlanan doğrulamalar:
 - [x] PR #180 exact HEAD/CI doğrulandı.
@@ -130,13 +148,18 @@ Tamamlanan doğrulamalar:
 - [x] AdMob exact PR HEAD + Android 16 cold-start/logcat kapısı PASS.
 - [x] `assets/questions.json` canlı toplamı ve Türkiye 2.000 paket merge durumu doğrulandı: **8.710**.
 - [x] Mevcut production AAB'nin kaynak SHA'sı ve GitHub Release zinciri doğrulandı.
+- [x] 200 bölüm harita ölçekleme mimarisi kritik karar olarak kilitlendi.
 
 Açık/onay gerektirenler:
+- [ ] Mevcut iki Kelime Avı haritasının neden rota başına uzun manuel çalışma gerektirdiğini canlı release kodundan çıkar ve yeni motor için anti-pattern listesini oluştur.
+- [ ] Tek 10-bölümlük motorun yalnız numaralı geometri iskeletini tanımla; sanat/dekor aşamasına geçme.
+- [ ] Aynı motoru 3 farklı rota temasıyla özel layout/koordinat kodu olmadan kanıtla.
+- [ ] Harita mimarisi kabul edilmeden Orman Yolu B1 veya diğer yeni bölümleri runtime kataloğuna bağlama.
 - [ ] Play Console'daki gerçek production/candidate sürümü harici canlı kaynaktan doğrula ve GitHub release zinciriyle eşleştir.
 - [ ] PR #180 için ürün/owner kabulü alınmadan Ready/merge yapma.
 - [ ] Yeni Play adayı gerekiyorsa ancak PR #180 merge/onay zincirinden sonra exact HEAD'den yeniden build et; bunu ayrıca onayla.
 
-## 10. Korunan sınırlar
+## 11. Korunan sınırlar
 
 - `assets/questions.json` kontrolsüz değiştirilmez.
 - BoardMap / 67 node ve mevcut oyun oynanışı korunur.
@@ -146,6 +169,6 @@ Açık/onay gerektirenler:
 - Gizli bilgi, parola, anahtar, testçi e-postası, UID/FID/token loglanmaz.
 - Bir bilgi doğrulanmamışsa **DOĞRULANACAK** yazılır; tahmin edilmez.
 
-## 11. Devir notu
+## 12. Devir notu
 
 Bu dosya proje durumunun kısa kanonik özeti olarak tutulur. Geçici `DEVRALMA_1_AYLIK_GPT.md` belgesi, canlı durum bağımsız doğrulandıktan ve bu dosya güncellendikten sonra ayrı branch/PR üzerinden kaldırılabilir.
