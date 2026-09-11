@@ -294,7 +294,7 @@ class WordHuntGokyuzuContent {
             id: 'gokyuzu-8',
             routeId: 'gokyuzu-adalari',
             index: 8,
-            type: WordHuntLevelType.bonus,
+            type: WordHuntLevelType.normal,
             grid: <String>[
               'YAJJEAAİ',
               'GTNSRDEL',

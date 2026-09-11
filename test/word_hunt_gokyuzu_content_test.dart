@@ -29,17 +29,17 @@ void main() {
     expect(totalWords, 80);
   });
 
-  test('bölüm tipleri ve özel bonuslar canonical paket eğrisini korur', () {
+  test('bölüm tipleri ve bölüm içi bonus kelimeler canonical eğriyi korur', () {
     final counts = <WordHuntLevelType, int>{};
     for (final level in route.levels) {
       counts[level.type] = (counts[level.type] ?? 0) + 1;
     }
-    expect(counts[WordHuntLevelType.normal], 7);
+    expect(counts[WordHuntLevelType.normal], 8);
     expect(counts[WordHuntLevelType.challenge], 1);
-    expect(counts[WordHuntLevelType.bonus], 1);
+    expect(counts[WordHuntLevelType.bonus] ?? 0, 0);
     expect(counts[WordHuntLevelType.routeFinal], 1);
     expect(route.levels[4].type, WordHuntLevelType.challenge);
-    expect(route.levels[7].type, WordHuntLevelType.bonus);
+    expect(route.levels[7].type, WordHuntLevelType.normal);
     expect(route.levels[9].type, WordHuntLevelType.routeFinal);
     expect(route.levels[7].bonusWords, const <String>['SIRLAR', 'HAZİNE']);
     expect(route.levels[8].bonusWords, const <String>['ROKET']);

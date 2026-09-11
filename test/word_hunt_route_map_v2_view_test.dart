@@ -17,6 +17,19 @@ void main() {
     },
   );
 
+  const proofProgressThroughEight = WordHuntProgressSnapshot(
+    bestStarsByLevelId: <String, int>{
+      'baslangic-1': 3,
+      'baslangic-2': 3,
+      'baslangic-3': 3,
+      'baslangic-4': 3,
+      'baslangic-5': 3,
+      'baslangic-6': 3,
+      'baslangic-7': 3,
+      'baslangic-8': 3,
+    },
+  );
+
   testWidgets('v2 route map renders the approved ten-stop composition', (
     tester,
   ) async {
@@ -29,7 +42,7 @@ void main() {
     expect(find.text('KELİME AVI'), findsOneWidget);
     expect(find.text('BAŞLANGIÇ LİMANI'), findsOneWidget);
     expect(find.text('MEYDAN OKUMA'), findsOneWidget);
-    expect(find.text('BONUS DURAK'), findsOneWidget);
+    expect(find.text('BONUS DURAK'), findsNothing);
     expect(find.text('ROTA FİNALİ'), findsOneWidget);
     expect(find.byKey(const Key('word_hunt_v2_scene')), findsOneWidget);
     expect(find.byKey(const Key('word_hunt_v2_compass')), findsOneWidget);
@@ -40,7 +53,7 @@ void main() {
     }
   });
 
-  testWidgets('v2 opens node 9 but keeps final 10 progression locked', (
+  testWidgets('v2 opens 8 first, then 9, while final 10 stays locked', (
     tester,
   ) async {
     var tapped = 0;
@@ -65,6 +78,23 @@ void main() {
     await tester.ensureVisible(level9);
     await tester.pumpAndSettle();
     await tester.tap(level9, warnIfMissed: false);
+    await tester.pump();
+    expect(tapped, 0);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: WordHuntRouteMapV2Screen(
+          progress: proofProgressThroughEight,
+          onLevelTap: (index) => tapped = index,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final unlockedLevel9 = find.byKey(const Key('word_hunt_v2_level_9'));
+    await tester.ensureVisible(unlockedLevel9);
+    await tester.pumpAndSettle();
+    await tester.tap(unlockedLevel9);
     await tester.pump();
     expect(tapped, 9);
 

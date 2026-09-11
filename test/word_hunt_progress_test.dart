@@ -63,8 +63,9 @@ void main() {
     );
   });
 
-  test('Baslangic Limani 9 acik kalirken 10 mevcut sirali kilidi korur', () {
-    const progress = WordHuntProgressSnapshot(
+  test('Baslangic Limani 7-8-9-10 sirali ilerler', () {
+    const definition = WordHuntStarterContent.baslangicLimani;
+    const throughSeven = WordHuntProgressSnapshot(
       bestStarsByLevelId: <String, int>{
         'baslangic-1': 3,
         'baslangic-2': 3,
@@ -75,17 +76,56 @@ void main() {
         'baslangic-7': 3,
       },
     );
-    const definition = WordHuntStarterContent.baslangicLimani;
+    const throughEight = WordHuntProgressSnapshot(
+      bestStarsByLevelId: <String, int>{
+        'baslangic-1': 3,
+        'baslangic-2': 3,
+        'baslangic-3': 3,
+        'baslangic-4': 3,
+        'baslangic-5': 3,
+        'baslangic-6': 3,
+        'baslangic-7': 3,
+        'baslangic-8': 3,
+      },
+    );
+    const throughNine = WordHuntProgressSnapshot(
+      bestStarsByLevelId: <String, int>{
+        'baslangic-1': 3,
+        'baslangic-2': 3,
+        'baslangic-3': 3,
+        'baslangic-4': 3,
+        'baslangic-5': 3,
+        'baslangic-6': 3,
+        'baslangic-7': 3,
+        'baslangic-8': 3,
+        'baslangic-9': 3,
+      },
+    );
 
     expect(
-      WordHuntRouteProgressEngine.isLevelUnlocked(definition, progress, 9),
+      WordHuntRouteProgressEngine.isLevelUnlocked(definition, throughSeven, 8),
       isTrue,
-      reason: 'Başlangıç Limanı 9 normal/açık ürün durağıdır.',
+      reason: '7 tamamlanınca yalnız 8 açılmalıdır.',
     );
     expect(
-      WordHuntRouteProgressEngine.isLevelUnlocked(definition, progress, 10),
+      WordHuntRouteProgressEngine.isLevelUnlocked(definition, throughSeven, 9),
       isFalse,
-      reason: 'Final 10, 9 tamamlanmadan oynanabilir olmamalıdır.',
+      reason: '8 tamamlanmadan 9 açılmamalıdır.',
+    );
+    expect(
+      WordHuntRouteProgressEngine.isLevelUnlocked(definition, throughEight, 9),
+      isTrue,
+      reason: '8 tamamlanınca 9 açılmalıdır.',
+    );
+    expect(
+      WordHuntRouteProgressEngine.isLevelUnlocked(definition, throughEight, 10),
+      isFalse,
+      reason: '9 tamamlanmadan final 10 açılmamalıdır.',
+    );
+    expect(
+      WordHuntRouteProgressEngine.isLevelUnlocked(definition, throughNine, 10),
+      isTrue,
+      reason: '9 tamamlanınca final 10 açılmalıdır.',
     );
   });
 

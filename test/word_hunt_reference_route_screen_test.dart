@@ -143,7 +143,8 @@ void main() {
       );
       expect(
         find.byKey(const Key('word_hunt_pixel_proof_node_9_override')),
-        findsOneWidget,
+        findsNothing,
+        reason: '8 tamamlanmadan 9 açık görünmemelidir.',
       );
       expect(
         find.byKey(const Key('word_hunt_reference_route_area')),
@@ -157,11 +158,22 @@ void main() {
       );
 
       await tester.tap(
+        find.byKey(const Key('word_hunt_pixel_proof_level_8')),
+        warnIfMissed: false,
+      );
+      await tester.pump();
+      expect(tappedLevels, <int>[8]);
+
+      await tester.tap(
         find.byKey(const Key('word_hunt_pixel_proof_level_9')),
         warnIfMissed: false,
       );
       await tester.pump();
-      expect(tappedLevels, <int>[9]);
+      expect(
+        tappedLevels,
+        <int>[8],
+        reason: '8 tamamlanmadan 9 callback üretmemelidir.',
+      );
 
       await tester.tap(
         find.byKey(const Key('word_hunt_pixel_proof_level_10')),
@@ -170,8 +182,8 @@ void main() {
       await tester.pump();
       expect(
         tappedLevels,
-        <int>[9],
-        reason: 'Final 10, node 9 tamamlanmadan callback üretmemelidir.',
+        <int>[8],
+        reason: '9 tamamlanmadan final 10 callback üretmemelidir.',
       );
     },
   );
@@ -241,11 +253,14 @@ void main() {
           (Offset(243.00, 1432.32), Offset(410.40, 1488.00)),
         ],
       );
-      expect(WordHuntReferenceRouteLayout.specialPlaques, const <int, Rect>{
-        5: Rect.fromLTWH(426, 825, 324, 88),
-        8: Rect.fromLTWH(785, 1142, 206, 82),
-        10: Rect.fromLTWH(613, 1488, 250, 110),
-      });
+      expect(
+        WordHuntReferenceRouteLayout.specialPlaques[5],
+        const Rect.fromLTWH(426, 825, 324, 88),
+      );
+      expect(
+        WordHuntReferenceRouteLayout.specialPlaques[10],
+        const Rect.fromLTWH(613, 1488, 250, 110),
+      );
       expect(
         WordHuntReferenceRouteLayout.finalCrown,
         const Rect.fromLTWH(451, 1417, 154, 94),
@@ -353,20 +368,25 @@ void main() {
     );
   });
 
-  testWidgets('special plaques and final crown follow canonical bounds', (
+  testWidgets('challenge plaque and final crown follow canonical bounds', (
     tester,
   ) async {
     await pumpCanonicalReferenceRoute(tester);
 
-    for (final entry in WordHuntReferenceRouteLayout.specialPlaques.entries) {
+    for (final level in <int>[5, 10]) {
+      final expected = WordHuntReferenceRouteLayout.specialPlaques[level]!;
       final actual = tester.getRect(
-        find.byKey(Key('word_hunt_route_stop_plaque_${entry.key}')),
+        find.byKey(Key('word_hunt_route_stop_plaque_$level')),
       );
-      expect(actual.left, closeTo(entry.value.left, 1.1));
-      expect(actual.top, closeTo(entry.value.top, 1.1));
-      expect(actual.width, closeTo(entry.value.width, 1.1));
-      expect(actual.height, closeTo(entry.value.height, 1.1));
+      expect(actual.left, closeTo(expected.left, 1.1));
+      expect(actual.top, closeTo(expected.top, 1.1));
+      expect(actual.width, closeTo(expected.width, 1.1));
+      expect(actual.height, closeTo(expected.height, 1.1));
     }
+    expect(
+      find.byKey(const Key('word_hunt_route_stop_plaque_8')),
+      findsNothing,
+    );
 
     final crown = tester.getRect(
       find.byKey(const Key('word_hunt_route_stop_crown_10')),
@@ -463,7 +483,7 @@ void main() {
     );
   });
 
-  testWidgets('stop 7 stars stay clear of the bonus stop', (tester) async {
+  testWidgets('stop 7 stars stay clear of level 8', (tester) async {
     await pumpReferenceRoute(tester);
 
     final seven = rectOf(tester, 7);
@@ -472,8 +492,7 @@ void main() {
     expect(
       seven.overlaps(eight),
       isFalse,
-      reason:
-          '7 numaranın yıldız alanı 8 numaralı Bonus durağın arkasında kalmamalı.',
+      reason: '7 numaranın yıldız alanı 8 numaralı bölümün arkasında kalmamalı.',
     );
     expect(
       eight.left - seven.right,
@@ -483,14 +502,13 @@ void main() {
     );
   });
 
-  testWidgets('special labels stay to the right of stops 5, 8 and 10', (
+  testWidgets('special labels stay to the right of stops 5 and 10', (
     tester,
   ) async {
     await pumpReferenceRoute(tester);
 
     for (final entry in <(int, String)>[
       (5, 'MEYDAN OKUMA'),
-      (8, 'BONUS DURAK'),
       (10, 'ROTA FİNALİ'),
     ]) {
       final orb = tester.getCenter(
@@ -503,6 +521,7 @@ void main() {
         reason: '${entry.$1} özel etiketi referanstaki gibi sağda kalmalı.',
       );
     }
+    expect(find.text('BONUS DURAK'), findsNothing);
   });
 
   testWidgets(

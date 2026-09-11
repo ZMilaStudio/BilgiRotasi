@@ -261,7 +261,7 @@ class WordHuntStarterContent {
             id: 'baslangic-8',
             routeId: 'baslangic-limani',
             index: 8,
-            type: WordHuntLevelType.bonus,
+            type: WordHuntLevelType.normal,
             grid: <String>[
               'ILFEÜCİU',
               'ĞMAÇSDCŞ',
