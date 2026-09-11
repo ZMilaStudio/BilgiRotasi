@@ -24,8 +24,8 @@ abstract final class WordHuntRouteMapGeometry {
     Offset(0.60, 0.91),
   ];
 
-  /// 7 tamamlandığında 8 ve 9 paralel olarak açılır. 8 normal bir bölümdür;
-  /// 9 için geçiş kapısı değildir. Final 10 ise yalnız 9 üzerinden devam eder.
+  /// Canonical rota sıralıdır: 7→8→9→10. 8 normal bir bölümdür;
+  /// bonus değildir ve 9 yalnız 8 tamamlandıktan sonra açılır.
   static const List<(int, int)> connections = <(int, int)>[
     (1, 2),
     (2, 3),
@@ -34,7 +34,7 @@ abstract final class WordHuntRouteMapGeometry {
     (5, 6),
     (6, 7),
     (7, 8),
-    (7, 9),
+    (8, 9),
     (9, 10),
   ];
 
