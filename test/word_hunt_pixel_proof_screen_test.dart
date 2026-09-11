@@ -126,12 +126,12 @@ void main() {
     expect(
       find.byKey(const Key('word_hunt_master_art_level_8_locked')),
       findsNothing,
-      reason: '7 tamamlanınca bonus 8 açılmalı.',
+      reason: '7 tamamlanınca normal 8 açılmalı.',
     );
     expect(
       find.byKey(const Key('word_hunt_master_art_level_9_locked')),
-      findsNothing,
-      reason: '7 tamamlanınca normal 9 da açılmalı.',
+      findsOneWidget,
+      reason: '8 tamamlanmadan 9 kilitli kalmalı.',
     );
     expect(
       find.byKey(const Key('word_hunt_master_art_level_10_locked')),
