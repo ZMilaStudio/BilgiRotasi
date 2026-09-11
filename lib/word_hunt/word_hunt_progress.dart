@@ -65,18 +65,14 @@ class WordHuntRouteProgressEngine {
       return true;
     }
 
-    // Bonus durak ana rota için zorunlu bir geçiş kapısı değildir. Bir bölümün
-    // hemen öncesindeki durak bonus ise ana rota, bonusun öncesindeki bölüm
-    // tamamlandığında devam eder. Böylece canonical 7 -> (8 bonus, 9 ana)
-    // davranışı rota kimliğine özel if yazmadan bütün 10-bölümlük rotalarda
-    // korunur. Final 10'un hemen öncesi 9 normal olduğundan 10 yine yalnız 9
-    // tamamlandıktan sonra açılır.
-    final previous = route.levels[levelIndex - 2];
-    if (previous.type == WordHuntLevelType.bonus && levelIndex >= 3) {
-      final levelBeforeBonus = route.levels[levelIndex - 3];
-      return isLevelCompleted(levelBeforeBonus, progress);
+    // Canonical 10-bölümlük rota sözleşmesinde 7 tamamlandığında 8 ve 9
+    // paralel olarak açılır. 8 normal bir bölümdür; bonus değildir ve 9 için
+    // geçiş kapısı sayılmaz. Final 10 ise yalnız 9 tamamlandıktan sonra açılır.
+    if (route.levels.length == 10 && levelIndex == 9) {
+      return isLevelCompleted(route.levels[6], progress);
     }
 
+    final previous = route.levels[levelIndex - 2];
     return isLevelCompleted(previous, progress);
   }
 
