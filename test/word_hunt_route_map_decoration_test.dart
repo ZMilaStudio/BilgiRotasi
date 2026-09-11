@@ -109,36 +109,57 @@ void main() {
     );
   });
 
-  testWidgets('forest painter stays exception-free on narrow and tall surfaces', (
+  testWidgets('all motif painters stay exception-free on narrow and tall surfaces', (
     tester,
   ) async {
-    Future<void> render(Size size) async {
-      tester.view.physicalSize = size;
-      tester.view.devicePixelRatio = 1;
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: Scaffold(
-            body: CustomPaint(
-              painter: WordHuntRouteDecorationPainter(
-                spec: forest,
-                reservedPoints: WordHuntRouteMapGeometry.normalizedStops,
-                palette: palette,
-              ),
-              child: SizedBox.expand(),
-            ),
-          ),
-        ),
-      );
-      await tester.pump();
-      expect(tester.takeException(), isNull);
-    }
+    const specs = <WordHuntRouteDecorationSpec>[
+      WordHuntRouteDecorationSpec(
+        kind: WordHuntRouteDecorationKind.forest,
+        seed: 20260912,
+        count: 18,
+      ),
+      WordHuntRouteDecorationSpec(
+        kind: WordHuntRouteDecorationKind.sky,
+        seed: 20260912,
+        count: 18,
+      ),
+      WordHuntRouteDecorationSpec(
+        kind: WordHuntRouteDecorationKind.harbor,
+        seed: 20260912,
+        count: 18,
+      ),
+    ];
+    const sizes = <Size>[
+      Size(320, 640),
+      Size(430, 932),
+    ];
 
     addTearDown(() {
       tester.view.resetPhysicalSize();
       tester.view.resetDevicePixelRatio();
     });
 
-    await render(const Size(320, 640));
-    await render(const Size(430, 932));
+    for (final spec in specs) {
+      for (final size in sizes) {
+        tester.view.physicalSize = size;
+        tester.view.devicePixelRatio = 1;
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: CustomPaint(
+                painter: WordHuntRouteDecorationPainter(
+                  spec: spec,
+                  reservedPoints: WordHuntRouteMapGeometry.normalizedStops,
+                  palette: palette,
+                ),
+                child: const SizedBox.expand(),
+              ),
+            ),
+          ),
+        );
+        await tester.pump();
+        expect(tester.takeException(), isNull);
+      }
+    }
   });
 }
