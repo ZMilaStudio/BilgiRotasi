@@ -81,6 +81,18 @@ jobs:
             --reporter expanded
           git diff --check
 
+      - name: Reusable harita widget kanıtlarını yükle
+        uses: actions/upload-artifact@v4
+        with:
+          name: BilgiRotasi-KelimeAvi-ReusableMap-${{ env.PROOF_SHA }}
+          path: |
+            reports/WORD_HUNT_REUSABLE_MAP_WIDGET.txt
+            reports/WORD_HUNT_REUSABLE_MAP_WIDGET_HARBOR_PROOF.png
+            reports/WORD_HUNT_REUSABLE_MAP_WIDGET_SKY_PROOF.png
+            reports/WORD_HUNT_REUSABLE_MAP_WIDGET_FOREST_PROOF.png
+          if-no-files-found: error
+          retention-days: 30
+
       - name: İzole görsel kanıt APK'sını üret ve asset'i doğrula
         shell: bash
         run: |
@@ -199,9 +211,5 @@ jobs:
             reports/WORD_HUNT_VISUAL_PROOF_PACKAGED_ASSET_SHA256.txt
             reports/WORD_HUNT_VISUAL_PROOF_PACKAGED_ASSET_BYTES.txt
             reports/WORD_HUNT_VISUAL_PROOF_ASSET_COMPARE.txt
-            reports/WORD_HUNT_REUSABLE_MAP_WIDGET.txt
-            reports/WORD_HUNT_REUSABLE_MAP_WIDGET_HARBOR_PROOF.png
-            reports/WORD_HUNT_REUSABLE_MAP_WIDGET_SKY_PROOF.png
-            reports/WORD_HUNT_REUSABLE_MAP_WIDGET_FOREST_PROOF.png
           if-no-files-found: error
           retention-days: 30
