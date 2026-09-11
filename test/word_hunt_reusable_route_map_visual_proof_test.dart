@@ -47,11 +47,11 @@ void main() {
     for (final theme in themes) {
       final boundaryKey = Key('reusable-proof-boundary-${theme.id}');
       await tester.pumpWidget(
-        RepaintBoundary(
-          key: boundaryKey,
-          child: MaterialApp(
-            debugShowCheckedModeBanner: false,
-            home: WordHuntReusableRouteMapScreen(
+        MaterialApp(
+          debugShowCheckedModeBanner: false,
+          home: RepaintBoundary(
+            key: boundaryKey,
+            child: WordHuntReusableRouteMapScreen(
               route: WordHuntStarterContent.baslangicLimani,
               theme: theme,
               progress: progressThroughSeven,
@@ -59,7 +59,8 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 50));
 
       centersByTheme[theme.id] = <Offset>[
         for (var level = 1; level <= 10; level++)
@@ -74,14 +75,20 @@ void main() {
         final boundary = tester.renderObject<RenderRepaintBoundary>(
           find.byKey(boundaryKey),
         );
-        final image = await boundary.toImage(pixelRatio: 1);
-        final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
-        expect(bytes, isNotNull);
+        expect(boundary.debugNeedsPaint, isFalse);
         final safeTheme = theme.id.replaceAll('-', '_').toUpperCase();
-        File(
-          'reports/ADMOB_ANDROID16_TEST_WIDGET_REUSABLE_MAP_$safeTheme.png',
-        ).writeAsBytesSync(bytes!.buffer.asUint8List());
-        image.dispose();
+        await tester.runAsync(() async {
+          final image = await boundary.toImage(pixelRatio: 1);
+          try {
+            final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
+            expect(bytes, isNotNull);
+            File(
+              'reports/ADMOB_ANDROID16_TEST_WIDGET_REUSABLE_MAP_$safeTheme.png',
+            ).writeAsBytesSync(bytes!.buffer.asUint8List());
+          } finally {
+            image.dispose();
+          }
+        });
       }
     }
 
