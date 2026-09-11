@@ -76,6 +76,9 @@ jobs:
             test/word_hunt_route_map_view_test.dart \
             test/word_hunt_reusable_route_map_screen_test.dart \
             test/word_hunt_reusable_route_map_visual_proof_test.dart \
+            test/word_hunt_route_map_decoration_test.dart \
+            test/word_hunt_route_map_decoration_layer_test.dart \
+            test/word_hunt_route_visual_theme_test.dart \
             test/word_hunt_scoring_test.dart \
             test/word_hunt_starter_content_test.dart \
             --reporter expanded
