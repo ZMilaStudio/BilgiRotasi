@@ -65,13 +65,9 @@ class WordHuntRouteProgressEngine {
       return true;
     }
 
-    // Canonical 10-bölümlük rota sözleşmesinde 7 tamamlandığında 8 ve 9
-    // paralel olarak açılır. 8 normal bir bölümdür; bonus değildir ve 9 için
-    // geçiş kapısı sayılmaz. Final 10 ise yalnız 9 tamamlandıktan sonra açılır.
-    if (route.levels.length == 10 && levelIndex == 9) {
-      return isLevelCompleted(route.levels[6], progress);
-    }
-
+    // Canonical rota ilerlemesi sıralıdır: her bölüm yalnız kendinden önceki
+    // bölüm tamamlandığında açılır. Bu nedenle 7→8, 8→9 ve 9→10 zinciri
+    // korunur. 8 normal bir bölümdür; bonus değildir.
     final previous = route.levels[levelIndex - 2];
     return isLevelCompleted(previous, progress);
   }
