@@ -1,3 +1,4 @@
+import 'package:bilgi_rotasi/word_hunt/word_hunt_gokyuzu_content.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_models.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_progress.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_reusable_route_map_screen.dart';
@@ -40,14 +41,25 @@ void main() {
     }
   });
 
-  test('bonus eight branches from seven and never gates nine', () {
+  test('level eight is normal on both existing routes', () {
+    expect(
+      WordHuntStarterContent.baslangicLimani.levels[7].type,
+      WordHuntLevelType.normal,
+    );
+    expect(
+      WordHuntGokyuzuContent.gokyuzuAdalari.levels[7].type,
+      WordHuntLevelType.normal,
+    );
+  });
+
+  test('seven branches to normal eight and nine, while nine gates ten', () {
     expect(WordHuntRouteMapGeometry.connections, contains((7, 8)));
     expect(WordHuntRouteMapGeometry.connections, contains((7, 9)));
     expect(WordHuntRouteMapGeometry.connections, isNot(contains((8, 9))));
     expect(WordHuntRouteMapGeometry.connections, contains((9, 10)));
   });
 
-  test('bonus progression works for a future route id without special cases', () {
+  test('parallel 8 and 9 progression works for a future route id', () {
     final futureRoute = WordHuntRouteDefinition(
       id: 'orman-yolu-proof',
       title: 'Orman Yolu Proof',
