@@ -120,7 +120,7 @@ class WordHuntReusableRouteMapScreen extends StatelessWidget {
     required this.theme,
     this.progress = const WordHuntProgressSnapshot(),
     this.onLevelTap,
-  }) : assert(route.levels.length == 10);
+  });
 
   final WordHuntRouteDefinition route;
   final WordHuntRouteMapTheme theme;
@@ -133,6 +133,10 @@ class WordHuntReusableRouteMapScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    assert(
+      route.levels.length == 10,
+      'Reusable Kelime Avı rota haritası tam 10 bölüm bekler.',
+    );
     final stars = WordHuntRouteProgressEngine.totalStars(route, progress);
 
     return Scaffold(
