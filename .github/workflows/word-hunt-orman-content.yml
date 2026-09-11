@@ -1,0 +1,42 @@
+name: Kelime Avı Orman Yolu içerik kapısı
+
+on:
+  pull_request:
+    branches:
+      - release/final-closed-test-aab-1.68.8
+    paths:
+      - 'lib/word_hunt/word_hunt_orman_content.dart'
+      - 'test/word_hunt_orman_content_test.dart'
+      - '.github/workflows/word-hunt-orman-content.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  orman-content:
+    name: Orman Yolu 10 bölüm doğrulaması
+    runs-on: ubuntu-22.04
+    timeout-minutes: 15
+    steps:
+      - name: Depoyu indir
+        uses: actions/checkout@v4
+
+      - name: Flutter 3.44.6 kur
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.6'
+          channel: stable
+          cache: true
+
+      - name: Bağımlılıkları kur
+        run: flutter pub get
+
+      - name: Kelime Avı kodunu analiz et
+        run: dart analyze lib/word_hunt
+
+      - name: Orman Yolu content sözleşmesini doğrula
+        run: flutter test test/word_hunt_orman_content_test.dart --reporter expanded
+
+      - name: Diff whitespace kontrolü
+        run: git diff --check
