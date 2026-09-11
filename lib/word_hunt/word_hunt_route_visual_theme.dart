@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'word_hunt_models.dart';
+import 'word_hunt_progress.dart';
 import 'word_hunt_reusable_route_map_screen.dart';
 import 'word_hunt_route_map_decoration.dart';
 
@@ -23,6 +25,38 @@ class WordHuntRouteVisualTheme {
   final WordHuntRouteDecorationSpec decorationSpec;
   final WordHuntRouteDecorationPalette decorationPalette;
   final double decorationOpacity;
+}
+
+/// Bütün temalı 10-bölümlük rotalar için tek generic bağlayıcı.
+///
+/// Rota ile görsel skin paketini ortak motora aktarır. Rota adına göre branch,
+/// ayrı widget veya koordinat üretmez. Production kataloğuna henüz bağlı değildir.
+class WordHuntThemedRouteMapScreen extends StatelessWidget {
+  const WordHuntThemedRouteMapScreen({
+    super.key,
+    required this.route,
+    required this.visualTheme,
+    this.progress = const WordHuntProgressSnapshot(),
+    this.onLevelTap,
+  });
+
+  final WordHuntRouteDefinition route;
+  final WordHuntRouteVisualTheme visualTheme;
+  final WordHuntProgressSnapshot progress;
+  final ValueChanged<int>? onLevelTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return WordHuntReusableRouteMapScreen(
+      route: route,
+      theme: visualTheme.mapTheme,
+      progress: progress,
+      onLevelTap: onLevelTap,
+      decorationSpec: visualTheme.decorationSpec,
+      decorationPalette: visualTheme.decorationPalette,
+      decorationOpacity: visualTheme.decorationOpacity,
+    );
+  }
 }
 
 /// Production görsel kararı değildir; reusable motorun farklı skin verileriyle
