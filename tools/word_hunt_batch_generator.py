@@ -128,7 +128,7 @@ def place_all(words: Sequence[str], rng: random.Random) -> tuple[list[list[str |
 
 
 def count_occurrences(grid_rows: Sequence[str], word: str) -> int:
-    count = 0
+    physical_paths: set[tuple[tuple[int, int], ...]] = set()
     for row in range(GRID_SIZE):
         for col in range(GRID_SIZE):
             for dr, dc in DIRECTIONS:
@@ -137,8 +137,12 @@ def count_occurrences(grid_rows: Sequence[str], word: str) -> int:
                     continue
                 candidate = "".join(grid_rows[r][c] for r, c in cells)
                 if candidate == word:
-                    count += 1
-    return count
+                    path = tuple(cells)
+                    reverse_path = tuple(reversed(path))
+                    # Reverse gesture aynı fiziksel occurrence'ı temsil eder. Özellikle
+                    # KÖK gibi palindromlarda ileri ve geri tarama iki kez sayılmamalıdır.
+                    physical_paths.add(min(path, reverse_path))
+    return len(physical_paths)
 
 
 def finalize_grid(
