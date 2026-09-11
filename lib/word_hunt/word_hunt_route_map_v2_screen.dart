@@ -33,16 +33,16 @@ class WordHuntRouteMapV2Screen extends StatelessWidget {
   final ValueChanged<int>? onLevelTap;
 
   static const List<Offset> _stops = <Offset>[
-    Offset(0.15, 0.10),
-    Offset(0.46, 0.17),
-    Offset(0.70, 0.28),
-    Offset(0.82, 0.39),
-    Offset(0.33, 0.48),
-    Offset(0.17, 0.60),
-    Offset(0.46, 0.67),
-    Offset(0.76, 0.73),
-    Offset(0.24, 0.82),
-    Offset(0.51, 0.91),
+    Offset(0.14, 0.07),
+    Offset(0.41, 0.14),
+    Offset(0.65, 0.21),
+    Offset(0.84, 0.39),
+    Offset(0.32, 0.31),
+    Offset(0.10, 0.45),
+    Offset(0.36, 0.58),
+    Offset(0.67, 0.63),
+    Offset(0.21, 0.71),
+    Offset(0.45, 0.82),
   ];
 
   @override
@@ -359,7 +359,7 @@ class _MapScene extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final sceneHeight = (constraints.maxWidth * 1.74).clamp(590.0, 760.0);
+        final sceneHeight = (constraints.maxWidth * 1.42).clamp(470.0, 540.0);
         final size = Size(constraints.maxWidth, sceneHeight);
         final points = WordHuntRouteMapV2Screen._stops
             .take(route.levels.length)
@@ -407,30 +407,6 @@ class _MapScene extends StatelessWidget {
                     ),
                     sceneSize: size,
                   ),
-                const Positioned(
-                  top: 48,
-                  right: 24,
-                  child: _ScenicBadge(
-                    icon: Icons.light_mode_rounded,
-                    label: 'Fener',
-                  ),
-                ),
-                const Positioned(
-                  top: 196,
-                  left: 18,
-                  child: _ScenicBadge(
-                    icon: Icons.sailing_rounded,
-                    label: 'Liman',
-                  ),
-                ),
-                const Positioned(
-                  bottom: 82,
-                  right: 24,
-                  child: _ScenicBadge(
-                    icon: Icons.inventory_2_rounded,
-                    label: 'Hazine',
-                  ),
-                ),
                 Positioned(
                   left: 18,
                   bottom: 14,
@@ -477,9 +453,9 @@ class _MapScene extends StatelessWidget {
     required Size sceneSize,
   }) {
     final special = level.type != WordHuntLevelType.normal;
-    final boxWidth = special ? 188.0 : 76.0;
-    final boxHeight = special ? 100.0 : 78.0;
-    final placeLabelToLeft = level.index == 8;
+    final boxWidth = special ? 148.0 : 76.0;
+    final boxHeight = special ? 92.0 : 78.0;
+    const placeLabelToLeft = false;
     final centerX = special && !placeLabelToLeft ? 42.0 : boxWidth - 42.0;
     final left = (point.dx - centerX)
         .clamp(4.0, sceneSize.width - boxWidth - 4)
@@ -609,8 +585,8 @@ class _RouteStop extends StatelessWidget {
         : Expanded(
             child: Padding(
               padding: EdgeInsets.only(
-                left: labelOnLeft ? 0 : 6,
-                right: labelOnLeft ? 6 : 0,
+                left: labelOnLeft ? 0 : 4,
+                right: labelOnLeft ? 4 : 0,
                 top: 4,
               ),
               child: _SpecialStopLabel(
@@ -767,7 +743,7 @@ class _SpecialStopLabel extends StatelessWidget {
       opacity: dimmed ? 0.68 : 1,
       child: Container(
         constraints: const BoxConstraints(minHeight: 40),
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
           gradient: LinearGradient(
@@ -785,18 +761,18 @@ class _SpecialStopLabel extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, color: accent, size: 19),
-            const SizedBox(width: 7),
+            Icon(icon, color: accent, size: 14),
+            const SizedBox(width: 4),
             Flexible(
               child: Text(
                 label,
                 maxLines: 2,
                 style: TextStyle(
                   color: accent,
-                  fontSize: 10.5,
+                  fontSize: 9.4,
                   height: 1.05,
                   fontWeight: FontWeight.w900,
-                  letterSpacing: 0.5,
+                  letterSpacing: 0.2,
                 ),
               ),
             ),
@@ -877,45 +853,6 @@ class _BottomMapButton extends StatelessWidget {
             ),
             child: Icon(icon, color: const Color(0xFFDAB66D), size: 30),
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class _ScenicBadge extends StatelessWidget {
-  const _ScenicBadge({required this.icon, required this.label});
-
-  final IconData icon;
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return IgnorePointer(
-      child: Opacity(
-        opacity: 0.78,
-        child: Column(
-          children: [
-            Container(
-              width: 35,
-              height: 35,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: const Color(0xAA07101B),
-                border: Border.all(color: const Color(0xAAE9C77D)),
-              ),
-              child: Icon(icon, size: 19, color: const Color(0xFFE9C77D)),
-            ),
-            const SizedBox(height: 2),
-            Text(
-              label,
-              style: const TextStyle(
-                color: Color(0xFFD7CFBE),
-                fontSize: 8,
-                fontWeight: FontWeight.w800,
-              ),
-            ),
-          ],
         ),
       ),
     );
