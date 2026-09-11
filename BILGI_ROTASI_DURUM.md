@@ -70,7 +70,7 @@ AdMob çalışma kuralı korunur:
 - Reverse gesture aynı canonical kelimeyi üretir.
 - Nearest-word/autocomplete yok.
 - B5 ve B10 süreleri soft challenge olarak ele alınır.
-- 7 tamamlanınca 8 ve 9 açılır; 8 bonus node'dur ve 9 için gate değildir; 10 yalnız 9 tamamlanınca açılır.
+- **7 tamamlanınca 8 ve 9 paralel açılır; 8 normal bölümdür, bonus değildir ve 9 için gate değildir; 10 yalnız 9 tamamlanınca açılır.**
 - Kullanıcı kabulü olmadan görsel yön değiştirilemez.
 - Gökyüzü Adaları scenic gameplay görsel yönü kullanıcı tarafından PASS edilmiştir.
 
