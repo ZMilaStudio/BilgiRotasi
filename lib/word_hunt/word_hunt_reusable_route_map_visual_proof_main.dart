@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 
 import 'word_hunt_models.dart';
 import 'word_hunt_progress.dart';
-import 'word_hunt_reusable_route_map_screen.dart';
+import 'word_hunt_route_visual_theme.dart';
 import 'word_hunt_starter_content.dart';
 
 /// Yalnız reusable 10-bölümlük harita motorunun gerçek Flutter/Android görsel
@@ -34,12 +34,15 @@ class _ReusableRouteMapVisualProofApp extends StatelessWidget {
         },
       );
 
+  static const WordHuntRouteVisualTheme _visualTheme =
+      WordHuntRouteVisualThemeProofs.forest;
+
   WordHuntRouteDefinition get _proofRoute {
     final source = WordHuntStarterContent.baslangicLimani;
     return WordHuntRouteDefinition(
       id: source.id,
       title: 'Orman Yolu',
-      theme: 'forest-proof',
+      theme: _visualTheme.id,
       unlockStarsRequired: source.unlockStarsRequired,
       levels: source.levels,
       routeRewardId: 'proof-only-forest-route',
@@ -51,9 +54,9 @@ class _ReusableRouteMapVisualProofApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Kelime Avı Reusable Route Map Proof',
-      home: WordHuntReusableRouteMapScreen(
+      home: WordHuntThemedRouteMapScreen(
         route: _proofRoute,
-        theme: WordHuntRouteMapTheme.forestProof,
+        visualTheme: _visualTheme,
         progress: _proofProgress,
       ),
     );
