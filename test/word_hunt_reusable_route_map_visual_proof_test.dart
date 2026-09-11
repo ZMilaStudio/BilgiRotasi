@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:bilgi_rotasi/word_hunt/word_hunt_progress.dart';
@@ -7,25 +6,7 @@ import 'package:bilgi_rotasi/word_hunt/word_hunt_reusable_route_map_screen.dart'
 import 'package:bilgi_rotasi/word_hunt/word_hunt_starter_content.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-Future<void> _loadReadableProofFont() async {
-  final flutterRoot = Platform.environment['FLUTTER_ROOT'];
-  final candidates = <String>[
-    if (flutterRoot != null)
-      '$flutterRoot/bin/cache/artifacts/material_fonts/Roboto-Regular.ttf',
-    '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',
-    '/usr/share/fonts/truetype/liberation2/LiberationSans-Regular.ttf',
-  ];
-  final fontFile = candidates
-      .map(File.new)
-      .firstWhere((candidate) => candidate.existsSync());
-  final bytes = await fontFile.readAsBytes();
-  final loader = FontLoader('WordHuntProofSans')
-    ..addFont(Future<ByteData>.value(ByteData.sublistView(bytes)));
-  await loader.load();
-}
 
 void main() {
   const progressThroughSeven = WordHuntProgressSnapshot(
@@ -61,7 +42,6 @@ void main() {
     final reportsDirectory = Directory('reports');
     if (writeEvidence) {
       reportsDirectory.createSync(recursive: true);
-      await _loadReadableProofFont();
     }
 
     for (final theme in themes) {
@@ -69,9 +49,6 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           debugShowCheckedModeBanner: false,
-          theme: ThemeData(
-            fontFamily: writeEvidence ? 'WordHuntProofSans' : null,
-          ),
           home: RepaintBoundary(
             key: boundaryKey,
             child: WordHuntReusableRouteMapScreen(
@@ -127,8 +104,7 @@ void main() {
         'GEOMETRY=SHARED_NORMALIZED_10_STOP\n'
         'PROGRESSION=1-2-3-4-5-6-7-8-9-10\n'
         'LEVEL_8=NORMAL\n'
-        'STATE=LEVELS_1_TO_7_COMPLETE_LEVEL_8_OPEN_LEVEL_9_LOCKED\n'
-        'FONT=READABLE_CI_FONT\n',
+        'STATE=LEVELS_1_TO_7_COMPLETE_LEVEL_8_OPEN_LEVEL_9_LOCKED\n',
       );
     }
   });
