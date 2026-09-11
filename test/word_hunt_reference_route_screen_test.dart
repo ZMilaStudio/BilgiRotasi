@@ -143,7 +143,8 @@ void main() {
       );
       expect(
         find.byKey(const Key('word_hunt_pixel_proof_node_9_override')),
-        findsOneWidget,
+        findsNothing,
+        reason: '8 tamamlanmadan 9 açık görünmemelidir.',
       );
       expect(
         find.byKey(const Key('word_hunt_reference_route_area')),
@@ -157,11 +158,22 @@ void main() {
       );
 
       await tester.tap(
+        find.byKey(const Key('word_hunt_pixel_proof_level_8')),
+        warnIfMissed: false,
+      );
+      await tester.pump();
+      expect(tappedLevels, <int>[8]);
+
+      await tester.tap(
         find.byKey(const Key('word_hunt_pixel_proof_level_9')),
         warnIfMissed: false,
       );
       await tester.pump();
-      expect(tappedLevels, <int>[9]);
+      expect(
+        tappedLevels,
+        <int>[8],
+        reason: '8 tamamlanmadan 9 callback üretmemelidir.',
+      );
 
       await tester.tap(
         find.byKey(const Key('word_hunt_pixel_proof_level_10')),
@@ -170,8 +182,8 @@ void main() {
       await tester.pump();
       expect(
         tappedLevels,
-        <int>[9],
-        reason: 'Final 10, node 9 tamamlanmadan callback üretmemelidir.',
+        <int>[8],
+        reason: '9 tamamlanmadan final 10 callback üretmemelidir.',
       );
     },
   );
