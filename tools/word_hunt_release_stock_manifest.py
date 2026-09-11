@@ -37,10 +37,8 @@ def build_manifest() -> dict:
             start = ((index - 1) * 3) % len(pool)
             words = [pool[(start + offset) % len(pool)] for offset in range(5)]
             level_type = "normal"
-            if index in (5, 9):
+            if index == 5:
                 level_type = "challenge"
-            if index == 8:
-                level_type = "bonus"
             if index == 10:
                 level_type = "routeFinal"
             level = {
