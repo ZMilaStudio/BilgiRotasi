@@ -28,7 +28,7 @@ class WordHuntReferenceRouteLayout {
     Offset(361.80, 869.76), // 5 - meydan okuma
     Offset(180.36, 1059.84), // 6 - alt sol
     Offset(496.80, 1119.36), // 7 - merkez-alt
-    Offset(721.44, 1182.72), // 8 - normal, sağ
+    Offset(721.44, 1182.72), // 8 - bonus, sağ
     Offset(254.88, 1338.24), // 9 - kilitli sol kol
     Offset(528.12, 1530.24), // 10 - rota finali
   ];
@@ -42,6 +42,7 @@ class WordHuntReferenceRouteLayout {
 
   static const Map<int, Rect> specialPlaques = <int, Rect>{
     5: Rect.fromLTWH(426, 825, 324, 88),
+    8: Rect.fromLTWH(785, 1142, 206, 82),
     10: Rect.fromLTWH(613, 1488, 250, 110),
   };
 
@@ -530,19 +531,143 @@ class _ReferenceTopChrome extends StatelessWidget {
               ),
             ),
           ),
-          Positioned.fromRect(
-            rect: panel,
-            child: _ReferenceStatusPanel(
-              routeTitle: title,
-              stars: stars,
-              maximumStars: maximumStars,
-              unlockStarsRequired: unlockStarsRequired,
+          Positioned(
+            key: const Key('word_hunt_reference_top_panel'),
+            left: panel.left,
+            top: panel.top,
+            width: panel.width,
+            height: panel.height,
+            child: CustomPaint(
+              foregroundPainter: const _ReferencePanelOrnamentPainter(),
+              child: Container(
+                padding: const EdgeInsets.fromLTRB(42, 14, 42, 10),
+                decoration: BoxDecoration(
+                  color: const Color(0xE308101B),
+                  borderRadius: BorderRadius.circular(7),
+                  border: Border.all(
+                    color: const Color(0xD0B68B45),
+                    width: 2.6,
+                  ),
+                  boxShadow: const <BoxShadow>[
+                    BoxShadow(
+                      color: Color(0x88000000),
+                      blurRadius: 24,
+                      offset: Offset(0, 10),
+                    ),
+                    BoxShadow(color: Color(0x2D8B5CF6), blurRadius: 26),
+                  ],
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      title.toUpperCase().replaceFirst('LIMANI', 'LİMANI'),
+                      maxLines: 1,
+                      overflow: TextOverflow.fade,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        color: Color(0xFFFFF7E7),
+                        fontFamily: 'serif',
+                        fontSize: 49,
+                        height: 1,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 1.2,
+                        shadows: <Shadow>[
+                          Shadow(color: Color(0x99000000), blurRadius: 8),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.star_rounded,
+                          color: Color(0xFFFFC94A),
+                          size: 38,
+                        ),
+                        const SizedBox(width: 12),
+                        Text(
+                          '$stars / $maximumStars',
+                          style: const TextStyle(
+                            color: Color(0xFFFFE9B0),
+                            fontFamily: 'serif',
+                            fontSize: 32,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                        const Spacer(),
+                        Text(
+                          'Kapı: $unlockStarsRequired',
+                          style: const TextStyle(
+                            color: Color(0xFFF3E6C9),
+                            fontFamily: 'serif',
+                            fontSize: 30,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        const SizedBox(width: 9),
+                        const Icon(
+                          Icons.star_rounded,
+                          color: Color(0xFFFFC94A),
+                          size: 36,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
             ),
           ),
         ],
       ),
     );
   }
+}
+
+class _ReferencePanelOrnamentPainter extends CustomPainter {
+  const _ReferencePanelOrnamentPainter();
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint =
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 1.8
+          ..color = const Color(0xC6D1A45B);
+    const inset = 10.0;
+    const arm = 28.0;
+    for (final corner in <(Offset, double, double)>[
+      (const Offset(inset, inset), 1, 1),
+      (Offset(size.width - inset, inset), -1, 1),
+      (Offset(inset, size.height - inset), 1, -1),
+      (Offset(size.width - inset, size.height - inset), -1, -1),
+    ]) {
+      final origin = corner.$1;
+      canvas.drawLine(origin, origin + Offset(corner.$2 * arm, 0), paint);
+      canvas.drawLine(origin, origin + Offset(0, corner.$3 * arm), paint);
+      final diamond =
+          Path()
+            ..moveTo(origin.dx, origin.dy - 5)
+            ..lineTo(origin.dx + 5, origin.dy)
+            ..lineTo(origin.dx, origin.dy + 5)
+            ..lineTo(origin.dx - 5, origin.dy)
+            ..close();
+      canvas.drawPath(diamond, paint);
+    }
+    final midpoint = Offset(size.width / 2, inset);
+    final diamond =
+        Path()
+          ..moveTo(midpoint.dx, midpoint.dy - 6)
+          ..lineTo(midpoint.dx + 7, midpoint.dy)
+          ..lineTo(midpoint.dx, midpoint.dy + 6)
+          ..lineTo(midpoint.dx - 7, midpoint.dy)
+          ..close();
+    canvas.drawPath(diamond, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant _ReferencePanelOrnamentPainter oldDelegate) =>
+      false;
 }
 
 class _ReferenceTitleFlourish extends StatelessWidget {
@@ -552,111 +677,33 @@ class _ReferenceTitleFlourish extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const gradient = LinearGradient(
-      colors: <Color>[
-        Color(0x00A869FF),
-        Color(0xFFD1B3FF),
-        Color(0x00A869FF),
-      ],
-    );
-    return Transform(
-      alignment: Alignment.center,
-      transform: Matrix4.diagonal3Values(reverse ? -1 : 1, 1, 1),
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          gradient: gradient,
-          borderRadius: BorderRadius.circular(99),
-          boxShadow: const <BoxShadow>[
-            BoxShadow(color: Color(0x806E3BB8), blurRadius: 12),
-          ],
-        ),
-        child: const SizedBox(height: 3),
-      ),
-    );
-  }
-}
-
-class _ReferenceStatusPanel extends StatelessWidget {
-  const _ReferenceStatusPanel({
-    required this.routeTitle,
-    required this.stars,
-    required this.maximumStars,
-    required this.unlockStarsRequired,
-  });
-
-  final String routeTitle;
-  final int stars;
-  final int maximumStars;
-  final int unlockStarsRequired;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      key: const Key('word_hunt_reference_top_panel'),
-      decoration: BoxDecoration(
-        color: const Color(0xD9140B23),
-        borderRadius: BorderRadius.circular(44),
-        border: Border.all(color: const Color(0xFF9464D5), width: 3.4),
-        boxShadow: const <BoxShadow>[
-          BoxShadow(color: Color(0x80472586), blurRadius: 24, spreadRadius: 2),
-        ],
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 34),
-      child: Row(
-        children: [
-          Expanded(
-            child: Text(
-              routeTitle,
-              key: const Key('word_hunt_reference_route_title'),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                color: Color(0xFFF2EAFE),
-                fontFamily: 'serif',
-                fontSize: 46,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 0.4,
-                shadows: <Shadow>[
-                  Shadow(color: Color(0xFF6A35C0), blurRadius: 16),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(width: 22),
-          const Icon(Icons.star_rounded, color: Color(0xFFF0B85D), size: 50),
-          const SizedBox(width: 9),
-          Text(
-            '$stars / $maximumStars',
-            key: const Key('word_hunt_reference_star_counter'),
-            style: const TextStyle(
-              color: Color(0xFFFFE7A6),
-              fontSize: 38,
-              fontWeight: FontWeight.w800,
-              shadows: <Shadow>[
-                Shadow(color: Color(0x996E4B13), blurRadius: 10),
-              ],
-            ),
-          ),
-          const SizedBox(width: 28),
-          Container(
-            key: const Key('word_hunt_reference_unlock_gate'),
-            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+    return Row(
+      textDirection: reverse ? TextDirection.rtl : TextDirection.ltr,
+      children: [
+        Expanded(
+          child: Container(
+            height: 1,
             decoration: BoxDecoration(
-              color: const Color(0xFF231437),
-              borderRadius: BorderRadius.circular(999),
-              border: Border.all(color: const Color(0xFF6F4E9E), width: 2),
-            ),
-            child: Text(
-              'Kapı: $unlockStarsRequired',
-              style: const TextStyle(
-                color: Color(0xFFD8C7F2),
-                fontSize: 25,
-                fontWeight: FontWeight.w700,
+              gradient: LinearGradient(
+                begin: reverse ? Alignment.centerRight : Alignment.centerLeft,
+                end: reverse ? Alignment.centerLeft : Alignment.centerRight,
+                colors: const <Color>[Color(0x007B3BB5), Color(0xA88A4FC5)],
               ),
             ),
           ),
-        ],
-      ),
+        ),
+        const SizedBox(width: 10),
+        Transform.rotate(
+          angle: 0.785398,
+          child: Container(
+            width: 12,
+            height: 12,
+            decoration: BoxDecoration(
+              border: Border.all(color: const Color(0xB9A764DD), width: 1.8),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
@@ -676,19 +723,23 @@ class _ReferenceRoundButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Semantics(
-      label: semanticLabel,
       button: true,
+      label: semanticLabel,
       child: Material(
-        color: const Color(0xD90E1425),
-        shape: const CircleBorder(
-          side: BorderSide(color: Color(0xFF7658A2), width: 2.4),
-        ),
+        color: Colors.transparent,
+        shape: const CircleBorder(),
         child: InkWell(
-          customBorder: const CircleBorder(),
           onTap: onTap,
-          child: SizedBox.square(
-            dimension: 76,
-            child: Icon(icon, color: const Color(0xFFEBDFFF), size: 38),
+          customBorder: const CircleBorder(),
+          child: Container(
+            width: 66,
+            height: 66,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: const Color(0x660A111D),
+              border: Border.all(color: const Color(0xBBA57A3D)),
+            ),
+            child: Icon(icon, color: const Color(0xFFE8C678), size: 44),
           ),
         ),
       ),
@@ -711,31 +762,26 @@ class _ReferenceBottomControl extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Semantics(
-      label: semanticLabel,
       button: true,
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTap: onTap,
-        child: SizedBox.square(
-          dimension: 170,
-          child: Image.asset(
-            assetPath,
-            fit: BoxFit.contain,
-            errorBuilder:
-                (context, error, stackTrace) => DecoratedBox(
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: const Color(0xD91B1230),
-                    border: Border.all(color: const Color(0xFF8D67BF), width: 3),
-                  ),
-                  child: Icon(
-                    semanticLabel == 'Pusula'
-                        ? Icons.explore_rounded
-                        : Icons.menu_book_rounded,
-                    color: const Color(0xFFEADFFF),
-                    size: 80,
-                  ),
-                ),
+      label: semanticLabel,
+      child: Material(
+        color: Colors.transparent,
+        shape: const CircleBorder(),
+        child: InkWell(
+          onTap: onTap,
+          customBorder: const CircleBorder(),
+          child: SizedBox.square(
+            dimension: 170,
+            child: Image.asset(
+              assetPath,
+              key: Key(
+                semanticLabel == 'Pusula'
+                    ? 'word_hunt_reference_compass_asset'
+                    : 'word_hunt_reference_book_asset',
+              ),
+              fit: BoxFit.contain,
+              filterQuality: FilterQuality.high,
+            ),
           ),
         ),
       ),
@@ -748,29 +794,32 @@ class _ReferenceFramePainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final left =
-        Paint()
-          ..color = const Color(0x55946CD0)
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = 3;
-    final right =
-        Paint()
-          ..color = const Color(0x334E7D9E)
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = 2;
-    final rect = Rect.fromLTWH(18, 18, size.width - 36, size.height - 36);
-    canvas.drawRRect(RRect.fromRectAndRadius(rect, const Radius.circular(72)), left);
+    final outer = RRect.fromRectAndRadius(
+      Rect.fromLTWH(9, 9, size.width - 18, size.height - 18),
+      const Radius.circular(54),
+    );
+    final inner = RRect.fromRectAndRadius(
+      Rect.fromLTWH(20, 20, size.width - 40, size.height - 40),
+      const Radius.circular(44),
+    );
     canvas.drawRRect(
-      RRect.fromRectAndRadius(
-        rect.deflate(12),
-        const Radius.circular(64),
-      ),
-      right,
+      outer,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 2.4
+        ..color = const Color(0x7AB78A3E),
+    );
+    canvas.drawRRect(
+      inner,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1.4
+        ..color = const Color(0x554A3A25),
     );
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+  bool shouldRepaint(covariant _ReferenceFramePainter oldDelegate) => false;
 }
 
 class _ReferenceRoutePainter extends CustomPainter {
@@ -786,68 +835,133 @@ class _ReferenceRoutePainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    if (points.length < 2) return;
+    if (points.length < 2 || levelTypes.length < points.length) return;
+
+    final shadow =
+        Paint()
+          ..color = const Color(0xA8000000)
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 4.2
+          ..strokeCap = StrokeCap.round
+          ..strokeJoin = StrokeJoin.round;
 
     for (var index = 0; index < points.length - 1; index++) {
-      final start = points[index];
-      final end = points[index + 1];
+      final from = points[index];
+      final to = points[index + 1];
       final controls = WordHuntReferenceRouteLayout.routeControls[index];
-      final destinationType = levelTypes[index + 1];
-      final destinationUnlocked = index + 2 <= lastUnlockedIndex;
-      final style = WordHuntReferenceRouteVisualContract.segmentStyleFor(
-        destinationType: destinationType,
-        unlocked: destinationUnlocked,
-      );
-      final palette = _segmentPalette(style);
-      final path = Path()
-        ..moveTo(start.dx, start.dy)
-        ..cubicTo(
-          controls.$1.dx,
-          controls.$1.dy,
-          controls.$2.dx,
-          controls.$2.dy,
-          end.dx,
-          end.dy,
-        );
+      final control1 = controls.$1;
+      final control2 = controls.$2;
+      final path =
+          Path()
+            ..moveTo(from.dx, from.dy)
+            ..cubicTo(
+              control1.dx,
+              control1.dy,
+              control2.dx,
+              control2.dy,
+              to.dx,
+              to.dy,
+            );
 
-      final halo = Paint()
-        ..color = palette.$2
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 20
-        ..strokeCap = StrokeCap.round;
-      final core = Paint()
-        ..color = palette.$1
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 7.4
-        ..strokeCap = StrokeCap.round;
-      canvas.drawPath(path, halo);
-      canvas.drawPath(path, core);
+      canvas.drawPath(path, shadow);
+
+      final unlockedSegment = index + 2 <= lastUnlockedIndex;
+      final style = WordHuntReferenceRouteVisualContract.segmentStyleFor(
+        destinationType: levelTypes[index + 1],
+        unlocked: unlockedSegment,
+      );
+
+      if (style == WordHuntReferenceRouteSegmentStyle.locked) {
+        final dormantGlow =
+            Paint()
+              ..color = const Color(0x305B7589)
+              ..style = PaintingStyle.stroke
+              ..strokeWidth = 8.0
+              ..strokeCap = StrokeCap.round
+              ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4);
+        final dormant =
+            Paint()
+              ..color = const Color(0xB59AA5B2)
+              ..style = PaintingStyle.stroke
+              ..strokeWidth = 3.2
+              ..strokeCap = StrokeCap.round;
+        canvas.drawPath(path, dormantGlow);
+        _drawDashedPath(canvas, path, dormant);
+        continue;
+      }
+
+      final (coreColor, glowColor) = switch (style) {
+        WordHuntReferenceRouteSegmentStyle.normal => (
+          const Color(0xFF76F7FF),
+          const Color(0x7047EAF1),
+        ),
+        WordHuntReferenceRouteSegmentStyle.challenge => (
+          const Color(0xFFFFC45F),
+          const Color(0x70F39B38),
+        ),
+        WordHuntReferenceRouteSegmentStyle.bonus => (
+          const Color(0xFFC06BFF),
+          const Color(0x70A94AF3),
+        ),
+        WordHuntReferenceRouteSegmentStyle.finalStop => (
+          const Color(0xFFFFD76B),
+          const Color(0x70F6B83D),
+        ),
+        WordHuntReferenceRouteSegmentStyle.locked =>
+          throw StateError(
+            'Locked segment is handled before active palette selection.',
+          ),
+      };
+
+      final glow =
+          Paint()
+            ..color = glowColor
+            ..style = PaintingStyle.stroke
+            ..strokeWidth = 9.0
+            ..strokeCap = StrokeCap.round
+            ..strokeJoin = StrokeJoin.round
+            ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4.8);
+      final core =
+          Paint()
+            ..color = coreColor
+            ..style = PaintingStyle.stroke
+            ..strokeWidth = 3.0
+            ..strokeCap = StrokeCap.round
+            ..strokeJoin = StrokeJoin.round;
+
+      if (style == WordHuntReferenceRouteSegmentStyle.finalStop) {
+        _drawFinalGradient(canvas, path, glow, core);
+      } else {
+        canvas.drawPath(path, glow);
+        canvas.drawPath(path, core);
+      }
     }
   }
 
-  (Color, Color) _segmentPalette(WordHuntReferenceRouteSegmentStyle style) {
-    return switch (style) {
-      WordHuntReferenceRouteSegmentStyle.normal => (
-        const Color(0xFF26E6FF),
-        const Color(0x9B0094FF),
-      ),
-      WordHuntReferenceRouteSegmentStyle.challenge => (
-        const Color(0xFFFF8A43),
-        const Color(0xB5FF3F18),
-      ),
-      WordHuntReferenceRouteSegmentStyle.bonus => (
-        const Color(0xFFFF4FC9),
-        const Color(0xB5B30A8E),
-      ),
-      WordHuntReferenceRouteSegmentStyle.finalStop => (
-        const Color(0xFFFFC75C),
-        const Color(0xB5E36B0A),
-      ),
-      WordHuntReferenceRouteSegmentStyle.locked => (
-        const Color(0xFF2B536A),
-        const Color(0x662B536A),
-      ),
-    };
+  void _drawFinalGradient(Canvas canvas, Path path, Paint glow, Paint core) {
+    for (final metric in path.computeMetrics()) {
+      final split = metric.length * 0.52;
+      final purple = metric.extractPath(0, split);
+      final gold = metric.extractPath(split, metric.length);
+      canvas.drawPath(purple, glow..color = const Color(0x70A94AF3));
+      canvas.drawPath(purple, core..color = const Color(0xFFC06BFF));
+      canvas.drawPath(gold, glow..color = const Color(0x70F6B83D));
+      canvas.drawPath(gold, core..color = const Color(0xFFFFD76B));
+    }
+  }
+
+  void _drawDashedPath(Canvas canvas, Path path, Paint paint) {
+    const dashLength = 16.0;
+    const gapLength = 12.0;
+    for (final metric in path.computeMetrics()) {
+      var distance = 0.0;
+      while (distance < metric.length) {
+        final end =
+            (distance + dashLength).clamp(0.0, metric.length).toDouble();
+        canvas.drawPath(metric.extractPath(distance, end), paint);
+        distance += dashLength + gapLength;
+      }
+    }
   }
 
   @override
