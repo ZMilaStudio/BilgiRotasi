@@ -58,6 +58,34 @@ jobs:
           python3 tools/word_hunt_release_stock_manifest.py \
             --output /tmp/word_hunt_release_stock.manifest.json
 
+      - name: Canonical 5-8-9-10 bölüm tiplerini doğrula
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          data = json.loads(
+              Path('/tmp/word_hunt_release_stock.manifest.json').read_text(encoding='utf-8')
+          )
+          expected = {
+              5: 'challenge',
+              8: 'normal',
+              9: 'normal',
+              10: 'routeFinal',
+          }
+          for route in data['routes']:
+              levels = {level['index']: level for level in route['levels']}
+              assert len(levels) == 10, route['id']
+              for index, level_type in expected.items():
+                  actual = levels[index]['type']
+                  assert actual == level_type, (
+                      route['id'], index, actual, level_type
+                  )
+              assert levels[5].get('timeLimitSeconds') == 60, route['id']
+              assert levels[10].get('timeLimitSeconds') == 120, route['id']
+          print('CANONICAL_LEVEL_TYPES: PASS')
+          PY
+
       - name: 180 yeni bölümü üret ve exact-one doğrula
         run: |
           python3 tools/word_hunt_batch_generator.py \
