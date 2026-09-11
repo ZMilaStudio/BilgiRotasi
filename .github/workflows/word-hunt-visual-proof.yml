@@ -74,6 +74,8 @@ jobs:
             test/word_hunt_prototype_screens_test.dart \
             test/word_hunt_route_map_v2_view_test.dart \
             test/word_hunt_route_map_view_test.dart \
+            test/word_hunt_reusable_route_map_screen_test.dart \
+            test/word_hunt_reusable_route_map_visual_proof_test.dart \
             test/word_hunt_scoring_test.dart \
             test/word_hunt_starter_content_test.dart \
             --reporter expanded
@@ -197,5 +199,9 @@ jobs:
             reports/WORD_HUNT_VISUAL_PROOF_PACKAGED_ASSET_SHA256.txt
             reports/WORD_HUNT_VISUAL_PROOF_PACKAGED_ASSET_BYTES.txt
             reports/WORD_HUNT_VISUAL_PROOF_ASSET_COMPARE.txt
+            reports/WORD_HUNT_REUSABLE_MAP_WIDGET.txt
+            reports/WORD_HUNT_REUSABLE_MAP_WIDGET_HARBOR_PROOF.png
+            reports/WORD_HUNT_REUSABLE_MAP_WIDGET_SKY_PROOF.png
+            reports/WORD_HUNT_REUSABLE_MAP_WIDGET_FOREST_PROOF.png
           if-no-files-found: error
           retention-days: 30
