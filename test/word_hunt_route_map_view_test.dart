@@ -14,7 +14,7 @@ void main() {
 
     expect(find.text('BAŞLANGIÇ LİMANI'), findsOneWidget);
     expect(find.text('MEYDAN OKUMA'), findsOneWidget);
-    expect(find.text('BONUS DURAK'), findsOneWidget);
+    expect(find.text('BONUS DURAK'), findsNothing);
     expect(find.text('ROTA FİNALİ'), findsOneWidget);
 
     for (var index = 1; index <= 10; index++) {
@@ -80,7 +80,7 @@ void main() {
     expect(find.byKey(const Key('word_hunt_map_level_1')), findsOneWidget);
     expect(find.byKey(const Key('word_hunt_map_level_10')), findsOneWidget);
     expect(find.text('MEYDAN OKUMA'), findsOneWidget);
-    expect(find.text('BONUS DURAK'), findsOneWidget);
+    expect(find.text('BONUS DURAK'), findsNothing);
     expect(find.text('ROTA FİNALİ'), findsOneWidget);
   });
 }
