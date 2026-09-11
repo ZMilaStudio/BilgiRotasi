@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 
 import 'word_hunt_models.dart';
 import 'word_hunt_progress.dart';
-import 'word_hunt_reusable_route_map_screen.dart';
 import 'word_hunt_route_visual_theme.dart';
 import 'word_hunt_starter_content.dart';
 
@@ -55,13 +54,10 @@ class _ReusableRouteMapVisualProofApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Kelime Avı Reusable Route Map Proof',
-      home: WordHuntReusableRouteMapScreen(
+      home: WordHuntThemedRouteMapScreen(
         route: _proofRoute,
-        theme: _visualTheme.mapTheme,
+        visualTheme: _visualTheme,
         progress: _proofProgress,
-        decorationSpec: _visualTheme.decorationSpec,
-        decorationPalette: _visualTheme.decorationPalette,
-        decorationOpacity: _visualTheme.decorationOpacity,
       ),
     );
   }
