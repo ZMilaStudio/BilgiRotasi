@@ -127,7 +127,7 @@ void main() {
     );
   });
 
-  test('level 7 opens bonus 8 and normal 9; 10 waits for 9', () {
+  test('levels 7, 8, 9 and 10 unlock strictly in sequence', () {
     final after7 = const WordHuntProgressSnapshot(
       bestStarsByLevelId: <String, int>{
         'gokyuzu-1': 1,
@@ -145,14 +145,24 @@ void main() {
     );
     expect(
       WordHuntRouteProgressEngine.isLevelUnlocked(route, after7, 9),
-      isTrue,
+      isFalse,
     );
     expect(
       WordHuntRouteProgressEngine.isLevelUnlocked(route, after7, 10),
       isFalse,
     );
 
-    final after9 = after7.recordLevelResult(levelId: 'gokyuzu-9', stars: 1);
+    final after8 = after7.recordLevelResult(levelId: 'gokyuzu-8', stars: 1);
+    expect(
+      WordHuntRouteProgressEngine.isLevelUnlocked(route, after8, 9),
+      isTrue,
+    );
+    expect(
+      WordHuntRouteProgressEngine.isLevelUnlocked(route, after8, 10),
+      isFalse,
+    );
+
+    final after9 = after8.recordLevelResult(levelId: 'gokyuzu-9', stars: 1);
     expect(
       WordHuntRouteProgressEngine.isLevelUnlocked(route, after9, 10),
       isTrue,
@@ -173,12 +183,9 @@ WordHuntRouteDefinition _route() {
         id: 'gokyuzu-$index',
         routeId: 'gokyuzu-adalari',
         index: index,
-        type:
-            index == 8
-                ? WordHuntLevelType.bonus
-                : index == 10
-                ? WordHuntLevelType.routeFinal
-                : WordHuntLevelType.normal,
+        type: index == 10
+            ? WordHuntLevelType.routeFinal
+            : WordHuntLevelType.normal,
         grid: const <String>['ABC', 'DEF', 'GHI'],
         targetWords: const <String>['ABC'],
         starRules: const WordHuntStarRules(),
