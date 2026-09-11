@@ -29,7 +29,7 @@ void main() {
     expect(find.text('KELİME AVI'), findsOneWidget);
     expect(find.text('BAŞLANGIÇ LİMANI'), findsOneWidget);
     expect(find.text('MEYDAN OKUMA'), findsOneWidget);
-    expect(find.text('BONUS DURAK'), findsOneWidget);
+    expect(find.text('BONUS DURAK'), findsNothing);
     expect(find.text('ROTA FİNALİ'), findsOneWidget);
     expect(find.byKey(const Key('word_hunt_v2_scene')), findsOneWidget);
     expect(find.byKey(const Key('word_hunt_v2_compass')), findsOneWidget);
@@ -40,7 +40,7 @@ void main() {
     }
   });
 
-  testWidgets('v2 opens node 9 but keeps final 10 progression locked', (
+  testWidgets('v2 opens nodes 8 and 9 but keeps final 10 locked', (
     tester,
   ) async {
     var tapped = 0;
