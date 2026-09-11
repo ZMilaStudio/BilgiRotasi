@@ -1,131 +1,159 @@
 # Bilgi Rotası – Güncel Proje Durumu
 
-**Son güncelleme:** 11 Eylül 2026
+**Son güncelleme:** 12 Eylül 2026
 
 ## 1. Kritik gerçek durum
 
 - Repo: `ZMilaStudio/BilgiRotasi`
 - Default branch: `main`
-- **Önemli:** `main` güncel ürün tabanı olarak varsayılmayacak. Canlı geliştirme/release zinciri `release/final-closed-test-aab-1.68.8` ve ondan türeyen branch/PR'ler üzerinden ilerliyor.
-- `main` HEAD: `653e176625111a7d3b2ed9d600a91ed009fd2af2` — `ci: document public Actions and storage policy`
-- `main` içindeki `pubspec.yaml`: **1.68.6+96**. Bu nedenle yalnız `main` sürümüne bakarak ürünün güncel sürümünü belirleme.
-- PR #179 (`1.68.20+110`) **MERGED**; merge commit `a43d85eae86eac335c7e09a832152667ba608c53`.
-- PR #180 **OPEN / DRAFT / mergeable**: `feat(kelime-avi): add 200-level content production pipeline`.
-- PR #180 HEAD: `618404e281bca91cdd2e9eb03761f47784690353`.
-- PR #180 base: `release/final-closed-test-aab-1.68.8` / `a43d85eae86eac335c7e09a832152667ba608c53`.
-- PR #180 sürümü: `1.68.20+110`; Play'e yükleme/yayınlama yok.
+- **Önemli:** `main` güncel ürün tabanı olarak varsayılmayacak. Canlı ürün/release zinciri `release/final-closed-test-aab-1.68.8` ve ondan türeyen branch/PR'ler üzerinden ilerliyor.
+- `main` HEAD (bu docs checkpoint branch'i açılırken): `a5494b6f9c93b9d07ae04c45dc8360208ca5acf7`.
+- Canonical release branch: `release/final-closed-test-aab-1.68.8`.
+- Canonical release HEAD: `d72b034a30bf32893b8a807ba4791d637880d989`.
+- Release `pubspec.yaml`: **1.68.20+110**.
+- Play yükleme/yayınlama bu çalışma kapsamında yapılmadı.
 
-## 2. Son ürün/release zinciri
+## 2. PR #180 — 200 bölüm içerik üretim hattı
 
-Kelime Avı / Gökyüzü Adaları V9 zincirinde:
+PR #180: `feat(kelime-avi): add 200-level content production pipeline`
 
-- PR #175: Gökyüzü Adaları onaylı gameplay görsel yönü; Android16 + fiziksel kabul PASS; merge zincirinin parçası.
-- PR #176: canonical Gökyüzü Adaları 10 bölüm / 8×8 içerik entegrasyonu; Android16 + AdMob PR doğrulaması PASS.
-- PR #177: production rota selector; merge edildi.
-- PR #178: V9 merged checkpoint; docs-only.
-- PR #179: `1.68.20+110` release version bump; **MERGED**.
-- PR #180: 20 bölümden minimum **200 hazır/doğrulanmış Kelime Avı bölümü** üretmek için deterministik batch üretim + doğrulama altyapısı; **DRAFT**, merge edilmedi.
+- Durum: **OPEN / DRAFT / mergeable / merged=false**.
+- Branch: `feat/kelime-avi-200-level-content-pipeline-20260906`.
+- Exact HEAD: `dd99b25ccb7d437ba6d05ea5dea26356a8d99032`.
+- Base: `release/final-closed-test-aab-1.68.8`.
+- Sürüm: **1.68.20+110**.
+- `Kelime Avı Content Factory` run `34610110468`: **SUCCESS**.
+- `AdMob PR doğrulaması` run `34610110384`: **SUCCESS**.
+- Content Factory kanıtı: 18 rota / 180 yeni bölüm üretildi; mevcut 20 ile **200/200 release-stock gate PASS**.
+- Exact-one fiziksel occurrence doğrulaması PASS; palindrome `KÖK` için aynı fiziksel hücre yolu ileri/geri iki occurrence sayılmayacak şekilde düzeltildi.
+- Bu 200 bölüm **release branch'e veya runtime kataloğuna merge edilmiş değildir**; yalnız PR #180 draft hattında doğrulanmış stoktur.
+- Ready/merge için açık Levent onayı gerekir.
 
-PR #180 korunan alanları:
+## 3. PR #184 — reusable 10-bölümlük rota haritası
+
+PR #184: `feat(kelime-avi): introduce reusable 10-level route map engine`
+
+- Durum: **OPEN / DRAFT / mergeable / merged=false**.
+- Branch: `feat/kelime-avi-reusable-route-map-engine-20260911`.
+- Base: `release/final-closed-test-aab-1.68.8` @ `d72b034a30bf32893b8a807ba4791d637880d989`.
+- Exact HEAD: `b34bfddff5183692e62ac7c9bd49ad15140dae31`.
+- Amaç: her yeni rota için ayrı master-art + piksel koordinat + route-id özel layout üretme döngüsünü bitirmek.
+
+Mimari sözleşme:
+- Tek normalize edilmiş 10 düğümlük geometri.
+- Ortak topoloji: `1→2→3→4→5→6→7→8→9→10`.
+- Önerilen modelde **8 normal bölümdür; bonus node değildir**.
+- Progression route-id özel istisna kullanmaz; her bölüm yalnız kendinden önceki bölüm tamamlandıysa açılır.
+- Tema renk/veri taşır; koordinat/layout taşımaz.
+- Liman / Gökyüzü / Orman proof temaları aynı widget/painter/geometriyi kullanır.
+- Yeni rota eklemek için özel Widget/Painter/koordinat listesi gerekirse mimari başarısız sayılır.
+
+Exact HEAD canlı kanıtları:
+- `Kelime Avı Android 16 görsel kanıtı` run `34636992893`: **SUCCESS**.
+- `AdMob PR doğrulaması` run `34636992854`: **SUCCESS**.
+- Focused Kelime Avı suite: PASS.
+- Analyzer + tüm testler: PASS.
+- Reusable Orman Yolu proof APK build: PASS.
+- Gerçek Android 16 reusable ekran yakalama: PASS.
+- Release APK / signing / package / manifest: PASS.
+- Android 16 cold-start ilk deneme: PASS; ikinci deneme gerekmedi.
+- Final AdMob app gate: PASS.
+
+Artifact'ler:
+- `BilgiRotasi-KelimeAvi-ReusableMap-b34bfddff5183692e62ac7c9bd49ad15140dae31` — ID `10278822820`.
+- `BilgiRotasi-KelimeAvi-ReusableMap-Android16-b34bfddff5183692e62ac7c9bd49ad15140dae31` — ID `10278274442`.
+- `BilgiRotasi-KelimeAvi-PixelProof-b34bfddff5183692e62ac7c9bd49ad15140dae31` — ID `10278559423`.
+
+Gerçek Android Orman Yolu proof incelemesi:
+- başlık/yıldız sayacı okunaklı,
+- ortak 1–10 geometri taşmasız,
+- proof state'te 1–7 tamamlanmış, 8 açık, 9–10 kilitli,
+- route-id özel layout/painter/koordinat yok,
+- ekran yalnız mimari iskelet kanıtıdır; nihai Orman Yolu dekor/sanat tasarımı değildir,
+- proof target production `main.dart` / production navigasyona bağlı değildir.
+
+**Kabul kapısı:** PR #184 owner tarafından kabul edilmeden Ready/merge yapılmaz ve yeni 180 bölüm runtime kataloğuna bağlanmaz.
+
+## 4. Release branch'teki mevcut progression ile PR #184 önerisini karıştırma
+
+Canonical release HEAD `d72b034...` üzerinde mevcut kod hâlâ iki rota için özel istisna taşır:
+
+- `baslangic-limani` ve `gokyuzu-adalari` için 7 tamamlanınca 9 da açılır.
+- 8 mevcut release modelinde bonus geçiş noktasıdır ve 9 için gate değildir.
+- 10, 9 tamamlanınca açılır.
+
+PR #184 ise bunu **önerilen yeni canonical sıralı model** olarak değiştirir:
+
+- `7→8→9→10`,
+- 8 normal bölüm,
+- route-id özel progression yok.
+
+PR #184 merge edilmeden yeni modeli "canlı release davranışı" diye yazma veya varsayma.
+
+## 5. Kelime Avı kilitli ürün kuralları
+
+Release'e göre hâlen geçerli/korunanlar:
+- Canonical gameplay grid: **8×8 / 64 hücre**.
+- Başlangıç Limanı: 10 bölüm / 30 yıldız / 80 target+bonus.
+- Gökyüzü Adaları: 10 bölüm / 30 yıldız / 80 target+bonus.
+- Her canonical kelimede exactly-one fiziksel occurrence gate.
+- Reverse gesture aynı canonical kelimeyi üretir.
+- Nearest-word/autocomplete yok.
+- B5 ve B10 süreleri soft challenge.
+- Kullanıcı kabulü olmadan görsel yön değişmez.
+- Gökyüzü Adaları scenic gameplay yönü kullanıcı tarafından kabul edilmiştir.
+
+## 6. Korunan alanlar
+
+Ayrı açık karar olmadan değiştirilmez:
 - `assets/questions.json`
 - BoardMap / 67 node
+- mevcut ana oyun oynanışı
 - Firebase
-- AdMob
+- AdMob production ayarları
 - signing
 - package/version
 - Play release/yayın
 
-PR #180'un sonraki hedefi: altyapı PASS olduktan sonra 18 yeni 10-bölümlük rota için toplu içerik üretimi; mevcut 20 + yeni 180 = minimum 200 bölüm.
+## 7. AdMob / Android doğrulama standardı
 
-## 3. AdMob durumu
+- Gerçek Android `adb logcat` / `AndroidRuntime` kanıtı olmadan crash nedeni kesin ilan edilmez.
+- Full workflow + YAML + script + dosya yolları + shell davranışı birlikte incelenir.
+- Build PASS tek başına ürün kabulü değildir.
+- Cold-start, app/process/activity gate ve artifact birlikte değerlendirilir.
+- Test App ID ile production App ID karıştırılmaz.
+- PR #184 exact HEAD'de AdMob validation `34636992854` SUCCESS ve ilk Android16 cold-start denemesi PASS'tır.
 
-AdMob geçmişte V2–V7 denemelerinde açılış çökmesine yol açtığı için güvenli teşhis yaklaşımına dönüldü. Son çalışma kuralı:
-
-1. Gerçek Android `adb logcat` / `AndroidRuntime` hatası görülmeden neden tahmin edilmez.
-2. Tam workflow, YAML, script, dosya yolları, shell davranışı ve CI logu birlikte incelenir.
-3. Yalnız son kırmızı satıra tek satırlık yama yapılmaz.
-4. `MobileAdsInitProvider` gibi kritik Android provider davranışları, gerçek kanıt olmadan kaldırılmaz.
-5. SDK başlangıcı reklam yüklenmeden önce yapılır; uygulama açılışı gereksiz yere SDK başlangıcına kilitlenmez.
-6. Test App ID ile production App ID birbirine karıştırılmaz.
-
-**AdMob canlı entegrasyonunun hangi exact HEAD'de ve hangi son CI run'ında olduğu DOĞRULANACAK.** Eski sohbetlerdeki sürüm/branch bilgileri canlı GitHub karşısında geçersiz kabul edilir.
-
-## 4. Kelime Avı – kilitli ürün sözleşmeleri
-
-- Canonical gameplay grid: **8×8 / 64 hücre**.
-- Başlangıç Limanı: 10 bölüm / 30 yıldız / 80 target+bonus.
-- Gökyüzü Adaları: 10 bölüm / 30 yıldız / 80 target+bonus.
-- Her canonical kelime için exactly-one fiziksel occurrence gate korunur.
-- Reverse gesture aynı canonical kelimeyi üretir.
-- Nearest-word/autocomplete yok.
-- B5 ve B10 süreleri soft challenge olarak ele alınır.
-- 7 tamamlanınca 8 ve 9 açılır; 8 bonus node'dur ve 9 için gate değildir; 10 yalnız 9 tamamlanınca açılır.
-- Kullanıcı kabulü olmadan görsel yön değiştirilemez.
-- Gökyüzü Adaları scenic gameplay görsel yönü kullanıcı tarafından PASS edilmiştir.
-
-## 5. Soru bankası
+## 8. Soru bankası
 
 - Önceki kanonik kayıt: **6.710 soru**.
-- Türkiye özel 2.000 kolay soru paketi hazırlanmış durumda; çakışma yedekleri ve kurulum aracı bulunuyor.
-- Paketin canlı `assets/questions.json` içine gerçekten merge edilip edilmediği ve güncel toplam soru sayısı bu durum dosyasından tek başına doğrulanmış değildir: **DOĞRULANACAK**.
-- `assets/questions.json` kontrolsüz biçimde değiştirilmez.
-- Soru düzeltmesi yapılacaksa metin + seçenekler + doğru indeks + açıklama + kategori + zorluk birlikte kontrol edilir.
-
-## 6. 3B tahta
-
-- Oynanışa, BoardMap'e ve **67 node** düzenine dokunulmaz.
-- Önce numaralı deterministik geometri.
-- Kullanıcı onayı olmadan stil/Flutter/APK aşamasına geçilmez.
-- Tek Matrix4 ile bütün 2B sahne eğilmez.
-- 8 rozet / 6 pozisyon eşlemesi çözülmeden ilerlenmez.
-
-## 7. CI / GitHub çalışma standardı
-
-- `main` güncel varsayılmaz.
-- İş ayrı branch'te yapılır.
-- Sıra: **test → commit → push → PR → inceleme → merge**.
-- Kritik merge için Levent'in açık onayı gerekir.
-- Build PASS tek başına çalışma/ürün kabulü değildir.
-- Full log + workflow + diff + Git geçmişi birlikte incelenir.
-- Public Actions politikası gereği gereksiz workflow/artifact üretimi azaltılır; aynı PR'daki eski koşular concurrency ile iptal edilir, ilgisiz değişikliklerde ağır Android/görsel doğrulama çalıştırılmaz.
-- APK/AAB yalnız test/release ihtiyacında üretilir.
-- Artifact kalıcı sürüm çıktısı olarak gerekiyorsa GitHub Release tercih edilir.
-
-## 8. Son sohbet – CI hatası düzeltme devri
-
-Son sohbetten alınan temel yöntem:
-
-- Önce tam teşhis.
-- Tam CI logu baştan sona okunacak.
-- Mevcut workflow ve `main` birlikte incelenecek, ancak `main` güncel kabul edilmeyecek.
-- YAML, script, dosya yolları, shell davranışı ve sonraki adımlar uçtan uca doğrulanacak.
-- Gerçek `AndroidRuntime` / `adb logcat` kanıtı olmadan crash nedeni kesin ilan edilmeyecek.
-- Eski AdMob yamaları kör biçimde tekrar uygulanmayacak.
-
-Son sohbetin exact son CI run ID'si, failure job ID'si ve son düzeltme commit'i mevcut dosya indeksinden güvenilir biçimde çıkarılamadı: **DOĞRULANACAK**.
-
-## 9. Şu anki açık işler
-
-### P0
-1. PR #180 batch içerik üretim hattının CI sonucunu exact HEAD `618404e...` üzerinden doğrula.
-2. Minimum 200 Kelime Avı bölüm stoğu üretim gate'ini tamamla.
-3. AdMob'un güncel exact production/release HEAD, workflow ve son cold-start kanıtını doğrula.
-
-### P1
-4. `assets/questions.json` güncel soru sayısını ve Türkiye 2.000 paketinin canlı merge durumunu doğrula.
-5. Güncel release AAB/APK sürümünün gerçekten hangi branch/HEAD'den üretildiğini doğrula.
-6. Play Console'daki mevcut production/candidate sürüm ile GitHub release zincirini eşleştir.
-
-## 10. Korunan sınırlar
-
+- Türkiye özel 2.000 kolay soru paketi hazırlanmış durumda.
+- Paketin canlı `assets/questions.json` içine gerçekten merge edilip edilmediği ve güncel toplam soru sayısı bu dosyada doğrulanmış değildir: **DOĞRULANACAK**.
 - `assets/questions.json` kontrolsüz değiştirilmez.
-- BoardMap / 67 node ve mevcut oyun oynanışı korunur.
-- Firebase/AdMob/signing/package/Play yapılandırması ayrı karar olmadan değiştirilmez.
-- Kullanıcının yerel değişiklikleri silinmez.
+
+## 9. Çalışma protokolü
+
+Her teknik işte sıra:
+
+**Canlı durum → kararlar → görev/bitti ölçütü → branch → değişiklik → test → commit → push → PR → inceleme → açık onay → merge**
+
+- `main`/release'e doğrudan yazma.
+- Ayrı branch kullan.
+- Levent açıkça onaylamadan kritik Ready/merge/release/Play yapma.
+- Doğrulanmamış bilgiyi **DOĞRULANACAK** diye işaretle.
+- Kullanıcının ilgisiz değişikliklerini silme.
 - `git reset --hard` rutin çözüm değildir.
-- Gizli bilgi, parola, anahtar, testçi e-postası, UID/FID/token loglanmaz.
-- Bir bilgi doğrulanmamışsa **DOĞRULANACAK** yazılır; tahmin edilmez.
+
+## 10. Şu anki gerçek kapılar
+
+1. **PR #184 mimari owner kabulü** — teknik CI + Android16 kanıtı PASS; hâlâ DRAFT.
+2. PR #184 kabul edilirse sonraki production entegrasyon planı ayrıca branch/PR ile yapılacak; bu PR 180 bölümü runtime'a bağlamaz.
+3. **PR #180 merge/Ready kararı** — 200/200 release-stock gate PASS; hâlâ DRAFT.
+4. `assets/questions.json` güncel toplamı ve Türkiye 2.000 paketinin merge durumu — **DOĞRULANACAK**.
+5. Play Console mevcut production/candidate sürümü ile GitHub exact HEAD eşleşmesi — **DOĞRULANACAK**; bu çalışmada Play aksiyonu yok.
 
 ## 11. Devir notu
 
-Bu dosya proje durumunun kısa kanonik özeti olarak tutulur. Daha kapsamlı 1 aylık devir talimatı `DEVRALMA_1_AYLIK_GPT.md` dosyasındadır.
+Daha kapsamlı çalışma kuralları `DEVRALMA_1_AYLIK_GPT.md` dosyasındadır.
+
+**Kuralın özü:** canlı GitHub > bu durum dosyası > diğer karar/görev kayıtları > eski sohbetler.
