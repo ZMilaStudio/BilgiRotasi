@@ -20,12 +20,12 @@ void main() {
     for (final level in route.levels) {
       counts[level.type] = (counts[level.type] ?? 0) + 1;
     }
-    expect(counts[WordHuntLevelType.normal], 7);
+    expect(counts[WordHuntLevelType.normal], 8);
     expect(counts[WordHuntLevelType.challenge], 1);
-    expect(counts[WordHuntLevelType.bonus], 1);
+    expect(counts[WordHuntLevelType.bonus] ?? 0, 0);
     expect(counts[WordHuntLevelType.routeFinal], 1);
     expect(route.levels[4].type, WordHuntLevelType.challenge);
-    expect(route.levels[7].type, WordHuntLevelType.bonus);
+    expect(route.levels[7].type, WordHuntLevelType.normal);
     expect(route.levels.last.type, WordHuntLevelType.routeFinal);
   });
 
@@ -123,8 +123,9 @@ void main() {
     });
   }
 
-  test('Bölüm 8 Bonus Durak iki bonus taşır ve TOP tek hattadır', () {
+  test('Bölüm 8 normaldir, iki bonus kelime taşır ve TOP tek hattadır', () {
     final level = route.levels[7];
+    expect(level.type, WordHuntLevelType.normal);
     expect(level.bonusWords, const <String>['HIZ', 'SKOR']);
     expect(_findPhysicalOccurrences(level.grid, 'TOP'), hasLength(1));
   });
