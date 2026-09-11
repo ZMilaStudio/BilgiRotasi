@@ -19,6 +19,33 @@ void main() {
     },
   );
 
+  const progressThroughEight = WordHuntProgressSnapshot(
+    bestStarsByLevelId: <String, int>{
+      'baslangic-1': 3,
+      'baslangic-2': 3,
+      'baslangic-3': 3,
+      'baslangic-4': 3,
+      'baslangic-5': 3,
+      'baslangic-6': 3,
+      'baslangic-7': 3,
+      'baslangic-8': 3,
+    },
+  );
+
+  const progressThroughNine = WordHuntProgressSnapshot(
+    bestStarsByLevelId: <String, int>{
+      'baslangic-1': 3,
+      'baslangic-2': 3,
+      'baslangic-3': 3,
+      'baslangic-4': 3,
+      'baslangic-5': 3,
+      'baslangic-6': 3,
+      'baslangic-7': 3,
+      'baslangic-8': 3,
+      'baslangic-9': 3,
+    },
+  );
+
   test('reusable map owns exactly one normalized ten-stop geometry', () {
     expect(WordHuntRouteMapGeometry.normalizedStops, hasLength(10));
 
@@ -52,14 +79,14 @@ void main() {
     );
   });
 
-  test('seven branches to normal eight and nine, while nine gates ten', () {
+  test('route geometry stays sequential through levels 7, 8, 9 and 10', () {
     expect(WordHuntRouteMapGeometry.connections, contains((7, 8)));
-    expect(WordHuntRouteMapGeometry.connections, contains((7, 9)));
-    expect(WordHuntRouteMapGeometry.connections, isNot(contains((8, 9))));
+    expect(WordHuntRouteMapGeometry.connections, contains((8, 9)));
+    expect(WordHuntRouteMapGeometry.connections, isNot(contains((7, 9))));
     expect(WordHuntRouteMapGeometry.connections, contains((9, 10)));
   });
 
-  test('parallel 8 and 9 progression works for a future route id', () {
+  test('sequential 7-8-9-10 progression works for a future route id', () {
     final futureRoute = WordHuntRouteDefinition(
       id: 'orman-yolu-proof',
       title: 'Orman Yolu Proof',
@@ -83,15 +110,31 @@ void main() {
         progressThroughSeven,
         9,
       ),
+      isFalse,
+    );
+    expect(
+      WordHuntRouteProgressEngine.isLevelUnlocked(
+        futureRoute,
+        progressThroughEight,
+        9,
+      ),
       isTrue,
     );
     expect(
       WordHuntRouteProgressEngine.isLevelUnlocked(
         futureRoute,
-        progressThroughSeven,
+        progressThroughEight,
         10,
       ),
       isFalse,
+    );
+    expect(
+      WordHuntRouteProgressEngine.isLevelUnlocked(
+        futureRoute,
+        progressThroughNine,
+        10,
+      ),
+      isTrue,
     );
   });
 
@@ -169,7 +212,7 @@ void main() {
     }
   });
 
-  testWidgets('progression stays interactive without route-specific layout', (
+  testWidgets('progression stays sequential without route-specific layout', (
     tester,
   ) async {
     var tapped = 0;
@@ -189,6 +232,25 @@ void main() {
     expect(tapped, 8);
 
     tapped = 0;
+    await tester.tap(
+      find.byKey(const Key('word_hunt_reusable_level_9')),
+      warnIfMissed: false,
+    );
+    await tester.pump();
+    expect(tapped, 0);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: WordHuntReusableRouteMapScreen(
+          route: WordHuntStarterContent.baslangicLimani,
+          theme: WordHuntRouteMapTheme.harborProof,
+          progress: progressThroughEight,
+          onLevelTap: (index) => tapped = index,
+        ),
+      ),
+    );
+    await tester.pump();
+
     await tester.tap(find.byKey(const Key('word_hunt_reusable_level_9')));
     await tester.pump();
     expect(tapped, 9);
