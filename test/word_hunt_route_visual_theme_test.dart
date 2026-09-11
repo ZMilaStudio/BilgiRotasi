@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:bilgi_rotasi/word_hunt/word_hunt_reusable_route_map_screen.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_route_visual_theme.dart';
 import 'package:flutter_test/flutter_test.dart';
