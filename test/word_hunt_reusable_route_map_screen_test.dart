@@ -48,7 +48,7 @@ void main() {
   });
 
   test('bonus progression works for a future route id without special cases', () {
-    const futureRoute = WordHuntRouteDefinition(
+    final futureRoute = WordHuntRouteDefinition(
       id: 'orman-yolu-proof',
       title: 'Orman Yolu Proof',
       theme: 'orman',
