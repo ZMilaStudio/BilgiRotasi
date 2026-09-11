@@ -1,5 +1,6 @@
 import 'package:bilgi_rotasi/word_hunt/word_hunt_reusable_route_map_screen.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_route_map_decoration.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -7,6 +8,11 @@ void main() {
     kind: WordHuntRouteDecorationKind.forest,
     seed: 20260912,
     count: 18,
+  );
+  const palette = WordHuntRouteDecorationPalette(
+    primary: Color(0xFF4F8D62),
+    secondary: Color(0xFF72533A),
+    accent: Color(0xFFF3D47A),
   );
 
   test('same seed creates exactly the same normalized decoration layout', () {
@@ -101,5 +107,38 @@ void main() {
       second.map((mark) => mark.center).toList(),
       isNot(first.map((mark) => mark.center).toList()),
     );
+  });
+
+  testWidgets('forest painter stays exception-free on narrow and tall surfaces', (
+    tester,
+  ) async {
+    Future<void> render(Size size) async {
+      tester.view.physicalSize = size;
+      tester.view.devicePixelRatio = 1;
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: CustomPaint(
+              painter: WordHuntRouteDecorationPainter(
+                spec: forest,
+                reservedPoints: WordHuntRouteMapGeometry.normalizedStops,
+                palette: palette,
+              ),
+              child: SizedBox.expand(),
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+      expect(tester.takeException(), isNull);
+    }
+
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
+    await render(const Size(320, 640));
+    await render(const Size(430, 932));
   });
 }
