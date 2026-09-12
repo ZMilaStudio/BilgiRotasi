@@ -5,17 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  const progressThroughSeven = WordHuntProgressSnapshot(
-    bestStarsByLevelId: <String, int>{
-      'baslangic-1': 3,
-      'baslangic-2': 3,
-      'baslangic-3': 3,
-      'baslangic-4': 3,
-      'baslangic-5': 3,
-      'baslangic-6': 3,
-      'baslangic-7': 3,
-    },
-  );
+  const initialProgress = WordHuntProgressSnapshot();
 
   test('scenic theme tokens cannot alter canonical normalized geometry', () {
     const size = Size(430, 932);
@@ -49,7 +39,7 @@ void main() {
           home: WordHuntReusableRouteMapScreen(
             route: WordHuntStarterContent.baslangicLimani,
             theme: theme,
-            progress: progressThroughSeven,
+            progress: initialProgress,
           ),
         ),
       );
@@ -76,7 +66,7 @@ void main() {
     expect(forest.$2, everyElement(const Size(86, 82)));
   });
 
-  testWidgets('proof progression is visible as 1-7 done 8 current 9-10 locked', (
+  testWidgets('initial progression shows only level 1 open and 2-10 locked', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -84,30 +74,22 @@ void main() {
         home: WordHuntReusableRouteMapScreen(
           route: WordHuntStarterContent.baslangicLimani,
           theme: WordHuntRouteMapTheme.forestProof,
-          progress: progressThroughSeven,
+          progress: initialProgress,
         ),
       ),
     );
     await tester.pump();
 
-    for (var level = 1; level <= 7; level++) {
+    expect(
+      find.byKey(const Key('word_hunt_reusable_node_1_current')),
+      findsOneWidget,
+    );
+    for (var level = 2; level <= 10; level++) {
       expect(
-        find.byKey(Key('word_hunt_reusable_node_${level}_completed')),
+        find.byKey(Key('word_hunt_reusable_node_${level}_locked')),
         findsOneWidget,
       );
     }
-    expect(
-      find.byKey(const Key('word_hunt_reusable_node_8_current')),
-      findsOneWidget,
-    );
-    expect(
-      find.byKey(const Key('word_hunt_reusable_node_9_locked')),
-      findsOneWidget,
-    );
-    expect(
-      find.byKey(const Key('word_hunt_reusable_node_10_locked')),
-      findsOneWidget,
-    );
   });
 
   testWidgets('generic atmosphere renders forest and sky on a tall phone', (
@@ -129,7 +111,7 @@ void main() {
           home: WordHuntReusableRouteMapScreen(
             route: WordHuntStarterContent.baslangicLimani,
             theme: theme,
-            progress: progressThroughSeven,
+            progress: initialProgress,
           ),
         ),
       );
