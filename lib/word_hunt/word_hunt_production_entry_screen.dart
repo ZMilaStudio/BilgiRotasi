@@ -12,6 +12,7 @@ import 'word_hunt_route_selector.dart';
 import 'word_hunt_route_visual_theme.dart';
 import 'word_hunt_screens.dart';
 import 'word_hunt_starter_content.dart';
+import 'word_hunt_themed_production_route_screen.dart';
 
 /// Ana Bilgi Rotası uygulamasından Kelime Avı production akışına girilen ekran.
 ///
@@ -303,7 +304,8 @@ class _WordHuntProductionEntryScreenState
           onLevelTap: _openLevel,
         );
       case WordHuntRoutePresentationKind.themedReusable:
-        final visualTheme = _activeCatalogEntry?.visualTheme;
+        final WordHuntRouteVisualTheme? visualTheme =
+            _activeCatalogEntry?.visualTheme;
         if (visualTheme == null) {
           return WordHuntReferenceRouteScreen(
             key: const Key('word_hunt_production_entry_theme_fallback'),
@@ -316,11 +318,15 @@ class _WordHuntProductionEntryScreenState
             onLevelTap: _openLevel,
           );
         }
-        return WordHuntThemedRouteMapScreen(
+        return WordHuntThemedProductionRouteScreen(
           key: const Key('word_hunt_production_entry_themed_route'),
           route: route,
           visualTheme: visualTheme,
           progress: _progress,
+          onBack: _leaveRoute,
+          onInfo: _showInfo,
+          onCompass: _showCompassHint,
+          onBook: _showBook,
           onLevelTap: _openLevel,
         );
       case WordHuntRoutePresentationKind.referenceRoute:
