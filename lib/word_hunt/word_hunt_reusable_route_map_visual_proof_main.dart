@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'word_hunt_models.dart';
+import 'word_hunt_orman_content.dart';
 import 'word_hunt_progress.dart';
 import 'word_hunt_route_visual_theme.dart';
-import 'word_hunt_starter_content.dart';
 
 /// Yalnız reusable 10-bölümlük harita motorunun gerçek Flutter/Android görsel
 /// kanıtı için kullanılan izole giriş noktasıdır.
@@ -24,30 +23,18 @@ class _ReusableRouteMapVisualProofApp extends StatelessWidget {
   static const WordHuntProgressSnapshot _proofProgress =
       WordHuntProgressSnapshot(
         bestStarsByLevelId: <String, int>{
-          'baslangic-1': 3,
-          'baslangic-2': 3,
-          'baslangic-3': 3,
-          'baslangic-4': 3,
-          'baslangic-5': 3,
-          'baslangic-6': 3,
-          'baslangic-7': 3,
+          'orman-yolu-01': 3,
+          'orman-yolu-02': 3,
+          'orman-yolu-03': 3,
+          'orman-yolu-04': 3,
+          'orman-yolu-05': 3,
+          'orman-yolu-06': 3,
+          'orman-yolu-07': 3,
         },
       );
 
   static const WordHuntRouteVisualTheme _visualTheme =
       WordHuntRouteVisualThemeProofs.forest;
-
-  WordHuntRouteDefinition get _proofRoute {
-    final source = WordHuntStarterContent.baslangicLimani;
-    return WordHuntRouteDefinition(
-      id: source.id,
-      title: 'Orman Yolu',
-      theme: _visualTheme.id,
-      unlockStarsRequired: source.unlockStarsRequired,
-      levels: source.levels,
-      routeRewardId: 'proof-only-forest-route',
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +42,7 @@ class _ReusableRouteMapVisualProofApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Kelime Avı Reusable Route Map Proof',
       home: WordHuntThemedRouteMapScreen(
-        route: _proofRoute,
+        route: WordHuntOrmanContent.ormanYolu,
         visualTheme: _visualTheme,
         progress: _proofProgress,
       ),
