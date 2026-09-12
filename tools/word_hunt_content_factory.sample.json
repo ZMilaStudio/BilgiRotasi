@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "seed": 20260906,
+  "minimumReleaseLevels": 200,
+  "routes": [
+    {
+      "id": "fabrika-ornek",
+      "title": "Fabrika Örnek Rotası",
+      "theme": "Yalnız content factory doğrulama örneği; production içeriği değildir.",
+      "unlockStarsRequired": 0,
+      "routeRewardId": "reward-fabrika-ornek",
+      "levels": [
+        {
+          "index": 1,
+          "type": "normal",
+          "targetWords": ["BULUT", "GÜNEŞ", "RÜZGAR", "YILDIZ", "KANAT"],
+          "bonusWords": ["AYNA"]
+        },
+        {
+          "index": 2,
+          "type": "routeFinal",
+          "targetWords": ["DENİZ", "FENER", "LİMAN", "MARTI", "YELKEN"],
+          "bonusWords": ["PUSULA"]
+        }
+      ]
+    }
+  ]
+}
