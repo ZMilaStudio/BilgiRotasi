@@ -18,6 +18,48 @@ void main() {
     },
   );
 
+  testWidgets('fresh production route opens only level 1', (tester) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
+    var tappedLevel = 0;
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: WordHuntThemedProductionRouteScreen(
+          route: WordHuntOrmanContent.ormanYolu,
+          visualTheme: WordHuntRouteVisualThemes.ormanYolu,
+          progress: const WordHuntProgressSnapshot(),
+          onBack: () {},
+          onInfo: () {},
+          onCompass: () {},
+          onBook: () {},
+          onLevelTap: (level) => tappedLevel = level,
+        ),
+      ),
+    );
+    await tester.pump();
+
+    await tester.tap(find.byKey(const Key('word_hunt_reusable_level_1')));
+    await tester.pump();
+    expect(tappedLevel, 1);
+
+    for (var level = 2; level <= 10; level++) {
+      tappedLevel = 0;
+      await tester.tap(
+        find.byKey(Key('word_hunt_reusable_level_$level')),
+        warnIfMissed: false,
+      );
+      await tester.pump();
+      expect(tappedLevel, 0, reason: 'Bölüm $level fresh progress ile kilitli');
+      expect(tester.takeException(), isNull);
+    }
+  });
+
   testWidgets('production themed chrome forwards all controls and level taps', (
     tester,
   ) async {
@@ -38,7 +80,7 @@ void main() {
       MaterialApp(
         home: WordHuntThemedProductionRouteScreen(
           route: WordHuntOrmanContent.ormanYolu,
-          visualTheme: WordHuntRouteVisualThemeProofs.forest,
+          visualTheme: WordHuntRouteVisualThemes.ormanYolu,
           progress: progressThroughSeven,
           onBack: () => backCount++,
           onInfo: () => infoCount++,
@@ -98,7 +140,7 @@ void main() {
       MaterialApp(
         home: WordHuntThemedProductionRouteScreen(
           route: WordHuntOrmanContent.ormanYolu,
-          visualTheme: WordHuntRouteVisualThemeProofs.forest,
+          visualTheme: WordHuntRouteVisualThemes.ormanYolu,
           progress: progressThroughSeven,
           onBack: () {},
           onInfo: () {},
