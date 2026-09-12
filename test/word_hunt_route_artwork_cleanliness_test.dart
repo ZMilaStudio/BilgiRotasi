@@ -39,9 +39,9 @@ void main() {
     expect(theme.backgroundScale, 1);
     expect(theme.backgroundBlurSigma, 0);
     expect(theme.backgroundOverlayColor, Colors.transparent);
-    expect(theme.mapTheme.pathUnderlayColor, const Color(0xFFB08A52));
-    expect(theme.mapTheme.lockedNodeColor, const Color(0xFF5D6460));
-    expect(theme.mapTheme.nodeShadowColor, const Color(0xFF34452F));
+    expect(theme.mapTheme.pathUnderlayColor, const Color(0xFF2A1E14));
+    expect(theme.mapTheme.lockedNodeColor, const Color(0xFF34453A));
+    expect(theme.mapTheme.nodeShadowColor, const Color(0xFF0A160F));
   });
 
   testWidgets('Orman production artwork decodes and renders from bundled parts', (
