@@ -69,13 +69,14 @@ abstract final class WordHuntRouteVisualThemeProofs {
     decorationSpec: WordHuntRouteDecorationSpec(
       kind: WordHuntRouteDecorationKind.forest,
       seed: 20260912,
-      count: 18,
+      count: 22,
     ),
     decorationPalette: WordHuntRouteDecorationPalette(
-      primary: Color(0xFF4F8D62),
-      secondary: Color(0xFF72533A),
-      accent: Color(0xFFF3D47A),
+      primary: Color(0xFF3F7A4C),
+      secondary: Color(0xFF5B4632),
+      accent: Color(0xFFE9D78A),
     ),
+    decorationOpacity: 0.52,
   );
 
   static const WordHuntRouteVisualTheme sky = WordHuntRouteVisualTheme(
