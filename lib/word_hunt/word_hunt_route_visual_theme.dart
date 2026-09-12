@@ -4,6 +4,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'word_hunt_artwork_route_map_screen.dart';
 import 'word_hunt_models.dart';
 import 'word_hunt_progress.dart';
 import 'word_hunt_reusable_route_map_screen.dart';
@@ -62,8 +63,10 @@ class WordHuntRouteVisualTheme {
       backgroundAsset != null || backgroundBase64AssetParts.isNotEmpty;
 }
 
-/// Tema/artwork verisini tek reusable harita motoruna bağlayan production
-/// uyumlu ortak ekran. Route-id özel painter veya koordinat dalı içermez.
+/// Tema/artwork verisini ortak 1-10 geometri ve progression sözleşmesine bağlar.
+/// Raster artwork kullanan rotalar generic premium artwork renderer'ını;
+/// procedural proof temaları reusable temel renderer'ı kullanır. Seçim route-id
+/// üzerinden yapılmaz.
 class WordHuntThemedRouteMapScreen extends StatelessWidget {
   const WordHuntThemedRouteMapScreen({
     super.key,
@@ -87,21 +90,28 @@ class WordHuntThemedRouteMapScreen extends StatelessWidget {
     final showProceduralDecorations =
         !hasArtwork || visualTheme.overlayDecorationsOnArtwork;
 
-    final map = WordHuntReusableRouteMapScreen(
-      route: route,
-      theme: effectiveMapTheme,
-      progress: progress,
-      onLevelTap: onLevelTap,
-      decorationSpec: showProceduralDecorations
-          ? visualTheme.decorationSpec
-          : null,
-      decorationPalette: showProceduralDecorations
-          ? visualTheme.decorationPalette
-          : null,
-      decorationOpacity: showProceduralDecorations
-          ? visualTheme.decorationOpacity
-          : 0,
-    );
+    final Widget map = hasArtwork
+        ? WordHuntArtworkRouteMapScreen(
+            route: route,
+            theme: effectiveMapTheme,
+            progress: progress,
+            onLevelTap: onLevelTap,
+          )
+        : WordHuntReusableRouteMapScreen(
+            route: route,
+            theme: effectiveMapTheme,
+            progress: progress,
+            onLevelTap: onLevelTap,
+            decorationSpec: showProceduralDecorations
+                ? visualTheme.decorationSpec
+                : null,
+            decorationPalette: showProceduralDecorations
+                ? visualTheme.decorationPalette
+                : null,
+            decorationOpacity: showProceduralDecorations
+                ? visualTheme.decorationOpacity
+                : 0,
+          );
 
     if (!hasArtwork) return map;
 
