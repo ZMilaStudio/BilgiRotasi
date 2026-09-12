@@ -30,7 +30,8 @@ class WordHuntRouteVisualTheme {
 /// Bütün temalı 10-bölümlük rotalar için tek generic bağlayıcı.
 ///
 /// Rota ile görsel skin paketini ortak motora aktarır. Rota adına göre branch,
-/// ayrı widget veya koordinat üretmez. Production kataloğuna henüz bağlı değildir.
+/// ayrı widget veya koordinat üretmez. Production host, catalog entry içindeki
+/// visualTheme verisini bu ortak bağlayıcıya aktarabilir.
 class WordHuntThemedRouteMapScreen extends StatelessWidget {
   const WordHuntThemedRouteMapScreen({
     super.key,
