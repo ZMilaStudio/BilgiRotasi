@@ -11,9 +11,8 @@ import 'word_hunt_route_map_decoration.dart';
 
 /// Bir Kelime Avı rotasının yalnız görsel skin verisini taşır.
 ///
-/// Bilerek node koordinatı, hitbox, progression veya route-id özel widget
-/// içermez. Yeni rota görselleştirmesi bu veri paketini değiştirerek yapılmalı;
-/// ortak 1-10 geometri motoru değişmemelidir.
+/// Node koordinatı, hitbox ve progression bu modelde tutulmaz; bunların tamamı
+/// ortak 1-10 rota motorunun sorumluluğundadır.
 @immutable
 class WordHuntRouteVisualTheme {
   const WordHuntRouteVisualTheme({
@@ -53,16 +52,8 @@ class WordHuntRouteVisualTheme {
   final double backgroundBlurSigma;
   final Color backgroundOverlayColor;
   final double backgroundScale;
-
-  /// Raster sahnenin yalnız renk sunumunu değiştirir; node/path/hitbox
-  /// geometrisine dokunmaz. Tema verisinden geldiği için route-id branch'i
-  /// gerektirmeden farklı sahneler kendi color-grade değerlerini taşıyabilir.
   final double backgroundContrast;
   final double backgroundSaturation;
-
-  /// Sahnenin kenarlarını doğal olarak geri çekip merkezdeki rota alanına
-  /// derinlik verir. Yalnız sunum katmanıdır; canlı node ve hitbox geometrisi
-  /// üzerinde hiçbir etkisi yoktur.
   final Color backgroundVignetteColor;
   final double backgroundVignetteStrength;
   final bool overlayDecorationsOnArtwork;
@@ -71,6 +62,8 @@ class WordHuntRouteVisualTheme {
       backgroundAsset != null || backgroundBase64AssetParts.isNotEmpty;
 }
 
+/// Tema/artwork verisini tek reusable harita motoruna bağlayan production
+/// uyumlu ortak ekran. Route-id özel painter veya koordinat dalı içermez.
 class WordHuntThemedRouteMapScreen extends StatelessWidget {
   const WordHuntThemedRouteMapScreen({
     super.key,
@@ -168,7 +161,7 @@ class WordHuntThemedRouteMapScreen extends StatelessWidget {
                         alpha: visualTheme.backgroundVignetteStrength,
                       ),
                     ],
-                    stops: const <double>[0.0, 0.48, 0.78, 1.0],
+                    stops: const <double>[0, 0.48, 0.78, 1],
                   ),
                 ),
               ),
@@ -308,7 +301,7 @@ class _Base64AssetArtworkState extends State<_Base64AssetArtwork> {
           bytes,
           fit: widget.fit,
           alignment: widget.alignment,
-          filterQuality: FilterQuality.medium,
+          filterQuality: FilterQuality.high,
           gaplessPlayback: true,
         );
       },
@@ -316,6 +309,7 @@ class _Base64AssetArtworkState extends State<_Base64AssetArtwork> {
   }
 }
 
+/// Production için kullanılabilecek reusable rota skinleri.
 abstract final class WordHuntRouteVisualThemes {
   static const WordHuntRouteVisualTheme ormanYolu = WordHuntRouteVisualTheme(
     id: 'orman-yolu-production',
@@ -324,7 +318,7 @@ abstract final class WordHuntRouteVisualThemes {
       backgroundColor: Color(0xFF07150D),
       surfaceColor: Color(0xFF143420),
       pathColor: Color(0xFFFFF0C2),
-      lockedPathColor: Color(0xFFC6C4BB),
+      lockedPathColor: Color(0xFFA9A18C),
       nodeColor: Color(0xFF8B592E),
       lockedNodeColor: Color(0xFF5D6460),
       accentColor: Color(0xFFFFD34E),
@@ -366,6 +360,8 @@ abstract final class WordHuntRouteVisualThemes {
   );
 }
 
+/// Production kararı değil; ortak renderer'ın farklı skin verileriyle aynı
+/// geometriyi koruduğunu kanıtlayan presetlerdir.
 abstract final class WordHuntRouteVisualThemeProofs {
   static const WordHuntRouteVisualTheme forest = WordHuntRouteVisualTheme(
     id: 'forest-proof',
