@@ -90,7 +90,7 @@ class WordHuntThemedRouteMapScreen extends StatelessWidget {
     final showProceduralDecorations =
         !hasArtwork || visualTheme.overlayDecorationsOnArtwork;
 
-    final Widget map = hasArtwork
+    final Widget map = hasArtwork && !showProceduralDecorations
         ? WordHuntArtworkRouteMapScreen(
             route: route,
             theme: effectiveMapTheme,
