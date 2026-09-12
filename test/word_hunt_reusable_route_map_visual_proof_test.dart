@@ -9,17 +9,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  const progressThroughSeven = WordHuntProgressSnapshot(
-    bestStarsByLevelId: <String, int>{
-      'baslangic-1': 3,
-      'baslangic-2': 3,
-      'baslangic-3': 3,
-      'baslangic-4': 3,
-      'baslangic-5': 3,
-      'baslangic-6': 3,
-      'baslangic-7': 3,
-    },
-  );
+  const initialProgress = WordHuntProgressSnapshot();
 
   testWidgets('reusable map renders identical geometry in three proof themes', (
     tester,
@@ -54,7 +44,7 @@ void main() {
             child: WordHuntReusableRouteMapScreen(
               route: WordHuntStarterContent.baslangicLimani,
               theme: theme,
-              progress: progressThroughSeven,
+              progress: initialProgress,
             ),
           ),
         ),
@@ -67,6 +57,16 @@ void main() {
           tester.getCenter(find.byKey(Key('word_hunt_reusable_level_$level'))),
       ];
 
+      expect(
+        find.byKey(const Key('word_hunt_reusable_node_1_current')),
+        findsOneWidget,
+      );
+      for (var level = 2; level <= 10; level++) {
+        expect(
+          find.byKey(Key('word_hunt_reusable_node_${level}_locked')),
+          findsOneWidget,
+        );
+      }
       expect(find.text('BAŞLANGIÇ'), findsOneWidget);
       expect(find.text('BİTİŞ'), findsOneWidget);
       expect(tester.takeException(), isNull);
@@ -104,7 +104,7 @@ void main() {
         'GEOMETRY=SHARED_NORMALIZED_10_STOP\n'
         'PROGRESSION=1-2-3-4-5-6-7-8-9-10\n'
         'LEVEL_8=NORMAL\n'
-        'STATE=LEVELS_1_TO_7_COMPLETE_LEVEL_8_OPEN_LEVEL_9_LOCKED\n',
+        'STATE=LEVEL_1_OPEN_LEVELS_2_TO_10_LOCKED\n',
       );
     }
   });
