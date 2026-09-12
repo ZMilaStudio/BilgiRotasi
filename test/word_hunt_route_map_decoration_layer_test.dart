@@ -30,7 +30,9 @@ void main() {
     accent: Color(0xFFF3D47A),
   );
 
-  testWidgets('decoration is painted below path and node layers', (tester) async {
+  testWidgets('atmosphere and decoration stay below path and node layers', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       const MaterialApp(
         home: WordHuntReusableRouteMapScreen(
@@ -48,14 +50,22 @@ void main() {
       find.byKey(const Key('word_hunt_reusable_layer_stack')),
     );
 
-    expect(stack.children, hasLength(12));
+    expect(stack.children, hasLength(13));
     expect(
       stack.children[0].key,
-      const Key('word_hunt_reusable_decoration_layer'),
+      const Key('word_hunt_reusable_atmosphere_layer'),
     );
     expect(
       stack.children[1].key,
+      const Key('word_hunt_reusable_decoration_layer'),
+    );
+    expect(
+      stack.children[2].key,
       const Key('word_hunt_reusable_path_layer'),
+    );
+    expect(
+      find.byKey(const Key('word_hunt_reusable_atmosphere')),
+      findsOneWidget,
     );
     expect(
       find.byKey(const Key('word_hunt_reusable_route_decoration')),
