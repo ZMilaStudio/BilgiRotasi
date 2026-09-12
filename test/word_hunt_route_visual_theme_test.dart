@@ -1,3 +1,4 @@
+import 'package:bilgi_rotasi/word_hunt/word_hunt_orman_content.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_reusable_route_map_screen.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_route_visual_theme.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_starter_content.dart';
@@ -65,5 +66,39 @@ void main() {
       }
       expect(tester.takeException(), isNull);
     }
+  });
+
+  testWidgets('real Orman Yolu content renders through the same generic map', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: WordHuntThemedRouteMapScreen(
+          route: WordHuntOrmanContent.ormanYolu,
+          visualTheme: WordHuntRouteVisualThemeProofs.forest,
+        ),
+      ),
+    );
+    await tester.pump();
+
+    expect(find.text('Orman Yolu'), findsOneWidget);
+    expect(
+      find.byKey(const Key('word_hunt_reusable_route_map')),
+      findsOneWidget,
+    );
+    for (var level = 1; level <= 10; level++) {
+      expect(
+        find.byKey(Key('word_hunt_reusable_level_$level')),
+        findsOneWidget,
+      );
+    }
+    expect(tester.takeException(), isNull);
   });
 }
