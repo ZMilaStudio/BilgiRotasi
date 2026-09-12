@@ -26,8 +26,11 @@ class _ReusableRouteMapVisualProofApp extends StatelessWidget {
   static const WordHuntProgressSnapshot _proofProgress =
       WordHuntProgressSnapshot();
 
+  /// Android screenshot artık proof presetini değil, Orman Yolu için ayrılan
+  /// gerçek production skin verisini render eder. Böylece proof ve production
+  /// arasında görsel preset sapması oluşmaz.
   static const WordHuntRouteVisualTheme _visualTheme =
-      WordHuntRouteVisualThemeProofs.forest;
+      WordHuntRouteVisualThemes.ormanYolu;
 
   @override
   Widget build(BuildContext context) {
