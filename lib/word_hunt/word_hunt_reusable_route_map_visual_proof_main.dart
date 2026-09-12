@@ -20,18 +20,11 @@ Future<void> main() async {
 class _ReusableRouteMapVisualProofApp extends StatelessWidget {
   const _ReusableRouteMapVisualProofApp();
 
+  /// Kanonik ilk açılış durumu: yalnız bölüm 1 açıktır.
+  /// Bölüm 2, yalnız 1 tamamlandıktan sonra; her sonraki bölüm de yalnız
+  /// kendinden önceki bölüm tamamlandıktan sonra açılır.
   static const WordHuntProgressSnapshot _proofProgress =
-      WordHuntProgressSnapshot(
-        bestStarsByLevelId: <String, int>{
-          'orman-yolu-01': 3,
-          'orman-yolu-02': 3,
-          'orman-yolu-03': 3,
-          'orman-yolu-04': 3,
-          'orman-yolu-05': 3,
-          'orman-yolu-06': 3,
-          'orman-yolu-07': 3,
-        },
-      );
+      WordHuntProgressSnapshot();
 
   static const WordHuntRouteVisualTheme _visualTheme =
       WordHuntRouteVisualThemeProofs.forest;
