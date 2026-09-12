@@ -33,6 +33,8 @@ void main() {
     expect(theme.id, 'orman-yolu-production');
     expect(theme.overlayDecorationsOnArtwork, isFalse);
     expect(theme.backgroundScale, 1);
+    expect(theme.backgroundBlurSigma, 0);
+    expect(theme.backgroundOverlayColor, Colors.transparent);
   });
 
   testWidgets('raster artwork suppresses procedural decorations by default', (
