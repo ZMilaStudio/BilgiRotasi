@@ -29,10 +29,14 @@ class WordHuntRouteVisualTheme {
     this.backgroundBlurSigma = 0,
     this.backgroundOverlayColor = Colors.transparent,
     this.backgroundScale = 1,
+    this.backgroundContrast = 1,
+    this.backgroundSaturation = 1,
     this.overlayDecorationsOnArtwork = false,
   }) : assert(decorationOpacity >= 0 && decorationOpacity <= 1),
        assert(backgroundBlurSigma >= 0),
-       assert(backgroundScale >= 1);
+       assert(backgroundScale >= 1),
+       assert(backgroundContrast >= 0),
+       assert(backgroundSaturation >= 0);
 
   final String id;
   final WordHuntRouteMapTheme mapTheme;
@@ -46,6 +50,12 @@ class WordHuntRouteVisualTheme {
   final double backgroundBlurSigma;
   final Color backgroundOverlayColor;
   final double backgroundScale;
+
+  /// Raster sahnenin yalnız renk sunumunu değiştirir; node/path/hitbox
+  /// geometrisine dokunmaz. Tema verisinden geldiği için route-id branch'i
+  /// gerektirmeden farklı sahneler kendi color-grade değerlerini taşıyabilir.
+  final double backgroundContrast;
+  final double backgroundSaturation;
   final bool overlayDecorationsOnArtwork;
 
   bool get hasArtwork =>
@@ -94,6 +104,14 @@ class WordHuntThemedRouteMapScreen extends StatelessWidget {
     if (!hasArtwork) return map;
 
     Widget artwork = _buildArtwork();
+    if (visualTheme.backgroundContrast != 1 ||
+        visualTheme.backgroundSaturation != 1) {
+      artwork = ColorFiltered(
+        key: const Key('word_hunt_route_background_color_filter'),
+        colorFilter: _sceneColorFilter(),
+        child: artwork,
+      );
+    }
     if (visualTheme.backgroundScale > 1) {
       artwork = Transform.scale(
         key: const Key('word_hunt_route_background_scale'),
@@ -125,6 +143,39 @@ class WordHuntThemedRouteMapScreen extends StatelessWidget {
         Positioned.fill(child: map),
       ],
     );
+  }
+
+  ColorFilter _sceneColorFilter() {
+    final saturation = visualTheme.backgroundSaturation;
+    final contrast = visualTheme.backgroundContrast;
+    const redLuma = 0.2126;
+    const greenLuma = 0.7152;
+    const blueLuma = 0.0722;
+    final inverseSaturation = 1 - saturation;
+    final contrastOffset = 128 * (1 - contrast);
+
+    return ColorFilter.matrix(<double>[
+      contrast * (inverseSaturation * redLuma + saturation),
+      contrast * inverseSaturation * greenLuma,
+      contrast * inverseSaturation * blueLuma,
+      0,
+      contrastOffset,
+      contrast * inverseSaturation * redLuma,
+      contrast * (inverseSaturation * greenLuma + saturation),
+      contrast * inverseSaturation * blueLuma,
+      0,
+      contrastOffset,
+      contrast * inverseSaturation * redLuma,
+      contrast * inverseSaturation * greenLuma,
+      contrast * (inverseSaturation * blueLuma + saturation),
+      0,
+      contrastOffset,
+      0,
+      0,
+      0,
+      1,
+      0,
+    ]);
   }
 
   Widget _buildArtwork() {
@@ -273,6 +324,8 @@ abstract final class WordHuntRouteVisualThemes {
     backgroundAlignment: Alignment.center,
     backgroundBlurSigma: 0,
     backgroundOverlayColor: Colors.transparent,
+    backgroundContrast: 1.08,
+    backgroundSaturation: 1.10,
     overlayDecorationsOnArtwork: false,
   );
 }
