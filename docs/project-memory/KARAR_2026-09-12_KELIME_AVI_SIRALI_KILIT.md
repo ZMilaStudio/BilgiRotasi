@@ -23,3 +23,11 @@ Bu karar, eski `KARARLAR.md` içindeki “Level 7 tamamlanınca 8 ve 9 birlikte 
 ## Kod sözleşmesi
 
 Kanonik motor `WordHuntRouteProgressEngine.isLevelUnlocked` içinde bunu uygular: Bölüm 1 her zaman açıktır; `N > 1` için yalnız `N-1` tamamlanmışsa N açılır. Bu sözleşme regresyon testleri ve gerçek Android görsel kanıtı ile korunacaktır.
+
+## Raster artwork / görsel kalite sözleşmesi
+
+- Yüksek kaliteli raster sahne kullanıldığında procedural ağaç, mantar ve benzeri proof dekorları varsayılan olarak rasterın üstüne tekrar çizilmez.
+- Raster artwork yalnız sahne tabanıdır; bölüm kilidi, yıldız ve progression canlı state olarak renderer üzerinde kalır.
+- Artwork kadrajı tema verisinden ölçeklenebilir/hizalanabilir; canonical 10 node merkezi, hitbox ve bağlantı geometrisi bundan etkilenmez.
+- Raster artwork aktif olduğunda procedural atmosfer glow/depth katmanı kapatılır; sahnenin kendi ışığı ve derinliği korunur.
+- Orman Yolu gerçek Android proof'u `forest-proof` yerine `WordHuntRouteVisualThemes.ormanYolu` production skin verisini render eder.
