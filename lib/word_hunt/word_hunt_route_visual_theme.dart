@@ -1,6 +1,9 @@
+import 'dart:convert';
+import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'word_hunt_models.dart';
 import 'word_hunt_progress.dart';
@@ -21,6 +24,7 @@ class WordHuntRouteVisualTheme {
     required this.decorationPalette,
     this.decorationOpacity = 0.38,
     this.backgroundAsset,
+    this.backgroundBase64AssetParts = const <String>[],
     this.backgroundFit = BoxFit.cover,
     this.backgroundAlignment = Alignment.center,
     this.backgroundBlurSigma = 0,
@@ -29,7 +33,11 @@ class WordHuntRouteVisualTheme {
     this.overlayDecorationsOnArtwork = false,
   }) : assert(decorationOpacity >= 0 && decorationOpacity <= 1),
        assert(backgroundBlurSigma >= 0),
-       assert(backgroundScale >= 1);
+       assert(backgroundScale >= 1),
+       assert(
+         backgroundAsset == null || backgroundBase64AssetParts.length == 0,
+         'Artwork tek bir kaynaktan gelmelidir.',
+       );
 
   final String id;
   final WordHuntRouteMapTheme mapTheme;
@@ -41,6 +49,12 @@ class WordHuntRouteVisualTheme {
   /// hitbox, yıldız, kilit veya progression state'i asset içine bake edilmez.
   /// Böylece aynı canonical 1-10 motoru raster sahne üzerinde de çalışır.
   final String? backgroundAsset;
+
+  /// Binary asset yükleme imkanı olmayan üretim akışlarında aynı rasterın
+  /// base64 metin parçaları kullanılabilir. Renderer parçaları sırayla
+  /// birleştirip bellekte decode eder; bu alan da yalnız sahne tabanıdır.
+  final List<String> backgroundBase64AssetParts;
+
   final BoxFit backgroundFit;
   final Alignment backgroundAlignment;
   final double backgroundBlurSigma;
@@ -53,6 +67,9 @@ class WordHuntRouteVisualTheme {
   /// Final raster sahne varken procedural ağaç/mantar/dekor tekrar çizilmez.
   /// Bu değer yalnız bilinçli bir hibrit tema istendiğinde true yapılmalıdır.
   final bool overlayDecorationsOnArtwork;
+
+  bool get hasArtwork =>
+      backgroundAsset != null || backgroundBase64AssetParts.isNotEmpty;
 }
 
 /// Bütün temalı 10-bölümlük rotalar için tek generic bağlayıcı.
@@ -76,8 +93,7 @@ class WordHuntThemedRouteMapScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final backgroundAsset = visualTheme.backgroundAsset;
-    final hasArtwork = backgroundAsset != null;
+    final hasArtwork = visualTheme.hasArtwork;
     final effectiveMapTheme = hasArtwork
         ? _transparentSceneTheme(visualTheme.mapTheme)
         : visualTheme.mapTheme;
@@ -102,13 +118,7 @@ class WordHuntThemedRouteMapScreen extends StatelessWidget {
 
     if (!hasArtwork) return map;
 
-    Widget artwork = Image.asset(
-      backgroundAsset,
-      key: const Key('word_hunt_route_background_asset'),
-      fit: visualTheme.backgroundFit,
-      alignment: visualTheme.backgroundAlignment,
-      filterQuality: FilterQuality.high,
-    );
+    Widget artwork = _buildArtwork();
     if (visualTheme.backgroundScale > 1) {
       artwork = Transform.scale(
         key: const Key('word_hunt_route_background_scale'),
@@ -142,6 +152,27 @@ class WordHuntThemedRouteMapScreen extends StatelessWidget {
     );
   }
 
+  Widget _buildArtwork() {
+    final base64Parts = visualTheme.backgroundBase64AssetParts;
+    if (base64Parts.isNotEmpty) {
+      return _Base64AssetArtwork(
+        key: const Key('word_hunt_route_background_asset'),
+        partAssets: base64Parts,
+        fit: visualTheme.backgroundFit,
+        alignment: visualTheme.backgroundAlignment,
+        fallbackColor: visualTheme.mapTheme.backgroundColor,
+      );
+    }
+
+    return Image.asset(
+      visualTheme.backgroundAsset!,
+      key: const Key('word_hunt_route_background_asset'),
+      fit: visualTheme.backgroundFit,
+      alignment: visualTheme.backgroundAlignment,
+      filterQuality: FilterQuality.high,
+    );
+  }
+
   WordHuntRouteMapTheme _transparentSceneTheme(WordHuntRouteMapTheme source) {
     return WordHuntRouteMapTheme(
       id: source.id,
@@ -161,6 +192,70 @@ class WordHuntThemedRouteMapScreen extends StatelessWidget {
   }
 }
 
+class _Base64AssetArtwork extends StatefulWidget {
+  const _Base64AssetArtwork({
+    super.key,
+    required this.partAssets,
+    required this.fit,
+    required this.alignment,
+    required this.fallbackColor,
+  });
+
+  final List<String> partAssets;
+  final BoxFit fit;
+  final Alignment alignment;
+  final Color fallbackColor;
+
+  @override
+  State<_Base64AssetArtwork> createState() => _Base64AssetArtworkState();
+}
+
+class _Base64AssetArtworkState extends State<_Base64AssetArtwork> {
+  late Future<Uint8List> _bytes;
+
+  @override
+  void initState() {
+    super.initState();
+    _bytes = _loadBytes();
+  }
+
+  @override
+  void didUpdateWidget(covariant _Base64AssetArtwork oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.partAssets.join('|') != widget.partAssets.join('|')) {
+      _bytes = _loadBytes();
+    }
+  }
+
+  Future<Uint8List> _loadBytes() async {
+    final encoded = StringBuffer();
+    for (final asset in widget.partAssets) {
+      encoded.write((await rootBundle.loadString(asset)).trim());
+    }
+    return base64Decode(encoded.toString());
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<Uint8List>(
+      future: _bytes,
+      builder: (context, snapshot) {
+        final bytes = snapshot.data;
+        if (bytes == null) {
+          return ColoredBox(color: widget.fallbackColor);
+        }
+        return Image.memory(
+          bytes,
+          fit: widget.fit,
+          alignment: widget.alignment,
+          filterQuality: FilterQuality.high,
+          gaplessPlayback: true,
+        );
+      },
+    );
+  }
+}
+
 /// Oyunda kullanılacak reusable rota skinleri.
 ///
 /// Bu sınıf proof/QA presetlerinden ayrıdır. Production host gerçek rota için
@@ -173,15 +268,15 @@ abstract final class WordHuntRouteVisualThemes {
       id: 'orman-yolu-production',
       backgroundColor: Color(0xFF07150D),
       surfaceColor: Color(0xFF143420),
-      pathColor: Color(0xFFEBD49B),
-      lockedPathColor: Color(0xFF657066),
-      nodeColor: Color(0xFF81542F),
-      lockedNodeColor: Color(0xFF4A5050),
-      accentColor: Color(0xFFFFD96B),
-      textColor: Color(0xFFFFF7E2),
+      pathColor: Color(0xFFF2D994),
+      lockedPathColor: Color(0xFF72776C),
+      nodeColor: Color(0xFF8A5A30),
+      lockedNodeColor: Color(0xFF4B5050),
+      accentColor: Color(0xFFFFD75A),
+      textColor: Color(0xFFFFF8E7),
       sceneGlowColor: Color(0xFFFFE7A8),
-      pathUnderlayColor: Color(0xA7352416),
-      nodeShadowColor: Color(0xD407100A),
+      pathUnderlayColor: Color(0xB03B2818),
+      nodeShadowColor: Color(0xDB07100A),
       sceneDepth: 0.58,
     ),
     decorationSpec: WordHuntRouteDecorationSpec(
@@ -195,6 +290,20 @@ abstract final class WordHuntRouteVisualThemes {
       accent: Color(0xFFFFE08A),
     ),
     decorationOpacity: 0.94,
+    backgroundBase64AssetParts: <String>[
+      'assets/word_hunt/orman_yolu_scene_00.b64',
+      'assets/word_hunt/orman_yolu_scene_01.b64',
+      'assets/word_hunt/orman_yolu_scene_02.b64',
+      'assets/word_hunt/orman_yolu_scene_03.b64',
+      'assets/word_hunt/orman_yolu_scene_04.b64',
+      'assets/word_hunt/orman_yolu_scene_05.b64',
+      'assets/word_hunt/orman_yolu_scene_06.b64',
+    ],
+    backgroundFit: BoxFit.cover,
+    backgroundAlignment: Alignment.center,
+    backgroundBlurSigma: 0.55,
+    backgroundOverlayColor: Color(0x18020A05),
+    overlayDecorationsOnArtwork: false,
   );
 }
 
