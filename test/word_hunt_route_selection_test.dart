@@ -168,7 +168,7 @@ void main() {
       entrySource,
       contains('case WordHuntRoutePresentationKind.themedReusable:'),
     );
-    expect(entrySource, contains('WordHuntThemedRouteMapScreen('));
+    expect(entrySource, contains('WordHuntThemedProductionRouteScreen('));
     expect(entrySource, contains("Key('word_hunt_production_entry_themed_route')"));
     expect(entrySource, contains('_activeCatalogEntry?.visualTheme'));
     expect(
