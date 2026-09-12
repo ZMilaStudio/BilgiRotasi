@@ -9,6 +9,7 @@ import 'word_hunt_progress_codec.dart';
 import 'word_hunt_reference_route_screen.dart';
 import 'word_hunt_route_catalog.dart';
 import 'word_hunt_route_selector.dart';
+import 'word_hunt_route_visual_theme.dart';
 import 'word_hunt_screens.dart';
 import 'word_hunt_starter_content.dart';
 
@@ -21,7 +22,8 @@ import 'word_hunt_starter_content.dart';
 /// - Başlangıç Limanı her zaman açıktır ve mevcut reference renderer'ı kullanır.
 /// - Gökyüzü Adaları 18 Başlangıç Limanı yıldızında açılır ve mevcut MASTER ART
 ///   renderer/gameplay arka planlarını kullanır.
-/// - Orman Yolu owner unlock + production skin kararı verilmeden katalogda yoktur.
+/// - Generic themed renderer production tarafından desteklenir; fakat Orman Yolu
+///   owner unlock + production skin kararı verilmeden katalogda yoktur.
 ///
 /// Doğrudan belirli bir rota gösterilecek QA/test senaryolarında
 /// [routeSelectionEnabled] false verilebilir. Catalog'da bilinen bir rota ise
@@ -158,6 +160,7 @@ class _WordHuntProductionEntryScreenState
   String? _gameplayBackgroundForLevel(int levelIndex) {
     switch (_activePresentationKind) {
       case WordHuntRoutePresentationKind.referenceRoute:
+      case WordHuntRoutePresentationKind.themedReusable:
         return null;
       case WordHuntRoutePresentationKind.gokyuzuMasterArt:
         return WordHuntGokyuzuGameplayBackgrounds.forLevel(levelIndex);
@@ -297,6 +300,27 @@ class _WordHuntProductionEntryScreenState
           onInfo: _showInfo,
           onCompass: _showCompassHint,
           onBook: _showBook,
+          onLevelTap: _openLevel,
+        );
+      case WordHuntRoutePresentationKind.themedReusable:
+        final visualTheme = _activeCatalogEntry?.visualTheme;
+        if (visualTheme == null) {
+          return WordHuntReferenceRouteScreen(
+            key: const Key('word_hunt_production_entry_theme_fallback'),
+            route: route,
+            progress: _progress,
+            onBack: _leaveRoute,
+            onInfo: _showInfo,
+            onCompass: _showCompassHint,
+            onBook: _showBook,
+            onLevelTap: _openLevel,
+          );
+        }
+        return WordHuntThemedRouteMapScreen(
+          key: const Key('word_hunt_production_entry_themed_route'),
+          route: route,
+          visualTheme: visualTheme,
+          progress: _progress,
           onLevelTap: _openLevel,
         );
       case WordHuntRoutePresentationKind.referenceRoute:

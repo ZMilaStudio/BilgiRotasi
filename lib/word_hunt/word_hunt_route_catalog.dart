@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'word_hunt_gokyuzu_content.dart';
 import 'word_hunt_models.dart';
 import 'word_hunt_progress.dart';
+import 'word_hunt_route_visual_theme.dart';
 import 'word_hunt_starter_content.dart';
 
 /// Production rota seçicisindeki bir rotanın nasıl açıldığını tanımlar.
@@ -15,9 +16,12 @@ enum WordHuntRouteUnlockKind { always, routeStars }
 ///
 /// Bu enum rota kimliği değildir. Birden fazla rota aynı presentation kind'ı
 /// paylaşabilir; böylece production entry içinde rota-id bazlı `if` zincirleri
-/// oluşmaz. Reusable production skin kabul edildiğinde yeni ortak kind burada
-/// bir kez eklenir, her rota için ayrı renderer branch'i yazılmaz.
-enum WordHuntRoutePresentationKind { referenceRoute, gokyuzuMasterArt }
+/// oluşmaz. Reusable themed renderer yeni rotaların ortak production yoludur.
+enum WordHuntRoutePresentationKind {
+  referenceRoute,
+  gokyuzuMasterArt,
+  themedReusable,
+}
 
 @immutable
 class WordHuntRouteUnlockRule {
@@ -63,7 +67,12 @@ class WordHuntRouteCatalogEntry {
     required this.colors,
     required this.unlockRule,
     required this.presentationKind,
-  });
+    this.visualTheme,
+  }) : assert(
+         presentationKind != WordHuntRoutePresentationKind.themedReusable ||
+             visualTheme != null,
+         'themedReusable presentation bir visualTheme gerektirir.',
+       );
 
   final String cardKey;
   final WordHuntRouteDefinition route;
@@ -73,6 +82,10 @@ class WordHuntRouteCatalogEntry {
   final List<Color> colors;
   final WordHuntRouteUnlockRule unlockRule;
   final WordHuntRoutePresentationKind presentationKind;
+
+  /// Yalnız [WordHuntRoutePresentationKind.themedReusable] rotalarında gerekir.
+  /// Node koordinatı veya progression içermez; yalnız ortak renderer skinidir.
+  final WordHuntRouteVisualTheme? visualTheme;
 
   bool isUnlocked(WordHuntProgressSnapshot progress) =>
       unlockRule.isUnlocked(progress);

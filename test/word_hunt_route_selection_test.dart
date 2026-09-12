@@ -1,9 +1,12 @@
 import 'dart:io';
 
 import 'package:bilgi_rotasi/word_hunt/word_hunt_gokyuzu_content.dart';
+import 'package:bilgi_rotasi/word_hunt/word_hunt_orman_content.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_progress.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_route_catalog.dart';
+import 'package:bilgi_rotasi/word_hunt/word_hunt_route_visual_theme.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_starter_content.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -34,6 +37,8 @@ void main() {
       WordHuntRouteCatalog.gokyuzu.presentationKind,
       WordHuntRoutePresentationKind.gokyuzuMasterArt,
     );
+    expect(WordHuntRouteCatalog.starter.visualTheme, isNull);
+    expect(WordHuntRouteCatalog.gokyuzu.visualTheme, isNull);
 
     expect(
       WordHuntRouteCatalog.entryForRouteId(
@@ -48,6 +53,34 @@ void main() {
       same(WordHuntRouteCatalog.gokyuzu),
     );
     expect(WordHuntRouteCatalog.entryForRouteId('orman-yolu'), isNull);
+  });
+
+  test('generic themed presentation catalog verisiyle tanımlanabilir', () {
+    const syntheticThemedEntry = WordHuntRouteCatalogEntry(
+      cardKey: 'synthetic-themed',
+      route: WordHuntOrmanContent.ormanYolu,
+      infoCards: WordHuntOrmanContent.infoCards,
+      ordinalLabel: 'Synthetic',
+      icon: Icons.park_rounded,
+      colors: <Color>[Color(0xFF2F855A), Color(0xFF173A28)],
+      unlockRule: WordHuntRouteUnlockRule.always(),
+      presentationKind: WordHuntRoutePresentationKind.themedReusable,
+      visualTheme: WordHuntRouteVisualThemeProofs.forest,
+    );
+
+    expect(
+      syntheticThemedEntry.presentationKind,
+      WordHuntRoutePresentationKind.themedReusable,
+    );
+    expect(syntheticThemedEntry.visualTheme?.id, 'forest-proof');
+    expect(syntheticThemedEntry.route.id, 'orman-yolu');
+
+    // Bu test yalnız production kabiliyetini kanıtlar; Orman owner unlock/skin
+    // kararı verilmeden canlı catalog listesine eklenmiş değildir.
+    expect(
+      WordHuntRouteCatalog.entries.map((entry) => entry.route.id),
+      isNot(contains('orman-yolu')),
+    );
   });
 
   test('Başlangıç Limanı her zaman açıktır', () {
@@ -127,6 +160,20 @@ void main() {
       isNot(
         contains('route.id == WordHuntGokyuzuMasterArtScreen.routeId'),
       ),
+    );
+  });
+
+  test('production host generic themed renderer yolunu destekler', () {
+    expect(
+      entrySource,
+      contains('case WordHuntRoutePresentationKind.themedReusable:'),
+    );
+    expect(entrySource, contains('WordHuntThemedRouteMapScreen('));
+    expect(entrySource, contains("Key('word_hunt_production_entry_themed_route')"));
+    expect(entrySource, contains('_activeCatalogEntry?.visualTheme'));
+    expect(
+      entrySource,
+      isNot(contains("route.id == 'orman-yolu'")),
     );
   });
 
