@@ -119,18 +119,18 @@ class WordHuntRouteMapTheme {
 
   static const WordHuntRouteMapTheme forestProof = WordHuntRouteMapTheme(
     id: 'forest-proof',
-    backgroundColor: Color(0xFF10261B),
-    surfaceColor: Color(0xFF173A28),
-    pathColor: Color(0xFF86EFAC),
-    lockedPathColor: Color(0xFF3F5B49),
-    nodeColor: Color(0xFF2F855A),
-    lockedNodeColor: Color(0xFF455A4C),
-    accentColor: Color(0xFFF6C453),
-    textColor: Color(0xFFF4FFF7),
-    sceneGlowColor: Color(0xFFF6C453),
-    pathUnderlayColor: Color(0xB308160E),
-    nodeShadowColor: Color(0xD105120B),
-    sceneDepth: 0.34,
+    backgroundColor: Color(0xFF07150D),
+    surfaceColor: Color(0xFF143420),
+    pathColor: Color(0xFFEBD49B),
+    lockedPathColor: Color(0xFF657066),
+    nodeColor: Color(0xFF81542F),
+    lockedNodeColor: Color(0xFF4A5050),
+    accentColor: Color(0xFFFFD96B),
+    textColor: Color(0xFFFFF7E2),
+    sceneGlowColor: Color(0xFFFFE7A8),
+    pathUnderlayColor: Color(0xA7352416),
+    nodeShadowColor: Color(0xD407100A),
+    sceneDepth: 0.58,
   );
 }
 
@@ -186,38 +186,17 @@ class WordHuntReusableRouteMapScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
             Padding(
-              padding: const EdgeInsets.fromLTRB(18, 14, 18, 10),
-              child: Row(
-                children: <Widget>[
-                  Expanded(
-                    child: Text(
-                      route.title,
-                      key: const Key('word_hunt_reusable_route_title'),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        color: theme.textColor,
-                        fontSize: 22,
-                        fontWeight: FontWeight.w900,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Text(
-                    '$stars / ${route.maximumStars} ★',
-                    key: const Key('word_hunt_reusable_route_stars'),
-                    style: TextStyle(
-                      color: theme.accentColor,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                ],
+              padding: const EdgeInsets.fromLTRB(12, 10, 12, 9),
+              child: _ReusableRouteHeader(
+                title: route.title,
+                stars: stars,
+                maximumStars: route.maximumStars,
+                theme: theme,
               ),
             ),
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+                padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
                 child: LayoutBuilder(
                   builder: (context, constraints) {
                     final size = constraints.biggest;
@@ -236,20 +215,21 @@ class WordHuntReusableRouteMapScreen extends StatelessWidget {
                       key: Key('word_hunt_reusable_surface_${theme.id}'),
                       decoration: BoxDecoration(
                         color: theme.surfaceColor,
-                        borderRadius: BorderRadius.circular(24),
+                        borderRadius: BorderRadius.circular(26),
                         border: Border.all(
-                          color: theme.accentColor.withValues(alpha: 0.45),
+                          color: theme.accentColor.withValues(alpha: 0.30),
+                          width: 1.2,
                         ),
                         boxShadow: <BoxShadow>[
                           BoxShadow(
-                            color: theme.nodeShadowColor.withValues(alpha: 0.32),
-                            blurRadius: 20,
-                            offset: const Offset(0, 8),
+                            color: theme.nodeShadowColor.withValues(alpha: 0.48),
+                            blurRadius: 22,
+                            offset: const Offset(0, 9),
                           ),
                         ],
                       ),
                       child: ClipRRect(
-                        borderRadius: BorderRadius.circular(23),
+                        borderRadius: BorderRadius.circular(25),
                         child: Stack(
                           key: const Key('word_hunt_reusable_layer_stack'),
                           fit: StackFit.expand,
@@ -370,6 +350,161 @@ class WordHuntReusableRouteMapScreen extends StatelessWidget {
   }
 }
 
+class _ReusableRouteHeader extends StatelessWidget {
+  const _ReusableRouteHeader({
+    required this.title,
+    required this.stars,
+    required this.maximumStars,
+    required this.theme,
+  });
+
+  final String title;
+  final int stars;
+  final int maximumStars;
+  final WordHuntRouteMapTheme theme;
+
+  @override
+  Widget build(BuildContext context) {
+    final panelTop = Color.alphaBlend(
+      theme.textColor.withValues(alpha: 0.09),
+      theme.nodeColor,
+    );
+    final panelBottom = Color.alphaBlend(
+      Colors.black.withValues(alpha: 0.24),
+      theme.nodeColor,
+    );
+
+    return Row(
+      children: <Widget>[
+        Material(
+          color: Colors.transparent,
+          child: InkWell(
+            customBorder: const CircleBorder(),
+            onTap: Navigator.of(context).canPop()
+                ? () => Navigator.of(context).pop()
+                : null,
+            child: Container(
+              width: 50,
+              height: 50,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: <Color>[panelTop, panelBottom],
+                ),
+                border: Border.all(
+                  color: theme.accentColor.withValues(alpha: 0.72),
+                  width: 2,
+                ),
+                boxShadow: <BoxShadow>[
+                  BoxShadow(
+                    color: theme.nodeShadowColor.withValues(alpha: 0.62),
+                    blurRadius: 10,
+                    offset: const Offset(0, 5),
+                  ),
+                ],
+              ),
+              child: Icon(
+                Icons.arrow_back_ios_new_rounded,
+                color: theme.textColor,
+                size: 24,
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Container(
+            height: 56,
+            padding: const EdgeInsets.symmetric(horizontal: 14),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: <Color>[panelTop, panelBottom],
+              ),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: theme.accentColor.withValues(alpha: 0.62),
+                width: 1.6,
+              ),
+              boxShadow: <BoxShadow>[
+                BoxShadow(
+                  color: theme.nodeShadowColor.withValues(alpha: 0.54),
+                  blurRadius: 12,
+                  offset: const Offset(0, 6),
+                ),
+              ],
+            ),
+            alignment: Alignment.center,
+            child: Text(
+              title,
+              key: const Key('word_hunt_reusable_route_title'),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: theme.textColor,
+                fontSize: 24,
+                fontWeight: FontWeight.w900,
+                letterSpacing: 0.2,
+                shadows: <Shadow>[
+                  Shadow(
+                    color: theme.nodeShadowColor.withValues(alpha: 0.72),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(width: 8),
+        Container(
+          height: 48,
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: <Color>[panelTop, panelBottom],
+            ),
+            borderRadius: BorderRadius.circular(15),
+            border: Border.all(
+              color: theme.accentColor.withValues(alpha: 0.70),
+              width: 1.5,
+            ),
+            boxShadow: <BoxShadow>[
+              BoxShadow(
+                color: theme.nodeShadowColor.withValues(alpha: 0.48),
+                blurRadius: 9,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Icon(Icons.star_rounded, color: theme.accentColor, size: 21),
+              const SizedBox(width: 4),
+              Text(
+                '$stars / $maximumStars',
+                key: const Key('word_hunt_reusable_route_stars'),
+                style: TextStyle(
+                  color: theme.textColor,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
 class _ReusableRouteNode extends StatelessWidget {
   const _ReusableRouteNode({
     super.key,
@@ -412,12 +547,14 @@ class _ReusableRouteNode extends StatelessWidget {
         : unlocked
         ? theme.accentColor
         : theme.lockedPathColor;
-    final displayFill = current
-        ? Color.alphaBlend(
-            theme.accentColor.withValues(alpha: 0.12),
-            fillColor,
-          )
-        : fillColor;
+    final lightFill = Color.alphaBlend(
+      theme.textColor.withValues(alpha: unlocked ? 0.09 : 0.03),
+      fillColor,
+    );
+    final darkFill = Color.alphaBlend(
+      Colors.black.withValues(alpha: unlocked ? 0.22 : 0.30),
+      fillColor,
+    );
 
     return Semantics(
       button: unlocked,
@@ -439,22 +576,26 @@ class _ReusableRouteNode extends StatelessWidget {
               height: WordHuntReusableRouteMapScreen._nodeDiameter,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: displayFill,
+                gradient: RadialGradient(
+                  center: const Alignment(-0.30, -0.38),
+                  colors: <Color>[lightFill, fillColor, darkFill],
+                  stops: const <double>[0.0, 0.58, 1.0],
+                ),
                 border: Border.all(
                   color: borderColor,
-                  width: current ? 4 : 3,
+                  width: current ? 4.2 : 3.2,
                 ),
                 boxShadow: <BoxShadow>[
                   BoxShadow(
-                    color: theme.nodeShadowColor.withValues(alpha: 0.68),
-                    blurRadius: 11,
-                    offset: const Offset(0, 5),
+                    color: theme.nodeShadowColor.withValues(alpha: 0.78),
+                    blurRadius: 12,
+                    offset: const Offset(0, 6),
                   ),
                   if (current)
                     BoxShadow(
-                      color: theme.accentColor.withValues(alpha: 0.52),
-                      blurRadius: 20,
-                      spreadRadius: 2,
+                      color: theme.accentColor.withValues(alpha: 0.74),
+                      blurRadius: 24,
+                      spreadRadius: 3,
                     ),
                 ],
               ),
@@ -463,39 +604,104 @@ class _ReusableRouteNode extends StatelessWidget {
                 fit: StackFit.expand,
                 children: <Widget>[
                   Center(
-                    child: Text(
-                      '${level.index}',
-                      style: TextStyle(
-                        color: theme.textColor,
-                        fontSize: 19,
-                        fontWeight: FontWeight.w900,
+                    child: Container(
+                      width: 41,
+                      height: 41,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: theme.textColor.withValues(
+                            alpha: unlocked ? 0.17 : 0.08,
+                          ),
+                          width: 1.2,
+                        ),
+                      ),
+                      alignment: Alignment.center,
+                      child: Text(
+                        '${level.index}',
+                        style: TextStyle(
+                          color: theme.textColor,
+                          fontSize: 20,
+                          fontWeight: FontWeight.w900,
+                          shadows: <Shadow>[
+                            Shadow(
+                              color: theme.nodeShadowColor.withValues(
+                                alpha: 0.82,
+                              ),
+                              blurRadius: 3,
+                              offset: const Offset(0, 1.5),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                  if (completed)
+                  if (!unlocked)
                     Positioned(
-                      right: 4,
-                      bottom: 3,
-                      child: Icon(
-                        Icons.check_rounded,
-                        size: 13,
-                        color: theme.textColor.withValues(alpha: 0.88),
+                      right: 3,
+                      bottom: 2,
+                      child: Container(
+                        width: 18,
+                        height: 18,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: theme.nodeShadowColor.withValues(alpha: 0.78),
+                          border: Border.all(
+                            color: theme.textColor.withValues(alpha: 0.22),
+                          ),
+                        ),
+                        child: Icon(
+                          Icons.lock_rounded,
+                          size: 11,
+                          color: theme.textColor.withValues(alpha: 0.88),
+                        ),
                       ),
                     ),
                 ],
               ),
             ),
+            if (completed) ...<Widget>[
+              const SizedBox(height: 1),
+              SizedBox(
+                height: 12,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: List<Widget>.generate(
+                    3,
+                    (_) => Icon(
+                      Icons.star_rounded,
+                      size: 12,
+                      color: theme.accentColor,
+                      shadows: <Shadow>[
+                        Shadow(
+                          color: theme.nodeShadowColor.withValues(alpha: 0.72),
+                          blurRadius: 3,
+                          offset: const Offset(0, 1),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
             if (endpointLabel != null) ...<Widget>[
-              const SizedBox(height: 3),
+              SizedBox(height: completed ? 0 : 3),
               FittedBox(
                 fit: BoxFit.scaleDown,
                 child: Text(
                   endpointLabel,
                   style: TextStyle(
-                    color: theme.textColor.withValues(alpha: 0.90),
-                    fontSize: 10,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: 0.5,
+                    color: theme.textColor.withValues(alpha: 0.94),
+                    fontSize: 9,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 0.45,
+                    shadows: <Shadow>[
+                      Shadow(
+                        color: theme.nodeShadowColor.withValues(alpha: 0.88),
+                        blurRadius: 3,
+                        offset: const Offset(0, 1),
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -519,17 +725,19 @@ class _ReusableRouteAtmospherePainter extends CustomPainter {
     final rect = Offset.zero & size;
     final longestSide = math.max(size.width, size.height);
     final glowRect = Rect.fromCircle(
-      center: Offset(size.width * 0.52, size.height * 0.16),
-      radius: longestSide * 0.58,
+      center: Offset(size.width * 0.50, size.height * 0.10),
+      radius: longestSide * 0.62,
     );
     final glowPaint = Paint()
       ..shader = RadialGradient(
         colors: <Color>[
           theme.resolvedSceneGlowColor.withValues(
-            alpha: theme.sceneDepth * 0.34,
+            alpha: theme.sceneDepth * 0.42,
           ),
+          theme.surfaceColor.withValues(alpha: theme.sceneDepth * 0.12),
           Colors.transparent,
         ],
+        stops: const <double>[0.0, 0.42, 1.0],
       ).createShader(glowRect);
     canvas.drawRect(rect, glowPaint);
 
@@ -539,20 +747,21 @@ class _ReusableRouteAtmospherePainter extends CustomPainter {
         end: Alignment.bottomCenter,
         colors: <Color>[
           Colors.transparent,
-          theme.backgroundColor.withValues(alpha: theme.sceneDepth * 0.54),
+          theme.backgroundColor.withValues(alpha: theme.sceneDepth * 0.18),
+          theme.backgroundColor.withValues(alpha: theme.sceneDepth * 0.62),
         ],
-        stops: const <double>[0.42, 1],
+        stops: const <double>[0.20, 0.62, 1.0],
       ).createShader(rect);
     canvas.drawRect(rect, depthPaint);
 
     final vignettePaint = Paint()
       ..shader = RadialGradient(
-        radius: 0.92,
+        radius: 0.88,
         colors: <Color>[
           Colors.transparent,
-          theme.backgroundColor.withValues(alpha: theme.sceneDepth * 0.48),
+          theme.backgroundColor.withValues(alpha: theme.sceneDepth * 0.62),
         ],
-        stops: const <double>[0.60, 1],
+        stops: const <double>[0.54, 1],
       ).createShader(rect);
     canvas.drawRect(rect, vignettePaint);
   }
@@ -576,29 +785,28 @@ class _ReusableRoutePathPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final underlayPaint = Paint()
-      ..color = theme.pathUnderlayColor
+    final broadShadowPaint = Paint()
+      ..color = theme.nodeShadowColor.withValues(alpha: 0.42)
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 13
+      ..strokeWidth = 18
       ..strokeCap = StrokeCap.round
       ..strokeJoin = StrokeJoin.round;
-    final lockedPaint = Paint()
-      ..color = theme.lockedPathColor
+    final earthPaint = Paint()
+      ..color = theme.pathUnderlayColor.withValues(alpha: 0.78)
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 7
+      ..strokeWidth = 12
       ..strokeCap = StrokeCap.round
       ..strokeJoin = StrokeJoin.round;
-    final unlockedPaint = Paint()
+    final unlockedStonePaint = Paint()
       ..color = theme.pathColor
+      ..style = PaintingStyle.fill;
+    final lockedStonePaint = Paint()
+      ..color = theme.lockedPathColor
+      ..style = PaintingStyle.fill;
+    final stoneHighlightPaint = Paint()
+      ..color = theme.textColor.withValues(alpha: 0.30)
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 7
-      ..strokeCap = StrokeCap.round
-      ..strokeJoin = StrokeJoin.round;
-    final unlockedHighlightPaint = Paint()
-      ..color = theme.textColor.withValues(alpha: 0.24)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 2
-      ..strokeCap = StrokeCap.round;
+      ..strokeWidth = 1.2;
 
     for (var index = 0;
         index < WordHuntRouteMapGeometry.connections.length;
@@ -612,10 +820,51 @@ class _ReusableRoutePathPainter extends CustomPainter {
         index,
       );
       final isUnlocked = unlocked[toIndex];
-      canvas.drawPath(path, underlayPaint);
-      canvas.drawPath(path, isUnlocked ? unlockedPaint : lockedPaint);
-      if (isUnlocked) {
-        canvas.drawPath(path, unlockedHighlightPaint);
+
+      canvas.drawPath(path, broadShadowPaint);
+      canvas.drawPath(path, earthPaint);
+      _paintSteppingStones(
+        canvas,
+        path,
+        isUnlocked ? unlockedStonePaint : lockedStonePaint,
+        stoneHighlightPaint,
+      );
+    }
+  }
+
+  void _paintSteppingStones(
+    Canvas canvas,
+    Path path,
+    Paint fillPaint,
+    Paint highlightPaint,
+  ) {
+    for (final metric in path.computeMetrics()) {
+      var distance = 8.0;
+      while (distance < metric.length - 6) {
+        final tangent = metric.getTangentForOffset(distance);
+        if (tangent != null) {
+          canvas.save();
+          canvas.translate(tangent.position.dx, tangent.position.dy);
+          canvas.rotate(tangent.angle);
+          final stoneRect = Rect.fromCenter(
+            center: Offset.zero,
+            width: 13,
+            height: 7.5,
+          );
+          canvas.drawRRect(
+            RRect.fromRectAndRadius(stoneRect, const Radius.circular(4)),
+            fillPaint,
+          );
+          canvas.drawArc(
+            stoneRect.deflate(1),
+            math.pi * 1.05,
+            math.pi * 0.70,
+            false,
+            highlightPaint,
+          );
+          canvas.restore();
+        }
+        distance += 19;
       }
     }
   }
