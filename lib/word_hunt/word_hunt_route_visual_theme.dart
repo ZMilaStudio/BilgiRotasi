@@ -25,8 +25,11 @@ class WordHuntRouteVisualTheme {
     this.backgroundAlignment = Alignment.center,
     this.backgroundBlurSigma = 0,
     this.backgroundOverlayColor = Colors.transparent,
+    this.backgroundScale = 1,
+    this.overlayDecorationsOnArtwork = false,
   }) : assert(decorationOpacity >= 0 && decorationOpacity <= 1),
-       assert(backgroundBlurSigma >= 0);
+       assert(backgroundBlurSigma >= 0),
+       assert(backgroundScale >= 1);
 
   final String id;
   final WordHuntRouteMapTheme mapTheme;
@@ -42,6 +45,14 @@ class WordHuntRouteVisualTheme {
   final Alignment backgroundAlignment;
   final double backgroundBlurSigma;
   final Color backgroundOverlayColor;
+
+  /// Artwork kadrajını tema verisinden yakınlaştırmaya yarar. Geometriyi veya
+  /// hitbox'ları değiştirmez; yalnız raster sahnenin kadrajıdır.
+  final double backgroundScale;
+
+  /// Final raster sahne varken procedural ağaç/mantar/dekor tekrar çizilmez.
+  /// Bu değer yalnız bilinçli bir hibrit tema istendiğinde true yapılmalıdır.
+  final bool overlayDecorationsOnArtwork;
 }
 
 /// Bütün temalı 10-bölümlük rotalar için tek generic bağlayıcı.
@@ -66,20 +77,30 @@ class WordHuntThemedRouteMapScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final backgroundAsset = visualTheme.backgroundAsset;
-    final effectiveMapTheme = backgroundAsset == null
-        ? visualTheme.mapTheme
-        : _transparentSceneTheme(visualTheme.mapTheme);
+    final hasArtwork = backgroundAsset != null;
+    final effectiveMapTheme = hasArtwork
+        ? _transparentSceneTheme(visualTheme.mapTheme)
+        : visualTheme.mapTheme;
+    final showProceduralDecorations =
+        !hasArtwork || visualTheme.overlayDecorationsOnArtwork;
+
     final map = WordHuntReusableRouteMapScreen(
       route: route,
       theme: effectiveMapTheme,
       progress: progress,
       onLevelTap: onLevelTap,
-      decorationSpec: visualTheme.decorationSpec,
-      decorationPalette: visualTheme.decorationPalette,
-      decorationOpacity: visualTheme.decorationOpacity,
+      decorationSpec: showProceduralDecorations
+          ? visualTheme.decorationSpec
+          : null,
+      decorationPalette: showProceduralDecorations
+          ? visualTheme.decorationPalette
+          : null,
+      decorationOpacity: showProceduralDecorations
+          ? visualTheme.decorationOpacity
+          : 0,
     );
 
-    if (backgroundAsset == null) return map;
+    if (!hasArtwork) return map;
 
     Widget artwork = Image.asset(
       backgroundAsset,
@@ -88,6 +109,14 @@ class WordHuntThemedRouteMapScreen extends StatelessWidget {
       alignment: visualTheme.backgroundAlignment,
       filterQuality: FilterQuality.high,
     );
+    if (visualTheme.backgroundScale > 1) {
+      artwork = Transform.scale(
+        key: const Key('word_hunt_route_background_scale'),
+        scale: visualTheme.backgroundScale,
+        alignment: visualTheme.backgroundAlignment,
+        child: artwork,
+      );
+    }
     if (visualTheme.backgroundBlurSigma > 0) {
       artwork = ImageFiltered(
         imageFilter: ui.ImageFilter.blur(
@@ -124,10 +153,10 @@ class WordHuntThemedRouteMapScreen extends StatelessWidget {
       lockedNodeColor: source.lockedNodeColor,
       accentColor: source.accentColor,
       textColor: source.textColor,
-      sceneGlowColor: source.sceneGlowColor,
+      sceneGlowColor: Colors.transparent,
       pathUnderlayColor: source.pathUnderlayColor,
       nodeShadowColor: source.nodeShadowColor,
-      sceneDepth: source.sceneDepth,
+      sceneDepth: 0,
     );
   }
 }
