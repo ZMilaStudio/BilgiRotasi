@@ -132,6 +132,43 @@ class WordHuntThemedRouteMapScreen extends StatelessWidget {
   }
 }
 
+/// Oyunda kullanılacak reusable rota skinleri.
+///
+/// Bu sınıf proof/QA presetlerinden ayrıdır. Production host gerçek rota için
+/// buradaki veriyi kullanır; node koordinatı, hitbox ve progression yine ortak
+/// reusable motor tarafından yönetilir.
+abstract final class WordHuntRouteVisualThemes {
+  static const WordHuntRouteVisualTheme ormanYolu = WordHuntRouteVisualTheme(
+    id: 'orman-yolu-production',
+    mapTheme: WordHuntRouteMapTheme(
+      id: 'orman-yolu-production',
+      backgroundColor: Color(0xFF07150D),
+      surfaceColor: Color(0xFF143420),
+      pathColor: Color(0xFFEBD49B),
+      lockedPathColor: Color(0xFF657066),
+      nodeColor: Color(0xFF81542F),
+      lockedNodeColor: Color(0xFF4A5050),
+      accentColor: Color(0xFFFFD96B),
+      textColor: Color(0xFFFFF7E2),
+      sceneGlowColor: Color(0xFFFFE7A8),
+      pathUnderlayColor: Color(0xA7352416),
+      nodeShadowColor: Color(0xD407100A),
+      sceneDepth: 0.58,
+    ),
+    decorationSpec: WordHuntRouteDecorationSpec(
+      kind: WordHuntRouteDecorationKind.forest,
+      seed: 20260912,
+      count: 28,
+    ),
+    decorationPalette: WordHuntRouteDecorationPalette(
+      primary: Color(0xFF4F8A45),
+      secondary: Color(0xFF6A4328),
+      accent: Color(0xFFFFE08A),
+    ),
+    decorationOpacity: 0.94,
+  );
+}
+
 /// Production görsel kararı değildir; reusable motorun farklı skin verileriyle
 /// çalışabildiğini kanıtlayan veri-only preset'lerdir.
 abstract final class WordHuntRouteVisualThemeProofs {
