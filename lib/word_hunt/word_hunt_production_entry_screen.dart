@@ -304,7 +304,8 @@ class _WordHuntProductionEntryScreenState
           onLevelTap: _openLevel,
         );
       case WordHuntRoutePresentationKind.themedReusable:
-        final visualTheme = _activeCatalogEntry?.visualTheme;
+        final WordHuntRouteVisualTheme? visualTheme =
+            _activeCatalogEntry?.visualTheme;
         if (visualTheme == null) {
           return WordHuntReferenceRouteScreen(
             key: const Key('word_hunt_production_entry_theme_fallback'),
