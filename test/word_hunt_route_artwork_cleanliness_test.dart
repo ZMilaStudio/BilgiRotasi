@@ -28,6 +28,13 @@ void main() {
     accent: Color(0xFFFFE08A),
   );
 
+  test('Orman production skin keeps raster layering clean by default', () {
+    const theme = WordHuntRouteVisualThemes.ormanYolu;
+    expect(theme.id, 'orman-yolu-production');
+    expect(theme.overlayDecorationsOnArtwork, isFalse);
+    expect(theme.backgroundScale, 1);
+  });
+
   testWidgets('raster artwork suppresses procedural decorations by default', (
     tester,
   ) async {
