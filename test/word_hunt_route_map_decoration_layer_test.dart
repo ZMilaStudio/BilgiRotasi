@@ -64,7 +64,7 @@ void main() {
       const Key('word_hunt_reusable_path_layer'),
     );
     expect(
-      find.byKey(const Key('word_hunt_reusable_atmosphere')),
+      find.byKey(const Key('word_hunt_reusable_atmosphere_layer')),
       findsOneWidget,
     );
     expect(
