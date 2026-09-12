@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
@@ -33,11 +32,7 @@ class WordHuntRouteVisualTheme {
     this.overlayDecorationsOnArtwork = false,
   }) : assert(decorationOpacity >= 0 && decorationOpacity <= 1),
        assert(backgroundBlurSigma >= 0),
-       assert(backgroundScale >= 1),
-       assert(
-         backgroundAsset == null || backgroundBase64AssetParts.length == 0,
-         'Artwork tek bir kaynaktan gelmelidir.',
-       );
+       assert(backgroundScale >= 1);
 
   final String id;
   final WordHuntRouteMapTheme mapTheme;
@@ -53,6 +48,7 @@ class WordHuntRouteVisualTheme {
   /// Binary asset yükleme imkanı olmayan üretim akışlarında aynı rasterın
   /// base64 metin parçaları kullanılabilir. Renderer parçaları sırayla
   /// birleştirip bellekte decode eder; bu alan da yalnız sahne tabanıdır.
+  /// İki kaynak aynı anda verilirse base64 parçaları önceliklidir.
   final List<String> backgroundBase64AssetParts;
 
   final BoxFit backgroundFit;
