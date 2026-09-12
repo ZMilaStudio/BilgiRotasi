@@ -37,8 +37,10 @@ void main() {
     expect(theme.backgroundBase64AssetParts, hasLength(7));
     expect(theme.overlayDecorationsOnArtwork, isFalse);
     expect(theme.backgroundScale, 1);
-    expect(theme.backgroundBlurSigma, 0.55);
-    expect(theme.backgroundOverlayColor, const Color(0x18020A05));
+    expect(theme.backgroundBlurSigma, 0);
+    expect(theme.backgroundOverlayColor, Colors.transparent);
+    expect(theme.mapTheme.pathUnderlayColor, const Color(0xFFD2B16F));
+    expect(theme.mapTheme.lockedNodeColor, const Color(0xFF666C68));
   });
 
   testWidgets('Orman production artwork decodes and renders from bundled parts', (
