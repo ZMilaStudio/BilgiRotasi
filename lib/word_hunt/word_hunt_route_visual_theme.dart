@@ -31,12 +31,15 @@ class WordHuntRouteVisualTheme {
     this.backgroundScale = 1,
     this.backgroundContrast = 1,
     this.backgroundSaturation = 1,
+    this.backgroundVignetteColor = Colors.transparent,
+    this.backgroundVignetteStrength = 0,
     this.overlayDecorationsOnArtwork = false,
   }) : assert(decorationOpacity >= 0 && decorationOpacity <= 1),
        assert(backgroundBlurSigma >= 0),
        assert(backgroundScale >= 1),
        assert(backgroundContrast >= 0),
-       assert(backgroundSaturation >= 0);
+       assert(backgroundSaturation >= 0),
+       assert(backgroundVignetteStrength >= 0 && backgroundVignetteStrength <= 1);
 
   final String id;
   final WordHuntRouteMapTheme mapTheme;
@@ -56,6 +59,12 @@ class WordHuntRouteVisualTheme {
   /// gerektirmeden farklı sahneler kendi color-grade değerlerini taşıyabilir.
   final double backgroundContrast;
   final double backgroundSaturation;
+
+  /// Sahnenin kenarlarını doğal olarak geri çekip merkezdeki rota alanına
+  /// derinlik verir. Yalnız sunum katmanıdır; canlı node ve hitbox geometrisi
+  /// üzerinde hiçbir etkisi yoktur.
+  final Color backgroundVignetteColor;
+  final double backgroundVignetteStrength;
   final bool overlayDecorationsOnArtwork;
 
   bool get hasArtwork =>
@@ -139,6 +148,31 @@ class WordHuntThemedRouteMapScreen extends StatelessWidget {
           Positioned.fill(
             key: const Key('word_hunt_route_background_overlay'),
             child: ColoredBox(color: visualTheme.backgroundOverlayColor),
+          ),
+        if (visualTheme.backgroundVignetteStrength > 0)
+          Positioned.fill(
+            key: const Key('word_hunt_route_background_vignette'),
+            child: IgnorePointer(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: RadialGradient(
+                    center: const Alignment(0, -0.10),
+                    radius: 0.96,
+                    colors: <Color>[
+                      Colors.transparent,
+                      Colors.transparent,
+                      visualTheme.backgroundVignetteColor.withValues(
+                        alpha: visualTheme.backgroundVignetteStrength * 0.45,
+                      ),
+                      visualTheme.backgroundVignetteColor.withValues(
+                        alpha: visualTheme.backgroundVignetteStrength,
+                      ),
+                    ],
+                    stops: const <double>[0.0, 0.48, 0.78, 1.0],
+                  ),
+                ),
+              ),
+            ),
           ),
         Positioned.fill(child: map),
       ],
@@ -324,8 +358,10 @@ abstract final class WordHuntRouteVisualThemes {
     backgroundAlignment: Alignment.center,
     backgroundBlurSigma: 0,
     backgroundOverlayColor: Colors.transparent,
-    backgroundContrast: 1.08,
-    backgroundSaturation: 1.10,
+    backgroundContrast: 1.12,
+    backgroundSaturation: 1.14,
+    backgroundVignetteColor: Color(0xFF06110A),
+    backgroundVignetteStrength: 0.38,
     overlayDecorationsOnArtwork: false,
   );
 }
