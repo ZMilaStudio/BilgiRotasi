@@ -14,16 +14,19 @@ import 'word_hunt_starter_content.dart';
 
 /// Ana Bilgi Rotası uygulamasından Kelime Avı production akışına girilen ekran.
 ///
-/// Varsayılan production girişinde rota seçimi [WordHuntRouteCatalog] verisiyle
-/// gösterilir. Mevcut production sözleşmesi değişmez:
-/// - Başlangıç Limanı her zaman açıktır.
-/// - Gökyüzü Adaları, Başlangıç Limanı'nda 18 yıldızdan sonra açılır.
+/// Rota seçimi ve route presentation kararı [WordHuntRouteCatalog] verisiyle
+/// çözülür. Bu ekran rota adına göre renderer seçmez.
 ///
-/// Orman Yolu doğrulanmış içeriğe sahip olsa da owner unlock kararı verilmeden
-/// production kataloğunda yer almaz.
+/// Mevcut production sözleşmesi değişmez:
+/// - Başlangıç Limanı her zaman açıktır ve mevcut reference renderer'ı kullanır.
+/// - Gökyüzü Adaları 18 Başlangıç Limanı yıldızında açılır ve mevcut MASTER ART
+///   renderer/gameplay arka planlarını kullanır.
+/// - Orman Yolu owner unlock + production skin kararı verilmeden katalogda yoktur.
 ///
 /// Doğrudan belirli bir rota gösterilecek QA/test senaryolarında
-/// [routeSelectionEnabled] false verilebilir.
+/// [routeSelectionEnabled] false verilebilir. Catalog'da bilinen bir rota ise
+/// mevcut production presentation'ı korunur; bilinmeyen QA rotası güvenli legacy
+/// reference renderer'a düşer.
 class WordHuntProductionEntryScreen extends StatefulWidget {
   const WordHuntProductionEntryScreen({
     super.key,
@@ -60,6 +63,13 @@ class _WordHuntProductionEntryScreenState
 
   List<WordHuntInfoCard> get _activeInfoCards =>
       _selectedInfoCards ?? widget.infoCards;
+
+  WordHuntRouteCatalogEntry? get _activeCatalogEntry =>
+      WordHuntRouteCatalog.entryForRouteId(_activeRoute.id);
+
+  WordHuntRoutePresentationKind get _activePresentationKind =>
+      _activeCatalogEntry?.presentationKind ??
+      WordHuntRoutePresentationKind.referenceRoute;
 
   String get _ownerScope => WordHuntProgressCodec.scopeForUid(widget.ownerUid);
 
@@ -145,6 +155,15 @@ class _WordHuntProductionEntryScreenState
     Navigator.of(context).maybePop();
   }
 
+  String? _gameplayBackgroundForLevel(int levelIndex) {
+    switch (_activePresentationKind) {
+      case WordHuntRoutePresentationKind.referenceRoute:
+        return null;
+      case WordHuntRoutePresentationKind.gokyuzuMasterArt:
+        return WordHuntGokyuzuGameplayBackgrounds.forLevel(levelIndex);
+    }
+  }
+
   Future<void> _openLevel(int levelIndex) async {
     final route = _activeRoute;
     if (!WordHuntRouteProgressEngine.isLevelUnlocked(
@@ -156,16 +175,12 @@ class _WordHuntProductionEntryScreenState
     }
 
     final level = route.levels[levelIndex - 1];
-    final isGokyuzu = route.id == WordHuntGokyuzuMasterArtScreen.routeId;
-    final backgroundAsset = isGokyuzu
-        ? WordHuntGokyuzuGameplayBackgrounds.forLevel(level.index)
-        : null;
     final result = await Navigator.of(context).push<WordHuntLevelPlayResult>(
       MaterialPageRoute<WordHuntLevelPlayResult>(
         builder: (_) => WordHuntLevelProductionScreen(
           level: level,
           infoCards: _activeInfoCards,
-          backgroundAsset: backgroundAsset,
+          backgroundAsset: _gameplayBackgroundForLevel(level.index),
           routeTitle: route.title,
         ),
       ),
@@ -272,28 +287,29 @@ class _WordHuntProductionEntryScreenState
     }
 
     final route = _activeRoute;
-    if (route.id == WordHuntGokyuzuMasterArtScreen.routeId) {
-      return WordHuntGokyuzuMasterArtScreen(
-        key: const Key('word_hunt_production_entry_gokyuzu_route'),
-        route: route,
-        progress: _progress,
-        onBack: _leaveRoute,
-        onInfo: _showInfo,
-        onCompass: _showCompassHint,
-        onBook: _showBook,
-        onLevelTap: _openLevel,
-      );
+    switch (_activePresentationKind) {
+      case WordHuntRoutePresentationKind.gokyuzuMasterArt:
+        return WordHuntGokyuzuMasterArtScreen(
+          key: const Key('word_hunt_production_entry_gokyuzu_route'),
+          route: route,
+          progress: _progress,
+          onBack: _leaveRoute,
+          onInfo: _showInfo,
+          onCompass: _showCompassHint,
+          onBook: _showBook,
+          onLevelTap: _openLevel,
+        );
+      case WordHuntRoutePresentationKind.referenceRoute:
+        return WordHuntReferenceRouteScreen(
+          key: const Key('word_hunt_production_entry_route'),
+          route: route,
+          progress: _progress,
+          onBack: _leaveRoute,
+          onInfo: _showInfo,
+          onCompass: _showCompassHint,
+          onBook: _showBook,
+          onLevelTap: _openLevel,
+        );
     }
-
-    return WordHuntReferenceRouteScreen(
-      key: const Key('word_hunt_production_entry_route'),
-      route: route,
-      progress: _progress,
-      onBack: _leaveRoute,
-      onInfo: _showInfo,
-      onCompass: _showCompassHint,
-      onBook: _showBook,
-      onLevelTap: _openLevel,
-    );
   }
 }
