@@ -46,6 +46,34 @@ void main() {
     );
   });
 
+  test('Baslangic Limani 1-10 kesin sirali acilir', () {
+    const definition = WordHuntStarterContent.baslangicLimani;
+    var progress = const WordHuntProgressSnapshot();
+
+    for (var current = 1; current <= definition.levels.length; current++) {
+      for (var index = 1; index <= definition.levels.length; index++) {
+        expect(
+          WordHuntRouteProgressEngine.isLevelUnlocked(
+            definition,
+            progress,
+            index,
+          ),
+          index <= current,
+          reason:
+              'Bölüm $current sırası beklenirken yalnız 1-$current açık olmalı; '
+              'Bölüm $index için durum hatalı.',
+        );
+      }
+
+      if (current < definition.levels.length) {
+        progress = progress.recordLevelResult(
+          levelId: definition.levels[current - 1].id,
+          stars: 1,
+        );
+      }
+    }
+  });
+
   test('bir bolum tamamlaninca siradaki bolum acilir', () {
     final definition = route();
     final progress = const WordHuntProgressSnapshot().recordLevelResult(
