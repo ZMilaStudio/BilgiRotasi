@@ -39,40 +39,19 @@ class WordHuntRouteVisualTheme {
   final WordHuntRouteDecorationSpec decorationSpec;
   final WordHuntRouteDecorationPalette decorationPalette;
   final double decorationOpacity;
-
-  /// Opsiyonel gerçek rota artwork'ü. Görsel yalnız sahne tabanıdır; node,
-  /// hitbox, yıldız, kilit veya progression state'i asset içine bake edilmez.
-  /// Böylece aynı canonical 1-10 motoru raster sahne üzerinde de çalışır.
   final String? backgroundAsset;
-
-  /// Binary asset yükleme imkanı olmayan üretim akışlarında aynı rasterın
-  /// base64 metin parçaları kullanılabilir. Renderer parçaları sırayla
-  /// birleştirip bellekte decode eder; bu alan da yalnız sahne tabanıdır.
-  /// İki kaynak aynı anda verilirse base64 parçaları önceliklidir.
   final List<String> backgroundBase64AssetParts;
-
   final BoxFit backgroundFit;
   final Alignment backgroundAlignment;
   final double backgroundBlurSigma;
   final Color backgroundOverlayColor;
-
-  /// Artwork kadrajını tema verisinden yakınlaştırmaya yarar. Geometriyi veya
-  /// hitbox'ları değiştirmez; yalnız raster sahnenin kadrajıdır.
   final double backgroundScale;
-
-  /// Final raster sahne varken procedural ağaç/mantar/dekor tekrar çizilmez.
-  /// Bu değer yalnız bilinçli bir hibrit tema istendiğinde true yapılmalıdır.
   final bool overlayDecorationsOnArtwork;
 
   bool get hasArtwork =>
       backgroundAsset != null || backgroundBase64AssetParts.isNotEmpty;
 }
 
-/// Bütün temalı 10-bölümlük rotalar için tek generic bağlayıcı.
-///
-/// Rota ile görsel skin paketini ortak motora aktarır. Rota adına göre branch,
-/// ayrı widget veya koordinat üretmez. Production host, catalog entry içindeki
-/// visualTheme verisini bu ortak bağlayıcıya aktarabilir.
 class WordHuntThemedRouteMapScreen extends StatelessWidget {
   const WordHuntThemedRouteMapScreen({
     super.key,
@@ -244,7 +223,7 @@ class _Base64AssetArtworkState extends State<_Base64AssetArtwork> {
           bytes,
           fit: widget.fit,
           alignment: widget.alignment,
-          filterQuality: FilterQuality.high,
+          filterQuality: FilterQuality.medium,
           gaplessPlayback: true,
         );
       },
@@ -252,11 +231,6 @@ class _Base64AssetArtworkState extends State<_Base64AssetArtwork> {
   }
 }
 
-/// Oyunda kullanılacak reusable rota skinleri.
-///
-/// Bu sınıf proof/QA presetlerinden ayrıdır. Production host gerçek rota için
-/// buradaki veriyi kullanır; node koordinatı, hitbox ve progression yine ortak
-/// reusable motor tarafından yönetilir.
 abstract final class WordHuntRouteVisualThemes {
   static const WordHuntRouteVisualTheme ormanYolu = WordHuntRouteVisualTheme(
     id: 'orman-yolu-production',
@@ -264,15 +238,15 @@ abstract final class WordHuntRouteVisualThemes {
       id: 'orman-yolu-production',
       backgroundColor: Color(0xFF07150D),
       surfaceColor: Color(0xFF143420),
-      pathColor: Color(0xFFFFE5A4),
-      lockedPathColor: Color(0xFFB9B5A7),
+      pathColor: Color(0xFFFFF0C2),
+      lockedPathColor: Color(0xFFC6C4BB),
       nodeColor: Color(0xFF8B592E),
-      lockedNodeColor: Color(0xFF666C68),
+      lockedNodeColor: Color(0xFF5D6460),
       accentColor: Color(0xFFFFD34E),
       textColor: Color(0xFFFFF8E7),
       sceneGlowColor: Color(0xFFFFE7A8),
-      pathUnderlayColor: Color(0xFFD2B16F),
-      nodeShadowColor: Color(0xFF4C3522),
+      pathUnderlayColor: Color(0xFFB08A52),
+      nodeShadowColor: Color(0xFF34452F),
       sceneDepth: 0.58,
     ),
     decorationSpec: WordHuntRouteDecorationSpec(
@@ -303,8 +277,6 @@ abstract final class WordHuntRouteVisualThemes {
   );
 }
 
-/// Production görsel kararı değildir; reusable motorun farklı skin verileriyle
-/// çalışabildiğini kanıtlayan veri-only preset'lerdir.
 abstract final class WordHuntRouteVisualThemeProofs {
   static const WordHuntRouteVisualTheme forest = WordHuntRouteVisualTheme(
     id: 'forest-proof',
