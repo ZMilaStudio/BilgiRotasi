@@ -65,7 +65,21 @@ class WordHuntThemedRouteMapScreen extends StatelessWidget {
 abstract final class WordHuntRouteVisualThemeProofs {
   static const WordHuntRouteVisualTheme forest = WordHuntRouteVisualTheme(
     id: 'forest-proof',
-    mapTheme: WordHuntRouteMapTheme.forestProof,
+    mapTheme: WordHuntRouteMapTheme(
+      id: 'forest-proof',
+      backgroundColor: Color(0xFF0B1D14),
+      surfaceColor: Color(0xFF173823),
+      pathColor: Color(0xFFD7C98B),
+      lockedPathColor: Color(0xFF35483B),
+      nodeColor: Color(0xFF6B5A3C),
+      lockedNodeColor: Color(0xFF3E4B42),
+      accentColor: Color(0xFFF2C14E),
+      textColor: Color(0xFFF7F1DE),
+      sceneGlowColor: Color(0xFFF4D58D),
+      pathUnderlayColor: Color(0xD51A130C),
+      nodeShadowColor: Color(0xE007120B),
+      sceneDepth: 0.44,
+    ),
     decorationSpec: WordHuntRouteDecorationSpec(
       kind: WordHuntRouteDecorationKind.forest,
       seed: 20260912,
