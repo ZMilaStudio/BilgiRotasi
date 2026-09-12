@@ -102,7 +102,7 @@
 
 ---
 
-## 8. 29 Ağustos 2026 — Başlangıç Limanı 8×8 ürün geometrisi
+## 8. 29 Ağustos 2026 Başlangıç Limanı 8×8 ürün geometrisi
 
 - Levent'in yeni ürün kararıyla Başlangıç Limanı bölüm grid standardı **8 satır × 8 sütun**dur.
 - Önceki 6×10 starter-content geometrisi bu yeni çalışma için **superseded** edilmiştir; 6×10 geçmiş teknik checkpoint ve kanıtları silinmez.
@@ -220,23 +220,21 @@ Bu bölüm, 31 Ağustos kayıtlarındaki `ERROR_STATE_VISUAL = DOĞRULANACAK` du
 - Canonical 8×8, kabul edilmiş görsel durumlar, engine/path/scoring/timer/progression ve korunan ürün alanları hız uğruna değiştirilmez.
 - Ayrıntılı çalışma sözleşmesi `docs/project-memory/KELIME_AVI_WORK_V2.md` dosyasında tutulur.
 
----
+## 15. 12 Eylül 2026 — bütün 10-bölümlük rotalarda kesin sıralı kilit
 
-## 15. 12 Eylül 2026 — Kelime Avı bütün rotalarda kesin sıralı bölüm kilidi / KANONİK
+- Yeni/boş progress durumunda yalnız Bölüm 1 açık/current başlar; Bölüm 2–10 locked olur.
+- Bölümler yalnız bir önceki tamamlanınca açılır: `1→2→3→4→5→6→7→8→9→10`.
+- Bir bölüm tamamlandığında yalnız bir sonraki bölüm açılır; iki ileri bölüm aynı anda açılmaz.
+- Bölüm 8 normal bölümdür ve Bölüm 9 için zorunlu kapıdır.
+- Bu kural tema/route fark etmeksizin ortak `WordHuntRouteProgressEngine` sözleşmesidir.
+- Locked node callback üretmez; Android proof da fresh progress ile 1 açık / 2–10 locked göstermelidir.
+- Görsel skin veya raster artwork bu progression kuralını değiştiremez.
+- Eski “7 tamamlanınca 8 ve 9 birlikte açılır” kararı geçersizdir.
 
-Bu karar **bütün 10 bölümlük Kelime Avı rotaları** için geçerlidir ve daha eski çelişkili unlock kayıtlarını supersede eder.
+## 16. 12 Eylül 2026 — raster artwork kalite katmanı
 
-- Yeni/boş ilerleme durumunda **yalnız Bölüm 1 açıktır/current'tır**.
-- **Bölüm 2–10 kilitlidir.**
-- Bölüm 2 yalnız Bölüm 1 tamamlandıktan sonra açılır.
-- Bölüm 3 yalnız Bölüm 2 tamamlandıktan sonra açılır.
-- Aynı kural kesin olarak devam eder: `1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 → 9 → 10`.
-- Bir bölümün tamamlanması yalnızca **bir sonraki** bölümü açar; iki ileri bölüm aynı anda açılmaz.
-- Bölüm 8 normal bölümdür; bonus/atlama kapısı değildir. Bölüm 9, Bölüm 8 tamamlanmadan açılamaz.
-- Bölüm 10, Bölüm 9 tamamlanmadan açılamaz.
-- Kilitli bölüm kullanıcı etkileşimi/callback üretmez.
-- Tema, raster artwork, görsel skin veya rota adı bu progression kuralını değiştiremez.
-- Android görsel proof ve kabul ekranlarının varsayılan başlangıç durumu da **1 açık/current, 2–10 locked** olacaktır.
-- Kanonik motor sözleşmesi `WordHuntRouteProgressEngine.isLevelUnlocked` içinde korunur: Bölüm 1 her zaman açık; `N > 1` için yalnız `N-1` tamamlandıysa N açık.
-- Bu karar özellikle eski “7 tamamlanınca 8 ve 9 birlikte açılır / 8 zorunlu kapı değildir” kaydını **GEÇERSİZ KILAR**.
-- Ayrıntılı karar kaydı ayrıca `docs/project-memory/KARAR_2026-09-12_KELIME_AVI_SIRALI_KILIT.md` dosyasında tutulur.
+- Final raster artwork kullanıldığında proof amaçlı procedural ağaç/mantar/dekor katmanı varsayılan olarak **çizilmez**.
+- Raster artwork aktifken procedural atmosfer glow/depth kapatılır; sahnenin kendi ışığı ve derinliği korunur.
+- Artwork kadrajı yalnız tema verisiyle ölçek/hizalama alabilir; canonical 10-node geometri ve 86×82 hitbox değişmez.
+- Canlı path/node/kilit/yıldız/progression katmanı artwork üzerinde runtime state olarak kalır.
+- Orman Yolu Android görsel proof'u artık `WordHuntRouteVisualThemes.ormanYolu` production skin verisini render eder; `forest-proof` production kabul kaynağı değildir.
