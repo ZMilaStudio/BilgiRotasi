@@ -1,3 +1,4 @@
+import 'package:bilgi_rotasi/word_hunt/word_hunt_orman_content.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_reusable_route_map_screen.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_route_map_decoration.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_route_visual_theme.dart';
@@ -28,13 +29,58 @@ void main() {
     accent: Color(0xFFFFE08A),
   );
 
-  test('Orman production skin keeps raster layering clean by default', () {
+  test('Orman production skin points at the scenic artwork bundle', () {
     const theme = WordHuntRouteVisualThemes.ormanYolu;
     expect(theme.id, 'orman-yolu-production');
+    expect(theme.hasArtwork, isTrue);
+    expect(theme.backgroundAsset, isNull);
+    expect(theme.backgroundBase64AssetParts, hasLength(7));
     expect(theme.overlayDecorationsOnArtwork, isFalse);
     expect(theme.backgroundScale, 1);
-    expect(theme.backgroundBlurSigma, 0);
-    expect(theme.backgroundOverlayColor, Colors.transparent);
+    expect(theme.backgroundBlurSigma, 0.55);
+    expect(theme.backgroundOverlayColor, const Color(0x18020A05));
+  });
+
+  testWidgets('Orman production artwork decodes and renders from bundled parts', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: WordHuntThemedRouteMapScreen(
+          route: WordHuntOrmanContent.ormanYolu,
+          visualTheme: WordHuntRouteVisualThemes.ormanYolu,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(
+      find.byKey(const Key('word_hunt_route_background_asset')),
+      findsOneWidget,
+    );
+    expect(find.byType(Image), findsOneWidget);
+    expect(
+      find.byKey(const Key('word_hunt_reusable_decoration_layer')),
+      findsNothing,
+    );
+    expect(
+      find.byKey(const Key('word_hunt_reusable_node_1_current')),
+      findsOneWidget,
+    );
+    for (var level = 2; level <= 10; level++) {
+      expect(
+        find.byKey(Key('word_hunt_reusable_node_${level}_locked')),
+        findsOneWidget,
+      );
+    }
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets('raster artwork suppresses procedural decorations by default', (
