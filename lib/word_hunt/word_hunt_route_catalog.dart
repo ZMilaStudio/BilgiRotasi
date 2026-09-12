@@ -11,6 +11,14 @@ import 'word_hunt_starter_content.dart';
 /// sözleşmesi kullanılmalıdır.
 enum WordHuntRouteUnlockKind { always, routeStars }
 
+/// Production rota ekranının hangi ortak renderer ailesini kullandığını söyler.
+///
+/// Bu enum rota kimliği değildir. Birden fazla rota aynı presentation kind'ı
+/// paylaşabilir; böylece production entry içinde rota-id bazlı `if` zincirleri
+/// oluşmaz. Reusable production skin kabul edildiğinde yeni ortak kind burada
+/// bir kez eklenir, her rota için ayrı renderer branch'i yazılmaz.
+enum WordHuntRoutePresentationKind { referenceRoute, gokyuzuMasterArt }
+
 @immutable
 class WordHuntRouteUnlockRule {
   const WordHuntRouteUnlockRule.always()
@@ -40,10 +48,10 @@ class WordHuntRouteUnlockRule {
   }
 }
 
-/// Rota kartının production selector'da ihtiyaç duyduğu veri paketi.
+/// Rota kartının ve production route host'un ihtiyaç duyduğu veri paketi.
 ///
-/// Geometri taşımaz ve rota ekranı üretmez. Böylece katalog büyürken selector
-/// içinde rota-id özel kart blokları veya `_openXRoute` metotları çoğalmaz.
+/// Geometri taşımaz ve rota adına göre widget üretmez. Böylece katalog büyürken
+/// selector ve production entry içinde rota-id özel bloklar çoğalmaz.
 @immutable
 class WordHuntRouteCatalogEntry {
   const WordHuntRouteCatalogEntry({
@@ -54,6 +62,7 @@ class WordHuntRouteCatalogEntry {
     required this.icon,
     required this.colors,
     required this.unlockRule,
+    required this.presentationKind,
   });
 
   final String cardKey;
@@ -63,6 +72,7 @@ class WordHuntRouteCatalogEntry {
   final IconData icon;
   final List<Color> colors;
   final WordHuntRouteUnlockRule unlockRule;
+  final WordHuntRoutePresentationKind presentationKind;
 
   bool isUnlocked(WordHuntProgressSnapshot progress) =>
       unlockRule.isUnlocked(progress);
@@ -70,8 +80,8 @@ class WordHuntRouteCatalogEntry {
 
 /// Kullanıcıya şu anda gerçekten sunulan production Kelime Avı rotaları.
 ///
-/// Orman Yolu içeriği doğrulanmış olsa da owner unlock kararı verilmeden bu
-/// listeye bilerek eklenmez.
+/// Orman Yolu içeriği doğrulanmış olsa da owner unlock + production skin kararı
+/// verilmeden bu listeye bilerek eklenmez.
 abstract final class WordHuntRouteCatalog {
   static const WordHuntRouteCatalogEntry starter = WordHuntRouteCatalogEntry(
     cardKey: 'starter',
@@ -81,6 +91,7 @@ abstract final class WordHuntRouteCatalog {
     icon: Icons.anchor_rounded,
     colors: <Color>[Color(0xFF0E7490), Color(0xFF1E3A8A)],
     unlockRule: WordHuntRouteUnlockRule.always(),
+    presentationKind: WordHuntRoutePresentationKind.referenceRoute,
   );
 
   static const WordHuntRouteCatalogEntry gokyuzu = WordHuntRouteCatalogEntry(
@@ -94,8 +105,19 @@ abstract final class WordHuntRouteCatalog {
       prerequisiteRoute: WordHuntStarterContent.baslangicLimani,
       requiredStars: 18,
     ),
+    presentationKind: WordHuntRoutePresentationKind.gokyuzuMasterArt,
   );
 
   static const List<WordHuntRouteCatalogEntry> entries =
       <WordHuntRouteCatalogEntry>[starter, gokyuzu];
+
+  /// Catalog mode dışında doğrudan QA rotası açıldığında da canlı rotaların
+  /// mevcut production presentation'ını korur. Tanınmayan/gelecek rotalar
+  /// owner tarafından kataloğa eklenene kadar null döner.
+  static WordHuntRouteCatalogEntry? entryForRouteId(String routeId) {
+    for (final entry in entries) {
+      if (entry.route.id == routeId) return entry;
+    }
+    return null;
+  }
 }

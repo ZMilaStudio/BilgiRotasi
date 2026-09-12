@@ -25,6 +25,31 @@ void main() {
     expect(entries.map((entry) => entry.route.id), isNot(contains('orman-yolu')));
   });
 
+  test('canlı rotaların production presentation türü catalog verisidir', () {
+    expect(
+      WordHuntRouteCatalog.starter.presentationKind,
+      WordHuntRoutePresentationKind.referenceRoute,
+    );
+    expect(
+      WordHuntRouteCatalog.gokyuzu.presentationKind,
+      WordHuntRoutePresentationKind.gokyuzuMasterArt,
+    );
+
+    expect(
+      WordHuntRouteCatalog.entryForRouteId(
+        WordHuntStarterContent.baslangicLimani.id,
+      ),
+      same(WordHuntRouteCatalog.starter),
+    );
+    expect(
+      WordHuntRouteCatalog.entryForRouteId(
+        WordHuntGokyuzuContent.gokyuzuAdalari.id,
+      ),
+      same(WordHuntRouteCatalog.gokyuzu),
+    );
+    expect(WordHuntRouteCatalog.entryForRouteId('orman-yolu'), isNull);
+  });
+
   test('Başlangıç Limanı her zaman açıktır', () {
     expect(
       WordHuntRouteCatalog.starter.isUnlocked(
@@ -92,13 +117,32 @@ void main() {
     expect(entrySource, isNot(contains('void _openStarterRoute(')));
   });
 
-  test('QA belirli rotayı selector olmadan doğrudan açabilir', () {
+  test('route renderer ve gameplay background route-id if kullanmaz', () {
+    expect(entrySource, contains('WordHuntRouteCatalog.entryForRouteId('));
+    expect(entrySource, contains('_activePresentationKind'));
+    expect(entrySource, contains('switch (_activePresentationKind)'));
+    expect(entrySource, contains('_gameplayBackgroundForLevel('));
+    expect(
+      entrySource,
+      isNot(
+        contains('route.id == WordHuntGokyuzuMasterArtScreen.routeId'),
+      ),
+    );
+  });
+
+  test('QA belirli canlı rotayı selector olmadan doğrudan açabilir', () {
     expect(entrySource, contains('this.routeSelectionEnabled = true'));
     expect(entrySource, contains('final bool routeSelectionEnabled;'));
     expect(entrySource, contains('widget.routeSelectionEnabled &&'));
     expect(
       entrySource,
       contains("Key('word_hunt_production_entry_gokyuzu_route')"),
+    );
+    expect(
+      WordHuntRouteCatalog.entryForRouteId(
+        WordHuntGokyuzuContent.gokyuzuAdalari.id,
+      )?.presentationKind,
+      WordHuntRoutePresentationKind.gokyuzuMasterArt,
     );
   });
 }
