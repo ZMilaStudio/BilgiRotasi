@@ -46,7 +46,7 @@ abstract final class WordHuntRouteMapGeometry {
   }
 }
 
-/// Görsel tema yalnız boya ve metin renklerini taşır; geometri taşıyamaz.
+/// Görsel tema yalnız boya ve metin token'larını taşır; geometri taşıyamaz.
 @immutable
 class WordHuntRouteMapTheme {
   const WordHuntRouteMapTheme({
@@ -59,7 +59,11 @@ class WordHuntRouteMapTheme {
     required this.lockedNodeColor,
     required this.accentColor,
     required this.textColor,
-  });
+    this.sceneGlowColor,
+    this.pathUnderlayColor = const Color(0x66000000),
+    this.nodeShadowColor = const Color(0x99000000),
+    this.sceneDepth = 0.28,
+  }) : assert(sceneDepth >= 0 && sceneDepth <= 1);
 
   final String id;
   final Color backgroundColor;
@@ -70,6 +74,14 @@ class WordHuntRouteMapTheme {
   final Color lockedNodeColor;
   final Color accentColor;
   final Color textColor;
+
+  /// Yalnız görsel derinlik token'larıdır; node/path koordinatı taşımazlar.
+  final Color? sceneGlowColor;
+  final Color pathUnderlayColor;
+  final Color nodeShadowColor;
+  final double sceneDepth;
+
+  Color get resolvedSceneGlowColor => sceneGlowColor ?? accentColor;
 
   /// Yalnız mimari kanıt için üç farklı tema. Hiçbiri production route asset'i
   /// veya route-id özel layout davranışı içermez.
@@ -83,6 +95,10 @@ class WordHuntRouteMapTheme {
     lockedNodeColor: Color(0xFF37474F),
     accentColor: Color(0xFFFFC857),
     textColor: Color(0xFFF5FAFF),
+    sceneGlowColor: Color(0xFF58D5E6),
+    pathUnderlayColor: Color(0xB3051520),
+    nodeShadowColor: Color(0xCC031018),
+    sceneDepth: 0.24,
   );
 
   static const WordHuntRouteMapTheme skyProof = WordHuntRouteMapTheme(
@@ -95,6 +111,10 @@ class WordHuntRouteMapTheme {
     lockedNodeColor: Color(0xFF475569),
     accentColor: Color(0xFFFDE68A),
     textColor: Color(0xFFF8FAFC),
+    sceneGlowColor: Color(0xFFFDE68A),
+    pathUnderlayColor: Color(0xA6111738),
+    nodeShadowColor: Color(0xC90D1330),
+    sceneDepth: 0.27,
   );
 
   static const WordHuntRouteMapTheme forestProof = WordHuntRouteMapTheme(
@@ -107,13 +127,18 @@ class WordHuntRouteMapTheme {
     lockedNodeColor: Color(0xFF455A4C),
     accentColor: Color(0xFFF6C453),
     textColor: Color(0xFFF4FFF7),
+    sceneGlowColor: Color(0xFFF6C453),
+    pathUnderlayColor: Color(0xB308160E),
+    nodeShadowColor: Color(0xD105120B),
+    sceneDepth: 0.34,
   );
 }
 
 /// 20 rota için ortak 10-bölümlük harita iskeleti.
 ///
-/// Bu ekran henüz production kataloğuna bağlı değildir. İlk kabul aşamasında
-/// yol, 1-10 düğümleri ve opsiyonel deterministik tema dekorunu gösterir.
+/// Yol, 1-10 düğümleri ve opsiyonel deterministik tema dekorunu tek ortak
+/// renderer'da gösterir. Görsel derinlik de tema verisinden gelir; rota adına
+/// göre layout veya painter seçimi yapılmaz.
 class WordHuntReusableRouteMapScreen extends StatelessWidget {
   const WordHuntReusableRouteMapScreen({
     super.key,
@@ -148,6 +173,10 @@ class WordHuntReusableRouteMapScreen extends StatelessWidget {
       'Reusable Kelime Avı rota haritası tam 10 bölüm bekler.',
     );
     final stars = WordHuntRouteProgressEngine.totalStars(route, progress);
+    final currentLevelIndex = WordHuntRouteProgressEngine.nextPlayableLevelIndex(
+      route,
+      progress,
+    );
 
     return Scaffold(
       key: const Key('word_hunt_reusable_route_map'),
@@ -211,6 +240,13 @@ class WordHuntReusableRouteMapScreen extends StatelessWidget {
                         border: Border.all(
                           color: theme.accentColor.withValues(alpha: 0.45),
                         ),
+                        boxShadow: <BoxShadow>[
+                          BoxShadow(
+                            color: theme.nodeShadowColor.withValues(alpha: 0.32),
+                            blurRadius: 20,
+                            offset: const Offset(0, 8),
+                          ),
+                        ],
                       ),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(23),
@@ -218,6 +254,21 @@ class WordHuntReusableRouteMapScreen extends StatelessWidget {
                           key: const Key('word_hunt_reusable_layer_stack'),
                           fit: StackFit.expand,
                           children: <Widget>[
+                            Positioned.fill(
+                              key: const Key(
+                                'word_hunt_reusable_atmosphere_layer',
+                              ),
+                              child: IgnorePointer(
+                                child: CustomPaint(
+                                  key: const Key(
+                                    'word_hunt_reusable_route_atmosphere',
+                                  ),
+                                  painter: _ReusableRouteAtmospherePainter(
+                                    theme: theme,
+                                  ),
+                                ),
+                              ),
+                            ),
                             if (decorationSpec != null &&
                                 decorationPalette != null)
                               Positioned.fill(
@@ -257,6 +308,17 @@ class WordHuntReusableRouteMapScreen extends StatelessWidget {
                                 point: points[index],
                                 level: route.levels[index],
                                 unlocked: unlocked[index],
+                                completed:
+                                    WordHuntRouteProgressEngine.isLevelCompleted(
+                                      route.levels[index],
+                                      progress,
+                                    ),
+                                current: unlocked[index] &&
+                                    index + 1 == currentLevelIndex &&
+                                    !WordHuntRouteProgressEngine.isLevelCompleted(
+                                      route.levels[index],
+                                      progress,
+                                    ),
                                 mapSize: size,
                               ),
                           ],
@@ -277,6 +339,8 @@ class WordHuntReusableRouteMapScreen extends StatelessWidget {
     required Offset point,
     required WordHuntLevelDefinition level,
     required bool unlocked,
+    required bool completed,
+    required bool current,
     required Size mapSize,
   }) {
     final left = (point.dx - _nodeBoxWidth / 2)
@@ -295,6 +359,8 @@ class WordHuntReusableRouteMapScreen extends StatelessWidget {
         key: Key('word_hunt_reusable_level_${level.index}'),
         level: level,
         unlocked: unlocked,
+        completed: completed,
+        current: current,
         theme: theme,
         onTap: unlocked && onLevelTap != null
             ? () => onLevelTap!(level.index)
@@ -309,12 +375,16 @@ class _ReusableRouteNode extends StatelessWidget {
     super.key,
     required this.level,
     required this.unlocked,
+    required this.completed,
+    required this.current,
     required this.theme,
     this.onTap,
   });
 
   final WordHuntLevelDefinition level;
   final bool unlocked;
+  final bool completed;
+  final bool current;
   final WordHuntRouteMapTheme theme;
   final VoidCallback? onTap;
 
@@ -324,16 +394,37 @@ class _ReusableRouteNode extends StatelessWidget {
     return null;
   }
 
+  String get _visualState {
+    if (completed) return 'completed';
+    if (current) return 'current';
+    if (unlocked) return 'open';
+    return 'locked';
+  }
+
   @override
   Widget build(BuildContext context) {
     final endpointLabel = _endpointLabel;
     final fillColor = unlocked ? theme.nodeColor : theme.lockedNodeColor;
-    final borderColor = unlocked ? theme.accentColor : theme.lockedPathColor;
+    final borderColor = current
+        ? theme.accentColor
+        : completed
+        ? theme.pathColor
+        : unlocked
+        ? theme.accentColor
+        : theme.lockedPathColor;
+    final displayFill = current
+        ? Color.alphaBlend(
+            theme.accentColor.withValues(alpha: 0.12),
+            fillColor,
+          )
+        : fillColor;
 
     return Semantics(
       button: unlocked,
       enabled: unlocked,
-      label: 'Bölüm ${level.index}${unlocked ? ', açık' : ', kilitli'}',
+      label:
+          'Bölüm ${level.index}${unlocked ? ', açık' : ', kilitli'}'
+          '${completed ? ', tamamlandı' : current ? ', sıradaki' : ''}',
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: onTap,
@@ -341,27 +432,57 @@ class _ReusableRouteNode extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             Container(
+              key: Key(
+                'word_hunt_reusable_node_${level.index}_$_visualState',
+              ),
               width: WordHuntReusableRouteMapScreen._nodeDiameter,
               height: WordHuntReusableRouteMapScreen._nodeDiameter,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: fillColor,
-                border: Border.all(color: borderColor, width: 3),
+                color: displayFill,
+                border: Border.all(
+                  color: borderColor,
+                  width: current ? 4 : 3,
+                ),
                 boxShadow: <BoxShadow>[
                   BoxShadow(
-                    color: borderColor.withValues(alpha: 0.22),
-                    blurRadius: 8,
+                    color: theme.nodeShadowColor.withValues(alpha: 0.68),
+                    blurRadius: 11,
+                    offset: const Offset(0, 5),
                   ),
+                  if (current)
+                    BoxShadow(
+                      color: theme.accentColor.withValues(alpha: 0.52),
+                      blurRadius: 20,
+                      spreadRadius: 2,
+                    ),
                 ],
               ),
               alignment: Alignment.center,
-              child: Text(
-                '${level.index}',
-                style: TextStyle(
-                  color: theme.textColor,
-                  fontSize: 19,
-                  fontWeight: FontWeight.w900,
-                ),
+              child: Stack(
+                fit: StackFit.expand,
+                children: <Widget>[
+                  Center(
+                    child: Text(
+                      '${level.index}',
+                      style: TextStyle(
+                        color: theme.textColor,
+                        fontSize: 19,
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                  ),
+                  if (completed)
+                    Positioned(
+                      right: 4,
+                      bottom: 3,
+                      child: Icon(
+                        Icons.check_rounded,
+                        size: 13,
+                        color: theme.textColor.withValues(alpha: 0.88),
+                      ),
+                    ),
+                ],
               ),
             ),
             if (endpointLabel != null) ...<Widget>[
@@ -386,6 +507,62 @@ class _ReusableRouteNode extends StatelessWidget {
   }
 }
 
+class _ReusableRouteAtmospherePainter extends CustomPainter {
+  const _ReusableRouteAtmospherePainter({required this.theme});
+
+  final WordHuntRouteMapTheme theme;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (size.isEmpty || theme.sceneDepth == 0) return;
+
+    final rect = Offset.zero & size;
+    final longestSide = math.max(size.width, size.height);
+    final glowRect = Rect.fromCircle(
+      center: Offset(size.width * 0.52, size.height * 0.16),
+      radius: longestSide * 0.58,
+    );
+    final glowPaint = Paint()
+      ..shader = RadialGradient(
+        colors: <Color>[
+          theme.resolvedSceneGlowColor.withValues(
+            alpha: theme.sceneDepth * 0.34,
+          ),
+          Colors.transparent,
+        ],
+      ).createShader(glowRect);
+    canvas.drawRect(rect, glowPaint);
+
+    final depthPaint = Paint()
+      ..shader = LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: <Color>[
+          Colors.transparent,
+          theme.backgroundColor.withValues(alpha: theme.sceneDepth * 0.54),
+        ],
+        stops: const <double>[0.42, 1],
+      ).createShader(rect);
+    canvas.drawRect(rect, depthPaint);
+
+    final vignettePaint = Paint()
+      ..shader = RadialGradient(
+        radius: 0.92,
+        colors: <Color>[
+          Colors.transparent,
+          theme.backgroundColor.withValues(alpha: theme.sceneDepth * 0.48),
+        ],
+        stops: const <double>[0.60, 1],
+      ).createShader(rect);
+    canvas.drawRect(rect, vignettePaint);
+  }
+
+  @override
+  bool shouldRepaint(covariant _ReusableRouteAtmospherePainter oldDelegate) {
+    return oldDelegate.theme != theme;
+  }
+}
+
 class _ReusableRoutePathPainter extends CustomPainter {
   const _ReusableRoutePathPainter({
     required this.points,
@@ -399,15 +576,28 @@ class _ReusableRoutePathPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+    final underlayPaint = Paint()
+      ..color = theme.pathUnderlayColor
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 13
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round;
     final lockedPaint = Paint()
       ..color = theme.lockedPathColor
       ..style = PaintingStyle.stroke
       ..strokeWidth = 7
-      ..strokeCap = StrokeCap.round;
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round;
     final unlockedPaint = Paint()
       ..color = theme.pathColor
       ..style = PaintingStyle.stroke
       ..strokeWidth = 7
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round;
+    final unlockedHighlightPaint = Paint()
+      ..color = theme.textColor.withValues(alpha: 0.24)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2
       ..strokeCap = StrokeCap.round;
 
     for (var index = 0;
@@ -421,10 +611,12 @@ class _ReusableRoutePathPainter extends CustomPainter {
         points[toIndex],
         index,
       );
-      canvas.drawPath(
-        path,
-        unlocked[toIndex] ? unlockedPaint : lockedPaint,
-      );
+      final isUnlocked = unlocked[toIndex];
+      canvas.drawPath(path, underlayPaint);
+      canvas.drawPath(path, isUnlocked ? unlockedPaint : lockedPaint);
+      if (isUnlocked) {
+        canvas.drawPath(path, unlockedHighlightPaint);
+      }
     }
   }
 
