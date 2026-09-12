@@ -21,7 +21,7 @@ permissions:
 
 jobs:
   visual-proof:
-    name: Başlangıç Limanı gerçek Android 16 ekranı
+    name: Kelime Avı gerçek Android 16 ekranları
     runs-on: ubuntu-22.04
     timeout-minutes: 35
     env:
@@ -79,6 +79,7 @@ jobs:
             test/word_hunt_route_map_decoration_test.dart \
             test/word_hunt_route_map_decoration_layer_test.dart \
             test/word_hunt_route_visual_theme_test.dart \
+            test/word_hunt_orman_content_test.dart \
             test/word_hunt_scoring_test.dart \
             test/word_hunt_starter_content_test.dart \
             --reporter expanded
