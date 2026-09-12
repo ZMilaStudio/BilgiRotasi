@@ -3,14 +3,20 @@ set -eu
 
 mkdir -p reports
 
+PACKAGE='com.leventua.bilgirotasi'
+MAIN_ACTIVITY='com.leventua.bilgirotasi/.MainActivity'
+
 wait_for_app_drawn() {
   local snapshot="$1"
   local label="$2"
   local drawn=0
 
   for attempt in $(seq 1 30); do
-    adb shell dumpsys activity activities > "$snapshot"
-    if grep -Fq 'com.leventua.bilgirotasi/.MainActivity' "$snapshot" \
+    if ! adb shell dumpsys activity activities > "$snapshot"; then
+      echo "$label lost adb while waiting for first frame" >&2
+      return 1
+    fi
+    if grep -Fq "$MAIN_ACTIVITY" "$snapshot" \
       && grep -q 'reportedDrawn=true' "$snapshot"; then
       drawn=1
       echo "$label first frame confirmed on attempt $attempt"
@@ -25,9 +31,38 @@ wait_for_app_drawn() {
     return 1
   fi
 
-  grep -Fq 'com.leventua.bilgirotasi/.MainActivity' "$snapshot"
+  grep -Fq "$MAIN_ACTIVITY" "$snapshot"
   grep -Eq 'mResumedActivity.*com\.leventua\.bilgirotasi|topResumedActivity=.*com\.leventua\.bilgirotasi|mCurrentFocus=.*com\.leventua\.bilgirotasi' "$snapshot"
   sleep 1
+}
+
+launch_main_activity() {
+  local launch_report="$1"
+  local label="$2"
+
+  adb shell am force-stop "$PACKAGE"
+  if ! adb shell am start -S -n "$MAIN_ACTIVITY" > "$launch_report" 2>&1; then
+    echo "$label explicit activity launch failed" >&2
+    cat "$launch_report" >&2
+    return 1
+  fi
+  cat "$launch_report"
+  grep -Eq 'Starting: Intent|Status: ok|Activity:' "$launch_report"
+}
+
+start_runtime_logcat() {
+  local log_file="$1"
+  adb logcat -c
+  adb logcat -v threadtime > "$log_file" 2>&1 &
+  RUNTIME_LOGCAT_PID=$!
+}
+
+stop_runtime_logcat() {
+  if [ -n "${RUNTIME_LOGCAT_PID:-}" ]; then
+    kill "$RUNTIME_LOGCAT_PID" 2>/dev/null || true
+    wait "$RUNTIME_LOGCAT_PID" 2>/dev/null || true
+    unset RUNTIME_LOGCAT_PID
+  fi
 }
 
 validate_nonblack_png() {
@@ -149,19 +184,20 @@ PY
   cat "$metrics"
 }
 
-if adb shell pm path com.leventua.bilgirotasi 2>/dev/null | grep -q '^package:'; then
-  adb uninstall com.leventua.bilgirotasi
+if adb shell pm path "$PACKAGE" 2>/dev/null | grep -q '^package:'; then
+  adb uninstall "$PACKAGE"
 fi
 
 adb install reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_PROOF.apk
-adb logcat -c
-adb shell am force-stop com.leventua.bilgirotasi
-adb shell monkey -p com.leventua.bilgirotasi -c android.intent.category.LAUNCHER 1 >/dev/null
+start_runtime_logcat reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_LOGCAT.txt
+launch_main_activity \
+  reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_LAUNCH.txt \
+  'Reusable map proof'
 wait_for_app_drawn \
   reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_ACTIVITY.txt \
   'Reusable map proof'
 adb exec-out screencap -p > reports/WORD_HUNT_REUSABLE_MAP_ANDROID16.png
-adb logcat -d > reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_LOGCAT.txt
+stop_runtime_logcat
 test -s reports/WORD_HUNT_REUSABLE_MAP_ANDROID16.png
 validate_nonblack_png \
   reports/WORD_HUNT_REUSABLE_MAP_ANDROID16.png \
@@ -171,17 +207,18 @@ if grep -E 'FATAL EXCEPTION|ANR in com\.leventua\.bilgirotasi|am_crash.*com\.lev
   echo 'Reusable map Android proof process failure detected.' >&2
   exit 1
 fi
-adb uninstall com.leventua.bilgirotasi
+adb uninstall "$PACKAGE"
 
 adb install build/app/outputs/flutter-apk/app-debug.apk
-adb logcat -c
-adb shell am force-stop com.leventua.bilgirotasi
-adb shell monkey -p com.leventua.bilgirotasi -c android.intent.category.LAUNCHER 1 >/dev/null
+start_runtime_logcat reports/WORD_HUNT_VISUAL_PROOF_LOGCAT.txt
+launch_main_activity \
+  reports/WORD_HUNT_VISUAL_PROOF_LAUNCH.txt \
+  'MASTER ART visual proof'
 wait_for_app_drawn \
   reports/WORD_HUNT_VISUAL_PROOF_ACTIVITY.txt \
   'MASTER ART visual proof'
 adb exec-out screencap -p > reports/ANDROID16_RAW.png
-adb logcat -d > reports/WORD_HUNT_VISUAL_PROOF_LOGCAT.txt
+stop_runtime_logcat
 awk '/WORD_HUNT_PIXEL_PROOF_ASSET_(LOADED|ERROR)/' \
   reports/WORD_HUNT_VISUAL_PROOF_LOGCAT.txt \
   > reports/WORD_HUNT_VISUAL_PROOF_ASSET_RUNTIME.txt
