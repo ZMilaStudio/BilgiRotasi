@@ -1,3 +1,5 @@
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
 
 import 'word_hunt_models.dart';
@@ -18,13 +20,28 @@ class WordHuntRouteVisualTheme {
     required this.decorationSpec,
     required this.decorationPalette,
     this.decorationOpacity = 0.38,
-  }) : assert(decorationOpacity >= 0 && decorationOpacity <= 1);
+    this.backgroundAsset,
+    this.backgroundFit = BoxFit.cover,
+    this.backgroundAlignment = Alignment.center,
+    this.backgroundBlurSigma = 0,
+    this.backgroundOverlayColor = Colors.transparent,
+  }) : assert(decorationOpacity >= 0 && decorationOpacity <= 1),
+       assert(backgroundBlurSigma >= 0);
 
   final String id;
   final WordHuntRouteMapTheme mapTheme;
   final WordHuntRouteDecorationSpec decorationSpec;
   final WordHuntRouteDecorationPalette decorationPalette;
   final double decorationOpacity;
+
+  /// Opsiyonel gerçek rota artwork'ü. Görsel yalnız sahne tabanıdır; node,
+  /// hitbox, yıldız, kilit veya progression state'i asset içine bake edilmez.
+  /// Böylece aynı canonical 1-10 motoru raster sahne üzerinde de çalışır.
+  final String? backgroundAsset;
+  final BoxFit backgroundFit;
+  final Alignment backgroundAlignment;
+  final double backgroundBlurSigma;
+  final Color backgroundOverlayColor;
 }
 
 /// Bütün temalı 10-bölümlük rotalar için tek generic bağlayıcı.
@@ -48,14 +65,69 @@ class WordHuntThemedRouteMapScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return WordHuntReusableRouteMapScreen(
+    final backgroundAsset = visualTheme.backgroundAsset;
+    final effectiveMapTheme = backgroundAsset == null
+        ? visualTheme.mapTheme
+        : _transparentSceneTheme(visualTheme.mapTheme);
+    final map = WordHuntReusableRouteMapScreen(
       route: route,
-      theme: visualTheme.mapTheme,
+      theme: effectiveMapTheme,
       progress: progress,
       onLevelTap: onLevelTap,
       decorationSpec: visualTheme.decorationSpec,
       decorationPalette: visualTheme.decorationPalette,
       decorationOpacity: visualTheme.decorationOpacity,
+    );
+
+    if (backgroundAsset == null) return map;
+
+    Widget artwork = Image.asset(
+      backgroundAsset,
+      key: const Key('word_hunt_route_background_asset'),
+      fit: visualTheme.backgroundFit,
+      alignment: visualTheme.backgroundAlignment,
+      filterQuality: FilterQuality.high,
+    );
+    if (visualTheme.backgroundBlurSigma > 0) {
+      artwork = ImageFiltered(
+        imageFilter: ui.ImageFilter.blur(
+          sigmaX: visualTheme.backgroundBlurSigma,
+          sigmaY: visualTheme.backgroundBlurSigma,
+        ),
+        child: artwork,
+      );
+    }
+
+    return Stack(
+      key: const Key('word_hunt_themed_artwork_stack'),
+      fit: StackFit.expand,
+      children: <Widget>[
+        Positioned.fill(child: artwork),
+        if (visualTheme.backgroundOverlayColor.a > 0)
+          Positioned.fill(
+            key: const Key('word_hunt_route_background_overlay'),
+            child: ColoredBox(color: visualTheme.backgroundOverlayColor),
+          ),
+        Positioned.fill(child: map),
+      ],
+    );
+  }
+
+  WordHuntRouteMapTheme _transparentSceneTheme(WordHuntRouteMapTheme source) {
+    return WordHuntRouteMapTheme(
+      id: source.id,
+      backgroundColor: Colors.transparent,
+      surfaceColor: Colors.transparent,
+      pathColor: source.pathColor,
+      lockedPathColor: source.lockedPathColor,
+      nodeColor: source.nodeColor,
+      lockedNodeColor: source.lockedNodeColor,
+      accentColor: source.accentColor,
+      textColor: source.textColor,
+      sceneGlowColor: source.sceneGlowColor,
+      pathUnderlayColor: source.pathUnderlayColor,
+      nodeShadowColor: source.nodeShadowColor,
+      sceneDepth: source.sceneDepth,
     );
   }
 }
