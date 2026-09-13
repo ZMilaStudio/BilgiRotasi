@@ -124,7 +124,10 @@ void main() {
     final rule = WordHuntRouteCatalog.orman.unlockRule;
     expect(rule.kind, WordHuntRouteUnlockKind.routeComplete);
     expect(rule.prerequisiteRoute?.id, WordHuntStarterContent.baslangicLimani.id);
-    expect(WordHuntRouteCatalog.orman.isUnlocked(const WordHuntProgressSnapshot()), isFalse);
+    expect(
+      WordHuntRouteCatalog.orman.isUnlocked(const WordHuntProgressSnapshot()),
+      isFalse,
+    );
 
     const highStarsWithoutFinal = WordHuntProgressSnapshot(
       bestStarsByLevelId: <String, int>{
@@ -141,7 +144,10 @@ void main() {
     );
     expect(rule.currentStars(highStarsWithoutFinal), 27);
     expect(rule.currentCompletedLevels(highStarsWithoutFinal), 9);
-    expect(WordHuntRouteCatalog.orman.isUnlocked(highStarsWithoutFinal), isFalse);
+    expect(
+      WordHuntRouteCatalog.orman.isUnlocked(highStarsWithoutFinal),
+      isFalse,
+    );
 
     const finalCompleted = WordHuntProgressSnapshot(
       bestStarsByLevelId: <String, int>{
@@ -161,30 +167,33 @@ void main() {
     expect(WordHuntRouteCatalog.orman.isUnlocked(finalCompleted), isTrue);
   });
 
-  test('Orman açıldığında kendi iç progressionı yine yalnız Bölüm 1 ile başlar', () {
-    const progress = WordHuntProgressSnapshot(
-      bestStarsByLevelId: <String, int>{'baslangic-10': 1},
-    );
-    expect(WordHuntRouteCatalog.orman.isUnlocked(progress), isTrue);
-    expect(
-      WordHuntRouteProgressEngine.isLevelUnlocked(
-        WordHuntOrmanContent.ormanYolu,
-        progress,
-        1,
-      ),
-      isTrue,
-    );
-    for (var level = 2; level <= 10; level++) {
+  test(
+    'Orman açıldığında kendi iç progressionı yine yalnız Bölüm 1 ile başlar',
+    () {
+      const progress = WordHuntProgressSnapshot(
+        bestStarsByLevelId: <String, int>{'baslangic-10': 1},
+      );
+      expect(WordHuntRouteCatalog.orman.isUnlocked(progress), isTrue);
       expect(
         WordHuntRouteProgressEngine.isLevelUnlocked(
           WordHuntOrmanContent.ormanYolu,
           progress,
-          level,
+          1,
         ),
-        isFalse,
+        isTrue,
       );
-    }
-  });
+      for (var level = 2; level <= 10; level++) {
+        expect(
+          WordHuntRouteProgressEngine.isLevelUnlocked(
+            WordHuntOrmanContent.ormanYolu,
+            progress,
+            level,
+          ),
+          isFalse,
+        );
+      }
+    },
+  );
 
   test('selector kartları catalog listesinden generic olarak üretir', () {
     expect(selectorSource, contains("Key('word_hunt_route_selector')"));
@@ -199,6 +208,17 @@ void main() {
     expect(entrySource, contains('void _openCatalogRoute('));
     expect(entrySource, isNot(contains('void _openGokyuzuRoute(')));
     expect(entrySource, isNot(contains('void _openStarterRoute(')));
+  });
+
+  test('kilitli rota mesajı unlock türünü doğru anlatır', () {
+    expect(entrySource, contains('String _lockedRouteMessage('));
+    expect(entrySource, contains('case WordHuntRouteUnlockKind.routeStars:'));
+    expect(entrySource, contains('case WordHuntRouteUnlockKind.routeComplete:'));
+    expect(entrySource, contains('bölümü tamamlaman gerekli.'));
+    expect(
+      entrySource,
+      isNot(contains('Orman Yolu için 0 Başlangıç Limanı yıldızı gerekli.')),
+    );
   });
 
   test('route renderer ve gameplay background route-id if kullanmaz', () {
