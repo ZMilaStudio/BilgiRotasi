@@ -111,7 +111,7 @@ launch_main_activity() {
 
   for attempt in 1 2 3; do
     adb_call 15 shell am force-stop "$PACKAGE" >/dev/null 2>&1 || true
-    if adb_call 30 shell am start -W -S -n "$MAIN_ACTIVITY" \
+    if adb_call 30 shell am start -W -n "$MAIN_ACTIVITY" \
         > "$launch_report" 2>&1; then
       launched=1
       break
