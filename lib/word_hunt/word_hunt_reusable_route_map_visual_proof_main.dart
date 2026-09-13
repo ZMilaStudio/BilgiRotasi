@@ -37,11 +37,44 @@ class _ReusableRouteMapVisualProofApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Kelime Avı Reusable Route Map Proof',
-      home: WordHuntThemedRouteMapScreen(
-        route: WordHuntOrmanContent.ormanYolu,
-        visualTheme: _visualTheme,
-        progress: _proofProgress,
+      home: const _ReusableProofRuntimeProbe(
+        child: WordHuntThemedRouteMapScreen(
+          route: WordHuntOrmanContent.ormanYolu,
+          visualTheme: _visualTheme,
+          progress: _proofProgress,
+        ),
       ),
     );
   }
+}
+
+/// Android `reportedDrawn` bazı emulator/runner birleşimlerinde gerçek Flutter
+/// frame'i çizilmiş olsa bile false kalabiliyor. Bu işaret yalnız izole proof
+/// binary'sinde ilk Flutter frame'inin gerçekten tamamlandığını logcat'e yazar.
+class _ReusableProofRuntimeProbe extends StatefulWidget {
+  const _ReusableProofRuntimeProbe({required this.child});
+
+  final Widget child;
+
+  @override
+  State<_ReusableProofRuntimeProbe> createState() =>
+      _ReusableProofRuntimeProbeState();
+}
+
+class _ReusableProofRuntimeProbeState extends State<_ReusableProofRuntimeProbe> {
+  bool _scheduled = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_scheduled) return;
+    _scheduled = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      debugPrint('[WORD_HUNT_REUSABLE_MAP_PROOF_FRAME_READY]');
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.child;
 }
