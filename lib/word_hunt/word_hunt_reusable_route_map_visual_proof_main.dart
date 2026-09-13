@@ -7,10 +7,10 @@ import 'package:flutter/services.dart';
 import 'word_hunt_orman_content.dart';
 import 'word_hunt_progress.dart';
 import 'word_hunt_route_visual_theme.dart';
+import 'word_hunt_themed_production_route_screen.dart';
 
-/// Yalnız reusable 10-bölümlük harita motorunun gerçek Flutter/Android görsel
-/// kanıtı için kullanılan izole giriş noktasıdır.
-/// Production `lib/main.dart`, katalog ve navigasyon bu dosyayı kullanmaz.
+/// Orman Yolu'nun gerçek production kompozisyonunu Android 16'da kanıtlayan
+/// izole giriş noktasıdır. Production `lib/main.dart` bu dosyayı kullanmaz.
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SystemChrome.setPreferredOrientations(<DeviceOrientation>[
@@ -23,38 +23,33 @@ Future<void> main() async {
 class _ReusableRouteMapVisualProofApp extends StatelessWidget {
   const _ReusableRouteMapVisualProofApp();
 
-  /// Kanonik ilk açılış durumu: yalnız bölüm 1 açıktır.
-  /// Bölüm 2, yalnız 1 tamamlandıktan sonra; her sonraki bölüm de yalnız
-  /// kendinden önceki bölüm tamamlandıktan sonra açılır.
   static const WordHuntProgressSnapshot _proofProgress =
       WordHuntProgressSnapshot();
-
-  /// Android screenshot artık proof presetini değil, Orman Yolu için ayrılan
-  /// gerçek production skin verisini render eder. Böylece proof ve production
-  /// arasında görsel preset sapması oluşmaz.
-  static const WordHuntRouteVisualTheme _visualTheme =
-      WordHuntRouteVisualThemes.ormanYolu;
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Kelime Avı Reusable Route Map Proof',
-      home: const _ReusableProofRuntimeProbe(
-        child: WordHuntThemedRouteMapScreen(
+      title: 'Kelime Avı Orman Production Proof',
+      home: _ReusableProofRuntimeProbe(
+        child: WordHuntThemedProductionRouteScreen(
           route: WordHuntOrmanContent.ormanYolu,
-          visualTheme: _visualTheme,
+          visualTheme: WordHuntRouteVisualThemes.ormanYolu,
           progress: _proofProgress,
+          onBack: _noop,
+          onInfo: _noop,
+          onCompass: _noop,
+          onBook: _noop,
+          onLevelTap: _noopLevel,
         ),
       ),
     );
   }
+
+  static void _noop() {}
+  static void _noopLevel(int _) {}
 }
 
-/// Android `reportedDrawn` bazı emulator/runner birleşimlerinde gerçek Flutter
-/// frame'i çizilmiş olsa bile false kalabiliyor. Bu probe yalnız izole proof
-/// binary'sinde artwork bundle'ının decode edildiğini ve ardından Flutter'ın
-/// bir frame daha tamamladığını logcat'e yazar.
 class _ReusableProofRuntimeProbe extends StatefulWidget {
   const _ReusableProofRuntimeProbe({required this.child});
 
@@ -97,9 +92,6 @@ class _ReusableProofRuntimeProbeState extends State<_ReusableProofRuntimeProbe> 
           codec.dispose();
         }
 
-        // Background widget aynı küçük bundle'ı bağımsız yükler. Bir sonraki
-        // frame sınırını beklemek screenshot'ın fallback renk üzerinde
-        // yakalanmasını önler.
         await Future<void>.delayed(const Duration(milliseconds: 200));
         await WidgetsBinding.instance.endOfFrame;
         if (!mounted) return;
