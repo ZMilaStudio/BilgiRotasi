@@ -109,9 +109,14 @@ launch_main_activity() {
   local label="$2"
   local launched=0
 
+  # Do not use `am start -W` here. On hosted Android 16 emulators the
+  # synchronous wait can outlive the adb transport while Flutter is bringing
+  # up its first frame, which makes an infrastructure loss look like an app
+  # launch failure. Start asynchronously and let wait_for_flutter_frame own
+  # the real activity/frame readiness contract.
   for attempt in 1 2 3; do
     adb_call 15 shell am force-stop "$PACKAGE" >/dev/null 2>&1 || true
-    if adb_call 30 shell am start -W -n "$MAIN_ACTIVITY" \
+    if adb_call 10 shell am start -n "$MAIN_ACTIVITY" \
         > "$launch_report" 2>&1; then
       launched=1
       break
@@ -126,7 +131,7 @@ launch_main_activity() {
     return 1
   fi
   cat "$launch_report"
-  grep -Eq 'Starting: Intent|Status: ok|Activity:' "$launch_report"
+  grep -Eq 'Starting: Intent|Warning: Activity not started|Activity:' "$launch_report"
 }
 
 prepare_runtime_logcat() {
