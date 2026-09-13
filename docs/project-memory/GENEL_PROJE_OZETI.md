@@ -1,6 +1,6 @@
 # Bilgi Rotası — Genel Proje Özeti
 
-**Son güncelleme:** 13 Eylül 2026 — Kelime Avı reusable rota haritası / Orman Yolu Android runtime kanıt hattı güçlendirildi. Canlı çalışma PR'ı #198 `feat/kelime-avi-scenic-theme-depth-20260912` branch'inde OPEN/DRAFT durumda. Kanonik release branch `release/final-closed-test-aab-1.68.8` olarak korunuyor. Bölüm progression kararı kesin olarak **yalnız Bölüm 1 açık başlar; 2–10 kilitli; her bölüm yalnız kendinden önceki tamamlanınca açılır (`1→2→3→4→5→6→7→8→9→10`)** şeklindedir. Eski “7 bitince 8 ve 9 birlikte açılır” kararı geçersizdir. Orman Yolu production skin `WordHuntRouteVisualThemes.ormanYolu` ile gerçek artwork tabanı + canlı path/node/lock/progression katmanı ayrıdır. Android visual proof artık kırılgan `reportedDrawn` sinyaline tek başına güvenmez; proof binary'leri gerçek Flutter frame/artwork-ready marker üretir ve workflow emulator altyapı hatasında en fazla bir temiz retry yapar. Orman Yolu production catalog'a henüz eklenmedi; rota-katalog unlock kararı ayrı tutuluyor. PR Ready/merge için Levent/owner açık onayı zorunludur.
+**Son güncelleme:** 13 Eylül 2026 — Kelime Avı reusable rota haritası / Orman Yolu Android runtime kanıt hattı üzerinde çalışılıyor. Canlı çalışma PR'ı #198 `feat/kelime-avi-scenic-theme-depth-20260912` branch'inde OPEN/DRAFT durumda. Kanonik release branch `release/final-closed-test-aab-1.68.8` olarak korunuyor. Bölüm progression kararı kesin olarak **yalnız Bölüm 1 açık başlar; 2–10 kilitli; her bölüm yalnız kendinden önceki tamamlanınca açılır (`1→2→3→4→5→6→7→8→9→10`)** şeklindedir. Eski “7 bitince 8 ve 9 birlikte açılır” kararı geçersizdir. Orman Yolu production skin `WordHuntRouteVisualThemes.ormanYolu` ile gerçek artwork tabanı + canlı path/node/lock/progression katmanı ayrıdır. Exact-head `473cf82affd54de34b2fc01410f941a4a6072d20` üzerinde focused Kelime Avı suite'i 167/167 PASS ve AdMob PR doğrulaması PASS oldu; Android 16 görsel proof ise iki temiz emulator denemesinde de uygulama crash/ANR üretmeden ADB/emulator bağlantısını kaybetti. Log, Flutter/Impeller başlangıcını ve Orman artwork decode'unu doğruladı (`width=200 height=400`), fakat frame-ready marker'dan önce emulator kayboldu. Bu nedenle proof hattı debug-runtime baskısını azaltmak için profile APK ve tek transient ADB hatasında hemen düşmeyen bounded recovery mantığına taşınıyor; kanıt şartları gevşetilmiyor. Mevcut 200×400 Orman artwork final kalite kabul edilmez. Orman Yolu production catalog'a henüz eklenmedi; rota-katalog unlock kararı ayrı tutuluyor. PR Ready/merge için Levent/owner açık onayı zorunludur.
 
 > Teknik doğrulukta tek kanonik kaynak canlı `ZMilaStudio/BilgiRotasi` deposu ve ilgili canlı servislerdir. Bu dosya canlı branch/PR/CI/pubspec doğrulamasının yerine geçmez. Ayrıntılı eski üretim günlükleri Git geçmişinde ve `docs/project-memory/archive/` altında korunur.
 
@@ -49,8 +49,11 @@
 - Production Orman widget artifact'i ayrıca üretilir; raster artwork ile canlı sıralı kilit state'inin birlikte render edildiği test kapısı vardır.
 - Android runtime proof binary'si Orman artwork bundle'ını decode eder, boyutunu loglar ve sonraki Flutter frame tamamlanınca `[WORD_HUNT_REUSABLE_MAP_PROOF_FRAME_READY]` marker üretir.
 - Legacy MASTER ART proof de asset'ler precache edildikten ve bir frame daha tamamlandıktan sonra `[WORD_HUNT_VISUAL_PROOF_FRAME_READY]` marker üretir.
-- Android proof workflow gerçek app crash/ANR/process-death bulursa fail verir; yalnız emulator/render altyapı hatasında tek temiz retry yapabilir.
+- `473cf82...` raw Android denemesinde artwork marker başarıyla görüldü ve kaynak boyutu **200×400** doğrulandı; iki emulator denemesi de frame-ready marker'dan önce ADB/emulator bağlantısını kaybetti. Captured loglarda uygulama crash/ANR/process-death kanıtı yoktu.
+- Android proof workflow gerçek app crash/ANR/process-death bulursa fail vermeye devam eder; emulator/ADB altyapı hatası yalnız sınırlı recovery/retry ile ele alınır. Frame marker, screenshot ve nonblack-pixel kapıları kaldırılmaz.
+- Görsel proof APK'ları debug VM yükünü azaltmak üzere profile moda taşınır; bu değişiklik yalnız proof harness kapsamındadır, production build/release ayarını değiştirmez.
 - Final raster Orman artwork'ü production catalog/unlock kararıyla karıştırılmaz; görsel kalite kabulü raw Android üzerinden yapılır.
+- Mevcut Orman rasterının gerçek decode boyutu 200×400 olduğundan final kalite artwork olarak kabul edilmez.
 
 ## Production Ana Navigasyon — CANONICAL
 
@@ -83,12 +86,13 @@
 
 ## Aktif devam sırası
 
-1. PR #198 exact HEAD CI ve Android 16 raw runtime kanıtını tamamla; proof marker + screenshot + nonblack pixel gate'i birlikte doğrula.
-2. Başarılı Android artifact'ındaki production Orman ekranını içeride incele; mevcut düşük kalite artwork final kabul edilmez.
-3. Orman Yolu için final kalite raster artwork'i yalnız generic artwork katmanından bağla; procedural proof dekorunu final art üzerine bindirme.
-4. Fresh state'in 1 açık / 2–10 locked olduğunu raw Android proof ile tekrar doğrula.
-5. Kullanıcı görsel kalite PASS vermeden PR Ready/merge yapma.
-6. Orman Yolu production catalog/unlock kararını görsel kabulden ayrı ele al; kendiliğinden unlock kuralı icat etme.
-7. `assets/questions.json`, 67-node BoardMap, Firebase, production AdMob, signing, version veya Play'e dokunma.
+1. Android visual-proof harness'ını profile APK + bounded ADB recovery ile stabilize et; raw proof gereksinimlerini gevşetme.
+2. PR #198 exact HEAD CI ve Android 16 raw runtime kanıtını tamamla; artwork/frame marker + screenshot + nonblack pixel gate'ini birlikte doğrula.
+3. Başarılı Android artifact'ındaki production Orman ekranını içeride incele; mevcut 200×400 artwork final kabul edilmez.
+4. Orman Yolu için final kalite raster artwork'i yalnız generic artwork katmanından bağla; procedural proof dekorunu final art üzerine bindirme.
+5. Fresh state'in 1 açık / 2–10 locked olduğunu raw Android proof ile tekrar doğrula.
+6. Kullanıcı görsel kalite PASS vermeden PR Ready/merge yapma.
+7. Orman Yolu production catalog/unlock kararını görsel kabulden ayrı ele al; kendiliğinden unlock kuralı icat etme.
+8. `assets/questions.json`, 67-node BoardMap, Firebase, production AdMob, signing, version veya Play'e dokunma.
 
-**SON DURUM:** PR #198 OPEN/DRAFT / Orman production skin ayrıldı / sıralı 1→10 kilit kuralı kanonik / raster artwork temiz katman sözleşmesi aktif / Android proof gerçek Flutter frame marker + tek infra retry ile güçlendirildi / raw Android exact-head kanıtı zorunlu / mevcut Orman artwork final kalite kabul edilmedi / Orman production catalog henüz kapalı / merge ve Play yok.
+**SON DURUM:** PR #198 OPEN/DRAFT / Orman production skin ayrıldı / sıralı 1→10 kilit kuralı kanonik / raster artwork temiz katman sözleşmesi aktif / focused testler ve AdMob exact-head PASS / Android visual proof iki emulator denemesinde app crash olmadan ADB/emulator kaybıyla FAIL / artwork decode 200×400 doğrulandı ve final kalite değil / proof harness profile + bounded ADB recovery ile stabilize ediliyor / Orman production catalog henüz kapalı / merge ve Play yok.
