@@ -1,10 +1,46 @@
 #!/usr/bin/env bash
-set -eu
+set -euo pipefail
 
 mkdir -p reports
 
 PACKAGE='com.leventua.bilgirotasi'
 MAIN_ACTIVITY='com.leventua.bilgirotasi/.MainActivity'
+REUSABLE_APK='reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_PROOF.apk'
+MASTER_ART_APK='reports/WORD_HUNT_VISUAL_PROOF_ANDROID16_PROOF.apk'
+
+adb_call() {
+  local timeout_seconds="$1"
+  shift
+  timeout "$timeout_seconds" adb "$@"
+}
+
+refresh_logcat_snapshot() {
+  local log_file="$1"
+  local temp_file="${log_file}.tmp"
+
+  if adb_call 20 logcat -d -v threadtime > "$temp_file" 2>&1; then
+    mv "$temp_file" "$log_file"
+    return 0
+  fi
+
+  if [ -s "$temp_file" ]; then
+    cat "$temp_file" >> "$log_file" 2>/dev/null || true
+  fi
+  rm -f "$temp_file"
+  return 1
+}
+
+recover_adb_transport() {
+  for recovery_attempt in 1 2 3; do
+    if adb_call 8 wait-for-device >/dev/null 2>&1 \
+        && adb_call 8 shell getprop sys.boot_completed 2>/dev/null \
+          | tr -d '\r' | grep -Fxq '1'; then
+      return 0
+    fi
+    sleep 2
+  done
+  return 1
+}
 
 wait_for_flutter_frame() {
   local snapshot="$1"
@@ -12,12 +48,27 @@ wait_for_flutter_frame() {
   local ready_marker="$3"
   local label="$4"
   local ready=0
+  local consecutive_adb_failures=0
 
-  for attempt in $(seq 1 45); do
-    if ! adb shell dumpsys activity activities > "$snapshot"; then
-      echo "$label lost adb while waiting for Flutter frame" >&2
-      return 1
+  for attempt in $(seq 1 60); do
+    local snapshot_temp="${snapshot}.tmp"
+    if ! adb_call 15 shell dumpsys activity activities > "$snapshot_temp" 2>&1; then
+      mv "$snapshot_temp" "$snapshot"
+      refresh_logcat_snapshot "$log_file" || true
+      consecutive_adb_failures=$((consecutive_adb_failures + 1))
+      echo "$label adb probe failed on attempt $attempt ($consecutive_adb_failures/3)" >&2
+      if [ "$consecutive_adb_failures" -ge 3 ]; then
+        echo "$label lost adb after bounded recovery attempts" >&2
+        return 1
+      fi
+      recover_adb_transport || true
+      sleep 2
+      continue
     fi
+    mv "$snapshot_temp" "$snapshot"
+    consecutive_adb_failures=0
+
+    refresh_logcat_snapshot "$log_file" || true
     if grep -Fq "$MAIN_ACTIVITY" "$snapshot" \
       && grep -Eq 'topResumedActivity=.*com\.leventua\.bilgirotasi|ResumedActivity:.*com\.leventua\.bilgirotasi' "$snapshot" \
       && grep -Fq "$ready_marker" "$log_file"; then
@@ -28,9 +79,10 @@ wait_for_flutter_frame() {
     sleep 1
   done
 
+  refresh_logcat_snapshot "$log_file" || true
   if [ "$ready" -ne 1 ]; then
     echo "$label never emitted its Flutter frame-ready marker" >&2
-    cat "$snapshot" >&2
+    cat "$snapshot" >&2 || true
     tail -n 200 "$log_file" >&2 || true
     return 1
   fi
@@ -38,36 +90,76 @@ wait_for_flutter_frame() {
   grep -Fq "$MAIN_ACTIVITY" "$snapshot"
   grep -Eq 'topResumedActivity=.*com\.leventua\.bilgirotasi|ResumedActivity:.*com\.leventua\.bilgirotasi' "$snapshot"
   grep -Fq "$ready_marker" "$log_file"
-  test -n "$(adb shell pidof "$PACKAGE" | tr -d '\r\n')"
+
+  local app_pid=''
+  for pid_attempt in 1 2 3; do
+    app_pid="$(adb_call 10 shell pidof "$PACKAGE" 2>/dev/null | tr -d '\r\n' || true)"
+    if [ -n "$app_pid" ]; then
+      break
+    fi
+    recover_adb_transport || true
+    sleep 1
+  done
+  test -n "$app_pid"
   sleep 1
 }
 
 launch_main_activity() {
   local launch_report="$1"
   local label="$2"
+  local launched=0
 
-  adb shell am force-stop "$PACKAGE"
-  if ! adb shell am start -S -n "$MAIN_ACTIVITY" > "$launch_report" 2>&1; then
-    echo "$label explicit activity launch failed" >&2
-    cat "$launch_report" >&2
+  for attempt in 1 2 3; do
+    adb_call 15 shell am force-stop "$PACKAGE" >/dev/null 2>&1 || true
+    if adb_call 30 shell am start -W -S -n "$MAIN_ACTIVITY" \
+        > "$launch_report" 2>&1; then
+      launched=1
+      break
+    fi
+    echo "$label explicit activity launch failed on attempt $attempt" >&2
+    cat "$launch_report" >&2 || true
+    recover_adb_transport || true
+    sleep 2
+  done
+
+  if [ "$launched" -ne 1 ]; then
     return 1
   fi
   cat "$launch_report"
   grep -Eq 'Starting: Intent|Status: ok|Activity:' "$launch_report"
 }
 
-start_runtime_logcat() {
+prepare_runtime_logcat() {
   local log_file="$1"
-  adb logcat -c
-  adb logcat -v threadtime > "$log_file" 2>&1 &
-  RUNTIME_LOGCAT_PID=$!
+  : > "$log_file"
+  if ! adb_call 15 logcat -c > /dev/null 2>&1; then
+    recover_adb_transport || true
+    adb_call 15 logcat -c > /dev/null 2>&1
+  fi
 }
 
-stop_runtime_logcat() {
-  if [ -n "${RUNTIME_LOGCAT_PID:-}" ]; then
-    kill "$RUNTIME_LOGCAT_PID" 2>/dev/null || true
-    wait "$RUNTIME_LOGCAT_PID" 2>/dev/null || true
-    unset RUNTIME_LOGCAT_PID
+install_apk() {
+  local apk="$1"
+  local label="$2"
+  local install_report="reports/${label}_INSTALL.txt"
+
+  for attempt in 1 2 3; do
+    if adb_call 180 install -r "$apk" > "$install_report" 2>&1 \
+        && grep -Fq 'Success' "$install_report"; then
+      cat "$install_report"
+      return 0
+    fi
+    cat "$install_report" >&2 || true
+    recover_adb_transport || true
+    sleep 2
+  done
+  echo "$label APK install failed after retries" >&2
+  return 1
+}
+
+uninstall_if_present() {
+  if adb_call 15 shell pm path "$PACKAGE" 2>/dev/null | grep -q '^package:'; then
+    adb_call 60 uninstall "$PACKAGE" >/dev/null 2>&1 || true
   fi
 }
 
@@ -190,12 +282,33 @@ PY
   cat "$metrics"
 }
 
-if adb shell pm path "$PACKAGE" 2>/dev/null | grep -q '^package:'; then
-  adb uninstall "$PACKAGE"
-fi
+capture_screenshot() {
+  local target="$1"
+  for attempt in 1 2 3; do
+    if adb_call 30 exec-out screencap -p > "$target" 2>/dev/null \
+        && test -s "$target"; then
+      return 0
+    fi
+    recover_adb_transport || true
+    sleep 1
+  done
+  echo "Unable to capture Android screenshot: $target" >&2
+  return 1
+}
 
-adb install reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_PROOF.apk
-start_runtime_logcat reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_LOGCAT.txt
+has_app_failure() {
+  local log_file="$1"
+  grep -Eqi \
+    'FATAL EXCEPTION|ANR in com\.leventua\.bilgirotasi|am_crash.*com\.leventua\.bilgirotasi|am_proc_died.*com\.leventua\.bilgirotasi|Process com\.leventua\.bilgirotasi .*has died|Cmdline: com\.leventua\.bilgirotasi' \
+    "$log_file"
+}
+
+test -s "$REUSABLE_APK"
+test -s "$MASTER_ART_APK"
+
+uninstall_if_present
+install_apk "$REUSABLE_APK" 'WORD_HUNT_REUSABLE_MAP_ANDROID16'
+prepare_runtime_logcat reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_LOGCAT.txt
 launch_main_activity \
   reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_LAUNCH.txt \
   'Reusable map proof'
@@ -204,6 +317,7 @@ wait_for_flutter_frame \
   reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_LOGCAT.txt \
   '[WORD_HUNT_REUSABLE_MAP_PROOF_FRAME_READY]' \
   'Reusable map proof'
+refresh_logcat_snapshot reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_LOGCAT.txt || true
 awk '/WORD_HUNT_REUSABLE_MAP_PROOF_(ARTWORK_READY|FRAME_READY|ERROR)/' \
   reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_LOGCAT.txt \
   > reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_RUNTIME.txt
@@ -217,21 +331,18 @@ if grep -Fq '[WORD_HUNT_REUSABLE_MAP_PROOF_ERROR]' \
   cat reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_RUNTIME.txt >&2
   exit 1
 fi
-adb exec-out screencap -p > reports/WORD_HUNT_REUSABLE_MAP_ANDROID16.png
-stop_runtime_logcat
-test -s reports/WORD_HUNT_REUSABLE_MAP_ANDROID16.png
+capture_screenshot reports/WORD_HUNT_REUSABLE_MAP_ANDROID16.png
 validate_nonblack_png \
   reports/WORD_HUNT_REUSABLE_MAP_ANDROID16.png \
   reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_PIXEL_CHECK.txt
-if grep -E 'FATAL EXCEPTION|ANR in com\.leventua\.bilgirotasi|am_crash.*com\.leventua\.bilgirotasi|am_proc_died.*com\.leventua\.bilgirotasi' \
-  reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_LOGCAT.txt; then
+if has_app_failure reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_LOGCAT.txt; then
   echo 'Reusable map Android proof process failure detected.' >&2
   exit 1
 fi
-adb uninstall "$PACKAGE"
+uninstall_if_present
 
-adb install build/app/outputs/flutter-apk/app-debug.apk
-start_runtime_logcat reports/WORD_HUNT_VISUAL_PROOF_LOGCAT.txt
+install_apk "$MASTER_ART_APK" 'WORD_HUNT_VISUAL_PROOF'
+prepare_runtime_logcat reports/WORD_HUNT_VISUAL_PROOF_LOGCAT.txt
 launch_main_activity \
   reports/WORD_HUNT_VISUAL_PROOF_LAUNCH.txt \
   'MASTER ART visual proof'
@@ -240,19 +351,17 @@ wait_for_flutter_frame \
   reports/WORD_HUNT_VISUAL_PROOF_LOGCAT.txt \
   '[WORD_HUNT_VISUAL_PROOF_FRAME_READY]' \
   'MASTER ART visual proof'
-adb exec-out screencap -p > reports/ANDROID16_RAW.png
-stop_runtime_logcat
+capture_screenshot reports/ANDROID16_RAW.png
+refresh_logcat_snapshot reports/WORD_HUNT_VISUAL_PROOF_LOGCAT.txt || true
 awk '/WORD_HUNT_VISUAL_PROOF_FRAME_READY|WORD_HUNT_PIXEL_PROOF_ASSET_(LOADED|ERROR)/' \
   reports/WORD_HUNT_VISUAL_PROOF_LOGCAT.txt \
   > reports/WORD_HUNT_VISUAL_PROOF_ASSET_RUNTIME.txt
 grep -Fq '[WORD_HUNT_VISUAL_PROOF_FRAME_READY]' \
   reports/WORD_HUNT_VISUAL_PROOF_ASSET_RUNTIME.txt
-test -s reports/ANDROID16_RAW.png
 validate_nonblack_png \
   reports/ANDROID16_RAW.png \
   reports/WORD_HUNT_VISUAL_PROOF_PIXEL_CHECK.txt
-if grep -E 'FATAL EXCEPTION|ANR in com\.leventua\.bilgirotasi|am_crash.*com\.leventua\.bilgirotasi|am_proc_died.*com\.leventua\.bilgirotasi' \
-  reports/WORD_HUNT_VISUAL_PROOF_LOGCAT.txt; then
+if has_app_failure reports/WORD_HUNT_VISUAL_PROOF_LOGCAT.txt; then
   echo 'Bilgi Rotası visual-proof process failure detected.' >&2
   exit 1
 fi
