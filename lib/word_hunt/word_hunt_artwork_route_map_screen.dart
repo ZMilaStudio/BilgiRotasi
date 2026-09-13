@@ -344,7 +344,7 @@ class _ArtworkHeader extends StatelessWidget {
                   children: <Widget>[
                     Expanded(
                       child: Text(
-                        title.toUpperCase(),
+                        title,
                         key: const Key('word_hunt_reusable_route_title'),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
