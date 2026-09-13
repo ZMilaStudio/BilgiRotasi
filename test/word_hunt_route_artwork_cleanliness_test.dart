@@ -46,7 +46,7 @@ void main() {
     expect(theme.mapTheme.nodeShadowColor, const Color(0xFF08120D));
   });
 
-  testWidgets('Orman production artwork decodes with clean live overlay', (
+  testWidgets('Orman production artwork decodes with production route overlay', (
     tester,
   ) async {
     tester.view.physicalSize = const Size(390, 844);
@@ -70,10 +70,18 @@ void main() {
       find.byKey(const Key('word_hunt_route_background_asset')),
       findsOneWidget,
     );
-    expect(find.byType(Image), findsOneWidget);
+    expect(find.byType(Image), findsWidgets);
     expect(
-      find.byKey(const Key('word_hunt_artwork_node_asset_1')),
-      findsNothing,
+      find.byKey(const Key('word_hunt_route_stop_asset_1')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const Key('word_hunt_route_stop_plaque_5')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const Key('word_hunt_route_stop_plaque_10')),
+      findsOneWidget,
     );
     expect(
       find.byKey(const Key('word_hunt_reusable_decoration_layer')),
