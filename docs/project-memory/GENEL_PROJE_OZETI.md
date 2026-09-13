@@ -1,6 +1,6 @@
 # Bilgi Rotası — Genel Proje Özeti
 
-**Son güncelleme:** 13 Eylül 2026 — Kelime Avı reusable rota haritası / Orman Yolu production entegrasyonu PR #198 `feat/kelime-avi-scenic-theme-depth-20260912` branch'inde OPEN/DRAFT durumda. Kanonik release branch `release/final-closed-test-aab-1.68.8` olarak korunuyor. Bölüm progression kararı kesin olarak **yalnız Bölüm 1 açık başlar; 2–10 kilitli; her bölüm yalnız kendinden önceki tamamlanınca açılır (`1→2→3→4→5→6→7→8→9→10`)** şeklindedir. Eski “7 bitince 8 ve 9 birlikte açılır” kararı geçersizdir. Orman Yolu production skin `WordHuntRouteVisualThemes.ormanYolu` ile gerçek artwork tabanı + canlı path/node/lock/progression katmanı ayrıdır. Android proof altyapısındaki blocking launch sorunu `9b23363d7a0c4a28652fa717802e97c4bced1cfa` ile çözüldü; aynı exact-head'de Android 16 görsel proof ve AdMob PR doğrulaması SUCCESS oldu. 13 Eylül owner kararıyla **Orman Yolu production catalog'a üçüncü rota olarak eklendi ve yalnız Başlangıç Limanı 10. bölüm tamamlandığında açılır**; Gökyüzü Adaları'nın 18 Başlangıç Limanı yıldızı kapısı değişmez. Orman açıldığında kendi içinde yine yalnız Bölüm 1 açık/current, Bölüm 2–10 locked başlar. Dedicated route catalog gate entegrasyon commitinde SUCCESS geçti; güncel exact-head CI çalışıyor. Mevcut 200×400 Orman artwork final yüksek çözünürlük kalite hedefi olarak kabul edilmez. PR Ready/merge için Levent/owner ayrıca açık onay vermelidir.
+**Son güncelleme:** 13 Eylül 2026 — Kelime Avı reusable rota haritası / Orman Yolu production entegrasyonu PR #198 `feat/kelime-avi-scenic-theme-depth-20260912` branch'inde OPEN/DRAFT durumda. Kanonik release branch `release/final-closed-test-aab-1.68.8` olarak korunuyor. Bölüm progression kararı kesin olarak **yalnız Bölüm 1 açık başlar; 2–10 kilitli; her bölüm yalnız kendinden önceki tamamlanınca açılır (`1→2→3→4→5→6→7→8→9→10`)** şeklindedir. Eski “7 bitince 8 ve 9 birlikte açılır” kararı geçersizdir. 13 Eylül owner kararıyla **Orman Yolu production catalog'a üçüncü rota olarak eklendi ve yalnız Başlangıç Limanı 10. bölüm tamamlandığında açılır**; Gökyüzü Adaları'nın 18 Başlangıç Limanı yıldızı kapısı değişmez. Orman açıldığında kendi içinde yine yalnız Bölüm 1 açık/current, Bölüm 2–10 locked başlar. Exact product/test HEAD `827643972fc991cb63c594dc2e326d03594b2a71` üzerinde route catalog kapısı **12/12 PASS**, Android 16 raw visual proof **SUCCESS** ve AdMob/release APK/Android 16 cold-start **SUCCESS** oldu. Exact Android screenshot önceki `4b625284...` kanıtıyla byte-for-byte aynı SHA-256 (`2e597b75...`) kaldı; runtime artwork marker'ı mevcut Orman rasterını `200×400` olarak doğruluyor. Kilitli Orman kartı mesajının yanlışlıkla “0 yıldız” dememesi için ayrıca regresyon testi eklendi. Mevcut 200×400 Orman artwork final yüksek çözünürlük kalite hedefi olarak kabul edilmez; konuşma/Library ve repo geçmişinde temiz, onaylı gerçek yüksek çözünürlüklü Orman master'ı bulunamadı. PR Ready/merge için Levent/owner ayrıca açık onay vermelidir.
 
 > Teknik doğrulukta tek kanonik kaynak canlı `ZMilaStudio/BilgiRotasi` deposu ve ilgili canlı servislerdir. Bu dosya canlı branch/PR/CI/pubspec doğrulamasının yerine geçmez. Ayrıntılı eski üretim günlükleri Git geçmişinde ve `docs/project-memory/archive/` altında korunur.
 
@@ -49,8 +49,9 @@
 - Production Orman widget artifact'i ayrıca üretilir; raster artwork ile canlı sıralı kilit state'inin birlikte render edildiği test kapısı vardır.
 - Android runtime proof binary'si Orman artwork bundle'ını decode eder, boyutunu loglar ve sonraki Flutter frame tamamlanınca `[WORD_HUNT_REUSABLE_MAP_PROOF_FRAME_READY]` marker üretir.
 - Legacy MASTER ART proof de asset'ler precache edildikten ve bir frame daha tamamlandıktan sonra `[WORD_HUNT_VISUAL_PROOF_FRAME_READY]` marker üretir.
-- `9b23363...` exact-head'de blocking `am start -W` kaldırılıp asynchronous activity launch + ayrı Flutter frame polling kullanıldı; Android 16 görsel proof ilk denemede SUCCESS oldu ve raw screenshot/artifact üretildi.
-- Aynı exact-head'de AdMob PR doğrulaması da SUCCESS oldu; release APK + Android 16 cold-start kapısı geçti.
+- `827643972fc991cb63c594dc2e326d03594b2a71` exact product/test HEAD'de route catalog gate 12/12 PASS, Android 16 görsel proof SUCCESS ve AdMob/release Android gate SUCCESS oldu.
+- Kilitli Orman route mesajı `routeComplete` kuralını kullanıcıya “Başlangıç Limanı 10. bölümü tamamla” olarak anlatır; “0 yıldız” regresyonuna karşı test vardır.
+- Exact-head raw Android screenshot 1080×1920 üretildi; nonblack/visible pixel gate PASS ve screenshot önceki kabul edilebilir runtime ile byte-for-byte aynıdır.
 - Android proof workflow gerçek app crash/ANR/process-death bulursa fail vermeye devam eder; emulator/ADB altyapı hatası yalnız sınırlı recovery/retry ile ele alınır. Frame marker, screenshot ve nonblack-pixel kapıları kaldırılmaz.
 - Final raster Orman artwork'ü production catalog/unlock kararından ayrı kalite borcudur; görsel kalite kabulü raw Android üzerinden yapılır.
 - Mevcut Orman rasterının gerçek decode boyutu 200×400 olduğundan final yüksek çözünürlük artwork olarak kabul edilmez.
@@ -89,12 +90,10 @@
 
 ## Aktif devam sırası
 
-1. Orman production catalog entegrasyonunun exact-head route catalog, AdMob ve Android 16 CI kapılarını tamamla.
-2. Orman kartının fresh progress'te kilitli, Başlangıç Limanı 10 tamamlandıktan sonra açık olduğunu testlerle koru.
-3. Orman açıldığında kendi rotasında 1 açık / 2–10 locked state'ini koru.
-4. Başarılı Android artifact'ındaki production Orman ekranını içeride incele; mevcut 200×400 artwork final yüksek çözünürlük kabul edilmez.
-5. Orman Yolu için final kalite raster artwork yalnız onaylı kaynak bulunduğunda generic artwork katmanından bağlanır; procedural proof dekoru final art üzerine bindirilmez.
-6. Kullanıcı ayrıca açıkça onay vermeden PR Ready/merge yapma.
-7. `assets/questions.json`, 67-node BoardMap, Firebase, production AdMob, signing, version veya Play'e dokunma.
+1. Mevcut Orman route/catalog/progression kodunu exact-head CI ile yeşil tut; unlock veya sıralı kilit regresyonu ekleme.
+2. Orman Yolu için final kalite raster artwork yalnız temiz/onaylı gerçek yüksek çözünürlüklü kaynak bulunduğunda generic artwork katmanından bağlanır; mevcut 200×400 kaynağı yapay upscale ile “HD” diye değiştirme.
+3. Yeni gerçek yüksek çözünürlüklü source geldiğinde raw Android 16 visual proof ile tekrar doğrula; 1 açık / 2–10 locked state'ini koru.
+4. Kullanıcı ayrıca açıkça onay vermeden PR Ready/merge yapma.
+5. `assets/questions.json`, 67-node BoardMap, Firebase, production AdMob, signing, version veya Play'e dokunma.
 
-**SON DURUM:** PR #198 OPEN/DRAFT / Orman production skin + generic themed renderer aktif / sıralı 1→10 kilit kuralı kanonik / Android 16 raw runtime proof ve AdMob gate `9b23363...` üzerinde SUCCESS / owner kararıyla Orman production catalog'a üçüncü rota olarak eklendi ve Başlangıç Limanı Bölüm 10 completion kapısına bağlandı / Gökyüzü 18-star kapısı değişmedi / route catalog dedicated gate entegrasyon commitinde PASS / exact-head CI çalışıyor / mevcut artwork 200×400 ve final yüksek çözünürlük değil / merge ve Play yok.
+**SON DURUM:** PR #198 OPEN/DRAFT / production catalog üç rota / Orman Başlangıç Limanı B10 completion kapısına bağlı / Gökyüzü 18-star kapısı değişmedi / Orman fresh state 1 açık 2–10 locked / exact product/test HEAD `827643972fc991cb63c594dc2e326d03594b2a71` üzerinde route catalog 12/12 PASS + Android 16 visual proof SUCCESS + AdMob/release Android gate SUCCESS / raw Android screenshot önceki kanıtla byte-for-byte aynı / mevcut artwork 200×400 ve final yüksek çözünürlük değil / temiz onaylı gerçek HD Orman source bulunamadı / merge ve Play yok.
