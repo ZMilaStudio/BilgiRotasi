@@ -204,11 +204,17 @@ wait_for_flutter_frame \
   reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_LOGCAT.txt \
   '[WORD_HUNT_REUSABLE_MAP_PROOF_FRAME_READY]' \
   'Reusable map proof'
+awk '/WORD_HUNT_REUSABLE_MAP_PROOF_(ARTWORK_READY|FRAME_READY|ERROR)/' \
+  reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_LOGCAT.txt \
+  > reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_RUNTIME.txt
 grep -Fq '[WORD_HUNT_REUSABLE_MAP_PROOF_ARTWORK_READY]' \
-  reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_LOGCAT.txt
+  reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_RUNTIME.txt
+grep -Fq '[WORD_HUNT_REUSABLE_MAP_PROOF_FRAME_READY]' \
+  reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_RUNTIME.txt
 if grep -Fq '[WORD_HUNT_REUSABLE_MAP_PROOF_ERROR]' \
-  reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_LOGCAT.txt; then
+  reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_RUNTIME.txt; then
   echo 'Reusable map artwork/runtime probe failed.' >&2
+  cat reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_RUNTIME.txt >&2
   exit 1
 fi
 adb exec-out screencap -p > reports/WORD_HUNT_REUSABLE_MAP_ANDROID16.png
@@ -236,9 +242,11 @@ wait_for_flutter_frame \
   'MASTER ART visual proof'
 adb exec-out screencap -p > reports/ANDROID16_RAW.png
 stop_runtime_logcat
-awk '/WORD_HUNT_PIXEL_PROOF_ASSET_(LOADED|ERROR)/' \
+awk '/WORD_HUNT_VISUAL_PROOF_FRAME_READY|WORD_HUNT_PIXEL_PROOF_ASSET_(LOADED|ERROR)/' \
   reports/WORD_HUNT_VISUAL_PROOF_LOGCAT.txt \
   > reports/WORD_HUNT_VISUAL_PROOF_ASSET_RUNTIME.txt
+grep -Fq '[WORD_HUNT_VISUAL_PROOF_FRAME_READY]' \
+  reports/WORD_HUNT_VISUAL_PROOF_ASSET_RUNTIME.txt
 test -s reports/ANDROID16_RAW.png
 validate_nonblack_png \
   reports/ANDROID16_RAW.png \
