@@ -78,9 +78,11 @@ jobs:
             test/word_hunt_reusable_route_map_screen_test.dart \
             test/word_hunt_reusable_route_map_scenic_depth_test.dart \
             test/word_hunt_reusable_route_map_visual_proof_test.dart \
+            test/word_hunt_route_artwork_cleanliness_test.dart \
             test/word_hunt_route_map_decoration_test.dart \
             test/word_hunt_route_map_decoration_layer_test.dart \
             test/word_hunt_route_visual_theme_test.dart \
+            test/word_hunt_themed_production_route_screen_test.dart \
             test/word_hunt_orman_content_test.dart \
             test/word_hunt_scoring_test.dart \
             test/word_hunt_starter_content_test.dart \
@@ -96,6 +98,8 @@ jobs:
             reports/WORD_HUNT_REUSABLE_MAP_WIDGET_HARBOR_PROOF.png
             reports/WORD_HUNT_REUSABLE_MAP_WIDGET_SKY_PROOF.png
             reports/WORD_HUNT_REUSABLE_MAP_WIDGET_FOREST_PROOF.png
+            reports/WORD_HUNT_REUSABLE_MAP_WIDGET_ORMAN_PRODUCTION.png
+            reports/WORD_HUNT_REUSABLE_MAP_WIDGET_ORMAN_PRODUCTION.txt
           if-no-files-found: error
           retention-days: 30
 
