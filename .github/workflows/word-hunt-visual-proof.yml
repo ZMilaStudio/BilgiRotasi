@@ -108,11 +108,11 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p reports
-          flutter build apk --debug \
+          flutter build apk --profile \
             -t lib/word_hunt/word_hunt_reusable_route_map_visual_proof_main.dart \
             --dart-define=ADMOB_ENVIRONMENT=test
-          test -s build/app/outputs/flutter-apk/app-debug.apk
-          cp build/app/outputs/flutter-apk/app-debug.apk \
+          test -s build/app/outputs/flutter-apk/app-profile.apk
+          cp build/app/outputs/flutter-apk/app-profile.apk \
             reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_PROOF.apk
           sha256sum reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_PROOF.apk \
             | tee reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_APK_SHA256.txt
@@ -123,13 +123,15 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          flutter build apk --debug \
+          flutter build apk --profile \
             -t lib/word_hunt/word_hunt_visual_proof_main.dart \
             --dart-define=ADMOB_ENVIRONMENT=test
-          test -s build/app/outputs/flutter-apk/app-debug.apk
+          test -s build/app/outputs/flutter-apk/app-profile.apk
           mkdir -p reports
+          cp build/app/outputs/flutter-apk/app-profile.apk \
+            reports/WORD_HUNT_VISUAL_PROOF_ANDROID16_PROOF.apk
           git rev-parse HEAD | tee reports/WORD_HUNT_VISUAL_PROOF_HEAD_SHA.txt
-          sha256sum build/app/outputs/flutter-apk/app-debug.apk \
+          sha256sum reports/WORD_HUNT_VISUAL_PROOF_ANDROID16_PROOF.apk \
             | tee reports/WORD_HUNT_VISUAL_PROOF_APK_SHA256.txt
           source_assets=(
             assets/word_hunt/baslangic_limani_master_art_visual_proof.jpg
@@ -144,10 +146,10 @@ jobs:
           for source in "${source_assets[@]}"; do
             packaged="reports/packaged-assets/${source#assets/}"
             mkdir -p "$(dirname "$packaged")"
-            unzip -l build/app/outputs/flutter-apk/app-debug.apk \
+            unzip -l reports/WORD_HUNT_VISUAL_PROOF_ANDROID16_PROOF.apk \
               | grep -F "assets/flutter_assets/$source" \
               | tee -a reports/WORD_HUNT_VISUAL_PROOF_APK_ASSET_LIST.txt
-            unzip -p build/app/outputs/flutter-apk/app-debug.apk \
+            unzip -p reports/WORD_HUNT_VISUAL_PROOF_ANDROID16_PROOF.apk \
               "assets/flutter_assets/$source" > "$packaged"
             test -s "$packaged"
             cmp -s "$source" "$packaged"
