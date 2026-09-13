@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -49,8 +52,9 @@ class _ReusableRouteMapVisualProofApp extends StatelessWidget {
 }
 
 /// Android `reportedDrawn` bazı emulator/runner birleşimlerinde gerçek Flutter
-/// frame'i çizilmiş olsa bile false kalabiliyor. Bu işaret yalnız izole proof
-/// binary'sinde ilk Flutter frame'inin gerçekten tamamlandığını logcat'e yazar.
+/// frame'i çizilmiş olsa bile false kalabiliyor. Bu probe yalnız izole proof
+/// binary'sinde artwork bundle'ının decode edildiğini ve ardından Flutter'ın
+/// bir frame daha tamamladığını logcat'e yazar.
 class _ReusableProofRuntimeProbe extends StatefulWidget {
   const _ReusableProofRuntimeProbe({required this.child});
 
@@ -69,9 +73,44 @@ class _ReusableProofRuntimeProbeState extends State<_ReusableProofRuntimeProbe> 
     super.didChangeDependencies();
     if (_scheduled) return;
     _scheduled = true;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!mounted) return;
-      debugPrint('[WORD_HUNT_REUSABLE_MAP_PROOF_FRAME_READY]');
+      try {
+        final encoded = StringBuffer();
+        for (final asset
+            in WordHuntRouteVisualThemes.ormanYolu.backgroundBase64AssetParts) {
+          encoded.write((await rootBundle.loadString(asset)).trim());
+        }
+        final bytes = base64Decode(encoded.toString());
+        final codec = await ui.instantiateImageCodec(bytes);
+        try {
+          final frame = await codec.getNextFrame();
+          try {
+            debugPrint(
+              '[WORD_HUNT_REUSABLE_MAP_PROOF_ARTWORK_READY] '
+              'width=${frame.image.width} height=${frame.image.height}',
+            );
+          } finally {
+            frame.image.dispose();
+          }
+        } finally {
+          codec.dispose();
+        }
+
+        // Background widget aynı küçük bundle'ı bağımsız yükler. Bir sonraki
+        // frame sınırını beklemek screenshot'ın fallback renk üzerinde
+        // yakalanmasını önler.
+        await Future<void>.delayed(const Duration(milliseconds: 200));
+        await WidgetsBinding.instance.endOfFrame;
+        if (!mounted) return;
+        debugPrint('[WORD_HUNT_REUSABLE_MAP_PROOF_FRAME_READY]');
+      } catch (error, stackTrace) {
+        debugPrint('[WORD_HUNT_REUSABLE_MAP_PROOF_ERROR] error=$error');
+        debugPrintStack(
+          label: '[WORD_HUNT_REUSABLE_MAP_PROOF_ERROR_STACK]',
+          stackTrace: stackTrace,
+        );
+      }
     });
   }
 
