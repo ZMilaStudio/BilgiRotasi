@@ -24,7 +24,7 @@ jobs:
   visual-proof:
     name: Kelime Avı gerçek Android 16 ekranları
     runs-on: ubuntu-22.04
-    timeout-minutes: 35
+    timeout-minutes: 45
     env:
       PROOF_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
 
@@ -159,7 +159,7 @@ jobs:
           echo "SOURCE_EQUALS_PACKAGED=YES count=2" \
             | tee reports/WORD_HUNT_VISUAL_PROOF_ASSET_COMPARE.txt
 
-      - name: Android 16 emulator KVM erişimini hazırla
+      - name: Android emulator KVM erişimini hazırla
         shell: bash
         run: |
           set -euo pipefail
@@ -169,7 +169,9 @@ jobs:
           test -w /dev/kvm
           ./android/gradlew --stop || true
 
-      - name: Android 16'da gerçek Flutter ekranlarını çek
+      - name: Android 16 görsel kanıt (deneme 1/2)
+        id: android16_visual_attempt_1
+        continue-on-error: true
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 36
@@ -180,10 +182,87 @@ jobs:
           ram-size: 2048M
           heap-size: 512M
           emulator-boot-timeout: 1200
-          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -feature -Vulkan
-          disable-linux-hw-accel: true
           disable-animations: false
           script: bash tools/run_word_hunt_android16_visual_proof.sh
+
+      - name: İlk Android 16 görsel kanıt denemesini sınıflandır
+        id: android16_visual_retry
+        if: always()
+        shell: bash
+        env:
+          FIRST_ATTEMPT_OUTCOME: ${{ steps.android16_visual_attempt_1.outcome }}
+        run: |
+          set -euo pipefail
+          if [ "$FIRST_ATTEMPT_OUTCOME" = "success" ]; then
+            echo "retry=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          app_failure_pattern='FATAL EXCEPTION|ANR in com\.leventua\.bilgirotasi|am_crash.*com\.leventua\.bilgirotasi|am_proc_died.*com\.leventua\.bilgirotasi|Process com\.leventua\.bilgirotasi .*has died|Cmdline: com\.leventua\.bilgirotasi'
+          if grep -Eqi "$app_failure_pattern" \
+              reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_LOGCAT.txt \
+              reports/WORD_HUNT_VISUAL_PROOF_LOGCAT.txt 2>/dev/null; then
+            echo 'Android visual proof detected an application crash/ANR/process death; infrastructure retry is forbidden.' >&2
+            exit 1
+          fi
+
+          attempt_dir='reports/word-hunt-android16-attempt-1'
+          mkdir -p "$attempt_dir"
+          find reports -maxdepth 1 -type f \
+            \( -name 'WORD_HUNT_REUSABLE_MAP_ANDROID16*' \
+               -o -name 'WORD_HUNT_VISUAL_PROOF_*' \
+               -o -name 'ANDROID16_RAW.png' \) \
+            -exec cp {} "$attempt_dir/" \;
+          {
+            echo 'RESULT=INFRASTRUCTURE_RETRY_REQUIRED'
+            echo 'REASON=ANDROID_EMULATOR_OR_RENDER_PIPELINE_UNSTABLE'
+          } > "$attempt_dir/WORD_HUNT_ANDROID16_RETRY_CLASSIFICATION.txt"
+          echo "retry=true" >> "$GITHUB_OUTPUT"
+
+      - name: Android 16 görsel kanıt (temiz deneme 2/2)
+        id: android16_visual_attempt_2
+        if: steps.android16_visual_retry.outputs.retry == 'true'
+        continue-on-error: true
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 36
+          target: aosp_atd
+          arch: x86_64
+          profile: pixel_2
+          cores: 2
+          ram-size: 2048M
+          heap-size: 512M
+          emulator-boot-timeout: 1200
+          disable-animations: false
+          script: bash tools/run_word_hunt_android16_visual_proof.sh
+
+      - name: Android 16 görsel kanıt kapısını sonuçlandır
+        if: always()
+        shell: bash
+        env:
+          FIRST_ATTEMPT_OUTCOME: ${{ steps.android16_visual_attempt_1.outcome }}
+          RETRY_REQUIRED: ${{ steps.android16_visual_retry.outputs.retry }}
+          SECOND_ATTEMPT_OUTCOME: ${{ steps.android16_visual_attempt_2.outcome }}
+        run: |
+          set -euo pipefail
+          if [ "$RETRY_REQUIRED" = "true" ]; then
+            test "$SECOND_ATTEMPT_OUTCOME" = "success"
+          else
+            test "$FIRST_ATTEMPT_OUTCOME" = "success"
+          fi
+          test -s reports/WORD_HUNT_REUSABLE_MAP_ANDROID16.png
+          test -s reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_ACTIVITY.txt
+          test -s reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_LOGCAT.txt
+          test -s reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_PIXEL_CHECK.txt
+          test -s reports/ANDROID16_RAW.png
+          test -s reports/WORD_HUNT_VISUAL_PROOF_ACTIVITY.txt
+          test -s reports/WORD_HUNT_VISUAL_PROOF_LOGCAT.txt
+          test -s reports/WORD_HUNT_VISUAL_PROOF_PIXEL_CHECK.txt
+          grep -Fq 'visible_ratio=' reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_PIXEL_CHECK.txt
+          grep -Fq 'visible_ratio=' reports/WORD_HUNT_VISUAL_PROOF_PIXEL_CHECK.txt
+          grep -Fq '[WORD_HUNT_PIXEL_PROOF_ASSET_LOADED]' \
+            reports/WORD_HUNT_VISUAL_PROOF_ASSET_RUNTIME.txt
+          test "$(grep -Fc '[WORD_HUNT_PIXEL_PROOF_ASSET_LOADED]' reports/WORD_HUNT_VISUAL_PROOF_ASSET_RUNTIME.txt)" -eq 2
 
       - name: Reusable harita gerçek Android kanıtını yükle
         uses: actions/upload-artifact@v4
@@ -196,6 +275,7 @@ jobs:
             reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_HEAD_SHA.txt
             reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_APK_SHA256.txt
             reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_PIXEL_CHECK.txt
+            reports/word-hunt-android16-attempt-1/**
           if-no-files-found: error
           retention-days: 30
 
@@ -237,5 +317,9 @@ jobs:
             reports/WORD_HUNT_VISUAL_PROOF_PACKAGED_ASSET_BYTES.txt
             reports/WORD_HUNT_VISUAL_PROOF_ASSET_COMPARE.txt
             reports/WORD_HUNT_VISUAL_PROOF_PIXEL_CHECK.txt
+            reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_ACTIVITY.txt
+            reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_LOGCAT.txt
+            reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_LAUNCH.txt
+            reports/word-hunt-android16-attempt-1/**
           if-no-files-found: error
           retention-days: 30
