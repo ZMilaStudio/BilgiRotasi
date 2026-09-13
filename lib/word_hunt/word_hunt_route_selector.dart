@@ -83,13 +83,12 @@ class WordHuntRouteSelector extends StatelessWidget {
   Widget _buildCatalogCard(WordHuntRouteCatalogEntry entry) {
     final unlocked = entry.isUnlocked(progress);
     final unlockRule = entry.unlockRule;
-    final prerequisite = unlockRule.prerequisiteRoute;
     final subtitle = unlocked
         ? '${entry.ordinalLabel} • 10 bölüm • 30 yıldız'
-        : 'Kapı: ${unlockRule.requiredStars} ${prerequisite!.title} yıldızı';
+        : _lockedSubtitle(unlockRule);
     final progressText = unlocked
         ? '${WordHuntRouteProgressEngine.totalStars(entry.route, progress)} / ${entry.route.maximumStars}'
-        : '${unlockRule.currentStars(progress).clamp(0, unlockRule.requiredStars)} / ${unlockRule.requiredStars}';
+        : _lockedProgressText(unlockRule);
 
     return _WordHuntRouteCard(
       key: Key('word_hunt_route_card_${entry.cardKey}'),
@@ -101,6 +100,35 @@ class WordHuntRouteSelector extends StatelessWidget {
       unlocked: unlocked,
       onTap: () => onRouteTap(entry),
     );
+  }
+
+  String _lockedSubtitle(WordHuntRouteUnlockRule rule) {
+    final prerequisite = rule.prerequisiteRoute;
+    switch (rule.kind) {
+      case WordHuntRouteUnlockKind.always:
+        return 'Henüz açık değil.';
+      case WordHuntRouteUnlockKind.routeStars:
+        if (prerequisite == null) return 'Henüz açık değil.';
+        return 'Kapı: ${rule.requiredStars} ${prerequisite.title} yıldızı';
+      case WordHuntRouteUnlockKind.routeComplete:
+        if (prerequisite == null || prerequisite.levels.isEmpty) {
+          return 'Henüz açık değil.';
+        }
+        return 'Kapı: ${prerequisite.title} ${prerequisite.levels.length}. bölümü tamamla';
+    }
+  }
+
+  String _lockedProgressText(WordHuntRouteUnlockRule rule) {
+    final prerequisite = rule.prerequisiteRoute;
+    switch (rule.kind) {
+      case WordHuntRouteUnlockKind.always:
+        return 'Kilitli';
+      case WordHuntRouteUnlockKind.routeStars:
+        return '${rule.currentStars(progress).clamp(0, rule.requiredStars)} / ${rule.requiredStars}';
+      case WordHuntRouteUnlockKind.routeComplete:
+        final totalLevels = prerequisite?.levels.length ?? 0;
+        return '${rule.currentCompletedLevels(progress).clamp(0, totalLevels)} / $totalLevels bölüm';
+    }
   }
 }
 
