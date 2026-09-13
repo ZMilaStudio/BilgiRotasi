@@ -6,33 +6,39 @@ mkdir -p reports
 PACKAGE='com.leventua.bilgirotasi'
 MAIN_ACTIVITY='com.leventua.bilgirotasi/.MainActivity'
 
-wait_for_app_drawn() {
+wait_for_flutter_frame() {
   local snapshot="$1"
-  local label="$2"
-  local drawn=0
+  local log_file="$2"
+  local ready_marker="$3"
+  local label="$4"
+  local ready=0
 
-  for attempt in $(seq 1 30); do
+  for attempt in $(seq 1 45); do
     if ! adb shell dumpsys activity activities > "$snapshot"; then
-      echo "$label lost adb while waiting for first frame" >&2
+      echo "$label lost adb while waiting for Flutter frame" >&2
       return 1
     fi
     if grep -Fq "$MAIN_ACTIVITY" "$snapshot" \
-      && grep -q 'reportedDrawn=true' "$snapshot"; then
-      drawn=1
-      echo "$label first frame confirmed on attempt $attempt"
+      && grep -Eq 'topResumedActivity=.*com\.leventua\.bilgirotasi|ResumedActivity:.*com\.leventua\.bilgirotasi' "$snapshot" \
+      && grep -Fq "$ready_marker" "$log_file"; then
+      ready=1
+      echo "$label Flutter frame confirmed on attempt $attempt"
       break
     fi
     sleep 1
   done
 
-  if [ "$drawn" -ne 1 ]; then
-    echo "$label never reached reportedDrawn=true" >&2
+  if [ "$ready" -ne 1 ]; then
+    echo "$label never emitted its Flutter frame-ready marker" >&2
     cat "$snapshot" >&2
+    tail -n 200 "$log_file" >&2 || true
     return 1
   fi
 
   grep -Fq "$MAIN_ACTIVITY" "$snapshot"
-  grep -Eq 'mResumedActivity.*com\.leventua\.bilgirotasi|topResumedActivity=.*com\.leventua\.bilgirotasi|mCurrentFocus=.*com\.leventua\.bilgirotasi' "$snapshot"
+  grep -Eq 'topResumedActivity=.*com\.leventua\.bilgirotasi|ResumedActivity:.*com\.leventua\.bilgirotasi' "$snapshot"
+  grep -Fq "$ready_marker" "$log_file"
+  test -n "$(adb shell pidof "$PACKAGE" | tr -d '\r\n')"
   sleep 1
 }
 
@@ -193,9 +199,18 @@ start_runtime_logcat reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_LOGCAT.txt
 launch_main_activity \
   reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_LAUNCH.txt \
   'Reusable map proof'
-wait_for_app_drawn \
+wait_for_flutter_frame \
   reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_ACTIVITY.txt \
+  reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_LOGCAT.txt \
+  '[WORD_HUNT_REUSABLE_MAP_PROOF_FRAME_READY]' \
   'Reusable map proof'
+grep -Fq '[WORD_HUNT_REUSABLE_MAP_PROOF_ARTWORK_READY]' \
+  reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_LOGCAT.txt
+if grep -Fq '[WORD_HUNT_REUSABLE_MAP_PROOF_ERROR]' \
+  reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_LOGCAT.txt; then
+  echo 'Reusable map artwork/runtime probe failed.' >&2
+  exit 1
+fi
 adb exec-out screencap -p > reports/WORD_HUNT_REUSABLE_MAP_ANDROID16.png
 stop_runtime_logcat
 test -s reports/WORD_HUNT_REUSABLE_MAP_ANDROID16.png
@@ -214,8 +229,10 @@ start_runtime_logcat reports/WORD_HUNT_VISUAL_PROOF_LOGCAT.txt
 launch_main_activity \
   reports/WORD_HUNT_VISUAL_PROOF_LAUNCH.txt \
   'MASTER ART visual proof'
-wait_for_app_drawn \
+wait_for_flutter_frame \
   reports/WORD_HUNT_VISUAL_PROOF_ACTIVITY.txt \
+  reports/WORD_HUNT_VISUAL_PROOF_LOGCAT.txt \
+  '[WORD_HUNT_VISUAL_PROOF_FRAME_READY]' \
   'MASTER ART visual proof'
 adb exec-out screencap -p > reports/ANDROID16_RAW.png
 stop_runtime_logcat
