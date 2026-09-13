@@ -62,6 +62,7 @@ class _AssetRuntimeProbeState extends State<_AssetRuntimeProbe> {
     _started = true;
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!mounted) return;
+      debugPrint('[WORD_HUNT_VISUAL_PROOF_FRAME_READY]');
       String? loadingPath;
       try {
         for (final path in const <String>[
