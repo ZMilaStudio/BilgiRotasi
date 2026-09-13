@@ -70,7 +70,11 @@ void main() {
       find.byKey(const Key('word_hunt_route_background_asset')),
       findsOneWidget,
     );
-    expect(find.byType(Image), findsOneWidget);
+    expect(find.byType(Image), findsWidgets);
+    expect(
+      find.byKey(const Key('word_hunt_artwork_node_asset_1')),
+      findsOneWidget,
+    );
     expect(
       find.byKey(const Key('word_hunt_reusable_decoration_layer')),
       findsNothing,
