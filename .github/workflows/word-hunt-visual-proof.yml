@@ -176,6 +176,8 @@ jobs:
           ram-size: 2048M
           heap-size: 512M
           emulator-boot-timeout: 1200
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -feature -Vulkan
+          disable-linux-hw-accel: true
           disable-animations: false
           script: bash tools/run_word_hunt_android16_visual_proof.sh
 
