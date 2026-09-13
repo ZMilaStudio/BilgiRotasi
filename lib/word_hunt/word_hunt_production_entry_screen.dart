@@ -19,12 +19,12 @@ import 'word_hunt_themed_production_route_screen.dart';
 /// Rota seçimi ve route presentation kararı [WordHuntRouteCatalog] verisiyle
 /// çözülür. Bu ekran rota adına göre renderer seçmez.
 ///
-/// Mevcut production sözleşmesi değişmez:
+/// Mevcut production sözleşmesi:
 /// - Başlangıç Limanı her zaman açıktır ve mevcut reference renderer'ı kullanır.
 /// - Gökyüzü Adaları 18 Başlangıç Limanı yıldızında açılır ve mevcut MASTER ART
 ///   renderer/gameplay arka planlarını kullanır.
-/// - Generic themed renderer production tarafından desteklenir; fakat Orman Yolu
-///   owner unlock + production skin kararı verilmeden katalogda yoktur.
+/// - Orman Yolu, Başlangıç Limanı 10. bölüm tamamlandığında açılır ve generic
+///   themed reusable renderer ile production Orman skinini kullanır.
 ///
 /// Doğrudan belirli bir rota gösterilecek QA/test senaryolarında
 /// [routeSelectionEnabled] false verilebilir. Catalog'da bilinen bir rota ise
@@ -129,12 +129,7 @@ class _WordHuntProductionEntryScreenState
 
   void _openCatalogRoute(WordHuntRouteCatalogEntry entry) {
     if (!entry.isUnlocked(_progress)) {
-      final rule = entry.unlockRule;
-      final prerequisite = rule.prerequisiteRoute;
-      final message = prerequisite == null
-          ? '${entry.route.title} henüz açık değil.'
-          : '${entry.route.title} için ${rule.requiredStars} '
-                '${prerequisite.title} yıldızı gerekli.';
+      final message = _lockedRouteMessage(entry);
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(message)));
@@ -145,6 +140,25 @@ class _WordHuntProductionEntryScreenState
       _selectedRoute = entry.route;
       _selectedInfoCards = entry.infoCards;
     });
+  }
+
+  String _lockedRouteMessage(WordHuntRouteCatalogEntry entry) {
+    final rule = entry.unlockRule;
+    final prerequisite = rule.prerequisiteRoute;
+    if (prerequisite == null) {
+      return '${entry.route.title} henüz açık değil.';
+    }
+
+    switch (rule.kind) {
+      case WordHuntRouteUnlockKind.always:
+        return '${entry.route.title} henüz açık değil.';
+      case WordHuntRouteUnlockKind.routeStars:
+        return '${entry.route.title} için ${rule.requiredStars} '
+            '${prerequisite.title} yıldızı gerekli.';
+      case WordHuntRouteUnlockKind.routeComplete:
+        return '${entry.route.title} için ${prerequisite.title} '
+            '${prerequisite.levels.length}. bölümü tamamlaman gerekli.';
+    }
   }
 
   void _leaveRoute() {
