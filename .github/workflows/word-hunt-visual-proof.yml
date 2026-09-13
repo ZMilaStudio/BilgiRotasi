@@ -108,11 +108,11 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p reports
-          flutter build apk --profile \
+          flutter build apk --debug \
             -t lib/word_hunt/word_hunt_reusable_route_map_visual_proof_main.dart \
             --dart-define=ADMOB_ENVIRONMENT=test
-          test -s build/app/outputs/flutter-apk/app-profile.apk
-          cp build/app/outputs/flutter-apk/app-profile.apk \
+          test -s build/app/outputs/flutter-apk/app-debug.apk
+          cp build/app/outputs/flutter-apk/app-debug.apk \
             reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_PROOF.apk
           sha256sum reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_PROOF.apk \
             | tee reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_APK_SHA256.txt
@@ -123,12 +123,12 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          flutter build apk --profile \
+          flutter build apk --debug \
             -t lib/word_hunt/word_hunt_visual_proof_main.dart \
             --dart-define=ADMOB_ENVIRONMENT=test
-          test -s build/app/outputs/flutter-apk/app-profile.apk
+          test -s build/app/outputs/flutter-apk/app-debug.apk
           mkdir -p reports
-          cp build/app/outputs/flutter-apk/app-profile.apk \
+          cp build/app/outputs/flutter-apk/app-debug.apk \
             reports/WORD_HUNT_VISUAL_PROOF_ANDROID16_PROOF.apk
           git rev-parse HEAD | tee reports/WORD_HUNT_VISUAL_PROOF_HEAD_SHA.txt
           sha256sum reports/WORD_HUNT_VISUAL_PROOF_ANDROID16_PROOF.apk \
