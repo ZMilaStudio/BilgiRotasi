@@ -253,11 +253,20 @@ jobs:
           test -s reports/WORD_HUNT_REUSABLE_MAP_ANDROID16.png
           test -s reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_ACTIVITY.txt
           test -s reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_LOGCAT.txt
+          test -s reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_RUNTIME.txt
           test -s reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_PIXEL_CHECK.txt
           test -s reports/ANDROID16_RAW.png
           test -s reports/WORD_HUNT_VISUAL_PROOF_ACTIVITY.txt
           test -s reports/WORD_HUNT_VISUAL_PROOF_LOGCAT.txt
           test -s reports/WORD_HUNT_VISUAL_PROOF_PIXEL_CHECK.txt
+          grep -Fq '[WORD_HUNT_REUSABLE_MAP_PROOF_ARTWORK_READY]' \
+            reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_RUNTIME.txt
+          grep -Fq '[WORD_HUNT_REUSABLE_MAP_PROOF_FRAME_READY]' \
+            reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_RUNTIME.txt
+          ! grep -Fq '[WORD_HUNT_REUSABLE_MAP_PROOF_ERROR]' \
+            reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_RUNTIME.txt
+          grep -Fq '[WORD_HUNT_VISUAL_PROOF_FRAME_READY]' \
+            reports/WORD_HUNT_VISUAL_PROOF_ASSET_RUNTIME.txt
           grep -Fq 'visible_ratio=' reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_PIXEL_CHECK.txt
           grep -Fq 'visible_ratio=' reports/WORD_HUNT_VISUAL_PROOF_PIXEL_CHECK.txt
           grep -Fq '[WORD_HUNT_PIXEL_PROOF_ASSET_LOADED]' \
@@ -272,6 +281,7 @@ jobs:
             reports/WORD_HUNT_REUSABLE_MAP_ANDROID16.png
             reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_ACTIVITY.txt
             reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_LOGCAT.txt
+            reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_RUNTIME.txt
             reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_HEAD_SHA.txt
             reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_APK_SHA256.txt
             reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_PIXEL_CHECK.txt
@@ -319,6 +329,7 @@ jobs:
             reports/WORD_HUNT_VISUAL_PROOF_PIXEL_CHECK.txt
             reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_ACTIVITY.txt
             reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_LOGCAT.txt
+            reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_RUNTIME.txt
             reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_LAUNCH.txt
             reports/word-hunt-android16-attempt-1/**
           if-no-files-found: error
