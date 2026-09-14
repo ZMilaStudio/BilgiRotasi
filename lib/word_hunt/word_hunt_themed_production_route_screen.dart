@@ -44,6 +44,7 @@ class WordHuntThemedProductionRouteScreen extends StatefulWidget {
 class _WordHuntThemedProductionRouteScreenState
     extends State<WordHuntThemedProductionRouteScreen> {
   static const Size _ormanReferenceLogicalSize = Size(411, 731);
+  static const double _ormanAmbientBandThreshold = 12;
 
   int? _highlightedLevelIndex;
   int _highlightEpoch = 0;
@@ -182,7 +183,10 @@ class _WordHuntThemedProductionRouteScreenState
     );
   }
 
-  Widget _ormanAmbientBackground(WordHuntRouteMapTheme theme) {
+  Widget _ormanAmbientBackground(
+    WordHuntRouteMapTheme theme, {
+    required Alignment alignment,
+  }) {
     final parts = widget.visualTheme.backgroundBase64AssetParts;
     final asset = widget.visualTheme.backgroundAsset;
 
@@ -190,60 +194,81 @@ class _WordHuntThemedProductionRouteScreenState
     if (parts.isNotEmpty) {
       artwork = _AmbientBase64Artwork(
         partAssets: parts,
-        alignment: widget.visualTheme.backgroundAlignment,
+        alignment: alignment,
         fallbackColor: theme.backgroundColor,
       );
     } else if (asset != null) {
       artwork = Image.asset(
         asset,
         fit: BoxFit.cover,
-        alignment: widget.visualTheme.backgroundAlignment,
+        alignment: alignment,
         filterQuality: FilterQuality.medium,
       );
     } else {
       artwork = ColoredBox(color: theme.backgroundColor);
     }
 
-    return RepaintBoundary(
-      key: const Key('word_hunt_orman_ambient_background'),
-      child: IgnorePointer(
-        child: ClipRect(
-          child: Stack(
-            fit: StackFit.expand,
-            children: <Widget>[
-              Positioned.fill(
-                child: Transform.scale(
-                  scale: 1.06,
-                  alignment: widget.visualTheme.backgroundAlignment,
-                  child: ImageFiltered(
-                    imageFilter: ui.ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                    child: artwork,
+    return IgnorePointer(
+      child: ClipRect(
+        child: Stack(
+          fit: StackFit.expand,
+          children: <Widget>[
+            Positioned.fill(
+              child: Transform.scale(
+                scale: 1.18,
+                alignment: alignment,
+                child: ImageFiltered(
+                  imageFilter: ui.ImageFilter.blur(sigmaX: 26, sigmaY: 26),
+                  child: artwork,
+                ),
+              ),
+            ),
+            const Positioned.fill(
+              child: ColoredBox(color: Color(0x7606110A)),
+            ),
+            const Positioned.fill(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: <Color>[
+                      Color(0x68030B07),
+                      Color(0x2C06110A),
+                      Color(0x2C06110A),
+                      Color(0x70030B07),
+                    ],
+                    stops: <double>[0, 0.3, 0.7, 1],
                   ),
                 ),
               ),
-              const Positioned.fill(
-                child: ColoredBox(color: Color(0x4206110A)),
-              ),
-              const Positioned.fill(
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: <Color>[
-                        Color(0x36030B07),
-                        Color(0x12030B07),
-                        Color(0x12030B07),
-                        Color(0x46030B07),
-                      ],
-                      stops: <double>[0, 0.22, 0.72, 1],
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
+      ),
+    );
+  }
+
+  Widget _ormanAmbientBand({
+    required WordHuntRouteMapTheme theme,
+    required double extent,
+    required bool isTop,
+  }) {
+    if (extent <= _ormanAmbientBandThreshold) {
+      return const SizedBox.shrink();
+    }
+
+    return RepaintBoundary(
+      key: Key(
+        isTop
+            ? 'word_hunt_orman_ambient_top_band'
+            : 'word_hunt_orman_ambient_bottom_band',
+      ),
+      child: _ormanAmbientBackground(
+        theme,
+        alignment: isTop
+            ? const Alignment(0, -0.18)
+            : const Alignment(0, 0.52),
       ),
     );
   }
@@ -252,115 +277,136 @@ class _WordHuntThemedProductionRouteScreenState
     required WordHuntRouteMapTheme theme,
     required Widget map,
   }) {
-    return Stack(
-      fit: StackFit.expand,
-      children: <Widget>[
-        Positioned.fill(child: _ormanAmbientBackground(theme)),
-        SafeArea(
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              final available = constraints.biggest;
-              final fitted = applyBoxFit(
-                BoxFit.contain,
-                _ormanReferenceLogicalSize,
-                available,
-              ).destination;
-              final left = math.max(0.0, (available.width - fitted.width) / 2);
-              final top = math.max(0.0, (available.height - fitted.height) / 2);
-              final right = math.max(
-                0.0,
-                available.width - left - fitted.width,
-              );
-              final bottom = math.max(
-                0.0,
-                available.height - top - fitted.height,
-              );
-              final boardMediaQuery = MediaQuery.of(context).copyWith(
-                size: _ormanReferenceLogicalSize,
-                padding: EdgeInsets.zero,
-                viewPadding: EdgeInsets.zero,
-                viewInsets: EdgeInsets.zero,
-              );
+    return SafeArea(
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final available = constraints.biggest;
+          final fitted = applyBoxFit(
+            BoxFit.contain,
+            _ormanReferenceLogicalSize,
+            available,
+          ).destination;
+          final left = math.max(0.0, (available.width - fitted.width) / 2);
+          final top = math.max(0.0, (available.height - fitted.height) / 2);
+          final right = math.max(
+            0.0,
+            available.width - left - fitted.width,
+          );
+          final bottom = math.max(
+            0.0,
+            available.height - top - fitted.height,
+          );
+          final boardMediaQuery = MediaQuery.of(context).copyWith(
+            size: _ormanReferenceLogicalSize,
+            padding: EdgeInsets.zero,
+            viewPadding: EdgeInsets.zero,
+            viewInsets: EdgeInsets.zero,
+          );
 
-              return Stack(
-                fit: StackFit.expand,
-                children: <Widget>[
-                  Positioned(
-                    left: left,
-                    top: top,
-                    width: fitted.width,
-                    height: fitted.height,
-                    child: FittedBox(
-                      fit: BoxFit.fill,
-                      child: SizedBox(
-                        key: const Key('word_hunt_orman_reference_canvas'),
-                        width: _ormanReferenceLogicalSize.width,
-                        height: _ormanReferenceLogicalSize.height,
-                        child: MediaQuery(
-                          data: boardMediaQuery,
-                          child: Stack(
-                            fit: StackFit.expand,
-                            children: <Widget>[
-                              Positioned.fill(
-                                child: _withOpeningTransition(map),
-                              ),
-                              Positioned.fill(child: _artworkFrame(theme)),
-                            ],
+          return Stack(
+            fit: StackFit.expand,
+            children: <Widget>[
+              Positioned.fill(
+                child: ColoredBox(color: theme.backgroundColor),
+              ),
+              if (top > _ormanAmbientBandThreshold)
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  top: 0,
+                  height: top,
+                  child: _ormanAmbientBand(
+                    theme: theme,
+                    extent: top,
+                    isTop: true,
+                  ),
+                ),
+              if (bottom > _ormanAmbientBandThreshold)
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  height: bottom,
+                  child: _ormanAmbientBand(
+                    theme: theme,
+                    extent: bottom,
+                    isTop: false,
+                  ),
+                ),
+              Positioned(
+                left: left,
+                top: top,
+                width: fitted.width,
+                height: fitted.height,
+                child: FittedBox(
+                  fit: BoxFit.fill,
+                  child: SizedBox(
+                    key: const Key('word_hunt_orman_reference_canvas'),
+                    width: _ormanReferenceLogicalSize.width,
+                    height: _ormanReferenceLogicalSize.height,
+                    child: MediaQuery(
+                      data: boardMediaQuery,
+                      child: Stack(
+                        fit: StackFit.expand,
+                        children: <Widget>[
+                          Positioned.fill(
+                            child: _withOpeningTransition(map),
                           ),
-                        ),
+                          Positioned.fill(child: _artworkFrame(theme)),
+                        ],
                       ),
                     ),
                   ),
-                  Positioned(
-                    left: left + 8,
-                    top: top + 6,
-                    child: _ArtworkChromeButton(
-                      key: const Key('word_hunt_themed_chrome_back'),
-                      icon: Icons.arrow_back_rounded,
-                      tooltip: 'Geri',
-                      accent: theme.accentColor,
-                      textColor: theme.textColor,
-                      onPressed: widget.onBack,
-                    ),
-                  ),
-                  Positioned(
-                    right: right + 8,
-                    top: top + 6,
-                    child: _ArtworkChromeButton(
-                      key: const Key('word_hunt_themed_chrome_info'),
-                      icon: Icons.info_outline_rounded,
-                      tooltip: 'Bilgi',
-                      accent: theme.accentColor,
-                      textColor: theme.textColor,
-                      onPressed: widget.onInfo,
-                    ),
-                  ),
-                  Positioned(
-                    left: left + 8,
-                    bottom: bottom + 8,
-                    child: _ArtworkAssetButton(
-                      key: const Key('word_hunt_themed_chrome_compass'),
-                      assetPath: WordHuntProductionAssets.compassButton,
-                      semanticLabel: 'Pusula',
-                      onPressed: _handleCompass,
-                    ),
-                  ),
-                  Positioned(
-                    right: right + 8,
-                    bottom: bottom + 8,
-                    child: _ArtworkAssetButton(
-                      key: const Key('word_hunt_themed_chrome_book'),
-                      assetPath: WordHuntProductionAssets.bookButton,
-                      semanticLabel: 'Kitap',
-                      onPressed: widget.onBook,
-                    ),
-                  ),
-                ],
-              );
-            },
-          ),
-        ),
-      ],
+                ),
+              ),
+              Positioned(
+                left: left + 8,
+                top: top + 6,
+                child: _ArtworkChromeButton(
+                  key: const Key('word_hunt_themed_chrome_back'),
+                  icon: Icons.arrow_back_rounded,
+                  tooltip: 'Geri',
+                  accent: theme.accentColor,
+                  textColor: theme.textColor,
+                  onPressed: widget.onBack,
+                ),
+              ),
+              Positioned(
+                right: right + 8,
+                top: top + 6,
+                child: _ArtworkChromeButton(
+                  key: const Key('word_hunt_themed_chrome_info'),
+                  icon: Icons.info_outline_rounded,
+                  tooltip: 'Bilgi',
+                  accent: theme.accentColor,
+                  textColor: theme.textColor,
+                  onPressed: widget.onInfo,
+                ),
+              ),
+              Positioned(
+                left: left + 8,
+                bottom: bottom + 8,
+                child: _ArtworkAssetButton(
+                  key: const Key('word_hunt_themed_chrome_compass'),
+                  assetPath: WordHuntProductionAssets.compassButton,
+                  semanticLabel: 'Pusula',
+                  onPressed: _handleCompass,
+                ),
+              ),
+              Positioned(
+                right: right + 8,
+                bottom: bottom + 8,
+                child: _ArtworkAssetButton(
+                  key: const Key('word_hunt_themed_chrome_book'),
+                  assetPath: WordHuntProductionAssets.bookButton,
+                  semanticLabel: 'Kitap',
+                  onPressed: widget.onBook,
+                ),
+              ),
+            ],
+          );
+        },
+      ),
     );
   }
 
