@@ -186,6 +186,7 @@ class _WordHuntThemedProductionRouteScreenState
   Widget _ormanAmbientBackground(
     WordHuntRouteMapTheme theme, {
     required Alignment alignment,
+    required bool isTop,
   }) {
     final parts = widget.visualTheme.backgroundBase64AssetParts;
     final asset = widget.visualTheme.backgroundAsset;
@@ -224,21 +225,26 @@ class _WordHuntThemedProductionRouteScreenState
               ),
             ),
             const Positioned.fill(
-              child: ColoredBox(color: Color(0x7606110A)),
+              child: ColoredBox(color: Color(0x5206110A)),
             ),
-            const Positioned.fill(
+            Positioned.fill(
               child: DecoratedBox(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
-                    colors: <Color>[
-                      Color(0x68030B07),
-                      Color(0x2C06110A),
-                      Color(0x2C06110A),
-                      Color(0x70030B07),
-                    ],
-                    stops: <double>[0, 0.3, 0.7, 1],
+                    colors: isTop
+                        ? const <Color>[
+                            Color(0x66030B07),
+                            Color(0x3006110A),
+                            Color(0x1206110A),
+                          ]
+                        : const <Color>[
+                            Color(0x1206110A),
+                            Color(0x3006110A),
+                            Color(0x66030B07),
+                          ],
+                    stops: const <double>[0, 0.55, 1],
                   ),
                 ),
               ),
@@ -269,6 +275,7 @@ class _WordHuntThemedProductionRouteScreenState
         alignment: isTop
             ? const Alignment(0, -0.18)
             : const Alignment(0, 0.52),
+        isTop: isTop,
       ),
     );
   }
