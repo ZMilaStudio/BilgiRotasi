@@ -157,11 +157,15 @@ class WordHuntArtworkRouteMapScreen extends StatelessWidget {
               width: isFinal ? 118 : 92,
               height: isFinal ? 143 : 112,
               child: IgnorePointer(
-                child: _ForestStop(
-                  level: level,
-                  stars: stars,
-                  unlocked: unlocked,
-                  current: current && unlocked && !completed,
+                child: Transform.scale(
+                  scale: .62,
+                  alignment: Alignment.center,
+                  child: _ForestStop(
+                    level: level,
+                    stars: stars,
+                    unlocked: unlocked,
+                    current: current && unlocked && !completed,
+                  ),
                 ),
               ),
             ),
