@@ -1,4 +1,5 @@
 import 'package:bilgi_rotasi/word_hunt/word_hunt_orman_content.dart';
+import 'package:bilgi_rotasi/word_hunt/word_hunt_production_entry_screen.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_progress.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_route_visual_theme.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_themed_production_route_screen.dart';
@@ -15,6 +16,20 @@ void main() {
       'orman-yolu-05': 3,
       'orman-yolu-06': 3,
       'orman-yolu-07': 3,
+    },
+  );
+
+  const progressThroughNine = WordHuntProgressSnapshot(
+    bestStarsByLevelId: <String, int>{
+      'orman-yolu-01': 3,
+      'orman-yolu-02': 3,
+      'orman-yolu-03': 3,
+      'orman-yolu-04': 3,
+      'orman-yolu-05': 3,
+      'orman-yolu-06': 3,
+      'orman-yolu-07': 3,
+      'orman-yolu-08': 3,
+      'orman-yolu-09': 3,
     },
   );
 
@@ -42,7 +57,7 @@ void main() {
         ),
       ),
     );
-    await tester.pump();
+    await tester.pumpAndSettle();
 
     await tester.tap(find.byKey(const Key('word_hunt_reusable_level_1')));
     await tester.pump();
@@ -58,9 +73,53 @@ void main() {
       expect(tappedLevel, 0, reason: 'Bölüm $level fresh progress ile kilitli');
       expect(tester.takeException(), isNull);
     }
+
+    expect(find.byKey(const Key('word_hunt_route_final_lock')), findsOneWidget);
+    expect(
+      tester.getSize(find.byKey(const Key('word_hunt_orman_header_panel'))).height,
+      47,
+    );
+    expect(
+      tester.getSize(find.byKey(const Key('word_hunt_route_stop_plaque_5'))),
+      Size.zero,
+      reason: 'Meydan Okuma tabelası dekoratif kalmalı; ayrı buton olmamalı.',
+    );
   });
 
-  testWidgets('production themed chrome forwards all controls and level taps', (
+  testWidgets('final unlock removes lock overlay without changing progression', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: WordHuntThemedProductionRouteScreen(
+          route: WordHuntOrmanContent.ormanYolu,
+          visualTheme: WordHuntRouteVisualThemes.ormanYolu,
+          progress: progressThroughNine,
+          onBack: () {},
+          onInfo: () {},
+          onCompass: () {},
+          onBook: () {},
+          onLevelTap: (_) {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('word_hunt_route_final_lock')), findsNothing);
+    expect(
+      find.byKey(const Key('word_hunt_reusable_node_10_current')),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('production themed chrome forwards controls and compass pulses next node', (
     tester,
   ) async {
     tester.view.physicalSize = const Size(390, 844);
@@ -90,7 +149,7 @@ void main() {
         ),
       ),
     );
-    await tester.pump();
+    await tester.pumpAndSettle();
 
     expect(
       find.byKey(const Key('word_hunt_themed_production_route')),
@@ -105,12 +164,28 @@ void main() {
     await tester.tap(find.byKey(const Key('word_hunt_themed_chrome_info')));
     await tester.tap(find.byKey(const Key('word_hunt_themed_chrome_compass')));
     await tester.tap(find.byKey(const Key('word_hunt_themed_chrome_book')));
-    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 80));
 
     expect(backCount, 1);
     expect(infoCount, 1);
     expect(compassCount, 1);
     expect(bookCount, 1);
+    expect(
+      find.byKey(
+        const ValueKey<String>('word_hunt_route_stop_compass_highlight_8_1'),
+      ),
+      findsOneWidget,
+      reason: 'Pusula yalnız sıradaki oynanabilir Bölüm 8’i vurgulamalı.',
+    );
+
+    await tester.pump(const Duration(milliseconds: 1100));
+    expect(
+      find.byKey(
+        const ValueKey<String>('word_hunt_route_stop_compass_highlight_8_1'),
+      ),
+      findsNothing,
+      reason: 'Pusula vurgusu kısa süreli olmalı.',
+    );
 
     await tester.tap(find.byKey(const Key('word_hunt_reusable_level_8')));
     await tester.pump();
@@ -126,7 +201,7 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('production themed chrome stays overflow-free on narrow phone', (
+  testWidgets('production themed chrome stays overflow-free and controls do not overlap final', (
     tester,
   ) async {
     tester.view.physicalSize = const Size(320, 640);
@@ -150,7 +225,7 @@ void main() {
         ),
       ),
     );
-    await tester.pump();
+    await tester.pumpAndSettle();
 
     expect(tester.takeException(), isNull);
     expect(
@@ -161,5 +236,52 @@ void main() {
       find.byKey(const Key('word_hunt_themed_chrome_book')),
       findsOneWidget,
     );
+
+    final finalRect = tester.getRect(
+      find.byKey(const Key('word_hunt_reusable_level_10')),
+    );
+    final compassRect = tester.getRect(
+      find.byKey(const Key('word_hunt_themed_chrome_compass')),
+    );
+    final bookRect = tester.getRect(
+      find.byKey(const Key('word_hunt_themed_chrome_book')),
+    );
+    expect(finalRect.overlaps(compassRect), isFalse);
+    expect(finalRect.overlaps(bookRect), isFalse);
+  });
+
+  testWidgets('Orman info guide and topic book have separate duties', (tester) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: WordHuntProductionEntryScreen(
+          route: WordHuntOrmanContent.ormanYolu,
+          infoCards: WordHuntOrmanContent.infoCards,
+          routeSelectionEnabled: false,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const Key('word_hunt_themed_chrome_info')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('word_hunt_route_help_dialog')), findsOneWidget);
+    expect(find.text('Bölümleri sırayla tamamla.'), findsOneWidget);
+    expect(find.byKey(const Key('word_hunt_current_topic_sheet')), findsNothing);
+
+    await tester.tap(find.text('Tamam'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const Key('word_hunt_themed_chrome_book')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('word_hunt_current_topic_sheet')), findsOneWidget);
+    expect(find.textContaining('Bölüm 1 • Ormanın Temeli'), findsOneWidget);
+    expect(find.byKey(const Key('word_hunt_route_help_dialog')), findsNothing);
   });
 }

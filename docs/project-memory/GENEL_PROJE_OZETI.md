@@ -1,6 +1,6 @@
 # Bilgi Rotası — Genel Proje Özeti
 
-**Son güncelleme:** 13 Eylül 2026
+**Son güncelleme:** 14 Eylül 2026
 
 ## YENİ SOHBET DEVİR NOTU — ÖNCE BUNU OKU
 
@@ -8,13 +8,13 @@ Yeni sohbette işe başlamadan önce şu sırayı uygula:
 
 1. Bu dosyanın tamamını oku: `docs/project-memory/GENEL_PROJE_OZETI.md`.
 2. `docs/project-memory/KARARLAR.md` dosyasını oku.
-3. `docs/project-memory/DEVRALMA_1_AYLIK_GPT.md` dosyasındaki çalışma kurallarına uy.
+3. Mevcutsa `docs/project-memory/DEVRALMA_1_AYLIK_GPT.md` dosyasındaki çalışma kurallarına uy.
 4. Sonra canlı GitHub durumunu kendin doğrula: repo, branch, PR #198, exact HEAD, changed files ve GitHub Actions sonuçları.
 5. Çelişki varsa öncelik: **canlı GitHub > proje bellek dosyaları > eski sohbetler**.
 
-Bu özet yazılmadan hemen önce PR #198 canlı olarak **OPEN / DRAFT / unmerged / mergeable** durumundaydı. Branch: `feat/kelime-avi-scenic-theme-depth-20260912`, base: `release/final-closed-test-aab-1.68.8`. O anda canlı PR HEAD `5c4e577b4bea71cc9940c3f53481d82d97335d94` idi. **Bu özet güncellemesi docs-only yeni commit oluşturacağı için yeni sohbette HEAD'i mutlaka yeniden fetch et.**
+PR #198 için bağlayıcı durum: **OPEN / DRAFT / unmerged**. Branch: `feat/kelime-avi-scenic-theme-depth-20260912`, base: `release/final-closed-test-aab-1.68.8`. Bu dosya ürün koduyla aynı committe güncellenebilir; yeni sohbette exact HEAD'i mutlaka canlı fetch et.
 
-> Kullanıcı özellikle şunu istemektedir: mockup/görsel üretip göndermek yerine değişikliği doğrudan oyuna uygula. Yeni görsel üretme; kullanıcı açıkça istemedikçe görsel gönderme. Kullanıcı “bebek çizimi/cartoon” hissini istemiyor; hedef premium, gerçekçi fantasy forest oyun hissi.
+> Kullanıcı özellikle şunu istemektedir: mockup/görsel üretip göndermek yerine değişikliği doğrudan oyuna uygula. Yeni görsel üretme; kullanıcı açıkça istemedikçe görsel gönderme. Görsel hedef premium, gerçekçi fantasy forest oyun hissidir.
 
 ## Kalıcı çalışma ve owner kuralları
 
@@ -44,56 +44,72 @@ Sıra:
 
 1. **Başlangıç Limanı** — her zaman açık.
 2. **Gökyüzü Adaları** — mevcut kural değişmedi: Başlangıç Limanı'ndan 18 yıldız.
-3. **Orman Yolu** — owner tarafından 13 Eylül 2026'da onaylanan kural: **yalnız Başlangıç Limanı Bölüm 10 tamamlandığında açılır**.
+3. **Orman Yolu** — owner kararı: **yalnız Başlangıç Limanı Bölüm 10 tamamlandığında açılır**.
 
 Orman için önemli regresyon sözleşmeleri:
 
 - Başlangıç Limanı 1–9 tamamlanmış ve 27 yıldız alınmış olsa bile B10 tamamlanmamışsa Orman **kilitli kalır**.
 - B10 tamamlanınca Orman açılır.
 - Orman açıldığında kendi içinde yine **1 açık/current, 2–10 locked** başlar.
-- Kilit mesajı kullanıcıya yıldız sayısı söylemez; anlamı **“Başlangıç Limanı 10. bölümü tamamla”** olmalıdır.
-- “0 yıldız gerekli” regresyonuna karşı test eklenmiştir.
+- Kilit mesajı yıldız sayısına bağlanmaz; anlamı **“Başlangıç Limanı 10. bölümü tamamla”** olmalıdır.
+- “0 yıldız gerekli” regresyonu geri gelmemelidir.
 
 ## PR #198 — Reusable rota görsel sistemi
 
 PR: `#198 — feat(kelime-avi): add generic scenic depth to reusable map`
 
 - Ortak `WordHuntRouteMapGeometry.normalizedStops` korunur.
-- 10 node, 1–10 bağlantıları ve **86×82 hitbox** korunur.
-- Liman / Gökyüzü / Orman aynı generic renderer üzerinden çalışır; route-id özel koordinat/painter hilesi eklenmez.
+- 10 node, 1–10 bağlantıları ve görünmez geniş touch/hitbox mantığı korunur.
+- Liman / Gökyüzü / Orman progression mantığı ortaktır; route-id özel progression hilesi eklenmez.
 - Orman production skin: `WordHuntRouteVisualThemes.ormanYolu`.
 - Orman presentation: generic `themedReusable`.
-- Artwork yalnız sahne tabanıdır; node, lock, yıldız ve progression state canlı Flutter katmanıdır ve asset içine bake edilmez.
-- Scenic görünümde üst header daha küçük/ahşap-plaka hissine çekildi; açık/current node ahşap stump, locked node taş/kaya görünümüne yaklaştırıldı; kilit taşın içine entegre edildi; kalın yapay yol bandı azaltılıp hafif stepping-stone/earth path kullanıldı.
-- Ortak geometri/progression bu görsel düzenlemeler uğruna değiştirilmedi.
+- Artwork sahne tabanıdır; node, lock, yıldız ve progression state canlı Flutter katmanıdır.
+- Onaylı Orman artwork'i 941×1672 olarak production'a bağlandı ve `2511d9e70d6e2aa52c82edc276408bc78d8e9c82` checkpointinde gerçek Android 16 ekranda doğrulandı.
+- Orman route node görselleri owner onayıyla küçültüldü; rota geometrisi ve touch alanları değiştirilmedi.
 
-## Doğrulanmış test / Android durumu
+## 14 Eylül 2026 — Orman Yolu UX kararı
 
-En son doğrulanmış **ürün/test checkpoint**: `827643972fc991cb63c594dc2e326d03594b2a71`.
+Detaylı karar kaydı: `docs/project-memory/KARAR_2026-09-14_ORMAN_YOLU_UX.md`.
 
-Bu ürün/test checkpointinde:
+- Mevcut yön korunur: **Bölüm 1 üstte, Bölüm 10 altta**. Mevcut üç tema tersine çevrilmez.
+- Bölüm 10 özel final kimliğini korur. Kilitliyken taç/prestij çerçevesi kalır fakat merkez kilit görünür ve yıldızlar pasif/gri olur; açılınca 10 ve aktif altın final görünümü geri gelir.
+- Üst yeşil-altın panel yaklaşık %20–25 kompaktlaştırılır; geri ve bilgi kontrolünün görsel boyutu küçültülmez.
+- Yıldız okunabilirliği artırılır fakat gameplay yıldız/progress verisi değiştirilmez.
+- Pusula scroll/kamera hareketi yapmaz; yalnız `nextPlayableLevelIndex` node'unu kısa pulse/highlight ile gösterir.
+- Kitap = mevcut/sıradaki bölümün konusu hakkında kısa öğretici bilgi.
+- Sağ üst `i` = temalar arası genel Harita Rehberi. Kitap ve `i` görevleri ayrıdır.
+- Arka plandaki **MEYDAN OKUMA** tabelası dekoratif kalır; buton değildir.
+- SafeArea ve geniş touch target korunur; final node ile pusula/kitap touch alanı çakışmamalıdır.
+- Açılış animasyonu sade fade + çok hafif depth hissidir; toplam 1 saniyenin altındadır, bounce yoktur.
+- Test/proof ekranındaki örnek `0/30` veya yıldız görünümü progression bug kabul edilmez; gerçek veri kaynağı doğrulanmadan oyun veri sistemi değiştirilmez.
+- Bu UX işi Orman 1 içindir; **Orman 2 üretimine başlanmaz**.
 
-- Route catalog gate: **12/12 PASS**.
-- Orman `routeComplete` kapısı ve “27 yıldız ama B10 yok → kilitli / B10 tamam → açık” testleri PASS.
-- Locked Orman mesajı “0 yıldız” regresyon testi PASS.
-- Gerçek Android 16 raw visual proof: **SUCCESS**.
-- 1080×1920 screenshot üretildi; frame-ready/artwork marker ve non-black/visible pixel gate PASS.
-- Uygulama crash/ANR/process-death taraması PASS.
-- AdMob / release APK / Android 16 cold-start gate: **SUCCESS**.
+### Orman 2 gelecek pilotu
+
+Orman 1 tamamen tamamlandıktan sonra ayrı pilot yapılacaktır. Orman 1 assetleri mümkün olduğunca yeniden kullanılarak ikinci bir Orman haritasının:
+
+- üretim süresi,
+- Orman 1'den yeterince farklı hissedilmesi,
+- kalite kaybı olup olmaması
+
+ölçülecektir. Pilot sonucu görülmeden ana tema başına 10'dan fazla bölüm/alt harita kararı verilmez.
+
+## En son doğrulanmış test / Android checkpointi
+
+UX rötuşlarından hemen önce doğrulanmış product checkpoint:
+
+`2511d9e70d6e2aa52c82edc276408bc78d8e9c82`
+
+Bu checkpointte:
+
+- Kelime Avı route catalog kapısı: **SUCCESS**.
+- Kelime Avı Android 16 görsel kanıtı: **SUCCESS**.
+- AdMob PR doğrulaması: **SUCCESS**.
+- Gerçek Android 16 screenshot üretildi.
 - Fresh Orman runtime state: **Bölüm 1 açık, Bölüm 2–10 kilitli**.
+- Onaylı 941×1672 Orman sahnesi ve küçültülmüş rota butonları gerçek runtime'da görüldü.
 
-Not: Bundan sonraki docs-only commitler ürün kodunu değiştirmeyebilir. Yeni sohbet exact HEAD'de workflow sonuçlarını yine canlı kontrol etmelidir.
-
-## Orman artwork — kalan tek gerçek görsel kalite borcu
-
-Mevcut production Orman rasterı gerçekten **200×400** çözünürlükte decode ediliyor. Android 1080×1920 ekranda büyütülerek gösterildiği için sahne yumuşak/blur görünüyor.
-
-- Bu 200×400 kaynak final yüksek çözünürlük artwork olarak kabul edilmez.
-- Yapay upscale/sharpen işlemini “HD” diye final kabul etme; gerçek detay üretmez.
-- Üzerinde node/yazı/UI bake edilmiş yüksek çözünürlüklü referans görselleri doğrudan background olarak kullanma; canlı Flutter node'larıyla çift node/UI üretir.
-- Sohbet/Library/repo geçmişinde çeşitli yüksek çözünürlüklü referanslar bulundu ancak **temiz, onaylı, background-only gerçek HD master** bulunmadı.
-- Yeni temiz ve onaylı yüksek çözünürlüklü Orman background master geldiğinde generic artwork katmanından bağla ve raw Android 16 proof'u tekrar çalıştır.
-- Kullanıcı açıkça “resim oluşturma, oyuna uygula” dediği için yeni generatif artwork üretme.
+14 Eylül Orman UX rötuşları bu özetle aynı ürün commitine eklenir. Bu yeni commitin exact-head CI/Android 16 sonucu **canlı GitHub'dan yeniden doğrulanmadan PASS ilan edilmez**.
 
 ## Canonical gameplay ve release korumaları
 
@@ -106,12 +122,12 @@ Mevcut production Orman rasterı gerçekten **200×400** çözünürlükte decod
 
 ## Yeni sohbette önerilen devam sırası
 
-1. Bu dosya + `KARARLAR.md` + `DEVRALMA_1_AYLIK_GPT.md` dosyalarını oku.
+1. Bu dosya + `KARARLAR.md` + `KARAR_2026-09-14_ORMAN_YOLU_UX.md` dosyalarını oku.
 2. PR #198'i canlı fetch et; OPEN/DRAFT/unmerged ve exact HEAD'i doğrula.
-3. Son exact HEAD'in route-catalog, Android 16 visual proof ve AdMob/release workflow durumlarını doğrula.
-4. Progression/catalog mantığını tekrar kurcalama; owner kararları tamamlandı ve testli.
-5. Görsel tarafta yalnız **temiz/onaylı gerçek yüksek çözünürlüklü Orman background master** bulunduğunda asset değiştir.
-6. Asset değişirse fresh state `1 açık / 2–10 locked` kalmalı ve raw Android 16 proof tekrar PASS olmalı.
+3. Exact HEAD'in route-catalog, Android 16 visual proof ve AdMob workflow durumlarını doğrula.
+4. Progression/catalog mantığını tekrar kurcalama.
+5. Orman'da 1 üstte → 10 altta yönünü değiştirme.
+6. Final lock, pusula highlight, kitap/i görev ayrımı, SafeArea ve touch overlap regresyonlarını koru.
 7. Kullanıcı ayrıca açıkça onay vermeden PR Ready/merge yapma.
 
-**DEVİR SON DURUMU:** PR #198 OPEN/DRAFT/unmerged / production catalog = Başlangıç Limanı → Gökyüzü Adaları → Orman Yolu / Gökyüzü 18 yıldız kapısı değişmedi / Orman yalnız Başlangıç Limanı B10 completion ile açılır / Orman fresh state 1 açık 2–10 locked / strict 1→2→…→10 progression kalıcı / son doğrulanmış product-test checkpoint `827643972fc991cb63c594dc2e326d03594b2a71` üzerinde route catalog 12/12 PASS + Android 16 visual proof SUCCESS + AdMob/release Android gate SUCCESS / mevcut Orman artwork 200×400 ve final HD değil / temiz onaylı gerçek HD background master bekleniyor / merge ve Play yok.
+**DEVİR SON DURUMU:** PR #198 OPEN/DRAFT/unmerged / production catalog = Başlangıç Limanı → Gökyüzü Adaları → Orman Yolu / Gökyüzü 18 yıldız kapısı değişmedi / Orman yalnız Başlangıç Limanı B10 completion ile açılır / Orman fresh state 1 açık 2–10 locked / strict 1→2→…→10 progression kalıcı / Orman yönü 1 üstte 10 altta / onaylı 941×1672 sahne production'da / son doğrulanmış checkpoint `2511d9e70d6e2aa52c82edc276408bc78d8e9c82` üç workflow SUCCESS / yeni Orman UX rötuşlarının exact-head CI sonucu canlı doğrulanacak / Orman 2 yalnız gelecekte ayrı pilot / merge ve Play yok.

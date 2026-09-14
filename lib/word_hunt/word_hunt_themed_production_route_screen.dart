@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
@@ -5,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'word_hunt_models.dart';
 import 'word_hunt_production_assets.dart';
 import 'word_hunt_progress.dart';
+import 'word_hunt_route_ux_scope.dart';
 import 'word_hunt_route_visual_theme.dart';
 
 /// Reusable/themed Kelime Avı rotalarının production chrome katmanı.
@@ -12,7 +14,7 @@ import 'word_hunt_route_visual_theme.dart';
 /// Raster artwork kullanan rotalarda ayrı bir araç çubuğu açılmaz. Başlangıç
 /// Limanı ve Gökyüzü Adaları ile aynı hiyerarşi korunur: geri/bilgi üst
 /// köşelerde, pusula/kitap alt köşelerde ve artwork ekranın tamamında görünür.
-class WordHuntThemedProductionRouteScreen extends StatelessWidget {
+class WordHuntThemedProductionRouteScreen extends StatefulWidget {
   const WordHuntThemedProductionRouteScreen({
     super.key,
     required this.route,
@@ -35,23 +37,87 @@ class WordHuntThemedProductionRouteScreen extends StatelessWidget {
   final ValueChanged<int> onLevelTap;
 
   @override
+  State<WordHuntThemedProductionRouteScreen> createState() =>
+      _WordHuntThemedProductionRouteScreenState();
+}
+
+class _WordHuntThemedProductionRouteScreenState
+    extends State<WordHuntThemedProductionRouteScreen> {
+  int? _highlightedLevelIndex;
+  int _highlightEpoch = 0;
+  Timer? _highlightTimer;
+
+  @override
+  void dispose() {
+    _highlightTimer?.cancel();
+    super.dispose();
+  }
+
+  void _handleCompass() {
+    _highlightTimer?.cancel();
+    if (!WordHuntRouteProgressEngine.isRouteComplete(
+      widget.route,
+      widget.progress,
+    )) {
+      final level = WordHuntRouteProgressEngine.nextPlayableLevelIndex(
+        widget.route,
+        widget.progress,
+      );
+      final epoch = _highlightEpoch + 1;
+      setState(() {
+        _highlightedLevelIndex = level;
+        _highlightEpoch = epoch;
+      });
+      _highlightTimer = Timer(const Duration(milliseconds: 1050), () {
+        if (!mounted || epoch != _highlightEpoch) return;
+        setState(() => _highlightedLevelIndex = null);
+      });
+    }
+    widget.onCompass();
+  }
+
+  Widget _withOpeningTransition(Widget child) {
+    return TweenAnimationBuilder<double>(
+      key: const Key('word_hunt_orman_opening_transition'),
+      tween: Tween<double>(begin: 0, end: 1),
+      duration: const Duration(milliseconds: 650),
+      curve: Curves.easeOutCubic,
+      child: child,
+      builder: (context, value, animatedChild) {
+        return Opacity(
+          opacity: value,
+          child: Transform.scale(
+            scale: 0.992 + (0.008 * value),
+            alignment: Alignment.center,
+            child: animatedChild,
+          ),
+        );
+      },
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final theme = visualTheme.mapTheme;
-    final map = WordHuntThemedRouteMapScreen(
-      route: route,
-      visualTheme: visualTheme,
-      progress: progress,
-      onLevelTap: onLevelTap,
+    final theme = widget.visualTheme.mapTheme;
+    final map = WordHuntRouteUxScope(
+      highlightedLevelIndex: _highlightedLevelIndex,
+      highlightEpoch: _highlightEpoch,
+      child: WordHuntThemedRouteMapScreen(
+        route: widget.route,
+        visualTheme: widget.visualTheme,
+        progress: widget.progress,
+        onLevelTap: widget.onLevelTap,
+      ),
     );
 
-    if (visualTheme.hasArtwork) {
+    if (widget.visualTheme.hasArtwork) {
       return Scaffold(
         key: const Key('word_hunt_themed_production_route'),
         backgroundColor: theme.backgroundColor,
         body: Stack(
           fit: StackFit.expand,
           children: <Widget>[
-            Positioned.fill(child: map),
+            Positioned.fill(child: _withOpeningTransition(map)),
             Positioned.fill(
               child: IgnorePointer(
                 child: SafeArea(
@@ -71,7 +137,7 @@ class WordHuntThemedProductionRouteScreen extends StatelessWidget {
             ),
             SafeArea(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(12, 8, 12, 10),
+                padding: const EdgeInsets.fromLTRB(8, 6, 8, 8),
                 child: Stack(
                   fit: StackFit.expand,
                   children: <Widget>[
@@ -83,7 +149,7 @@ class WordHuntThemedProductionRouteScreen extends StatelessWidget {
                         tooltip: 'Geri',
                         accent: theme.accentColor,
                         textColor: theme.textColor,
-                        onPressed: onBack,
+                        onPressed: widget.onBack,
                       ),
                     ),
                     Align(
@@ -94,7 +160,7 @@ class WordHuntThemedProductionRouteScreen extends StatelessWidget {
                         tooltip: 'Bilgi',
                         accent: theme.accentColor,
                         textColor: theme.textColor,
-                        onPressed: onInfo,
+                        onPressed: widget.onInfo,
                       ),
                     ),
                     Align(
@@ -103,7 +169,7 @@ class WordHuntThemedProductionRouteScreen extends StatelessWidget {
                         key: const Key('word_hunt_themed_chrome_compass'),
                         assetPath: WordHuntProductionAssets.compassButton,
                         semanticLabel: 'Pusula',
-                        onPressed: onCompass,
+                        onPressed: _handleCompass,
                       ),
                     ),
                     Align(
@@ -112,7 +178,7 @@ class WordHuntThemedProductionRouteScreen extends StatelessWidget {
                         key: const Key('word_hunt_themed_chrome_book'),
                         assetPath: WordHuntProductionAssets.bookButton,
                         semanticLabel: 'Kitap',
-                        onPressed: onBook,
+                        onPressed: widget.onBook,
                       ),
                     ),
                   ],
@@ -140,28 +206,28 @@ class WordHuntThemedProductionRouteScreen extends StatelessWidget {
                     icon: Icons.arrow_back_rounded,
                     tooltip: 'Geri',
                     color: theme.textColor,
-                    onPressed: onBack,
+                    onPressed: widget.onBack,
                   ),
                   _ChromeButton(
                     key: const Key('word_hunt_themed_chrome_info'),
                     icon: Icons.info_outline_rounded,
                     tooltip: 'Bilgi',
                     color: theme.textColor,
-                    onPressed: onInfo,
+                    onPressed: widget.onInfo,
                   ),
                   _ChromeButton(
                     key: const Key('word_hunt_themed_chrome_compass'),
                     icon: Icons.explore_outlined,
                     tooltip: 'Pusula',
                     color: theme.accentColor,
-                    onPressed: onCompass,
+                    onPressed: _handleCompass,
                   ),
                   _ChromeButton(
                     key: const Key('word_hunt_themed_chrome_book'),
                     icon: Icons.menu_book_rounded,
                     tooltip: 'Kitap',
                     color: theme.textColor,
-                    onPressed: onBook,
+                    onPressed: widget.onBook,
                   ),
                 ],
               ),
@@ -202,32 +268,40 @@ class _ArtworkChromeButton extends StatelessWidget {
           child: InkWell(
             customBorder: const CircleBorder(),
             onTap: onPressed,
-            child: ClipOval(
-              child: BackdropFilter(
-                filter: ui.ImageFilter.blur(sigmaX: 7, sigmaY: 7),
-                child: Container(
-                  width: 45,
-                  height: 45,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: const LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: <Color>[Color(0xD91C2E20), Color(0xE308120C)],
-                    ),
-                    border: Border.all(
-                      color: accent.withValues(alpha: 0.76),
-                      width: 1.4,
-                    ),
-                    boxShadow: const <BoxShadow>[
-                      BoxShadow(
-                        color: Color(0x77000000),
-                        blurRadius: 10,
-                        offset: Offset(0, 4),
+            child: SizedBox.square(
+              dimension: 52,
+              child: Center(
+                child: ClipOval(
+                  child: BackdropFilter(
+                    filter: ui.ImageFilter.blur(sigmaX: 7, sigmaY: 7),
+                    child: Container(
+                      width: 45,
+                      height: 45,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: const LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: <Color>[
+                            Color(0xD91C2E20),
+                            Color(0xE308120C),
+                          ],
+                        ),
+                        border: Border.all(
+                          color: accent.withValues(alpha: 0.76),
+                          width: 1.4,
+                        ),
+                        boxShadow: const <BoxShadow>[
+                          BoxShadow(
+                            color: Color(0x77000000),
+                            blurRadius: 10,
+                            offset: Offset(0, 4),
+                          ),
+                        ],
                       ),
-                    ],
+                      child: Icon(icon, color: textColor, size: 22),
+                    ),
                   ),
-                  child: Icon(icon, color: textColor, size: 22),
                 ),
               ),
             ),
@@ -259,11 +333,16 @@ class _ArtworkAssetButton extends StatelessWidget {
         behavior: HitTestBehavior.opaque,
         onTap: onPressed,
         child: SizedBox.square(
-          dimension: 64,
-          child: Image.asset(
-            assetPath,
-            fit: BoxFit.contain,
-            filterQuality: FilterQuality.high,
+          dimension: 72,
+          child: Center(
+            child: SizedBox.square(
+              dimension: 64,
+              child: Image.asset(
+                assetPath,
+                fit: BoxFit.contain,
+                filterQuality: FilterQuality.high,
+              ),
+            ),
           ),
         ),
       ),
