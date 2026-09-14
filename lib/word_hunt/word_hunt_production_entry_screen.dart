@@ -51,7 +51,10 @@ class WordHuntProductionEntryScreen extends StatefulWidget {
 
 class _WordHuntProductionEntryScreenState
     extends State<WordHuntProductionEntryScreen> {
-  final SharedPreferencesAsync _preferences = SharedPreferencesAsync();
+  SharedPreferencesAsync? _preferencesInstance;
+
+  SharedPreferencesAsync get _preferences =>
+      _preferencesInstance ??= SharedPreferencesAsync();
 
   WordHuntProgressSnapshot _progress = const WordHuntProgressSnapshot();
   WordHuntRouteDefinition? _selectedRoute;
@@ -100,7 +103,8 @@ class _WordHuntProductionEntryScreenState
         );
       }
     } catch (_) {
-      // Bozuk/eski yerel veri Kelime Avı'nın açılmasını engellemez.
+      // Bozuk/eski yerel veri veya kullanılamayan storage katmanı Kelime Avı'nın
+      // açılmasını engellemez; varsayılan boş progression ile devam edilir.
       loaded = const WordHuntProgressSnapshot();
     }
 
