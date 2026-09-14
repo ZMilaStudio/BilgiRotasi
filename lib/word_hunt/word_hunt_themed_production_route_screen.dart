@@ -43,9 +43,14 @@ class WordHuntThemedProductionRouteScreen extends StatefulWidget {
 
 class _WordHuntThemedProductionRouteScreenState
     extends State<WordHuntThemedProductionRouteScreen> {
+  static const Size _ormanReferenceLogicalSize = Size(411, 731);
+
   int? _highlightedLevelIndex;
   int _highlightEpoch = 0;
   Timer? _highlightTimer;
+
+  bool get _usesOrmanReferenceCanvas =>
+      widget.visualTheme.id == 'orman-yolu-production';
 
   @override
   void dispose() {
@@ -96,6 +101,211 @@ class _WordHuntThemedProductionRouteScreenState
     );
   }
 
+  Widget _buildArtworkFrame(WordHuntRouteMapTheme theme) {
+    return IgnorePointer(
+      child: DecoratedBox(
+        key: const Key('word_hunt_themed_artwork_frame'),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(22),
+          border: Border.all(
+            color: theme.accentColor.withValues(alpha: 0.34),
+            width: 1.1,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildArtworkChrome({
+    required WordHuntRouteMapTheme theme,
+    required Widget map,
+  }) {
+    if (!_usesOrmanReferenceCanvas) {
+      return Stack(
+        fit: StackFit.expand,
+        children: <Widget>[
+          Positioned.fill(child: _withOpeningTransition(map)),
+          Positioned.fill(
+            child: SafeArea(
+              minimum: const EdgeInsets.all(5),
+              child: _buildArtworkFrame(theme),
+            ),
+          ),
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(8, 6, 8, 8),
+              child: Stack(
+                fit: StackFit.expand,
+                children: <Widget>[
+                  Align(
+                    alignment: Alignment.topLeft,
+                    child: _ArtworkChromeButton(
+                      key: const Key('word_hunt_themed_chrome_back'),
+                      icon: Icons.arrow_back_rounded,
+                      tooltip: 'Geri',
+                      accent: theme.accentColor,
+                      textColor: theme.textColor,
+                      onPressed: widget.onBack,
+                    ),
+                  ),
+                  Align(
+                    alignment: Alignment.topRight,
+                    child: _ArtworkChromeButton(
+                      key: const Key('word_hunt_themed_chrome_info'),
+                      icon: Icons.info_outline_rounded,
+                      tooltip: 'Bilgi',
+                      accent: theme.accentColor,
+                      textColor: theme.textColor,
+                      onPressed: widget.onInfo,
+                    ),
+                  ),
+                  Align(
+                    alignment: Alignment.bottomLeft,
+                    child: _ArtworkAssetButton(
+                      key: const Key('word_hunt_themed_chrome_compass'),
+                      assetPath: WordHuntProductionAssets.compassButton,
+                      semanticLabel: 'Pusula',
+                      onPressed: _handleCompass,
+                    ),
+                  ),
+                  Align(
+                    alignment: Alignment.bottomRight,
+                    child: _ArtworkAssetButton(
+                      key: const Key('word_hunt_themed_chrome_book'),
+                      assetPath: WordHuntProductionAssets.bookButton,
+                      semanticLabel: 'Kitap',
+                      onPressed: widget.onBook,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+
+    return SafeArea(
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final available = constraints.biggest;
+          final fitted = applyBoxFit(
+            BoxFit.contain,
+            _ormanReferenceLogicalSize,
+            available,
+          ).destination;
+          final boardLeft = mathMax(0, (available.width - fitted.width) / 2);
+          final boardTop = mathMax(0, (available.height - fitted.height) / 2);
+          final boardRight = mathMax(
+            0,
+            available.width - boardLeft - fitted.width,
+          );
+          final boardBottom = mathMax(
+            0,
+            available.height - boardTop - fitted.height,
+          );
+          final boardMediaQuery = MediaQuery.of(context).copyWith(
+            size: _ormanReferenceLogicalSize,
+            padding: EdgeInsets.zero,
+            viewPadding: EdgeInsets.zero,
+            viewInsets: EdgeInsets.zero,
+          );
+
+          return Stack(
+            fit: StackFit.expand,
+            children: <Widget>[
+              Positioned.fill(
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: <Color>[
+                        theme.backgroundColor,
+                        theme.surfaceColor,
+                        theme.backgroundColor,
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              Positioned(
+                left: boardLeft,
+                top: boardTop,
+                width: fitted.width,
+                height: fitted.height,
+                child: FittedBox(
+                  fit: BoxFit.fill,
+                  child: SizedBox(
+                    key: const Key('word_hunt_orman_reference_canvas'),
+                    width: _ormanReferenceLogicalSize.width,
+                    height: _ormanReferenceLogicalSize.height,
+                    child: MediaQuery(
+                      data: boardMediaQuery,
+                      child: Stack(
+                        fit: StackFit.expand,
+                        children: <Widget>[
+                          Positioned.fill(child: _withOpeningTransition(map)),
+                          Positioned.fill(child: _buildArtworkFrame(theme)),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Positioned(
+                left: boardLeft + 8,
+                top: boardTop + 6,
+                child: _ArtworkChromeButton(
+                  key: const Key('word_hunt_themed_chrome_back'),
+                  icon: Icons.arrow_back_rounded,
+                  tooltip: 'Geri',
+                  accent: theme.accentColor,
+                  textColor: theme.textColor,
+                  onPressed: widget.onBack,
+                ),
+              ),
+              Positioned(
+                right: boardRight + 8,
+                top: boardTop + 6,
+                child: _ArtworkChromeButton(
+                  key: const Key('word_hunt_themed_chrome_info'),
+                  icon: Icons.info_outline_rounded,
+                  tooltip: 'Bilgi',
+                  accent: theme.accentColor,
+                  textColor: theme.textColor,
+                  onPressed: widget.onInfo,
+                ),
+              ),
+              Positioned(
+                left: boardLeft + 8,
+                bottom: boardBottom + 8,
+                child: _ArtworkAssetButton(
+                  key: const Key('word_hunt_themed_chrome_compass'),
+                  assetPath: WordHuntProductionAssets.compassButton,
+                  semanticLabel: 'Pusula',
+                  onPressed: _handleCompass,
+                ),
+              ),
+              Positioned(
+                right: boardRight + 8,
+                bottom: boardBottom + 8,
+                child: _ArtworkAssetButton(
+                  key: const Key('word_hunt_themed_chrome_book'),
+                  assetPath: WordHuntProductionAssets.bookButton,
+                  semanticLabel: 'Kitap',
+                  onPressed: widget.onBook,
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  double mathMax(double a, double b) => a > b ? a : b;
+
   @override
   Widget build(BuildContext context) {
     final theme = widget.visualTheme.mapTheme;
@@ -114,79 +324,7 @@ class _WordHuntThemedProductionRouteScreenState
       return Scaffold(
         key: const Key('word_hunt_themed_production_route'),
         backgroundColor: theme.backgroundColor,
-        body: Stack(
-          fit: StackFit.expand,
-          children: <Widget>[
-            Positioned.fill(child: _withOpeningTransition(map)),
-            Positioned.fill(
-              child: IgnorePointer(
-                child: SafeArea(
-                  minimum: const EdgeInsets.all(5),
-                  child: DecoratedBox(
-                    key: const Key('word_hunt_themed_artwork_frame'),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(22),
-                      border: Border.all(
-                        color: theme.accentColor.withValues(alpha: 0.34),
-                        width: 1.1,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(8, 6, 8, 8),
-                child: Stack(
-                  fit: StackFit.expand,
-                  children: <Widget>[
-                    Align(
-                      alignment: Alignment.topLeft,
-                      child: _ArtworkChromeButton(
-                        key: const Key('word_hunt_themed_chrome_back'),
-                        icon: Icons.arrow_back_rounded,
-                        tooltip: 'Geri',
-                        accent: theme.accentColor,
-                        textColor: theme.textColor,
-                        onPressed: widget.onBack,
-                      ),
-                    ),
-                    Align(
-                      alignment: Alignment.topRight,
-                      child: _ArtworkChromeButton(
-                        key: const Key('word_hunt_themed_chrome_info'),
-                        icon: Icons.info_outline_rounded,
-                        tooltip: 'Bilgi',
-                        accent: theme.accentColor,
-                        textColor: theme.textColor,
-                        onPressed: widget.onInfo,
-                      ),
-                    ),
-                    Align(
-                      alignment: Alignment.bottomLeft,
-                      child: _ArtworkAssetButton(
-                        key: const Key('word_hunt_themed_chrome_compass'),
-                        assetPath: WordHuntProductionAssets.compassButton,
-                        semanticLabel: 'Pusula',
-                        onPressed: _handleCompass,
-                      ),
-                    ),
-                    Align(
-                      alignment: Alignment.bottomRight,
-                      child: _ArtworkAssetButton(
-                        key: const Key('word_hunt_themed_chrome_book'),
-                        assetPath: WordHuntProductionAssets.bookButton,
-                        semanticLabel: 'Kitap',
-                        onPressed: widget.onBook,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
+        body: _buildArtworkChrome(theme: theme, map: map),
       );
     }
 
