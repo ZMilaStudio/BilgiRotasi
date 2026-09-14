@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:math' as math;
-import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -325,7 +324,10 @@ class _ForestStop extends StatelessWidget {
           ),
         ),
         Transform.translate(
-          offset: Offset(0, isFinal ? -5 : -3),
+          // Scenic artwork üzerinde dekoratif yıldız işaretleri bulunduğu için
+          // canlı yıldız sırasını onların üstüne hizalayıp tek okunur sıra
+          // bırakıyoruz. Final assetinde bu dekoratif sıra yok; eski hizası kalır.
+          offset: Offset(0, isFinal ? -5 : 14),
           child: _Stars(
             stars: !unlocked ? 0 : stars.clamp(0, 3).toInt(),
             muted: !unlocked,
@@ -381,11 +383,12 @@ class _Stars extends StatelessWidget {
   @override
   Widget build(BuildContext context) => DecoratedBox(
         decoration: BoxDecoration(
-          color: const Color(0x61070A08),
+          color: const Color(0xE8070A08),
           borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: const Color(0x663A3020)),
         ),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 1),
+          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: List<Widget>.generate(3, (i) {
