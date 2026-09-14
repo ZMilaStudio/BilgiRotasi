@@ -25,8 +25,11 @@ class WordHuntArtworkRouteMapScreen extends StatelessWidget {
   final WordHuntProgressSnapshot progress;
   final ValueChanged<int>? onLevelTap;
 
-  static const _hitW = 82.0;
-  static const _hitH = 78.0;
+  // Orman reference canvas compact ekranlarda birlikte ölçeklendiği için
+  // görünmeyen hitbox biraz daha geniş tutulur. Görsel node offsetleri aşağıda
+  // aynı mutlak merkezde kalacak şekilde telafi edilir.
+  static const _hitW = 90.0;
+  static const _hitH = 84.0;
 
   bool get _forest => theme.id == 'orman-yolu-production';
 
@@ -157,8 +160,8 @@ class WordHuntArtworkRouteMapScreen extends StatelessWidget {
           clipBehavior: Clip.none,
           children: <Widget>[
             Positioned(
-              left: isFinal ? -18 : -5,
-              top: isFinal ? -23 : -14,
+              left: isFinal ? -14 : -1,
+              top: isFinal ? -20 : -11,
               width: isFinal ? 118 : 92,
               height: isFinal ? 143 : 112,
               child: IgnorePointer(
