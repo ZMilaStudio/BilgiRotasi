@@ -385,10 +385,9 @@ class _Stars extends StatelessWidget {
         decoration: BoxDecoration(
           color: const Color(0xE8070A08),
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: const Color(0x663A3020)),
         ),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+          padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 1),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: List<Widget>.generate(3, (i) {
