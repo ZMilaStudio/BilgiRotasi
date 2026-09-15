@@ -43,7 +43,6 @@ class WordHuntThemedProductionRouteScreen extends StatefulWidget {
 
 class _WordHuntThemedProductionRouteScreenState
     extends State<WordHuntThemedProductionRouteScreen> {
-  static const Size _ormanReferenceLogicalSize = Size(411, 731);
   static const double _ormanAmbientBandThreshold = 12;
   static const double _ormanAmbientFeatherOverlap = 8;
 
@@ -52,7 +51,7 @@ class _WordHuntThemedProductionRouteScreenState
   Timer? _highlightTimer;
 
   bool get _usesOrmanReferenceCanvas =>
-      widget.visualTheme.id == 'orman-yolu-production';
+      widget.visualTheme.referenceCanvasSize != null;
 
   @override
   void dispose() {
@@ -296,13 +295,14 @@ class _WordHuntThemedProductionRouteScreenState
     required WordHuntRouteMapTheme theme,
     required Widget map,
   }) {
+    final referenceCanvasSize = widget.visualTheme.referenceCanvasSize!;
     return SafeArea(
       child: LayoutBuilder(
         builder: (context, constraints) {
           final available = constraints.biggest;
           final fitted = applyBoxFit(
             BoxFit.contain,
-            _ormanReferenceLogicalSize,
+            referenceCanvasSize,
             available,
           ).destination;
           final left = math.max(0.0, (available.width - fitted.width) / 2);
@@ -316,7 +316,7 @@ class _WordHuntThemedProductionRouteScreenState
             available.height - top - fitted.height,
           );
           final boardMediaQuery = MediaQuery.of(context).copyWith(
-            size: _ormanReferenceLogicalSize,
+            size: referenceCanvasSize,
             padding: EdgeInsets.zero,
             viewPadding: EdgeInsets.zero,
             viewInsets: EdgeInsets.zero,
@@ -337,8 +337,8 @@ class _WordHuntThemedProductionRouteScreenState
                   fit: BoxFit.fill,
                   child: SizedBox(
                     key: const Key('word_hunt_orman_reference_canvas'),
-                    width: _ormanReferenceLogicalSize.width,
-                    height: _ormanReferenceLogicalSize.height,
+                    width: referenceCanvasSize.width,
+                    height: referenceCanvasSize.height,
                     child: MediaQuery(
                       data: boardMediaQuery,
                       child: Stack(
@@ -354,7 +354,8 @@ class _WordHuntThemedProductionRouteScreenState
                   ),
                 ),
               ),
-              if (top > _ormanAmbientBandThreshold)
+              if (widget.visualTheme.extendTallAmbientFromArtworkEdges &&
+                  top > _ormanAmbientBandThreshold)
                 Positioned(
                   left: 0,
                   right: 0,
@@ -367,7 +368,8 @@ class _WordHuntThemedProductionRouteScreenState
                     isTop: true,
                   ),
                 ),
-              if (bottom > _ormanAmbientBandThreshold)
+              if (widget.visualTheme.extendTallAmbientFromArtworkEdges &&
+                  bottom > _ormanAmbientBandThreshold)
                 Positioned(
                   left: 0,
                   right: 0,
