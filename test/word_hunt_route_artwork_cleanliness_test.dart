@@ -1,9 +1,14 @@
+import 'dart:convert';
+
+import 'package:bilgi_rotasi/word_hunt/word_hunt_orman_clean_environment_assets.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_orman_content.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_reusable_route_map_screen.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_route_map_decoration.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_route_visual_theme.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_starter_content.dart';
+import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -29,12 +34,30 @@ void main() {
     accent: Color(0xFFFFE08A),
   );
 
-  test('Orman production skin points at the scenic artwork bundle', () {
+  test('Orman production skin points only at clean environment artwork', () {
     const theme = WordHuntRouteVisualThemes.ormanYolu;
     expect(theme.id, 'orman-yolu-production');
     expect(theme.hasArtwork, isTrue);
     expect(theme.backgroundAsset, isNull);
-    expect(theme.backgroundBase64AssetParts, hasLength(7));
+    expect(
+      theme.backgroundBase64AssetParts,
+      wordHuntOrmanCleanEnvironmentAssetParts,
+    );
+    expect(theme.backgroundBase64AssetParts, hasLength(175));
+    expect(
+      theme.backgroundBase64AssetParts.every(
+        (asset) => asset.startsWith(
+          'assets/word_hunt/orman_environment_clean_route_',
+        ),
+      ),
+      isTrue,
+    );
+    expect(
+      theme.backgroundBase64AssetParts.any(
+        (asset) => asset.contains('orman_yolu_scene_'),
+      ),
+      isFalse,
+    );
     expect(theme.overlayDecorationsOnArtwork, isFalse);
     expect(theme.backgroundScale, 1);
     expect(theme.backgroundBlurSigma, 0);
@@ -44,6 +67,22 @@ void main() {
     expect(theme.mapTheme.pathUnderlayColor, const Color(0xFF342416));
     expect(theme.mapTheme.lockedNodeColor, const Color(0xFF56594F));
     expect(theme.mapTheme.nodeShadowColor, const Color(0xFF08120D));
+  });
+
+  testWidgets('Orman clean environment payload remains byte exact', (
+    tester,
+  ) async {
+    final encoded = StringBuffer();
+    for (final asset in wordHuntOrmanCleanEnvironmentAssetParts) {
+      encoded.write((await rootBundle.loadString(asset)).trim());
+    }
+
+    final bytes = base64Decode(encoded.toString());
+    expect(bytes, hasLength(wordHuntOrmanCleanEnvironmentDecodedBytes));
+    expect(
+      sha256.convert(bytes).toString(),
+      wordHuntOrmanCleanEnvironmentSha256,
+    );
   });
 
   testWidgets('Orman production artwork decodes with production route overlay', (

@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 
 import 'word_hunt_artwork_route_map_screen.dart';
 import 'word_hunt_models.dart';
+import 'word_hunt_orman_clean_environment_assets.dart';
 import 'word_hunt_progress.dart';
 import 'word_hunt_reusable_route_map_screen.dart';
 import 'word_hunt_route_map_decoration.dart';
@@ -349,15 +350,7 @@ abstract final class WordHuntRouteVisualThemes {
       accent: Color(0xFFFFE08A),
     ),
     decorationOpacity: 0.94,
-    backgroundBase64AssetParts: <String>[
-      'assets/word_hunt/orman_yolu_scene_00.b64',
-      'assets/word_hunt/orman_yolu_scene_01.b64',
-      'assets/word_hunt/orman_yolu_scene_02.b64',
-      'assets/word_hunt/orman_yolu_scene_03.b64',
-      'assets/word_hunt/orman_yolu_scene_04.b64',
-      'assets/word_hunt/orman_yolu_scene_05.b64',
-      'assets/word_hunt/orman_yolu_scene_06.b64',
-    ],
+    backgroundBase64AssetParts: wordHuntOrmanCleanEnvironmentAssetParts,
     backgroundFit: BoxFit.cover,
     backgroundAlignment: Alignment.center,
     backgroundBlurSigma: 0,
