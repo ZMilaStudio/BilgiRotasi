@@ -12,8 +12,8 @@
 - MASTER ART üzerindeki rota, node, plaque, yıldız, crown, pusula, kitap ve panel sanatı ikinci kez komple Flutter katmanı olarak çizilmez.
 - Yalnız runtime oyun state'i MASTER ART'tan gerçekten farklı olduğunda minimum lokal override uygulanır.
 - MASTER ART içindeki demo `X/30`, yıldız ve lock state'i gerçek progression'ı temsil etmek zorunda değildir; production ekranda gerçek state lokal override ile gösterilir.
-- Level 7 tamamlanınca 8 ve normal 9 birlikte açılır. Bonus 8, node 9 için zorunlu kapı değildir.
-- Node 9 callback üretir. Node 10, node 9 tamamlanmadan locked ve callback üretmeyen durumda kalır.
+- **12 Eylül 2026 güncellemesi:** eski “Level 7 tamamlanınca 8 ve 9 birlikte açılır / bonus 8 zorunlu değildir” davranışı **SUPERSEDED / GEÇERSİZ**. Güncel kural Bölüm 15'tir: yalnız 1 açık başlar ve bölümler kesin olarak `1→2→3→4→5→6→7→8→9→10` sırasıyla açılır.
+- Node 9 yalnız node 8 tamamlandıktan sonra açılır ve callback üretir. Node 10 yalnız node 9 tamamlandıktan sonra açılır; kilitliyken callback üretmez.
 - Bu karar Başlangıç Limanı için önceki “tamamen layered/modüler görünür sahne” şartını **supersede eder**.
 - Bu istisna diğer Kelime Avı tema/rotalarına otomatik genellenmez; her yeni rota ayrıca görsel/teknik karar ister.
 - PR #146 / `c42a9ff...` ve önceki ChatGPT-generated hedef asset'ler görsel kaynak değildir.
@@ -102,7 +102,7 @@
 
 ---
 
-## 8. 29 Ağustos 2026 — Başlangıç Limanı 8×8 ürün geometrisi
+## 8. 29 Ağustos 2026 Başlangıç Limanı 8×8 ürün geometrisi
 
 - Levent'in yeni ürün kararıyla Başlangıç Limanı bölüm grid standardı **8 satır × 8 sütun**dur.
 - Önceki 6×10 starter-content geometrisi bu yeni çalışma için **superseded** edilmiştir; 6×10 geçmiş teknik checkpoint ve kanıtları silinmez.
@@ -184,7 +184,7 @@ Bu bölüm, 31 Ağustos kayıtlarındaki `ERROR_STATE_VISUAL = DOĞRULANACAK` du
 - Final clean Android 16 compact run `33655562508`: **SUCCESS**. B5 target-only no-dialog, B5 all-words auto-dialog, B5 fresh replay auto-dialog, B10 target-only no-dialog, B10 all-words auto-dialog ve process failure scan PASS.
 - Raw Android B5/B10 kompakt popup ekranları Levent’e gösterildi ve **PASS** verildi.
 - Exact tested compact blob PR #163 ürün branch’ine QA-only dosya taşınmadan productize edildi: commit `9a6fede2c4aed4fdbaa6c9ba427fa84e0ce418da`; branch `fix/kelime-avi-v6-found-path-connector-product-20260901`; blob exact `6ce2830...`.
-- İnsan süre-zorluk playtesti scripted QA’dan ayrı tutulur: Levent B5’i **115 sn / 2 hata** ile tamamladı; 60 sn soft challenge hedefi karşılanmadı. B10’u **109 sn / 4 hata** ile tamamladı; 120 sn soft challenge hedefi karşılandı. Overall timing sonucu **MIXED**; B5 tuning kararı ayrıca verilecektir.
+- İnsan süre-zorluk playtesti scripted QA’dan ayrı tutulur: Levent B5’i **115 sn / 2 hata** ile tamamladı; 60 sn soft challenge hedefi karşılanmadı. B10'u **109 sn / 4 hata** ile tamamladı; 120 sn soft challenge hedefi karşılandı. Overall timing sonucu **MIXED**; B5 tuning kararı ayrıca verilecektir.
 - Soft challenge hard-fail değildir; yalnız bu ölçüm nedeniyle timer/gameplay otomatik değiştirilmez.
 - PR #163 **Draft/Open** kalır; görsel PASS Ready veya merge onayı değildir. Merge için Levent’in ayrıca açık onayı zorunludur.
 
@@ -193,13 +193,13 @@ Bu bölüm, 31 Ağustos kayıtlarındaki `ERROR_STATE_VISUAL = DOĞRULANACAK` du
 ## 12. 3 Eylül 2026 — Kelime Avı paket bazlı üretim ve risk bazlı test kararı
 
 - Her bölüm için ayrı branch, ayrı Android 16 Action, ayrı APK ve ayrı insan testi yapılması ölçeklenebilir değildir ve terk edilmiştir.
-- Temel üretim birimi **bir rota/paket = 10 bölüm**dür. Aynı paketin 10 bölümü tek içerik branch’inde topluca geliştirilir.
+- Temel üretim birimi **bir rota/paket = 10 bölüm**dür. Aynı paketin 10 bölümü tek içerik branch'inde topluca geliştirilir.
 - Her bölüm için otomatik kapılar zorunludur: 8×8/64 hücre, hedef+bonus sayısı, her kelimenin exactly-one fiziksel occurrence taşıması, izinli yönler, intended/opposite gesture eşitliği, timer/yıldız sözleşmesi ve grid render sınırları.
 - İnsan denge testi varsayılan olarak paketin temsili **B1 + B5 + B10** bölümlerinde yapılır. Otomatik zorluk/kontrat kapısı şüpheli outlier bulursa yalnız o bölüm ayrıca test edilir.
 - Onaylanmış ortak gameplay görseli her içerik/grid değişikliğinde yeniden kullanıcı kabulüne açılmaz.
 - Android 16 tam runtime kapısı şu durumlarda çalışır: 10 bölümlük paket tamamlandığında; engine/swipe/scoring/timer/progression/result UI veya ortak görsel sistem değiştiğinde; release entegrasyonu öncesinde.
 - Yalnız kelime/grid içeriği değişen tek bölüm için otomatik içerik testleri yeterlidir; paket tamamlanmadan ayrı Android Action/APK üretilmez.
-- Paket QA APK’sı tek uygulama içinde B1–B10 bölüm seçici, yeniden başlatma ve sonuç özeti sağlamalıdır; on ayrı APK üretilmez.
+- Paket QA APK'sı tek uygulama içinde B1–B10 bölüm seçici, yeniden başlatma ve sonuç özeti sağlamalıdır; on ayrı APK üretilmez.
 - Hata bulunursa bütün paket yeniden üretilmez; yalnız başarısız bölüm/dosya düzeltilir ve ilgili otomatik kapılar tekrarlanır.
 - Bu hızlandırma test standardını düşürmez: riskli ürün/runtime değişiklikleri ve final release için ham Android ekranı, logcat/crash-ANR taraması, exact SHA ve artifact kanıtı korunur.
 
@@ -219,3 +219,22 @@ Bu bölüm, 31 Ağustos kayıtlarındaki `ERROR_STATE_VISUAL = DOĞRULANACAK` du
 - Kelime Avı ilgili PR push'ları otomatik focused analyze/test/diff fast gate'inden geçer; kullanıcı workflow başlatan test operatörü olarak kullanılmaz.
 - Canonical 8×8, kabul edilmiş görsel durumlar, engine/path/scoring/timer/progression ve korunan ürün alanları hız uğruna değiştirilmez.
 - Ayrıntılı çalışma sözleşmesi `docs/project-memory/KELIME_AVI_WORK_V2.md` dosyasında tutulur.
+
+## 15. 12 Eylül 2026 — bütün 10-bölümlük rotalarda kesin sıralı kilit
+
+- Yeni/boş progress durumunda yalnız Bölüm 1 açık/current başlar; Bölüm 2–10 locked olur.
+- Bölümler yalnız bir önceki tamamlanınca açılır: `1→2→3→4→5→6→7→8→9→10`.
+- Bir bölüm tamamlandığında yalnız bir sonraki bölüm açılır; iki ileri bölüm aynı anda açılmaz.
+- Bölüm 8 normal bölümdür ve Bölüm 9 için zorunlu kapıdır.
+- Bu kural tema/route fark etmeksizin ortak `WordHuntRouteProgressEngine` sözleşmesidir.
+- Locked node callback üretmez; Android proof da fresh progress ile 1 açık / 2–10 locked göstermelidir.
+- Görsel skin veya raster artwork bu progression kuralını değiştiremez.
+- Eski “7 tamamlanınca 8 ve 9 birlikte açılır” kararı geçersizdir.
+
+## 16. 12 Eylül 2026 — raster artwork kalite katmanı
+
+- Final raster artwork kullanıldığında proof amaçlı procedural ağaç/mantar/dekor katmanı varsayılan olarak **çizilmez**.
+- Raster artwork aktifken procedural atmosfer glow/depth kapatılır; sahnenin kendi ışığı ve derinliği korunur.
+- Artwork kadrajı yalnız tema verisiyle ölçek/hizalama alabilir; canonical 10-node geometri ve 86×82 hitbox değişmez.
+- Canlı path/node/kilit/yıldız/progression katmanı artwork üzerinde runtime state olarak kalır.
+- Orman Yolu Android görsel proof'u artık `WordHuntRouteVisualThemes.ormanYolu` production skin verisini render eder; `forest-proof` production kabul kaynağı değildir.

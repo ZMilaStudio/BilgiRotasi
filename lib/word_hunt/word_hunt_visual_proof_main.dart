@@ -72,6 +72,9 @@ class _AssetRuntimeProbeState extends State<_AssetRuntimeProbe> {
           await precacheImage(AssetImage(path), context);
           debugPrint('[WORD_HUNT_PIXEL_PROOF_ASSET_LOADED] path=$path');
         }
+        await WidgetsBinding.instance.endOfFrame;
+        if (!mounted) return;
+        debugPrint('[WORD_HUNT_VISUAL_PROOF_FRAME_READY]');
       } catch (error, stackTrace) {
         debugPrint(
           '[WORD_HUNT_PIXEL_PROOF_ASSET_ERROR] '

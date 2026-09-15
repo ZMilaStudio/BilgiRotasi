@@ -19,12 +19,12 @@ import 'word_hunt_themed_production_route_screen.dart';
 /// Rota seçimi ve route presentation kararı [WordHuntRouteCatalog] verisiyle
 /// çözülür. Bu ekran rota adına göre renderer seçmez.
 ///
-/// Mevcut production sözleşmesi değişmez:
+/// Mevcut production sözleşmesi:
 /// - Başlangıç Limanı her zaman açıktır ve mevcut reference renderer'ı kullanır.
 /// - Gökyüzü Adaları 18 Başlangıç Limanı yıldızında açılır ve mevcut MASTER ART
 ///   renderer/gameplay arka planlarını kullanır.
-/// - Generic themed renderer production tarafından desteklenir; fakat Orman Yolu
-///   owner unlock + production skin kararı verilmeden katalogda yoktur.
+/// - Orman Yolu, Başlangıç Limanı 10. bölüm tamamlandığında açılır ve generic
+///   themed reusable renderer ile production Orman skinini kullanır.
 ///
 /// Doğrudan belirli bir rota gösterilecek QA/test senaryolarında
 /// [routeSelectionEnabled] false verilebilir. Catalog'da bilinen bir rota ise
@@ -51,7 +51,10 @@ class WordHuntProductionEntryScreen extends StatefulWidget {
 
 class _WordHuntProductionEntryScreenState
     extends State<WordHuntProductionEntryScreen> {
-  final SharedPreferencesAsync _preferences = SharedPreferencesAsync();
+  SharedPreferencesAsync? _preferencesInstance;
+
+  SharedPreferencesAsync get _preferences =>
+      _preferencesInstance ??= SharedPreferencesAsync();
 
   WordHuntProgressSnapshot _progress = const WordHuntProgressSnapshot();
   WordHuntRouteDefinition? _selectedRoute;
@@ -100,7 +103,8 @@ class _WordHuntProductionEntryScreenState
         );
       }
     } catch (_) {
-      // Bozuk/eski yerel veri Kelime Avı'nın açılmasını engellemez.
+      // Bozuk/eski yerel veri veya kullanılamayan storage katmanı Kelime Avı'nın
+      // açılmasını engellemez; varsayılan boş progression ile devam edilir.
       loaded = const WordHuntProgressSnapshot();
     }
 
@@ -129,12 +133,7 @@ class _WordHuntProductionEntryScreenState
 
   void _openCatalogRoute(WordHuntRouteCatalogEntry entry) {
     if (!entry.isUnlocked(_progress)) {
-      final rule = entry.unlockRule;
-      final prerequisite = rule.prerequisiteRoute;
-      final message = prerequisite == null
-          ? '${entry.route.title} henüz açık değil.'
-          : '${entry.route.title} için ${rule.requiredStars} '
-                '${prerequisite.title} yıldızı gerekli.';
+      final message = _lockedRouteMessage(entry);
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(message)));
@@ -145,6 +144,25 @@ class _WordHuntProductionEntryScreenState
       _selectedRoute = entry.route;
       _selectedInfoCards = entry.infoCards;
     });
+  }
+
+  String _lockedRouteMessage(WordHuntRouteCatalogEntry entry) {
+    final rule = entry.unlockRule;
+    final prerequisite = rule.prerequisiteRoute;
+    if (prerequisite == null) {
+      return '${entry.route.title} henüz açık değil.';
+    }
+
+    switch (rule.kind) {
+      case WordHuntRouteUnlockKind.always:
+        return '${entry.route.title} henüz açık değil.';
+      case WordHuntRouteUnlockKind.routeStars:
+        return '${entry.route.title} için ${rule.requiredStars} '
+            '${prerequisite.title} yıldızı gerekli.';
+      case WordHuntRouteUnlockKind.routeComplete:
+        return '${entry.route.title} için ${prerequisite.title} '
+            '${prerequisite.levels.length}. bölümü tamamlaman gerekli.';
+    }
   }
 
   void _leaveRoute() {
@@ -205,11 +223,19 @@ class _WordHuntProductionEntryScreenState
     showDialog<void>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Kelime Avı'),
-        content: const Text(
-          'Hedef kelimeleri yatay, dikey veya çapraz olarak bul. '
-          'Bölümü tamamladıkça yeni duraklar açılır; bonus kelimeler de '
-          'bilgi kartlarını keşfetmene yardımcı olur.',
+        key: const Key('word_hunt_route_help_dialog'),
+        title: const Text('Harita Rehberi'),
+        content: const Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            _GuideLine('Bölümleri sırayla tamamla.'),
+            _GuideLine('Her bölümden en fazla 3 yıldız kazanılabilir.'),
+            _GuideLine('İlerledikçe yeni duraklar açılır.'),
+            _GuideLine('Taçlı bölüm tema finalidir.'),
+            _GuideLine('Pusula sonraki durağı gösterir.'),
+            _GuideLine('Kitap bölümün konusu hakkında bilgi verir.'),
+          ],
         ),
         actions: <Widget>[
           TextButton(
@@ -223,20 +249,21 @@ class _WordHuntProductionEntryScreenState
 
   void _showCompassHint() {
     final route = _activeRoute;
-    final complete = WordHuntRouteProgressEngine.isRouteComplete(
-      route,
-      _progress,
+    if (!WordHuntRouteProgressEngine.isRouteComplete(route, _progress)) {
+      return;
+    }
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('${route.title} tamamlandı.')),
     );
-    final message = complete
-        ? '${route.title} tamamlandı.'
-        : 'Sıradaki durak: Bölüm '
-              '${WordHuntRouteProgressEngine.nextPlayableLevelIndex(route, _progress)}';
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   void _showBook() {
+    final route = _activeRoute;
+    if (route.theme == 'orman' && route.levels.isNotEmpty) {
+      _showOrmanTopicBook();
+      return;
+    }
+
     final unlocked = _activeInfoCards
         .where((card) => _progress.unlockedInfoCardIds.contains(card.id))
         .toList(growable: false);
@@ -268,6 +295,60 @@ class _WordHuntProductionEntryScreenState
               leading: CircleAvatar(child: Text(card.word.characters.first)),
             );
           },
+        ),
+      ),
+    );
+  }
+
+  void _showOrmanTopicBook() {
+    final route = _activeRoute;
+    final levelIndex = WordHuntRouteProgressEngine.nextPlayableLevelIndex(
+      route,
+      _progress,
+    ).clamp(1, route.levels.length).toInt();
+    final level = route.levels[levelIndex - 1];
+    final guide = _ormanTopicGuides[levelIndex - 1];
+
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: const Color(0xFF10251A),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (sheetContext) => SafeArea(
+        child: Padding(
+          key: const Key('word_hunt_current_topic_sheet'),
+          padding: const EdgeInsets.fromLTRB(22, 20, 22, 28),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text(
+                'Bölüm $levelIndex • ${guide.title}',
+                style: Theme.of(sheetContext).textTheme.titleLarge?.copyWith(
+                      color: const Color(0xFFFFE288),
+                      fontWeight: FontWeight.w800,
+                    ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                guide.fact,
+                style: Theme.of(sheetContext).textTheme.bodyLarge?.copyWith(
+                      color: const Color(0xFFFFF5DE),
+                      height: 1.45,
+                    ),
+              ),
+              const SizedBox(height: 14),
+              Text(
+                'Bu bölümde: ${level.targetWords.join(', ')}',
+                style: Theme.of(sheetContext).textTheme.bodyMedium?.copyWith(
+                      color: const Color(0xFFCAD6C8),
+                      height: 1.35,
+                    ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -343,3 +424,74 @@ class _WordHuntProductionEntryScreenState
     }
   }
 }
+
+class _GuideLine extends StatelessWidget {
+  const _GuideLine(this.text);
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          const Padding(
+            padding: EdgeInsets.only(top: 2, right: 8),
+            child: Text('•'),
+          ),
+          Expanded(child: Text(text)),
+        ],
+      ),
+    );
+  }
+}
+
+class _TopicGuide {
+  const _TopicGuide(this.title, this.fact);
+  final String title;
+  final String fact;
+}
+
+const List<_TopicGuide> _ormanTopicGuides = <_TopicGuide>[
+  _TopicGuide(
+    'Ormanın Temeli',
+    'Ağaçların kökleri toprağa tutunmayı sağlar; gövde ve dallar ise su ile besinlerin yapraklara taşınmasına yardımcı olur.',
+  ),
+  _TopicGuide(
+    'Kökler ve Ağaç Türleri',
+    'Çam ve meşe gibi farklı ağaç türleri aynı ormanda yaşayabilir. Kökler suyu ve mineralleri topraktan alır.',
+  ),
+  _TopicGuide(
+    'Kuşlar ve Yuvalar',
+    'Kuşlar yuvalarını korunmak ve yavrularını büyütmek için kullanır. Ağaçların dalları birçok canlıya güvenli yaşam alanı sağlar.',
+  ),
+  _TopicGuide(
+    'Toprak, Mantar ve Dere',
+    'Mantarlar ormandaki ölü organik maddelerin parçalanmasına yardım eder. Dereler de çevredeki canlılara su taşır.',
+  ),
+  _TopicGuide(
+    'Patika ve Orman Bitkileri',
+    'Orman tabanındaki çiçekler ve otlar ışık, su ve toprağın uygun olduğu alanlarda gelişir; patikalar bu yaşam alanlarının arasından geçer.',
+  ),
+  _TopicGuide(
+    'Orman Hayvanları',
+    'Sincap ve geyik gibi hayvanlar yiyecek, su ve barınak için ormanın farklı katmanlarından yararlanır.',
+  ),
+  _TopicGuide(
+    'Ağaçların Yaşam Döngüsü',
+    'Yapraklar güneş ışığını kullanarak ağacın besin üretmesine yardım eder; dallar ve gövde bu sistemi bir arada tutar.',
+  ),
+  _TopicGuide(
+    'Çam ve Orman Dokusu',
+    'Çamlar iğne yaprakları sayesinde su kaybını azaltabilir. Bu özellik birçok çam türünün serin ve zorlu koşullara uyum sağlamasına yardım eder.',
+  ),
+  _TopicGuide(
+    'Kuşların Ormandaki Rolü',
+    'Bazı kuşlar tohumların yayılmasına yardımcı olur. Böylece yeni bitkilerin farklı alanlarda filizlenmesine katkı sağlayabilirler.',
+  ),
+  _TopicGuide(
+    'Orman Ekosistemi',
+    'Toprak, bitkiler, mantarlar, su ve hayvanlar birbirine bağlı bir ekosistem oluşturur. Bir parçadaki değişim diğer canlıları da etkileyebilir.',
+  ),
+];

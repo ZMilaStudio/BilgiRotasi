@@ -1,215 +1,164 @@
 # Bilgi Rotası — Genel Proje Özeti
 
-**Son güncelleme:** 7 Eylül 2026 — Kelime Avı V9 devir noktası. V8/V9 gameplay ve görsel kabul zinciri korunuyor. Gökyüzü Adaları görsel yönü Levent tarafından PASS kabul edildi; runtime entegrasyonu sonrası Android16 raw screenshot/crash/ANR ve gerçek cihaz görsel kabulü zorunlu. 1.68.20+110 production AAB üretildi ancak **Kelime Avı içerdiği için Play Console'a yüklenmeyecek**. Kelime Avı için yeni yayın eşiği **minimum 200 hazır/doğrulanmış bölüm** olarak kilitlendi. PR #180, 20 bölümden minimum 200 bölüme ölçeklenebilir içerik üretim hattını eklemek üzere OPEN/DRAFT durumda. WORK V2 aktif.
+**Son güncelleme:** 15 Eylül 2026
 
-> Teknik doğrulukta tek kanonik kaynak canlı `ZMilaStudio/BilgiRotasi` deposu ve ilgili canlı servislerdir. Bu dosya canlı branch/PR/CI/pubspec doğrulamasının yerine geçmez. Ayrıntılı eski üretim günlükleri Git geçmişinde ve `docs/project-memory/archive/` altında korunur.
+## YENİ SOHBET DEVİR NOTU — ÖNCE BUNU OKU
 
-## Kalıcı Çalışma Kuralı
+Yeni sohbette işe başlamadan önce şu sırayı uygula:
 
-- Her görev başında canlı hedef branch, `pubspec.yaml`, son commit, PR ve CI yeniden doğrulanır.
-- `main` güncel/yayın kaynağı varsayılmaz.
-- Sıra: branch → test → commit → push → PR → inceleme → merge.
-- Kritik merge/release yalnız Levent'in açık onayıyla yapılır.
-- Build PASS tek başına kanıt değildir; diff, test, workflow, log, Git geçmişi ve gerçek runtime kanıtı birlikte değerlendirilir.
-- Görsel kabul yalnız gerçek/raw Android runtime üzerinden verilir; ImageGen/mockup/QA selector kabul kanıtı değildir.
-- `assets/questions.json` kontrolsüz değiştirilmez; ilgisiz değişiklikler silinmez.
-- Codex yalnız mevcut araçlarla yapılamayan zorunlu yerel kod/test işi olduğunda kullanılır; gereksiz Codex kredisi harcanmaz.
-- Kullanıcı açıkça dur dediğinde üretim/merge/release adımı başlatılmaz; durum özeti ve sohbet devri hazırlanır.
+1. Bu dosyanın tamamını oku: `docs/project-memory/GENEL_PROJE_OZETI.md`.
+2. Son sohbet devrini oku: `docs/project-memory/SOHBET_DEVIR_2026-09-15_ORMAN_YOLU_TEMIZ_ASSET_ENTEGRASYONU.md`.
+3. `docs/project-memory/KARARLAR.md`, `docs/project-memory/KARAR_2026-09-14_ORMAN_YOLU_UX.md` ve mevcutsa `docs/project-memory/DEVRALMA_1_AYLIK_GPT.md` dosyalarını oku.
+4. Sonra canlı GitHub durumunu kendin doğrula: repo, branch, PR #198, exact HEAD, changed files ve GitHub Actions sonuçları.
+5. Çelişki varsa öncelik: **canlı GitHub > proje bellek dosyaları > eski sohbetler**.
 
-## Canlı Release Hattı
+Repo: `ZMilaStudio/BilgiRotasi`  
+Branch: `feat/kelime-avi-scenic-theme-depth-20260912`  
+Base: `release/final-closed-test-aab-1.68.8`  
+PR: **#198 — OPEN / DRAFT / unmerged**.
 
-- Repo: `ZMilaStudio/BilgiRotasi`.
-- Canonical release branch: `release/final-closed-test-aab-1.68.8`.
-- Son doğrulanmış canonical release HEAD: **`a43d85eae86eac335c7e09a832152667ba608c53`**.
-- Son production sürümü: **1.68.20+110**.
-- Paket: `com.leventua.bilgirotasi`.
-- PR #179 sürüm/AppBuildInfo senkronizasyonunu canonical release'e taşıdı.
-- Production workflow run `34050183031`: **SUCCESS**; gerçek production AAB + universal APK üretildi ve GitHub Release `v1.68.20+110` oluşturuldu.
-- AAB SHA256: `2bfac3fb5642ba10c57d5f58acb158fdb2eede9210b9a8777d786f884d9cb66d`.
-- APK SHA256: `710e3c1025a41c6ca2a2c930dede4794ac9ef77ef7cf6e25fea6313b1323c8e3`.
-- **Play Console'a yükleme/yayınlama yapılmadı.** Kullanıcı kararı: Kelime Avı içeren bu AAB kesinlikle Play'e yüklenmeyecek.
+**Çok önemli:** Bu devir hazırlanırken ürün/runtime kodunun son gerçek baseline commit'i `ec0b501b7c9d05af03d273000a48af88e4a4bd3c` idi. Bu dosyaları güncellemek için bunun üstüne yalnız dokümantasyon commit'i eklenebilir. Yeni sohbette PR HEAD'i canlı fetch et; docs-only HEAD ile runtime baseline'ı birbirine karıştırma.
 
-## Başlangıç Limanı — Bağlayıcı Mimari
+## Kalıcı çalışma ve owner kuralları
 
-- İlk rota/paket: **Başlangıç Limanı**.
-- Rota hedefi: 10 bölüm / 30 yıldız.
-- Issue #109 `Photo 1.jpg` rota ekranı için bağlayıcı görsel kaynaktır.
-- Production rota tabanı: MASTER ART raster + şeffaf hitbox + minimum lokal runtime-state override.
-- Level 7 tamamlanınca bonus 8 ve normal 9 birlikte açılır; bonus 8, 9 için gate değildir; 10, node 9 tamamlanmadan locked/no-callback.
-- BoardMap / 67 node sözleşmesi kontrolsüz değiştirilmez.
+- PR #198 kullanıcı ayrıca açıkça onay vermeden **Ready yapılmaz, merge edilmez, release/Play adımı başlatılmaz**.
+- Her görev başında branch, HEAD, PR ve CI canlı GitHub'dan yeniden doğrulanır.
+- Build PASS tek başına yeterli değildir; diff + test + workflow + **gerçek Android runtime** kanıtı birlikte değerlendirilir.
+- Mockup/ImageGen final runtime kanıtı değildir. Kullanıcı final doğrulamada yalnız gerçek emulator/build ekranlarını kabul eder.
+- `assets/questions.json`, 67-node BoardMap, Firebase, signing, version ve Play kapsam dışıdır; açık izin olmadan dokunma.
+- **Orman 1 kullanıcı tarafından “Orman 1 tamam” denmeden tamamlanmış sayılmaz. Orman 2 pilotuna başlanmaz.**
 
-## Canonical Gameplay Sözleşmesi
+## Kelime Avı — kanonik progression ve catalog
+
+- Her 10-bölümlük rotada fresh progress: yalnız **Bölüm 1 açık/current**, Bölüm 2–10 locked.
+- Sıralı unlock: `1→2→3→4→5→6→7→8→9→10`.
+- Ortak motor `WordHuntRouteProgressEngine.isLevelUnlocked`; tema/artwork progression mantığını değiştiremez.
+- Production catalog: **Başlangıç Limanı → Gökyüzü Adaları → Orman Yolu**.
+- Gökyüzü kapısı: Başlangıç Limanı'ndan 18 yıldız; değişmedi.
+- Orman kapısı: yalnız Başlangıç Limanı **Bölüm 10 tamamlandığında** açılır. B1–B9 tamam + 27 yıldız tek başına yetmez.
+
+## Orman Yolu — onaylı UX / geometri kararları
+
+Detaylı karar: `docs/project-memory/KARAR_2026-09-14_ORMAN_YOLU_UX.md`.
+
+- Mevcut yön korunur: **Bölüm 1 üstte, Bölüm 10 altta**.
+- Mevcut zig-zag node anchor geometrisi değiştirilmez.
+- Node görsel ölçüsü owner onayıyla küçültülmüştür; görünmez rahat touch/hitbox alanları korunur.
+- Bölüm 10 final kimliği özel kalır:
+  - locked: prestige/taç çerçevesi + merkez kilit + gri/pasif yıldızlar,
+  - unlocked: 10 + aktif altın final,
+  - completed: gerçek oyuncu yıldızları.
+- Üst yeşil-altın panel kompakt; geri/bilgi görsel boyutu küçültülmez.
+- Pusula scroll/kamera yapmaz; yalnız sıradaki oynanabilir node'u kısa pulse/highlight ile vurgular.
+- Kitap = bölüm konusu bilgisi. Sağ üst `i` = genel harita kullanım rehberi.
+- **MEYDAN OKUMA** tabelası dekoratif environment öğesidir, interaktif değildir.
+- Açılış animasyonu kısa fade + çok hafif depth, 1 saniyenin altında, bounce yok.
+- SafeArea ve touch target korunur; final node ile pusula/kitap alanı çakışmamalıdır.
+- Test ekranındaki `0/30` veya örnek yıldızlar gameplay bug varsayılmaz; veri sistemi tahminle değiştirilmez.
+
+## 15 Eylül 2026 — kritik raster teşhisi
+
+Orman production raster'ı doğrudan APK/runtime asset zincirinden açılıp incelendi. Mevcut `orman_yolu_scene_00.b64 ... orman_yolu_scene_06.b64` birleşimi **941×1672 WebP** olmakla birlikte temiz environment değildi; eski tam UI kompozisyonu raster pikseline bake edilmişti.
+
+Eski raster'ın içine gömülü olduğu doğrulanan öğeler:
+
+- eski geri ve bilgi butonları,
+- büyük header kartı,
+- `KELİME AVI`, `Orman Yolu`, header yaprakları, yıldız simgesi ve eski `21/30`,
+- level 1–10 node görselleri,
+- level numaraları ve kilit ikonları,
+- final node, taç ve `10`,
+- bütün eski yıldız sıraları,
+- alt soldaki pusula ve alt sağdaki kitap,
+- ayrıca environment parçası olarak taş rota/patika ve MEYDAN OKUMA tabelası.
+
+Flutter aynı UI öğelerinin çoğunu canlı olarak tekrar çizdiği için header/node/yıldız/pusula/kitap ghosting ve double-image oluşuyordu. Tall ambient da aynı eski raster'ı kullandığı için blur altında eski UI izleri taşıyabiliyordu. **Kök neden widget hizası değil, UI-bake edilmiş raster'ın production environment olarak kullanılmasıydı.**
+
+## Owner tarafından onaylanan temiz Orman environment source
+
+Temizleme sonrası owner **ham temiz 941×1672 Orman environment asset'ini onayladı**.
+
+Konuşma çalışma alanında doğrulanmış dosyalar:
+
+- `ORMAN_ENVIRONMENT_CLEAN_ROUTE_941x1672.png` — 941×1672
+- `ORMAN_ENVIRONMENT_CLEAN_ROUTE_941x1672.webp` — 941×1672
+- `ORMAN_ROUTE_ANCHOR_DEBUG_941x1672.png` — yalnız doğrulama overlay'i, production asset değildir
+- `ORMAN_ENVIRONMENT_DIMENSION_PROOF.txt`
+- `ORMAN_ENVIRONMENT_941x1672_PACKAGE.zip`
+
+Temiz environment içinde **korunacaklar**:
+
+- doğal Orman sahnesi,
+- ağaçlar, şelale/su, kayalar, bitki örtüsü, ışık,
+- köprü ve çevresel dekorlar,
+- **1→10 taş rota/patika**,
+- **MEYDAN OKUMA** tabelası.
+
+Temiz environment içinde **bulunmayacaklar**:
+
+- eski header/back/info,
+- eski node 1–10,
+- numaralar/kilitler,
+- eski yıldızlar,
+- final node/taç/10,
+- eski pusula/kitap,
+- bunların halo/gölge/çerçeve kalıntıları.
+
+Node-anchor debug doğrulamasında mevcut canlı anchor noktaları temiz environment üstüne bindirildi; 1→10 taş rota bağlantılarının anchor akışıyla korunduğu kontrol edildi. Debug overlay final asset'e dahil edilmeyecek.
+
+## Hedef production mimarisi — bağlayıcı
+
+Bir sonraki kod adımı budur; başka redesign yapma:
+
+1. **Foreground environment:** yalnız yeni temiz 941×1672 Orman asset'i.
+2. **Canlı Flutter UI:** header, geri/bilgi, node 1–10, kilitler, numaralar, yıldızlar, final node, pusula ve kitap yalnız Flutter tarafından **bir kez** çizilir.
+3. **Tall ambient:** gerekirse yalnız aynı yeni temiz environment asset'i kaynak olur. Eski UI-bake raster kesinlikle ambient kaynağı olamaz.
+4. Taş rota temiz environment içinde bulunduğu için mevcut Orman live route painter **kapalı kalır**.
+5. `WordHuntRouteMapGeometry.normalizedStops`, node anchor'ları ve hitbox düzeni **değişmez**.
+6. Eski `orman_yolu_scene_00...06` UI-bake composite üretim runtime seçiminden tamamen çıkarılır. Tarihsel/test amaçla tutulursa production runtime'dan erişilemez olmalıdır.
+
+## Entegrasyon henüz tamamlanmadı — kritik devir durumu
+
+Kullanıcı temiz asset'i onayladı ve koda entegrasyon talimatını verdi, ancak bu sohbet sonunda **entegrasyon tamamlanmış/push edilmiş değildir**.
+
+- Runtime/game-code baseline: `ec0b501b7c9d05af03d273000a48af88e4a4bd3c`.
+- Temiz asset'i Base64/runtime parçalarına hazırlamak için yerel çalışma yapıldı; bazı Git blob hazırlıkları denenmiş olabilir.
+- **Bunlar production branch'te tamamlanmış bir clean-asset commit anlamına gelmez.**
+- Yeni sohbette hiçbir yarım blob'u “entegre edildi” sayma; önce canlı branch diff/HEAD'i doğrula.
+
+`ec0b501...` üzerinde eski baked raster ile şu exact-head kontroller PASS olmuştu:
+
+- Route Catalog ✅
+- Android 16 ana proof ✅
+- 3 ekran boyutu Android proof ✅
+- AdMob exact-head ✅
+
+Ancak bu görsel checkpoint **final kabul değildir**, çünkü baked eski UI raster hâlâ runtime zincirindeydi.
+
+## Yeni sohbette sıradaki uygulama
+
+1. `GENEL_PROJE_OZETI.md` ve `SOHBET_DEVIR_2026-09-15_ORMAN_YOLU_TEMIZ_ASSET_ENTEGRASYONU.md` dosyalarını oku.
+2. PR #198 ve branch exact HEAD'i canlı doğrula. Docs-only handoff commit'i varsa runtime baseline'ın hâlâ `ec0b501...` olduğunu ayır.
+3. Onaylı temiz 941×1672 environment asset'ini repo/runtime'a ekle.
+4. `WordHuntRouteVisualThemes.ormanYolu` ve ilgili asset seçimini yalnız temiz environment'a geçir.
+5. Eski UI-bake `orman_yolu_scene_00...06` dosyalarının foreground/ambient production runtime tarafından yüklenmediğini kod + manifest + runtime seçimi düzeyinde doğrula.
+6. Tall ambient yalnız temiz source'u kullansın ve foreground içine taşarak ghosting üretmesin.
+7. Live route painter kapalı, node anchor geometrisi değişmeden kalsın.
+8. Tek/temiz exact-head entegrasyon commit'i üret.
+9. Exact-head için Route Catalog + Android 16 ana proof + 3 ekran boyutu + AdMob doğrulamalarını çalıştır.
+10. **Yalnız gerçek Android 16 emulator/build** PNG'lerini üret:
+    - 720×1280
+    - 1080×1920
+    - 1080×2400
+11. Üçünü görsel olarak kontrol et: ikinci header yok, eski node/yıldız izi yok, pusula/kitap çiftlenmiyor, rota tek katman, node'lar taş rota anchor'larıyla uyumlu, ambient eski UI taşımıyor, tall seam/transition temiz.
+12. Görselleri kullanıcıya getir ve **orada dur**. Kullanıcı onayı olmadan Ready/merge yok; Orman 2 yok.
+
+## Canonical gameplay/release korumaları
 
 - Grid: **8×8 / 64 hücre — LOCKED**.
-- Önceki 6×10 yalnız tarihsel checkpointtir; ürüne geri dönmez.
-- Target+bonus eğrisi: B1 5+1, B2 5+1, B3 6+1, B4 6+1, B5 7+1, B6 7+1, B7 8+1, B8 7+2, B9 9+1, B10 9+1; toplam **80**.
-- Her target/bonus 8 düz yönde exactly-one fiziksel occurrence taşır; ters gesture aynı canonical kelimeye çözülür.
-- B8 bonusları `HIZ` + `SKOR`; B9 bonus `ROKET`; B10 hedef `YOL`, bonus `HAZİNE`.
-- B5 60 sn ve B10 120 sn soft challenge; hard-fail değildir.
-- Engine/path/scoring/timer/progression sözleşmesi görsel tema uğruna değiştirilmez.
+- 6×10 tarihsel checkpointtir; geri dönmez.
+- B5 60 sn, B10 120 sn soft challenge; hard-fail değildir.
+- Minimum Kelime Avı yayın stoğu: **200 hazır/doğrulanmış bölüm**.
+- 200/200 release-stock gate ve runtime/fiziksel kabul tamamlanmadan yeni Kelime Avı production release'i Play'e yüklenmez.
 
-## V5 / V6 Ürün Kabulü — PASS
-
-- V5 approved raster + dinamik Flutter text/state + canonical 8×8 engine mimarisi korunur.
-- Found-state Android16: **PASS**.
-- Error-state Android16: **PASS**.
-- Completion/result davranışı: **PASS**.
-- B5 tuning sonrası insan testi: **32 sn**, süre PASS.
-- Swipe false-positive toleransı Android16: gerçek `ANKARA + 1 trailing hücre` → `1/7`, hata `0`, PASS.
-
-## Release Merge Zinciri — TAMAMLANDI
-
-- PR #167 — MERGED → `c5d57e98866e244fdf36d5e7b6ad4684c5f935f4`.
-- PR #163 — MERGED → `806c4bfc01f2ab9211a2684bff36f76a82e4ac8d`.
-- PR #162 — MERGED → `929bb13177e03a0962464e21f6c174d4b3439349`.
-- PR #161 — MERGED → `4aa490e7c2d5e7547dc95f9463dbbb9adeb85e5a`.
-- PR #158 — MERGED → `189864c92a605e7bb960460300714049c730ea39`.
-- PR #169 — MERGED → `0c84aefd8a5ef591aaaab9eaa30bed2e044190cf`.
-- PR #179 — MERGED → `a43d85eae86eac335c7e09a832152667ba608c53`.
-- PR #166 tarihsel geliştirme/QA hattıdır; merge edilmeyecektir.
-
-## Production Ana Navigasyon — CANONICAL
-
-- Bilgi Rotası production **Oyna** menüsüne `Kelime Avı` kartı eklendi.
-- Kart `WordHuntProductionEntryScreen` üzerinden `WordHuntReferenceRouteScreen` production rotasına açılır.
-- Açık rota node'u `WordHuntLevelProductionScreen` gameplay ekranını açar.
-- İlerleme `WordHuntProgressCodec` ile Firebase UID / guest scope'una göre `SharedPreferencesAsync` üzerinde cihazda saklanır.
-- Başka hesap scope'una ait veri fail-closed reddedilir; bozuk/eski veri oyunun açılmasını engellemez.
-- Bölüm sonucu mevcut `WordHuntProgressSnapshot` sözleşmesiyle best yıldız ve açılan bilgi kartlarını kaydeder.
-- Geri / bilgi / pusula / kitap callbackleri production davranışına bağlıdır.
-
-## Gökyüzü Adaları — V9 GÖRSEL YÖNÜ LOCKED/PASS
-
-- Paket adı: **Gökyüzü Adaları**.
-- Görsel yön: **C — Neşeli & Parlak**.
-- Rota: 10 bölüm.
-- Modüler asset mimarisi ve rota mock V2 statik görsel yönü: **LOCKED/PASS**.
-- Levent'in son görsel kabulü: adacıklar için yalnız tema ile uyumlu boş/tematik arka plan kullanılacak; arka plan gameplay/UI yerine geçmeyecek.
-- Telefon ekranına göre kompozisyon yapılacak; üst/alt gereksiz boşluk bırakılmayacak, yalnız altta banner reklam için gereken alan bırakılacak.
-- Rota ekranında 8–9–10 arasında kullanıcı tarafından fark edilen gereksiz kilit + 3 yıldız işareti kaldırıldı; son kabul bu düzeltmeyi içeriyor.
-- **Raw Android runtime görsel PASS henüz yok.** Flutter entegrasyonu sonrası Android16 raw screenshot + crash/ANR/log kanıtı ve gerçek cihaz görsel kabulü zorunlu.
-
-## Gökyüzü Adaları Runtime Asset Paketi
-
-- Runtime sözleşmesi: **41 core + 7 opsiyonel island variant = 48 WebP**.
-- ZIP boyutu: **557.120 bayt**.
-- Zorunlu SHA256: `d219c6233fa27f5e3e04687ec5fd15dab1f24500584e78d6a7c80036ee68f5ca`.
-- Alpha/file QA: **PASS**.
-- Bu QA, raw Android görsel PASS değildir.
-- Firestorage aktarım dosyası: `gokyuzu_transfer_chunks18_native`.
-- Firestorage public/share bilgileri tarihsel aktarım kanıtıdır; retention süreli olduğundan final ürün kaynağı değildir.
-- Eski `.transfer`, raw8, v5 ve eski materialize yöntemleri final ürün geçmişi olarak kullanılmayacak.
-
-## Gökyüzü Adaları İçerik Paketi
-
-- 10 bölüm / toplam 80 target+bonus canonical 8×8 içerik hazır.
-- PR #171 `feat(kelime-avi): add Gokyuzu 8x8 content pack` **OPEN/DRAFT** olarak tarihsel içerik paketi hattıdır; merge/Ready yapılmayacak.
-- Exact içerik HEAD: `4ec33de7438fcbd15ed63b1ae2adda127da3be8c`.
-- Bu paket mevcut 20 bölümlük yayın stoğunun parçasıdır; yeni 200-bölüm üretim hattıyla karıştırılmamalıdır.
-
-## Kelime Avı V9 — 200 BÖLÜM YAYIN EŞİĞİ
-
-### Kalıcı karar
-
-- Mevcut Kelime Avı stoğu: **20 bölüm**.
-- Kullanıcı kararı: 20 bölüm yayın için yetersiz; kullanıcıların bir günde bitirmesi olası.
-- **Minimum yayın stoğu: 200 hazır/doğrulanmış bölüm.**
-- Tercih edilen güvenli yayın stoğu: 200–300 bölüm.
-- Kelime Avı, bu 200 bölüm eşiği oluşmadan Play'e çıkarılmayacak.
-- 1.68.20+110 AAB Kelime Avı içerdiği için Play'e yüklenmeyecek.
-
-### PR #180 — ölçeklenebilir üretim hattı
-
-- PR: **#180 — `feat(kelime-avi): add 200-level content production pipeline`**.
-- Durum: **OPEN / DRAFT / mergeable=true / merged=false**.
-- Base: `release/final-closed-test-aab-1.68.8` @ `a43d85eae86eac335c7e09a832152667ba608c53`.
-- Current PR HEAD: **`618404e281bca91cdd2e9eb03761f47784690353`**.
-- PR merge edilmedi.
-- Amaç: bölüm-bölüm el işçiliğini bırakıp deterministik toplu üretim + otomatik doğrulama hattına geçmek.
-
-### PR #180 kapsamı
-
-- `tools/word_hunt_batch_generator.py`
-  - canonical 8×8 grid,
-  - yatay/dikey/çapraz + ters yön,
-  - deterministic seed,
-  - target/bonus validation,
-  - exact-one physical occurrence gate,
-  - 200 bölüm release-stock gate.
-- `tools/word_hunt_content_factory.sample.json`.
-- `.github/workflows/word-hunt-content-factory.yml`.
-- `docs/project-memory/KELIME_AVI_200_BOLUM_URETIM_HATTI_2026-09-06.md`.
-- Protected scope: `assets/questions.json`, BoardMap/67 node, Firebase, AdMob, signing, package/version, Play release.
-- PR #180 Play yüklemez, runtime katalog eklemez ve production sürüm değiştirmez.
-
-### 200 bölüm üretim hedefi
-
-- Mevcut: **20 bölüm**.
-- Yeni hedef: **18 yeni rota × 10 bölüm = 180 bölüm**.
-- Toplam hedef: **200 bölüm minimum**.
-- Üretim birimi: 10 bölümlük rota/paket.
-- Bölüm başına ayrı branch/Android Action/APK/insan testi yapılmayacak.
-- Her bölüm otomatik 8×8, kelime sayısı, exactly-one occurrence, yön, reverse gesture, timer/yıldız ve render kapılarından geçecek.
-- İnsan denge örneklemesi varsayılan B1 + B5 + B10; otomatik outlier varsa yalnız ilgili ek bölüm oynanacak.
-- Android16 tam runtime paket tamamlanınca, engine/ortak UI değişiminde ve release entegrasyonu öncesinde çalışacak.
-
-### Üretim hattında son durum
-
-- PR #180'un ilk altyapı CI turu yeşil kabul edildi ve 180 yeni bölüm için toplu manifest üretimi hazırlığına geçildi.
-- Son çalışma HEAD'i `618404e281bca91cdd2e9eb03761f47784690353`.
-- Exact HEAD için CI durumları sohbet durdurulduğu anda takip ediliyordu; **yeni sohbette canlı GitHub'dan yeniden doğrulanmalı**.
-- Üretim manifestinde 18 temalı rota için 10'ar bölüm hedeflendi: Orman Yolu, Deniz Koyu, Dağ Geçidi, Çöl Vahası, Kış Ülkesi, Bahar Bahçesi, Gece Şehri, Uzay Üssü, Antik Kent, Gizemli Laboratuvar, Müzik Adası, Spor Vadisi, Mutfak Sokağı, Masal Ormanı, Teknoloji Kenti, Tarih Yolu, Bilim Koyu, Hazine Adası.
-- Bu isimler/kelime havuzları üretim taslağıdır; **oyuna veya canonical içerik dosyasına merge edilmiş değillerdir**.
-- Yeni sohbette önce PR #180 exact HEAD, CI ve değişen dosyalar doğrulanmalı; yeşil olmayan/eksik kapı varsa üretim commit'i veya merge yapılmamalı.
-
-## Docs-only / eski checkpoint PR'ları
-
-- PR #168 tarihsel docs-only checkpoint olarak kalmıştır; eski release-context bilgileri yeni V9 durumuyla karşılaştırılmadan kanonik kabul edilmez.
-- PR #171 Gökyüzü Adaları 8×8 içerik paketi: OPEN/DRAFT; Ready/merge yok.
-- PR #175 Gökyüzü Adaları runtime asset hattının tarihsel görsel kabul checkpoint'idir; raw Android fiziksel kabul kapısı ayrı kalır.
-
-## Ölçeklenebilir Üretim/Test — KALICI KARAR
-
-- Temel üretim birimi 10 bölümlük rota/pakettir.
-- Bölüm başına ayrı branch/Android Action/APK/insan testi yapılmaz.
-- Her bölüm otomatik 8×8, kelime sayısı, exactly-one occurrence, yön, reverse gesture, timer/yıldız ve render kapılarından geçer.
-- İnsan denge örneklemesi varsayılan B1 + B5 + B10; otomatik outlier varsa yalnız ilgili ek bölüm oynanır.
-- Android16 tam runtime paket tamamlanınca, engine/ortak UI değişiminde ve release entegrasyonu öncesinde çalışır.
-- Amaç, 10 bölüm/hafta gibi ölçeklenmeyen manuel üretim yerine tek üretim bloğunda çoklu rota/bölüm üretip makinece doğrulamaktır.
-
-## WORK V2 — AKTİF
-
-- Mikro değişiklik → tam test → rapor → bekleme döngüsü kullanılmaz.
-- İlişkili işler mümkün olan en büyük mantıklı üretim bloğunda tamamlanır.
-- Çözülebilen hata/fixture/test sorunları kullanıcıyı test operatörü yapmadan giderilir ve yeniden doğrulanır.
-- Kullanıcı ürün yönü, gerçek görsel/fiziksel kabul ve Ready/merge/release kararlarında devreye girer.
-
-## Reference Font
-
-- Runtime `fontFamily: 'serif'` kullanır.
-- Repo içinde exact custom font kaynağı yoktur.
-- `REFERENCE_FONT = DOĞRULANACAK / DEFERRED`; spekülatif font değişikliği yapılmaz.
-
-## Korunan Alanlar
-
-- `assets/questions.json` kontrolsüz değiştirilmez.
-- BoardMap / 67 node değiştirilmez.
-- Canonical 8×8 / 64 hücre sözleşmesi korunur.
-- Firebase / AdMob / release signing değişiklikleri ayrı scope gerektirir.
-- Package name korunur.
-- Play yükleme/yayınlama, Kelime Avı yayın stoğu ve kullanıcı onayı olmadan yapılmaz.
-
-## Kalan Aktif Sıra — V9 BURADAN DEVAM ETSİN
-
-1. Yeni sohbette canlı GitHub'dan canonical release branch, HEAD, `pubspec.yaml`, açık PR'lar ve CI yeniden doğrula.
-2. PR #180 exact HEAD `618404e...` ve CI durumunu kontrol et.
-3. PR #180'un 200-bölüm üretim hattını güvenli biçimde tamamla; mevcut 20 bölümü koru.
-4. 18 yeni rota × 10 bölüm = 180 yeni bölümü deterministik üretim + otomatik QA ile hazırla.
-5. 200/200 release-stock gate PASS olmadan Kelime Avı runtime katalog/release entegrasyonuna geçme.
-6. Yeni içeriklerin görsel/runtime entegrasyonu gerekiyorsa önce ürün içi görsel kabul, sonra Android16 raw runtime, sonra gerçek cihaz kabulü yap.
-7. Gökyüzü Adaları runtime asset entegrasyonu için 48 WebP gate'lerini ve exact SHA'yı koru; raw Android görsel PASS'i ayrıca al.
-8. Kelime Avı içeren `1.68.20+110` AAB **Play'e yüklenmeyecek**.
-9. Yeni Kelime Avı production AAB ancak minimum 200 doğrulanmış bölüm ve gerekli runtime/fiziksel kabul kapıları tamamlandıktan sonra üretilecek.
-10. Play Console yükleme/yayınlama için ayrıca Levent'in açık onayı gerekecek.
-
-**SON DURUM:** Başlangıç Limanı 8×8 LOCKED / V5-V6 gameplay PASS / Gökyüzü Adaları görsel yönü PASS + raw Android DEFERRED / production navigasyon canonical / `1.68.20+110` AAB üretildi ama Kelime Avı nedeniyle Play'e YÜKLENMEYECEK / minimum yayın stoğu 200 bölüm / PR #180 OPEN+DRAFT / current PR HEAD `618404e281bca91cdd2e9eb03761f47784690353` / 20 mevcut + 180 yeni hedef / WORK V2 AKTİF / Play YAYINI YOK.
+**DEVİR SON DURUMU:** PR #198 OPEN/DRAFT/unmerged / runtime baseline `ec0b501b7c9d05af03d273000a48af88e4a4bd3c` / baked eski UI raster kök neden olarak doğrulandı / owner temiz 941×1672 environment asset'ini onayladı / taş rota + MEYDAN OKUMA temiz asset'te kalıyor / clean-asset production entegrasyonu henüz tamamlanmadı / sıradaki iş yalnız temiz asset'i foreground+ambient runtime'a bağlayıp eski baked raster'ı production zincirinden çıkarmak ve üç gerçek Android boyutunda exact-head kanıt üretmek / PR merge yok / Orman 2 yok.

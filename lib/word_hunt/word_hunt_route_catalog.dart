@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'word_hunt_gokyuzu_content.dart';
 import 'word_hunt_models.dart';
+import 'word_hunt_orman_content.dart';
 import 'word_hunt_progress.dart';
 import 'word_hunt_route_visual_theme.dart';
 import 'word_hunt_starter_content.dart';
@@ -10,7 +11,7 @@ import 'word_hunt_starter_content.dart';
 ///
 /// Yeni rotalar için selector widget'ına özel koşul eklemek yerine bu veri
 /// sözleşmesi kullanılmalıdır.
-enum WordHuntRouteUnlockKind { always, routeStars }
+enum WordHuntRouteUnlockKind { always, routeStars, routeComplete }
 
 /// Production rota ekranının hangi ortak renderer ailesini kullandığını söyler.
 ///
@@ -36,19 +37,48 @@ class WordHuntRouteUnlockRule {
   }) : kind = WordHuntRouteUnlockKind.routeStars,
        assert(requiredStars > 0);
 
+  const WordHuntRouteUnlockRule.routeComplete({
+    required this.prerequisiteRoute,
+  }) : kind = WordHuntRouteUnlockKind.routeComplete,
+       requiredStars = 0;
+
   final WordHuntRouteUnlockKind kind;
   final WordHuntRouteDefinition? prerequisiteRoute;
   final int requiredStars;
 
   bool isUnlocked(WordHuntProgressSnapshot progress) {
-    if (kind == WordHuntRouteUnlockKind.always) return true;
-    return currentStars(progress) >= requiredStars;
+    switch (kind) {
+      case WordHuntRouteUnlockKind.always:
+        return true;
+      case WordHuntRouteUnlockKind.routeStars:
+        return currentStars(progress) >= requiredStars;
+      case WordHuntRouteUnlockKind.routeComplete:
+        final prerequisite = prerequisiteRoute;
+        if (prerequisite == null || prerequisite.levels.isEmpty) return false;
+        return WordHuntRouteProgressEngine.isLevelCompleted(
+          prerequisite.levels.last,
+          progress,
+        );
+    }
   }
 
   int currentStars(WordHuntProgressSnapshot progress) {
     final prerequisite = prerequisiteRoute;
     if (prerequisite == null) return 0;
     return WordHuntRouteProgressEngine.totalStars(prerequisite, progress);
+  }
+
+  int currentCompletedLevels(WordHuntProgressSnapshot progress) {
+    final prerequisite = prerequisiteRoute;
+    if (prerequisite == null) return 0;
+    return prerequisite.levels
+        .where(
+          (level) => WordHuntRouteProgressEngine.isLevelCompleted(
+            level,
+            progress,
+          ),
+        )
+        .length;
   }
 }
 
@@ -92,9 +122,6 @@ class WordHuntRouteCatalogEntry {
 }
 
 /// Kullanıcıya şu anda gerçekten sunulan production Kelime Avı rotaları.
-///
-/// Orman Yolu içeriği doğrulanmış olsa da owner unlock + production skin kararı
-/// verilmeden bu listeye bilerek eklenmez.
 abstract final class WordHuntRouteCatalog {
   static const WordHuntRouteCatalogEntry starter = WordHuntRouteCatalogEntry(
     cardKey: 'starter',
@@ -121,12 +148,27 @@ abstract final class WordHuntRouteCatalog {
     presentationKind: WordHuntRoutePresentationKind.gokyuzuMasterArt,
   );
 
+  /// Owner kararı: Orman Yolu, Başlangıç Limanı'nın 10. bölümü en az bir
+  /// yıldızla tamamlandığında açılır. Gökyüzü Adaları'nın durumundan bağımsızdır.
+  static const WordHuntRouteCatalogEntry orman = WordHuntRouteCatalogEntry(
+    cardKey: 'orman',
+    route: WordHuntOrmanContent.ormanYolu,
+    infoCards: WordHuntOrmanContent.infoCards,
+    ordinalLabel: 'Üçüncü rota',
+    icon: Icons.park_rounded,
+    colors: <Color>[Color(0xFF166534), Color(0xFF3F2B1D)],
+    unlockRule: WordHuntRouteUnlockRule.routeComplete(
+      prerequisiteRoute: WordHuntStarterContent.baslangicLimani,
+    ),
+    presentationKind: WordHuntRoutePresentationKind.themedReusable,
+    visualTheme: WordHuntRouteVisualThemes.ormanYolu,
+  );
+
   static const List<WordHuntRouteCatalogEntry> entries =
-      <WordHuntRouteCatalogEntry>[starter, gokyuzu];
+      <WordHuntRouteCatalogEntry>[starter, gokyuzu, orman];
 
   /// Catalog mode dışında doğrudan QA rotası açıldığında da canlı rotaların
-  /// mevcut production presentation'ını korur. Tanınmayan/gelecek rotalar
-  /// owner tarafından kataloğa eklenene kadar null döner.
+  /// mevcut production presentation'ını korur.
   static WordHuntRouteCatalogEntry? entryForRouteId(String routeId) {
     for (final entry in entries) {
       if (entry.route.id == routeId) return entry;
