@@ -94,7 +94,7 @@ PR #201 ile Orman 2 asset-reuse pilotundan önce gereken minimum generic present
 
 - Onaylı/test edilen PR HEAD: `834ba8458a5493c336d5ac06e1735062100e9a4c`
 - Squash merge commit: `19dd5ffa3a5d4b9d2588ef5030b99459fd04d37e`
-- Approved PR HEAD ile squash merge commit aynı Git tree SHA'sına sahiptir: `0284e5f8f12852eb1fafce8e863a806abaa06759`.
+- Approved PR HEAD ile squash merge commit aynı Git tree SHA'sına sahiptir: `73946e2d2b00f21f2e3dc09040ee3330f0696d1f`.
 - **Reference canvas + tall ambient artık config-driven.** Orman 1'in 411×731 reference canvas ve mevcut tall ambient davranışı config üzerinden korunur.
 - **Embedded decorative route + live nodes artık `artworkOverlayMode` ile config-driven.** Orman 1'de raster içindeki dekoratif rota korunurken canlı Flutter node/UI katmanı aynı davranışı sürdürür.
 - **NodeSkin refactor pilot için ertelendi.** Mevcut node skin asset yollarına bu aşamada dokunulmadı.
