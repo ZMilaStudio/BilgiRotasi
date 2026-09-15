@@ -4,6 +4,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'word_hunt_artwork_presentation.dart';
 import 'word_hunt_artwork_route_map_screen.dart';
 import 'word_hunt_models.dart';
 import 'word_hunt_orman_clean_environment_assets.dart';
@@ -35,6 +36,9 @@ class WordHuntRouteVisualTheme {
     this.backgroundVignetteColor = Colors.transparent,
     this.backgroundVignetteStrength = 0,
     this.overlayDecorationsOnArtwork = false,
+    this.artworkOverlayMode = WordHuntArtworkOverlayMode.reusable,
+    this.referenceCanvasSize,
+    this.extendTallAmbientFromArtworkEdges = false,
   }) : assert(decorationOpacity >= 0 && decorationOpacity <= 1),
        assert(backgroundBlurSigma >= 0),
        assert(backgroundScale >= 1),
@@ -59,6 +63,9 @@ class WordHuntRouteVisualTheme {
   final Color backgroundVignetteColor;
   final double backgroundVignetteStrength;
   final bool overlayDecorationsOnArtwork;
+  final WordHuntArtworkOverlayMode artworkOverlayMode;
+  final Size? referenceCanvasSize;
+  final bool extendTallAmbientFromArtworkEdges;
 
   bool get hasArtwork =>
       backgroundAsset != null || backgroundBase64AssetParts.isNotEmpty;
@@ -95,6 +102,7 @@ class WordHuntThemedRouteMapScreen extends StatelessWidget {
         ? WordHuntArtworkRouteMapScreen(
             route: route,
             theme: effectiveMapTheme,
+            overlayMode: visualTheme.artworkOverlayMode,
             progress: progress,
             onLevelTap: onLevelTap,
           )
@@ -360,6 +368,9 @@ abstract final class WordHuntRouteVisualThemes {
     backgroundVignetteColor: Color(0xFF06110A),
     backgroundVignetteStrength: 0.20,
     overlayDecorationsOnArtwork: false,
+    artworkOverlayMode: WordHuntArtworkOverlayMode.embeddedRouteLiveNodes,
+    referenceCanvasSize: Size(411, 731),
+    extendTallAmbientFromArtworkEdges: true,
   );
 }
 
