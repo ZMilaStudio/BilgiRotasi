@@ -88,4 +88,16 @@ Bu mimari merge'i aşağıdakileri **yapmaz**:
 
 Yeni rotalar runtime'a bağlanırken önce bu reusable mimari kullanılacaktır. Rota entegrasyonu yapılırken canonical 1–10 geometri veya progression tekrar rota özel kodla kopyalanmayacaktır. Her yeni rota mümkün olduğunca yalnız **route data + visualTheme data** sağlayacaktır.
 
-**Durum:** REUSABLE 10-LEVEL MAP ARCHITECTURE — OWNER APPROVED / MERGED / CI GREEN. PLAY YAYINI YOK.
+## Orman 2 pilot genericization zemini — tamamlandı
+
+PR #201 ile Orman 2 asset-reuse pilotundan önce gereken minimum generic presentation zemini tamamlandı ve squash merge edildi.
+
+- Onaylı/test edilen PR HEAD: `834ba8458a5493c336d5ac06e1735062100e9a4c`
+- Squash merge commit: `19dd5ffa3a5d4b9d2588ef5030b99459fd04d37e`
+- Approved PR HEAD ile squash merge commit aynı Git tree SHA'sına sahiptir: `0284e5f8f12852eb1fafce8e863a806abaa06759`.
+- **Reference canvas + tall ambient artık config-driven.** Orman 1'in 411×731 reference canvas ve mevcut tall ambient davranışı config üzerinden korunur.
+- **Embedded decorative route + live nodes artık `artworkOverlayMode` ile config-driven.** Orman 1'de raster içindeki dekoratif rota korunurken canlı Flutter node/UI katmanı aynı davranışı sürdürür.
+- **NodeSkin refactor pilot için ertelendi.** Mevcut node skin asset yollarına bu aşamada dokunulmadı.
+- Orman 2 environment üretimi, yeni environment asset entegrasyonu veya Orman 2 production runtime bağlantısı bu adımın parçası değildir ve henüz başlatılmamıştır.
+
+**Durum:** REUSABLE 10-LEVEL MAP ARCHITECTURE — OWNER APPROVED / MERGED / CI GREEN. ORMAN 2 PILOT GENERICIZATION ZEMİNİ TAMAMLANDI. ORMAN 2 ENVIRONMENT ENTEGRASYONU HENÜZ BAŞLAMADI.
