@@ -45,6 +45,7 @@ class _WordHuntThemedProductionRouteScreenState
     extends State<WordHuntThemedProductionRouteScreen> {
   static const Size _ormanReferenceLogicalSize = Size(411, 731);
   static const double _ormanAmbientBandThreshold = 12;
+  static const double _ormanAmbientFeatherOverlap = 8;
 
   int? _highlightedLevelIndex;
   int _highlightEpoch = 0;
@@ -185,25 +186,36 @@ class _WordHuntThemedProductionRouteScreenState
 
   Widget _ormanAmbientBackground(
     WordHuntRouteMapTheme theme, {
-    required Alignment alignment,
     required bool isTop,
   }) {
     final parts = widget.visualTheme.backgroundBase64AssetParts;
     final asset = widget.visualTheme.backgroundAsset;
+    final alignment = isTop ? Alignment.topCenter : Alignment.bottomCenter;
 
     Widget artwork;
     if (parts.isNotEmpty) {
       artwork = _AmbientBase64Artwork(
         partAssets: parts,
-        alignment: alignment,
+        isTop: isTop,
         fallbackColor: theme.backgroundColor,
       );
     } else if (asset != null) {
-      artwork = Image.asset(
-        asset,
-        fit: BoxFit.cover,
-        alignment: alignment,
-        filterQuality: FilterQuality.medium,
+      artwork = Transform(
+        alignment: Alignment.center,
+        transform: Matrix4.diagonal3Values(1, -1, 1),
+        child: Transform.scale(
+          scale: 1.08,
+          alignment: alignment,
+          child: ImageFiltered(
+            imageFilter: ui.ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+            child: Image.asset(
+              asset,
+              fit: BoxFit.cover,
+              alignment: alignment,
+              filterQuality: FilterQuality.medium,
+            ),
+          ),
+        ),
       );
     } else {
       artwork = ColoredBox(color: theme.backgroundColor);
@@ -214,19 +226,7 @@ class _WordHuntThemedProductionRouteScreenState
         child: Stack(
           fit: StackFit.expand,
           children: <Widget>[
-            Positioned.fill(
-              child: Transform.scale(
-                scale: 1.18,
-                alignment: alignment,
-                child: ImageFiltered(
-                  imageFilter: ui.ImageFilter.blur(sigmaX: 26, sigmaY: 26),
-                  child: artwork,
-                ),
-              ),
-            ),
-            const Positioned.fill(
-              child: ColoredBox(color: Color(0x5206110A)),
-            ),
+            Positioned.fill(child: artwork),
             Positioned.fill(
               child: DecoratedBox(
                 decoration: BoxDecoration(
@@ -235,16 +235,16 @@ class _WordHuntThemedProductionRouteScreenState
                     end: Alignment.bottomCenter,
                     colors: isTop
                         ? const <Color>[
-                            Color(0x66030B07),
-                            Color(0x3006110A),
-                            Color(0x1206110A),
+                            Color(0x24030B07),
+                            Color(0x0806110A),
+                            Color(0x0006110A),
                           ]
                         : const <Color>[
-                            Color(0x1206110A),
-                            Color(0x3006110A),
-                            Color(0x66030B07),
+                            Color(0x0006110A),
+                            Color(0x0806110A),
+                            Color(0x24030B07),
                           ],
-                    stops: const <double>[0, 0.55, 1],
+                    stops: const <double>[0, 0.68, 1],
                   ),
                 ),
               ),
@@ -258,11 +258,20 @@ class _WordHuntThemedProductionRouteScreenState
   Widget _ormanAmbientBand({
     required WordHuntRouteMapTheme theme,
     required double extent,
+    required double featherExtent,
     required bool isTop,
   }) {
     if (extent <= _ormanAmbientBandThreshold) {
       return const SizedBox.shrink();
     }
+
+    final featherRatio = (featherExtent / extent).clamp(0.0, 1.0).toDouble();
+    final stops = isTop
+        ? <double>[0, 1 - featherRatio, 1]
+        : <double>[0, featherRatio, 1];
+    final colors = isTop
+        ? const <Color>[Colors.white, Colors.white, Colors.transparent]
+        : const <Color>[Colors.transparent, Colors.white, Colors.white];
 
     return RepaintBoundary(
       key: Key(
@@ -270,12 +279,15 @@ class _WordHuntThemedProductionRouteScreenState
             ? 'word_hunt_orman_ambient_top_band'
             : 'word_hunt_orman_ambient_bottom_band',
       ),
-      child: _ormanAmbientBackground(
-        theme,
-        alignment: isTop
-            ? const Alignment(0, -0.18)
-            : const Alignment(0, 0.52),
-        isTop: isTop,
+      child: ShaderMask(
+        blendMode: BlendMode.dstIn,
+        shaderCallback: (bounds) => LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: colors,
+          stops: stops,
+        ).createShader(bounds),
+        child: _ormanAmbientBackground(theme, isTop: isTop),
       ),
     );
   }
@@ -316,30 +328,6 @@ class _WordHuntThemedProductionRouteScreenState
               Positioned.fill(
                 child: ColoredBox(color: theme.backgroundColor),
               ),
-              if (top > _ormanAmbientBandThreshold)
-                Positioned(
-                  left: 0,
-                  right: 0,
-                  top: 0,
-                  height: top,
-                  child: _ormanAmbientBand(
-                    theme: theme,
-                    extent: top,
-                    isTop: true,
-                  ),
-                ),
-              if (bottom > _ormanAmbientBandThreshold)
-                Positioned(
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  height: bottom,
-                  child: _ormanAmbientBand(
-                    theme: theme,
-                    extent: bottom,
-                    isTop: false,
-                  ),
-                ),
               Positioned(
                 left: left,
                 top: top,
@@ -366,6 +354,32 @@ class _WordHuntThemedProductionRouteScreenState
                   ),
                 ),
               ),
+              if (top > _ormanAmbientBandThreshold)
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  top: 0,
+                  height: top + _ormanAmbientFeatherOverlap,
+                  child: _ormanAmbientBand(
+                    theme: theme,
+                    extent: top + _ormanAmbientFeatherOverlap,
+                    featherExtent: _ormanAmbientFeatherOverlap,
+                    isTop: true,
+                  ),
+                ),
+              if (bottom > _ormanAmbientBandThreshold)
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  height: bottom + _ormanAmbientFeatherOverlap,
+                  child: _ormanAmbientBand(
+                    theme: theme,
+                    extent: bottom + _ormanAmbientFeatherOverlap,
+                    featherExtent: _ormanAmbientFeatherOverlap,
+                    isTop: false,
+                  ),
+                ),
               Positioned(
                 left: left + 8,
                 top: top + 6,
@@ -494,12 +508,12 @@ class _WordHuntThemedProductionRouteScreenState
 class _AmbientBase64Artwork extends StatefulWidget {
   const _AmbientBase64Artwork({
     required this.partAssets,
-    required this.alignment,
+    required this.isTop,
     required this.fallbackColor,
   });
 
   final List<String> partAssets;
-  final Alignment alignment;
+  final bool isTop;
   final Color fallbackColor;
 
   @override
@@ -540,12 +554,27 @@ class _AmbientBase64ArtworkState extends State<_AmbientBase64Artwork> {
         if (bytes == null) {
           return ColoredBox(color: widget.fallbackColor);
         }
-        return Image.memory(
-          bytes,
-          fit: BoxFit.cover,
-          alignment: widget.alignment,
-          filterQuality: FilterQuality.medium,
-          gaplessPlayback: true,
+
+        final alignment = widget.isTop
+            ? Alignment.topCenter
+            : Alignment.bottomCenter;
+        return Transform(
+          alignment: Alignment.center,
+          transform: Matrix4.diagonal3Values(1, -1, 1),
+          child: Transform.scale(
+            scale: 1.08,
+            alignment: alignment,
+            child: ImageFiltered(
+              imageFilter: ui.ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+              child: Image.memory(
+                bytes,
+                fit: BoxFit.cover,
+                alignment: alignment,
+                filterQuality: FilterQuality.medium,
+                gaplessPlayback: true,
+              ),
+            ),
+          ),
         );
       },
     );
