@@ -4,24 +4,27 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'word_hunt_artwork_presentation.dart';
 import 'word_hunt_models.dart';
 import 'word_hunt_progress.dart';
 import 'word_hunt_reusable_route_map_screen.dart';
 import 'word_hunt_route_ux_scope.dart';
 
 /// Raster artwork üstünde ortak 1→10 geometriyi ve gerçek progression hitbox'ını
-/// korur. Orman production artwork'i taş rotayı içerdiği için path tekrar çizilmez.
+/// korur. Embedded dekoratif rota seçildiğinde path tekrar çizilmez.
 class WordHuntArtworkRouteMapScreen extends StatelessWidget {
   const WordHuntArtworkRouteMapScreen({
     super.key,
     required this.route,
     required this.theme,
+    this.overlayMode = WordHuntArtworkOverlayMode.reusable,
     this.progress = const WordHuntProgressSnapshot(),
     this.onLevelTap,
   });
 
   final WordHuntRouteDefinition route;
   final WordHuntRouteMapTheme theme;
+  final WordHuntArtworkOverlayMode overlayMode;
   final WordHuntProgressSnapshot progress;
   final ValueChanged<int>? onLevelTap;
 
@@ -31,11 +34,9 @@ class WordHuntArtworkRouteMapScreen extends StatelessWidget {
   static const _hitW = 90.0;
   static const _hitH = 84.0;
 
-  bool get _forest => theme.id == 'orman-yolu-production';
-
   @override
   Widget build(BuildContext context) {
-    if (!_forest) {
+    if (overlayMode != WordHuntArtworkOverlayMode.embeddedRouteLiveNodes) {
       return WordHuntReusableRouteMapScreen(
         route: route,
         theme: theme,
