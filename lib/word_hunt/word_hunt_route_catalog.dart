@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import 'word_hunt_gokyuzu_content.dart';
 import 'word_hunt_models.dart';
+import 'word_hunt_orman2_content.dart';
+import 'word_hunt_orman2_visual_theme.dart';
 import 'word_hunt_orman_content.dart';
 import 'word_hunt_progress.dart';
 import 'word_hunt_route_visual_theme.dart';
@@ -164,13 +166,34 @@ abstract final class WordHuntRouteCatalog {
     visualTheme: WordHuntRouteVisualThemes.ormanYolu,
   );
 
+  /// Orman 2 asset-reuse pilotu gerçek production host tarafından tanınır,
+  /// ancak owner görsel onayı gelene kadar selector'da görünür rotalara eklenmez.
+  /// Böylece pilot runtime yolu gerçek kalırken yarım rota kullanıcıya sızmaz.
+  static final WordHuntRouteCatalogEntry orman2Pilot = WordHuntRouteCatalogEntry(
+    cardKey: 'orman2-pilot',
+    route: WordHuntOrman2Content.orman2,
+    infoCards: WordHuntOrman2Content.infoCards,
+    ordinalLabel: 'Dördüncü rota pilotu',
+    icon: Icons.forest_rounded,
+    colors: const <Color>[Color(0xFF173D2A), Color(0xFF162C24)],
+    unlockRule: const WordHuntRouteUnlockRule.routeComplete(
+      prerequisiteRoute: WordHuntOrmanContent.ormanYolu,
+    ),
+    presentationKind: WordHuntRoutePresentationKind.themedReusable,
+    visualTheme: WordHuntOrman2VisualTheme.production,
+  );
+
   static const List<WordHuntRouteCatalogEntry> entries =
       <WordHuntRouteCatalogEntry>[starter, gokyuzu, orman];
 
+  static final List<WordHuntRouteCatalogEntry> _presentationEntries =
+      <WordHuntRouteCatalogEntry>[...entries, orman2Pilot];
+
   /// Catalog mode dışında doğrudan QA rotası açıldığında da canlı rotaların
-  /// mevcut production presentation'ını korur.
+  /// mevcut production presentation'ını korur. Pilot rotalar selector'a
+  /// açılmadan aynı data-driven presentation lookup'a katılabilir.
   static WordHuntRouteCatalogEntry? entryForRouteId(String routeId) {
-    for (final entry in entries) {
+    for (final entry in _presentationEntries) {
       if (entry.route.id == routeId) return entry;
     }
     return null;
