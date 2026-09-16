@@ -167,7 +167,9 @@ class WordHuntOrmanContent {
         infoCardIds: <String>['orman-info-kozalak'],
         timeLimitSeconds: 60,
         starRules: WordHuntStarRules(
-          twoStarMaxMistakes: 2,
+          twoStarMaxSeconds: 36,
+          threeStarMaxSeconds: 25,
+          twoStarMaxMistakes: 1,
           threeStarMaxMistakes: 0,
         ),
       ),
@@ -279,6 +281,8 @@ class WordHuntOrmanContent {
         bonusWords: <String>['MACERA'],
         timeLimitSeconds: 120,
         starRules: WordHuntStarRules(
+          twoStarMaxSeconds: 66,
+          threeStarMaxSeconds: 50,
           twoStarMaxMistakes: 2,
           threeStarMaxMistakes: 0,
         ),

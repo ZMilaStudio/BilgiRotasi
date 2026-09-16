@@ -107,7 +107,7 @@ void main() {
     );
   });
 
-  test('L1-L7 gameplay payload remains unchanged except info card links', () {
+  test('L1-L7 gameplay payload remains unchanged except approved L5 balance', () {
     for (var index = 0; index < 7; index++) {
       final level = route.levels[index];
       expect(level.grid, originalL1ToL7Grids[index], reason: level.id);
@@ -115,28 +115,36 @@ void main() {
       expect(level.bonusWords, originalL1ToL7Bonus[index], reason: level.id);
       expect(level.type, originalL1ToL7Types[index], reason: level.id);
       expect(level.timeLimitSeconds, originalL1ToL7Times[index], reason: level.id);
-      expect(level.starRules.twoStarMaxMistakes, 2, reason: level.id);
       expect(level.starRules.threeStarMaxMistakes, 0, reason: level.id);
-      expect(level.starRules.twoStarMaxSeconds, isNull, reason: level.id);
-      expect(level.starRules.threeStarMaxSeconds, isNull, reason: level.id);
+      if (index == 4) {
+        expect(level.starRules.twoStarMaxMistakes, 1, reason: level.id);
+        expect(level.starRules.twoStarMaxSeconds, 36, reason: level.id);
+        expect(level.starRules.threeStarMaxSeconds, 25, reason: level.id);
+      } else {
+        expect(level.starRules.twoStarMaxMistakes, 2, reason: level.id);
+        expect(level.starRules.twoStarMaxSeconds, isNull, reason: level.id);
+        expect(level.starRules.threeStarMaxSeconds, isNull, reason: level.id);
+      }
     }
   });
 
-  test('L5 challenge and L10 route final difficulty contract stays stable', () {
+  test('L5 challenge and L10 route final progressive balance is exact', () {
     final l5 = route.levels[4];
     final l10 = route.levels[9];
 
     expect(l5.type, WordHuntLevelType.challenge);
     expect(l5.timeLimitSeconds, 60);
-    expect(l5.starRules.twoStarMaxMistakes, 2);
+    expect(l5.starRules.twoStarMaxMistakes, 1);
     expect(l5.starRules.threeStarMaxMistakes, 0);
+    expect(l5.starRules.twoStarMaxSeconds, 36);
+    expect(l5.starRules.threeStarMaxSeconds, 25);
 
     expect(l10.type, WordHuntLevelType.routeFinal);
     expect(l10.timeLimitSeconds, 120);
     expect(l10.starRules.twoStarMaxMistakes, 2);
     expect(l10.starRules.threeStarMaxMistakes, 0);
-    expect(l10.starRules.twoStarMaxSeconds, isNull);
-    expect(l10.starRules.threeStarMaxSeconds, isNull);
+    expect(l10.starRules.twoStarMaxSeconds, 66);
+    expect(l10.starRules.threeStarMaxSeconds, 50);
   });
 
   test('Orman Yolu owns six exact Doğa info cards', () {

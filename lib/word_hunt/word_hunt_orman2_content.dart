@@ -177,7 +177,9 @@ abstract final class WordHuntOrman2Content {
         infoCardIds: <String>['kadim-info-baykus'],
         timeLimitSeconds: 60,
         starRules: WordHuntStarRules(
-          twoStarMaxMistakes: 2,
+          twoStarMaxSeconds: 35,
+          threeStarMaxSeconds: 24,
+          twoStarMaxMistakes: 1,
           threeStarMaxMistakes: 0,
         ),
       ),
@@ -309,6 +311,8 @@ abstract final class WordHuntOrman2Content {
         bonusWords: <String>['KALP', 'KORU'],
         timeLimitSeconds: 120,
         starRules: WordHuntStarRules(
+          twoStarMaxSeconds: 64,
+          threeStarMaxSeconds: 48,
           twoStarMaxMistakes: 2,
           threeStarMaxMistakes: 0,
         ),
