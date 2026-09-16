@@ -1,4 +1,4 @@
-name: Orman 1 + Orman 2 Android çoklu ekran kanıtı
+name: Orman Yolu Android çoklu ekran kanıtı
 
 on:
   pull_request:
@@ -9,12 +9,8 @@ on:
     paths:
       - 'lib/word_hunt/**'
       - 'test/word_hunt_orman_final_polish_test.dart'
-      - 'test/word_hunt_orman2_runtime_integration_test.dart'
-      - 'test/word_hunt_route_selection_test.dart'
-      - 'test/word_hunt_route_visual_theme_test.dart'
       - 'assets/word_hunt/**'
       - 'tools/run_word_hunt_android16_multi_size_proof.sh'
-      - 'tools/run_word_hunt_android16_orman2_multi_size_proof.sh'
       - 'pubspec.yaml'
       - '.github/workflows/word-hunt-orman-multi-size-proof.yml'
   workflow_dispatch:
@@ -24,9 +20,9 @@ permissions:
 
 jobs:
   orman-multi-size-proof:
-    name: Orman 1 + Orman 2 Android 16 çoklu ekran kanıtı
+    name: Orman Yolu Android 16 çoklu ekran kanıtı
     runs-on: ubuntu-22.04
-    timeout-minutes: 45
+    timeout-minutes: 40
     env:
       PROOF_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
 
@@ -49,21 +45,16 @@ jobs:
           channel: stable
           cache: true
 
-      - name: Orman 1 regresyonu ve Orman 2 runtime sözleşmesini doğrula
+      - name: Orman final polish regresyonlarını doğrula
         shell: bash
         run: |
           set -euo pipefail
           flutter pub get
           dart analyze lib/word_hunt
-          flutter test \
-            test/word_hunt_orman_final_polish_test.dart \
-            test/word_hunt_orman2_runtime_integration_test.dart \
-            test/word_hunt_route_selection_test.dart \
-            test/word_hunt_route_visual_theme_test.dart \
-            --reporter expanded
+          flutter test test/word_hunt_orman_final_polish_test.dart --reporter expanded
           git diff --check
 
-      - name: Orman 1 proof APK'sını üret
+      - name: Orman proof APK'sını üret
         shell: bash
         run: |
           set -euo pipefail
@@ -74,24 +65,9 @@ jobs:
           test -s build/app/outputs/flutter-apk/app-debug.apk
           cp build/app/outputs/flutter-apk/app-debug.apk \
             reports/WORD_HUNT_ORMAN_MULTI_SIZE_PROOF.apk
+          git rev-parse HEAD | tee reports/WORD_HUNT_ORMAN_MULTI_SIZE_HEAD_SHA.txt
           sha256sum reports/WORD_HUNT_ORMAN_MULTI_SIZE_PROOF.apk \
             | tee reports/WORD_HUNT_ORMAN_MULTI_SIZE_APK_SHA256.txt
-
-      - name: Orman 2 proof APK'sını üret
-        shell: bash
-        run: |
-          set -euo pipefail
-          flutter build apk --debug \
-            -t lib/word_hunt/word_hunt_orman2_visual_proof_main.dart \
-            --dart-define=ADMOB_ENVIRONMENT=test
-          test -s build/app/outputs/flutter-apk/app-debug.apk
-          cp build/app/outputs/flutter-apk/app-debug.apk \
-            reports/WORD_HUNT_ORMAN2_MULTI_SIZE_PROOF.apk
-          git rev-parse HEAD | tee reports/WORD_HUNT_ORMAN_MULTI_SIZE_HEAD_SHA.txt
-          cp reports/WORD_HUNT_ORMAN_MULTI_SIZE_HEAD_SHA.txt \
-            reports/WORD_HUNT_ORMAN2_MULTI_SIZE_HEAD_SHA.txt
-          sha256sum reports/WORD_HUNT_ORMAN2_MULTI_SIZE_PROOF.apk \
-            | tee reports/WORD_HUNT_ORMAN2_MULTI_SIZE_APK_SHA256.txt
 
       - name: Android emulator KVM erişimini hazırla
         shell: bash
@@ -103,7 +79,7 @@ jobs:
           test -w /dev/kvm
           ./android/gradlew --stop || true
 
-      - name: Android 16 Orman 1 ve Orman 2 ekran boyutlarını doğrula
+      - name: Android 16 üç ekran boyutunu doğrula
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 36
@@ -115,15 +91,13 @@ jobs:
           heap-size: 512M
           emulator-boot-timeout: 1200
           disable-animations: false
-          script: |
-            bash tools/run_word_hunt_android16_multi_size_proof.sh
-            bash tools/run_word_hunt_android16_orman2_multi_size_proof.sh
+          script: bash tools/run_word_hunt_android16_multi_size_proof.sh
 
       - name: Çoklu ekran kanıtlarını yükle
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: BilgiRotasi-KelimeAvi-Orman1-Orman2-MultiSize-${{ env.PROOF_SHA }}
+          name: BilgiRotasi-KelimeAvi-Orman-MultiSize-${{ env.PROOF_SHA }}
           path: |
             reports/WORD_HUNT_ORMAN_ANDROID16_STANDARD_1080x1920.png
             reports/WORD_HUNT_ORMAN_ANDROID16_STANDARD_1080x1920_METRICS.txt
@@ -136,16 +110,5 @@ jobs:
             reports/WORD_HUNT_ORMAN_MULTI_SIZE_APK_SHA256.txt
             reports/WORD_HUNT_ORMAN_*_ACTIVITY.txt
             reports/WORD_HUNT_ORMAN_*_LOGCAT.txt
-            reports/WORD_HUNT_ORMAN2_ANDROID16_STANDARD_1080x1920.png
-            reports/WORD_HUNT_ORMAN2_ANDROID16_STANDARD_1080x1920_METRICS.txt
-            reports/WORD_HUNT_ORMAN2_ANDROID16_COMPACT_720x1280.png
-            reports/WORD_HUNT_ORMAN2_ANDROID16_COMPACT_720x1280_METRICS.txt
-            reports/WORD_HUNT_ORMAN2_ANDROID16_TALL_1080x2400.png
-            reports/WORD_HUNT_ORMAN2_ANDROID16_TALL_1080x2400_METRICS.txt
-            reports/WORD_HUNT_ORMAN2_MULTI_SIZE_RESULT.txt
-            reports/WORD_HUNT_ORMAN2_MULTI_SIZE_HEAD_SHA.txt
-            reports/WORD_HUNT_ORMAN2_MULTI_SIZE_APK_SHA256.txt
-            reports/WORD_HUNT_ORMAN2_*_ACTIVITY.txt
-            reports/WORD_HUNT_ORMAN2_*_LOGCAT.txt
           if-no-files-found: warn
           retention-days: 30
