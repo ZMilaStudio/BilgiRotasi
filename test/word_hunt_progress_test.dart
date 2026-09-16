@@ -17,12 +17,12 @@ void main() {
     );
   }
 
-  WordHuntRouteDefinition route() {
+  WordHuntRouteDefinition route({int unlockStarsRequired = 5}) {
     return WordHuntRouteDefinition(
       id: 'baslangic_limani',
       title: 'Başlangıç Limanı',
       theme: 'liman',
-      unlockStarsRequired: 5,
+      unlockStarsRequired: unlockStarsRequired,
       levels: <WordHuntLevelDefinition>[
         level(1),
         level(2),
@@ -85,10 +85,7 @@ void main() {
       WordHuntRouteProgressEngine.isLevelUnlocked(definition, progress, 2),
       isTrue,
     );
-    expect(
-      WordHuntRouteProgressEngine.nextPlayableLevelIndex(definition, progress),
-      2,
-    );
+    expect(WordHuntRouteProgressEngine.nextPlayableLevelIndex(definition, progress), 2);
   });
 
   test('Baslangic Limani 7-8-9-10 sirali ilerler', () {
@@ -170,10 +167,7 @@ void main() {
     );
 
     expect(second.starsFor('level_1'), 3);
-    expect(
-      second.unlockedInfoCardIds,
-      containsAll(<String>['kart_1', 'kart_2']),
-    );
+    expect(second.unlockedInfoCardIds, containsAll(<String>['kart_1', 'kart_2']));
   });
 
   test('yildiz sonucu 0 ile 3 arasinda sinirlanir', () {
@@ -190,19 +184,57 @@ void main() {
     expect(low.starsFor('level_2'), 0);
   });
 
-  test('rota finali tek basina yetmez, yildiz esigi de gerekir', () {
+  test('route complete final + yıldız threshold birlikte gerektirir', () {
     final definition = route();
-    var progress = const WordHuntProgressSnapshot();
-    progress = progress.recordLevelResult(levelId: 'level_1', stars: 1);
-    progress = progress.recordLevelResult(levelId: 'level_2', stars: 1);
-    progress = progress.recordLevelResult(levelId: 'level_3', stars: 1);
 
+    const thresholdWithoutFinal = WordHuntProgressSnapshot(
+      bestStarsByLevelId: <String, int>{'level_1': 3, 'level_2': 2},
+    );
     expect(
-      WordHuntRouteProgressEngine.isRouteComplete(definition, progress),
+      WordHuntRouteProgressEngine.isRouteComplete(
+        definition,
+        thresholdWithoutFinal,
+      ),
       isFalse,
     );
 
-    progress = progress.recordLevelResult(levelId: 'level_1', stars: 3);
+    const finalWithoutThreshold = WordHuntProgressSnapshot(
+      bestStarsByLevelId: <String, int>{
+        'level_1': 1,
+        'level_2': 1,
+        'level_3': 1,
+      },
+    );
+    expect(
+      WordHuntRouteProgressEngine.isRouteComplete(
+        definition,
+        finalWithoutThreshold,
+      ),
+      isFalse,
+    );
+
+    const finalWithThreshold = WordHuntProgressSnapshot(
+      bestStarsByLevelId: <String, int>{
+        'level_1': 2,
+        'level_2': 2,
+        'level_3': 1,
+      },
+    );
+    expect(
+      WordHuntRouteProgressEngine.isRouteComplete(
+        definition,
+        finalWithThreshold,
+      ),
+      isTrue,
+    );
+  });
+
+  test('route complete sıfır yıldız thresholdunda final completion ile sağlanır', () {
+    final definition = route(unlockStarsRequired: 0);
+    const progress = WordHuntProgressSnapshot(
+      bestStarsByLevelId: <String, int>{'level_3': 1},
+    );
+
     expect(
       WordHuntRouteProgressEngine.isRouteComplete(definition, progress),
       isTrue,

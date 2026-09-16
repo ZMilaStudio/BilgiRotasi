@@ -23,18 +23,35 @@ void main() {
     'lib/word_hunt/word_hunt_route_catalog.dart',
   ).readAsStringSync();
 
-  test('production catalog dört canlı rotayı doğru sırayla taşır', () {
+  Map<String, int> starterCompleteStars() => <String, int>{
+        for (final level in WordHuntStarterContent.baslangicLimani.levels.take(6))
+          level.id: 3,
+        WordHuntStarterContent.baslangicLimani.levels.last.id: 1,
+      };
+
+  Map<String, int> skyCompleteStars() => <String, int>{
+        for (final level in WordHuntGokyuzuContent.gokyuzuAdalari.levels.take(6))
+          level.id: 3,
+        WordHuntGokyuzuContent.gokyuzuAdalari.levels.last.id: 1,
+      };
+
+  test('production catalog order, ids and ordinal labels stay exact', () {
     final entries = WordHuntRouteCatalog.entries;
 
     expect(entries, hasLength(4));
-    expect(entries[0].cardKey, 'starter');
-    expect(entries[0].route.id, WordHuntStarterContent.baslangicLimani.id);
-    expect(entries[1].cardKey, 'gokyuzu');
-    expect(entries[1].route.id, WordHuntGokyuzuContent.gokyuzuAdalari.id);
-    expect(entries[2].cardKey, 'orman');
-    expect(entries[2].route.id, WordHuntOrmanContent.ormanYolu.id);
-    expect(entries[3].cardKey, 'orman2');
-    expect(entries[3].route.id, 'orman-2');
+    expect(
+      entries.map((entry) => entry.route.id).toList(),
+      <String>[
+        'baslangic-limani',
+        'gokyuzu-adalari',
+        'orman-yolu',
+        'orman-2',
+      ],
+    );
+    expect(
+      entries.map((entry) => entry.ordinalLabel).toList(),
+      <String>['İlk rota', 'İkinci rota', 'Üçüncü rota', 'Dördüncü rota'],
+    );
     expect(entries[3].route.title, 'Kadim Orman');
   });
 
@@ -88,53 +105,71 @@ void main() {
     );
   });
 
-  test('Başlangıç Limanı her zaman açıktır', () {
-    expect(
-      WordHuntRouteCatalog.starter.isUnlocked(
-        const WordHuntProgressSnapshot(),
-      ),
-      isTrue,
-    );
+  test('linear catalog prerequisite contract is exact and data-driven', () {
     expect(
       WordHuntRouteCatalog.starter.unlockRule.kind,
       WordHuntRouteUnlockKind.always,
     );
+
+    final skyRule = WordHuntRouteCatalog.gokyuzu.unlockRule;
+    expect(skyRule.kind, WordHuntRouteUnlockKind.routeComplete);
+    expect(skyRule.prerequisiteRoute, same(WordHuntStarterContent.baslangicLimani));
+    expect(WordHuntStarterContent.baslangicLimani.unlockStarsRequired, 18);
+    expect(
+      WordHuntRouteCatalog.gokyuzu.lockedMessage,
+      'Başlangıç Limanı’nı tamamla ve en az 18 yıldız kazan.',
+    );
+
+    final forestRule = WordHuntRouteCatalog.orman.unlockRule;
+    expect(forestRule.kind, WordHuntRouteUnlockKind.routeComplete);
+    expect(
+      forestRule.prerequisiteRoute,
+      same(WordHuntGokyuzuContent.gokyuzuAdalari),
+    );
+    expect(WordHuntGokyuzuContent.gokyuzuAdalari.unlockStarsRequired, 18);
+    expect(
+      WordHuntRouteCatalog.orman.lockedMessage,
+      'Gökyüzü Adaları’nı tamamla ve en az 18 yıldız kazan.',
+    );
+
+    final kadimRule = WordHuntRouteCatalog.orman2Pilot.unlockRule;
+    expect(kadimRule.kind, WordHuntRouteUnlockKind.routeComplete);
+    expect(kadimRule.prerequisiteRoute, same(WordHuntOrmanContent.ormanYolu));
+    expect(WordHuntOrmanContent.ormanYolu.unlockStarsRequired, 0);
+    expect(
+      WordHuntRouteCatalog.orman2Pilot.lockedMessage,
+      'Orman Yolu’nu tamamlayarak aç.',
+    );
   });
 
-  test('Gökyüzü kapısı 18 Başlangıç Limanı yıldızına bağlı kalır', () {
-    final rule = WordHuntRouteCatalog.gokyuzu.unlockRule;
-    expect(rule.kind, WordHuntRouteUnlockKind.routeStars);
-    expect(rule.prerequisiteRoute?.id, WordHuntStarterContent.baslangicLimani.id);
-    expect(
-      rule.requiredStars,
-      WordHuntGokyuzuContent.gokyuzuAdalari.unlockStarsRequired,
-    );
-    expect(rule.requiredStars, 18);
+  test('fresh progress yalnız Başlangıç Limanı rotasını açar', () {
+    const progress = WordHuntProgressSnapshot();
 
-    const progress = WordHuntProgressSnapshot(
+    expect(WordHuntRouteCatalog.starter.isUnlocked(progress), isTrue);
+    expect(WordHuntRouteCatalog.gokyuzu.isUnlocked(progress), isFalse);
+    expect(WordHuntRouteCatalog.orman.isUnlocked(progress), isFalse);
+    expect(WordHuntRouteCatalog.orman2Pilot.isUnlocked(progress), isFalse);
+  });
+
+  test('18 Başlangıç yıldızı final olmadan Gökyüzü açmaz', () {
+    final progress = WordHuntProgressSnapshot(
       bestStarsByLevelId: <String, int>{
-        'baslangic-1': 3,
-        'baslangic-2': 3,
-        'baslangic-3': 3,
-        'baslangic-4': 3,
-        'baslangic-5': 3,
-        'baslangic-6': 3,
+        for (final level in WordHuntStarterContent.baslangicLimani.levels.take(6))
+          level.id: 3,
       },
     );
 
-    expect(rule.currentStars(progress), 18);
-    expect(WordHuntRouteCatalog.gokyuzu.isUnlocked(progress), isTrue);
+    expect(WordHuntRouteCatalog.gokyuzu.unlockRule.currentStars(progress), 18);
+    expect(WordHuntRouteCatalog.gokyuzu.isUnlocked(progress), isFalse);
   });
 
-  test('17 yıldızda Gökyüzü kapısı kapalı kalır', () {
-    const progress = WordHuntProgressSnapshot(
+  test('Başlangıç finali tamam ama 17 yıldızda Gökyüzü kapalı kalır', () {
+    final levels = WordHuntStarterContent.baslangicLimani.levels;
+    final progress = WordHuntProgressSnapshot(
       bestStarsByLevelId: <String, int>{
-        'baslangic-1': 3,
-        'baslangic-2': 3,
-        'baslangic-3': 3,
-        'baslangic-4': 3,
-        'baslangic-5': 3,
-        'baslangic-6': 2,
+        for (final level in levels.take(5)) level.id: 3,
+        levels[5].id: 1,
+        levels.last.id: 1,
       },
     );
 
@@ -142,93 +177,168 @@ void main() {
     expect(WordHuntRouteCatalog.gokyuzu.isUnlocked(progress), isFalse);
   });
 
-  test('Orman Yolu yalnız Başlangıç Limanı 10. bölüm bitince açılır', () {
-    final rule = WordHuntRouteCatalog.orman.unlockRule;
-    expect(rule.kind, WordHuntRouteUnlockKind.routeComplete);
-    expect(rule.prerequisiteRoute?.id, WordHuntStarterContent.baslangicLimani.id);
-    expect(
-      WordHuntRouteCatalog.orman.isUnlocked(const WordHuntProgressSnapshot()),
-      isFalse,
+  test('Başlangıç final + en az 18 yıldız Gökyüzü açar', () {
+    final progress = WordHuntProgressSnapshot(
+      bestStarsByLevelId: starterCompleteStars(),
     );
 
-    const highStarsWithoutFinal = WordHuntProgressSnapshot(
+    expect(
+      WordHuntRouteProgressEngine.isRouteComplete(
+        WordHuntStarterContent.baslangicLimani,
+        progress,
+      ),
+      isTrue,
+    );
+    expect(WordHuntRouteCatalog.gokyuzu.isUnlocked(progress), isTrue);
+  });
+
+  test('Başlangıç complete olsa da Gökyüzü incomplete iken Orman kilitlidir', () {
+    final progress = WordHuntProgressSnapshot(
       bestStarsByLevelId: <String, int>{
-        'baslangic-1': 3,
-        'baslangic-2': 3,
-        'baslangic-3': 3,
-        'baslangic-4': 3,
-        'baslangic-5': 3,
-        'baslangic-6': 3,
-        'baslangic-7': 3,
-        'baslangic-8': 3,
-        'baslangic-9': 3,
+        ...starterCompleteStars(),
+        for (final level in WordHuntGokyuzuContent.gokyuzuAdalari.levels.take(6))
+          level.id: 3,
       },
     );
-    expect(rule.currentStars(highStarsWithoutFinal), 27);
-    expect(rule.currentCompletedLevels(highStarsWithoutFinal), 9);
-    expect(
-      WordHuntRouteCatalog.orman.isUnlocked(highStarsWithoutFinal),
-      isFalse,
-    );
 
-    const finalCompleted = WordHuntProgressSnapshot(
+    expect(WordHuntRouteCatalog.gokyuzu.isUnlocked(progress), isTrue);
+    expect(WordHuntRouteCatalog.orman.isUnlocked(progress), isFalse);
+  });
+
+  test('Gökyüzü finali tamam ama 17 yıldızda Orman kilitlidir', () {
+    final levels = WordHuntGokyuzuContent.gokyuzuAdalari.levels;
+    final progress = WordHuntProgressSnapshot(
       bestStarsByLevelId: <String, int>{
-        'baslangic-1': 3,
-        'baslangic-2': 3,
-        'baslangic-3': 3,
-        'baslangic-4': 3,
-        'baslangic-5': 3,
-        'baslangic-6': 3,
-        'baslangic-7': 3,
-        'baslangic-8': 3,
-        'baslangic-9': 3,
-        'baslangic-10': 1,
+        ...starterCompleteStars(),
+        for (final level in levels.take(5)) level.id: 3,
+        levels[5].id: 1,
+        levels.last.id: 1,
       },
     );
-    expect(rule.currentCompletedLevels(finalCompleted), 10);
-    expect(WordHuntRouteCatalog.orman.isUnlocked(finalCompleted), isTrue);
+
+    expect(WordHuntRouteCatalog.orman.unlockRule.currentStars(progress), 17);
+    expect(WordHuntRouteCatalog.orman.isUnlocked(progress), isFalse);
   });
 
-  test('Kadim Orman fresh progress durumunda görünür ama kilitlidir', () {
-    final entry = WordHuntRouteCatalog.orman2Pilot;
-    expect(WordHuntRouteCatalog.entries, contains(same(entry)));
-    expect(entry.route.id, 'orman-2');
-    expect(entry.route.title, 'Kadim Orman');
-    expect(entry.isUnlocked(const WordHuntProgressSnapshot()), isFalse);
-    expect(entry.lockedMessage, 'Orman Yolu’nu tamamlayarak aç.');
+  test('Gökyüzü final + en az 18 yıldız Orman Yolu açar', () {
+    final progress = WordHuntProgressSnapshot(
+      bestStarsByLevelId: <String, int>{
+        ...starterCompleteStars(),
+        ...skyCompleteStars(),
+      },
+    );
+
+    expect(
+      WordHuntRouteProgressEngine.isRouteComplete(
+        WordHuntGokyuzuContent.gokyuzuAdalari,
+        progress,
+      ),
+      isTrue,
+    );
+    expect(WordHuntRouteCatalog.orman.isUnlocked(progress), isTrue);
   });
 
-  test('Orman Yolu level 9 tamamken Kadim Orman kilitli kalır', () {
-    final stars = <String, int>{
-      for (final level in WordHuntOrmanContent.ormanYolu.levels.take(9))
-        level.id: 3,
-    };
-    final progress = WordHuntProgressSnapshot(bestStarsByLevelId: stars);
-    final entry = WordHuntRouteCatalog.orman2Pilot;
-
-    expect(entry.unlockRule.kind, WordHuntRouteUnlockKind.routeComplete);
-    expect(entry.unlockRule.prerequisiteRoute, same(WordHuntOrmanContent.ormanYolu));
-    expect(entry.unlockRule.currentCompletedLevels(progress), 9);
-    expect(entry.isUnlocked(progress), isFalse);
-  });
-
-  test('Orman Yolu level 10 tamamlanınca yıldız toplamından bağımsız açılır', () {
+  test('Orman Yolu finali 1 yıldızla tamamlanınca Kadim Orman açılır', () {
     final finalLevel = WordHuntOrmanContent.ormanYolu.levels.last;
     final progress = WordHuntProgressSnapshot(
       bestStarsByLevelId: <String, int>{finalLevel.id: 1},
     );
-    final entry = WordHuntRouteCatalog.orman2Pilot;
 
-    expect(entry.unlockRule.currentStars(progress), 1);
-    expect(entry.unlockRule.requiredStars, 0);
-    expect(entry.isUnlocked(progress), isTrue);
+    expect(WordHuntOrmanContent.ormanYolu.unlockStarsRequired, 0);
+    expect(WordHuntRouteCatalog.orman2Pilot.unlockRule.currentStars(progress), 1);
+    expect(WordHuntRouteCatalog.orman2Pilot.isUnlocked(progress), isTrue);
+  });
+
+  test('Orman Yolu yüksek yıldız ama final yokken Kadim Orman kilitlidir', () {
+    final progress = WordHuntProgressSnapshot(
+      bestStarsByLevelId: <String, int>{
+        for (final level in WordHuntOrmanContent.ormanYolu.levels.take(9))
+          level.id: 3,
+      },
+    );
+
+    expect(WordHuntRouteCatalog.orman2Pilot.unlockRule.currentStars(progress), 27);
+    expect(WordHuntRouteCatalog.orman2Pilot.isUnlocked(progress), isFalse);
+  });
+
+  test('legacy Orman progress Gökyüzü incomplete iken prerequisite bypass etmez', () {
+    final forest = WordHuntOrmanContent.ormanYolu;
+    final progress = WordHuntProgressSnapshot(
+      bestStarsByLevelId: <String, int>{
+        ...starterCompleteStars(),
+        forest.levels[0].id: 3,
+        forest.levels[4].id: 2,
+      },
+    );
+
+    expect(WordHuntRouteCatalog.gokyuzu.isUnlocked(progress), isTrue);
+    expect(WordHuntRouteCatalog.orman.isUnlocked(progress), isFalse);
+    expect(progress.starsFor(forest.levels[0].id), 3);
+    expect(progress.starsFor(forest.levels[4].id), 2);
+  });
+
+  test('Gökyüzü sonradan complete olunca Orman açılır ve downstream progress korunur', () {
+    final forest = WordHuntOrmanContent.ormanYolu;
+    var progress = WordHuntProgressSnapshot(
+      bestStarsByLevelId: <String, int>{
+        ...starterCompleteStars(),
+        forest.levels[0].id: 3,
+        forest.levels[4].id: 2,
+      },
+    );
+
+    for (final level in WordHuntGokyuzuContent.gokyuzuAdalari.levels.take(6)) {
+      progress = progress.recordLevelResult(levelId: level.id, stars: 3);
+    }
+    progress = progress.recordLevelResult(
+      levelId: WordHuntGokyuzuContent.gokyuzuAdalari.levels.last.id,
+      stars: 1,
+    );
+
+    expect(WordHuntRouteCatalog.orman.isUnlocked(progress), isTrue);
+    expect(progress.starsFor(forest.levels[0].id), 3);
+    expect(progress.starsFor(forest.levels[4].id), 2);
+  });
+
+  test('routeComplete rule gerçek route completion contractını kullanır', () {
+    final skyRule = WordHuntRouteCatalog.gokyuzu.unlockRule;
+    final starterLevels = WordHuntStarterContent.baslangicLimani.levels;
+
+    final thresholdWithoutFinal = WordHuntProgressSnapshot(
+      bestStarsByLevelId: <String, int>{
+        for (final level in starterLevels.take(6)) level.id: 3,
+      },
+    );
+    expect(skyRule.isUnlocked(thresholdWithoutFinal), isFalse);
+
+    final finalWithoutThreshold = WordHuntProgressSnapshot(
+      bestStarsByLevelId: <String, int>{starterLevels.last.id: 1},
+    );
+    expect(skyRule.isUnlocked(finalWithoutThreshold), isFalse);
+
+    final finalWithThreshold = WordHuntProgressSnapshot(
+      bestStarsByLevelId: starterCompleteStars(),
+    );
+    expect(skyRule.isUnlocked(finalWithThreshold), isTrue);
+
+    final forestFinal = WordHuntOrmanContent.ormanYolu.levels.last;
+    final zeroThresholdFinal = WordHuntProgressSnapshot(
+      bestStarsByLevelId: <String, int>{forestFinal.id: 1},
+    );
+    expect(
+      WordHuntRouteCatalog.orman2Pilot.isUnlocked(zeroThresholdFinal),
+      isTrue,
+    );
   });
 
   test(
     'Orman açıldığında kendi iç progressionı yine yalnız Bölüm 1 ile başlar',
     () {
-      const progress = WordHuntProgressSnapshot(
-        bestStarsByLevelId: <String, int>{'baslangic-10': 1},
+      final progress = WordHuntProgressSnapshot(
+        bestStarsByLevelId: <String, int>{
+          ...starterCompleteStars(),
+          ...skyCompleteStars(),
+        },
       );
       expect(WordHuntRouteCatalog.orman.isUnlocked(progress), isTrue);
       expect(
@@ -252,7 +362,7 @@ void main() {
     },
   );
 
-  testWidgets('fresh selector Kadim Orman kartını locked ve seçilemez gösterir', (
+  testWidgets('fresh selector lineer kilit mesajlarını exact gösterir', (
     tester,
   ) async {
     WordHuntRouteCatalogEntry? selected;
@@ -265,12 +375,19 @@ void main() {
       ),
     );
 
-    final card = find.byKey(const Key('word_hunt_route_card_orman2'));
-    await tester.ensureVisible(card);
-    expect(card, findsOneWidget);
-    expect(find.text('Kadim Orman'), findsOneWidget);
+    expect(
+      find.text('Başlangıç Limanı’nı tamamla ve en az 18 yıldız kazan.'),
+      findsOneWidget,
+    );
+    expect(
+      find.text('Gökyüzü Adaları’nı tamamla ve en az 18 yıldız kazan.'),
+      findsOneWidget,
+    );
     expect(find.text('Orman Yolu’nu tamamlayarak aç.'), findsOneWidget);
-    await tester.tap(card);
+
+    final forestCard = find.byKey(const Key('word_hunt_route_card_orman'));
+    await tester.ensureVisible(forestCard);
+    await tester.tap(forestCard);
     await tester.pump();
     expect(selected, isNull);
   });
@@ -321,9 +438,11 @@ void main() {
     expect(entrySource, contains('bölümü tamamlaman gerekli.'));
   });
 
-  test('Kadim Orman için route-id özel selector/renderer if eklenmemiştir', () {
+  test('lineer progression için route-id özel selector/renderer if eklenmemiştir', () {
     expect(selectorSource, isNot(contains("route.id == 'orman-2'")));
+    expect(selectorSource, isNot(contains("route.id == 'orman-yolu'")));
     expect(catalogSource, isNot(contains("if (route.id == 'orman-2')")));
+    expect(catalogSource, isNot(contains("if (route.id == 'orman-yolu')")));
     expect(entrySource, isNot(contains("route.id == 'orman-2'")));
   });
 
