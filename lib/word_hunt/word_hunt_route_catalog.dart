@@ -56,9 +56,9 @@ class WordHuntRouteUnlockRule {
         return currentStars(progress) >= requiredStars;
       case WordHuntRouteUnlockKind.routeComplete:
         final prerequisite = prerequisiteRoute;
-        if (prerequisite == null || prerequisite.levels.isEmpty) return false;
-        return WordHuntRouteProgressEngine.isLevelCompleted(
-          prerequisite.levels.last,
+        if (prerequisite == null) return false;
+        return WordHuntRouteProgressEngine.isRouteComplete(
+          prerequisite,
           progress,
         );
     }
@@ -148,15 +148,15 @@ abstract final class WordHuntRouteCatalog {
     ordinalLabel: 'İkinci rota',
     icon: Icons.cloud_rounded,
     colors: <Color>[Color(0xFF6D28D9), Color(0xFF1D4ED8)],
-    unlockRule: WordHuntRouteUnlockRule.routeStars(
+    unlockRule: WordHuntRouteUnlockRule.routeComplete(
       prerequisiteRoute: WordHuntStarterContent.baslangicLimani,
-      requiredStars: 18,
     ),
+    lockedMessage: 'Başlangıç Limanı’nı tamamla ve en az 18 yıldız kazan.',
     presentationKind: WordHuntRoutePresentationKind.gokyuzuMasterArt,
   );
 
-  /// Owner kararı: Orman Yolu, Başlangıç Limanı'nın 10. bölümü en az bir
-  /// yıldızla tamamlandığında açılır. Gökyüzü Adaları'nın durumundan bağımsızdır.
+  /// Orman Yolu yalnız Gökyüzü Adaları route-complete olduğunda açılır.
+  /// Gökyüzü'nün kendi completion contract'ı final + en az 18 yıldızdır.
   static const WordHuntRouteCatalogEntry orman = WordHuntRouteCatalogEntry(
     cardKey: 'orman',
     route: WordHuntOrmanContent.ormanYolu,
@@ -165,14 +165,16 @@ abstract final class WordHuntRouteCatalog {
     icon: Icons.park_rounded,
     colors: <Color>[Color(0xFF166534), Color(0xFF3F2B1D)],
     unlockRule: WordHuntRouteUnlockRule.routeComplete(
-      prerequisiteRoute: WordHuntStarterContent.baslangicLimani,
+      prerequisiteRoute: WordHuntGokyuzuContent.gokyuzuAdalari,
     ),
+    lockedMessage: 'Gökyüzü Adaları’nı tamamla ve en az 18 yıldız kazan.',
     presentationKind: WordHuntRoutePresentationKind.themedReusable,
     visualTheme: WordHuntRouteVisualThemes.ormanYolu,
   );
 
   /// Kadim Orman teknik olarak `orman-2` kimliğini korur ve Orman Yolu'nun
-  /// final bölümü tamamlandığında açılır. Yıldız toplamı unlock koşulu değildir.
+  /// route-complete contract'ı sağlandığında açılır. Orman Yolu için ekstra
+  /// yıldız eşiği yoktur; final bölümünün en az bir yıldızla bitmesi yeterlidir.
   static final WordHuntRouteCatalogEntry orman2Pilot = WordHuntRouteCatalogEntry(
     cardKey: 'orman2',
     route: WordHuntOrman2Content.orman2,
