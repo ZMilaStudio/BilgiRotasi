@@ -12,6 +12,7 @@ on:
       - 'test/word_hunt_orman2_runtime_integration_test.dart'
       - 'assets/word_hunt/**'
       - 'tools/run_word_hunt_android16_multi_size_proof.sh'
+      - 'tools/run_word_hunt_orman2_android16_multi_size_proof.sh'
       - 'pubspec.yaml'
       - '.github/workflows/word-hunt-orman-multi-size-proof.yml'
   workflow_dispatch:
@@ -114,5 +115,102 @@ jobs:
             reports/WORD_HUNT_ORMAN_MULTI_SIZE_APK_SHA256.txt
             reports/WORD_HUNT_ORMAN_*_ACTIVITY.txt
             reports/WORD_HUNT_ORMAN_*_LOGCAT.txt
+          if-no-files-found: warn
+          retention-days: 30
+
+  orman2-multi-size-proof:
+    name: Orman 2 Android 16 çoklu ekran kanıtı
+    runs-on: ubuntu-22.04
+    timeout-minutes: 40
+    env:
+      PROOF_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+
+    steps:
+      - name: Exact feature HEAD'i indir
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.PROOF_SHA }}
+
+      - name: Java 17 kur
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Flutter 3.44.6 kur
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.6'
+          channel: stable
+          cache: true
+
+      - name: Orman 2 proof sözleşmesini doğrula
+        shell: bash
+        run: |
+          set -euo pipefail
+          flutter pub get
+          dart analyze lib/word_hunt
+          flutter test test/word_hunt_orman2_runtime_integration_test.dart \
+            --reporter expanded
+          git diff --check
+
+      - name: Orman 2 proof APK'sını üret
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p reports
+          flutter build apk --debug \
+            -t lib/word_hunt/word_hunt_orman2_visual_proof_main.dart \
+            --dart-define=ADMOB_ENVIRONMENT=test
+          test -s build/app/outputs/flutter-apk/app-debug.apk
+          cp build/app/outputs/flutter-apk/app-debug.apk \
+            reports/WORD_HUNT_ORMAN2_MULTI_SIZE_PROOF.apk
+          git rev-parse HEAD | tee reports/WORD_HUNT_ORMAN2_MULTI_SIZE_HEAD_SHA.txt
+          sha256sum reports/WORD_HUNT_ORMAN2_MULTI_SIZE_PROOF.apk \
+            | tee reports/WORD_HUNT_ORMAN2_MULTI_SIZE_APK_SHA256.txt
+
+      - name: Android emulator KVM erişimini hazırla
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -e /dev/kvm
+          sudo chmod 666 /dev/kvm
+          test -r /dev/kvm
+          test -w /dev/kvm
+          ./android/gradlew --stop || true
+
+      - name: Android 16 Orman 2 üç ekran boyutunu doğrula
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 36
+          target: aosp_atd
+          arch: x86_64
+          profile: pixel_2
+          cores: 2
+          ram-size: 2048M
+          heap-size: 512M
+          emulator-boot-timeout: 1200
+          disable-animations: false
+          script: bash tools/run_word_hunt_orman2_android16_multi_size_proof.sh
+
+      - name: Orman 2 çoklu ekran kanıtlarını yükle
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: BilgiRotasi-KelimeAvi-Orman2-MultiSize-${{ env.PROOF_SHA }}
+          path: |
+            reports/WORD_HUNT_ORMAN2_ANDROID16_STANDARD_1080x1920.png
+            reports/WORD_HUNT_ORMAN2_ANDROID16_STANDARD_1080x1920_METRICS.txt
+            reports/WORD_HUNT_ORMAN2_ANDROID16_COMPACT_720x1280.png
+            reports/WORD_HUNT_ORMAN2_ANDROID16_COMPACT_720x1280_METRICS.txt
+            reports/WORD_HUNT_ORMAN2_ANDROID16_TALL_1080x2400.png
+            reports/WORD_HUNT_ORMAN2_ANDROID16_TALL_1080x2400_METRICS.txt
+            reports/WORD_HUNT_ORMAN2_MULTI_SIZE_RESULT.txt
+            reports/WORD_HUNT_ORMAN2_MULTI_SIZE_HEAD_SHA.txt
+            reports/WORD_HUNT_ORMAN2_MULTI_SIZE_APK_SHA256.txt
+            reports/WORD_HUNT_ORMAN2_MULTI_SIZE_INSTALL.txt
+            reports/WORD_HUNT_ORMAN2_*_LAUNCH.txt
+            reports/WORD_HUNT_ORMAN2_*_ACTIVITY.txt
+            reports/WORD_HUNT_ORMAN2_*_LOGCAT.txt
           if-no-files-found: warn
           retention-days: 30
