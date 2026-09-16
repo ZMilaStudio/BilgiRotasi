@@ -27,10 +27,10 @@ void main() {
     expect(String.fromCharCodes(bytes.sublist(8, 12)), 'WEBP');
   });
 
-  test('Orman 2 route identity is independent and validator-clean', () {
+  test('Kadim Orman technical route identity remains orman-2 and validator-clean', () {
     final route = WordHuntOrman2Content.orman2;
     expect(route.id, 'orman-2');
-    expect(route.title, 'Orman 2');
+    expect(route.title, 'Kadim Orman');
     expect(route.theme, 'orman');
     expect(route.levels, hasLength(10));
     expect(WordHuntDefinitionValidator.validateRoute(route), isEmpty);
@@ -49,6 +49,24 @@ void main() {
       expect(pilot.targetWords, same(source.targetWords));
       expect(pilot.type, source.type);
     }
+    expect(route.levels.map((level) => level.index).toList(), <int>[1,2,3,4,5,6,7,8,9,10]);
+  });
+
+  test('Kadim Orman progression identity does not mix with Orman Yolu', () {
+    final orman1Final = WordHuntOrmanContent.ormanYolu.levels.last;
+    final orman2Final = WordHuntOrman2Content.orman2.levels.last;
+
+    final orman1Only = WordHuntProgressSnapshot(
+      bestStarsByLevelId: <String, int>{orman1Final.id: 1},
+    );
+    expect(WordHuntRouteProgressEngine.isLevelCompleted(orman1Final, orman1Only), isTrue);
+    expect(WordHuntRouteProgressEngine.isLevelCompleted(orman2Final, orman1Only), isFalse);
+
+    final orman2Only = WordHuntProgressSnapshot(
+      bestStarsByLevelId: <String, int>{orman2Final.id: 1},
+    );
+    expect(WordHuntRouteProgressEngine.isLevelCompleted(orman1Final, orman2Only), isFalse);
+    expect(WordHuntRouteProgressEngine.isLevelCompleted(orman2Final, orman2Only), isTrue);
   });
 
   test('Orman 2 theme uses approved generic artwork contract without recolor', () {
@@ -90,7 +108,7 @@ void main() {
     );
   });
 
-  test('pilot is routable through catalog but remains hidden from selector', () {
+  test('Kadim Orman is routable and visible through the production catalog', () {
     final entry = WordHuntRouteCatalog.entryForRouteId(
       WordHuntOrman2Content.orman2.id,
     );
@@ -101,12 +119,13 @@ void main() {
       WordHuntRouteCatalog.entries.any(
         (visible) => visible.route.id == WordHuntOrman2Content.orman2.id,
       ),
-      isFalse,
+      isTrue,
     );
     expect(entry?.unlockRule.prerequisiteRoute, same(WordHuntOrmanContent.ormanYolu));
+    expect(entry?.unlockRule.kind, WordHuntRouteUnlockKind.routeComplete);
   });
 
-  testWidgets('Orman 2 renders live Flutter nodes and chrome on clean artwork', (
+  testWidgets('Kadim Orman renders live Flutter nodes and chrome on clean artwork', (
     tester,
   ) async {
     tester.view.physicalSize = const Size(411, 731);
@@ -132,7 +151,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('Orman 2'), findsOneWidget);
+    expect(find.text('Kadim Orman'), findsOneWidget);
     expect(find.byKey(const Key('word_hunt_themed_chrome_back')), findsOneWidget);
     expect(find.byKey(const Key('word_hunt_themed_chrome_info')), findsOneWidget);
     expect(find.byKey(const Key('word_hunt_themed_chrome_compass')), findsOneWidget);

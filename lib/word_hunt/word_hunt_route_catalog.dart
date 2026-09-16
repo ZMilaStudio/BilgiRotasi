@@ -99,6 +99,7 @@ class WordHuntRouteCatalogEntry {
     required this.colors,
     required this.unlockRule,
     required this.presentationKind,
+    this.lockedMessage,
     this.visualTheme,
   }) : assert(
          presentationKind != WordHuntRoutePresentationKind.themedReusable ||
@@ -114,6 +115,10 @@ class WordHuntRouteCatalogEntry {
   final List<Color> colors;
   final WordHuntRouteUnlockRule unlockRule;
   final WordHuntRoutePresentationKind presentationKind;
+
+  /// Kilitli selector kartında gösterilecek ürün metni. Null olduğunda selector
+  /// unlock rule'dan mevcut generic açıklamayı üretir.
+  final String? lockedMessage;
 
   /// Yalnız [WordHuntRoutePresentationKind.themedReusable] rotalarında gerekir.
   /// Node koordinatı veya progression içermez; yalnız ortak renderer skinidir.
@@ -166,32 +171,31 @@ abstract final class WordHuntRouteCatalog {
     visualTheme: WordHuntRouteVisualThemes.ormanYolu,
   );
 
-  /// Orman 2 asset-reuse pilotu gerçek production host tarafından tanınır,
-  /// ancak owner görsel onayı gelene kadar selector'da görünür rotalara eklenmez.
-  /// Böylece pilot runtime yolu gerçek kalırken yarım rota kullanıcıya sızmaz.
+  /// Kadim Orman teknik olarak `orman-2` kimliğini korur ve Orman Yolu'nun
+  /// final bölümü tamamlandığında açılır. Yıldız toplamı unlock koşulu değildir.
   static final WordHuntRouteCatalogEntry orman2Pilot = WordHuntRouteCatalogEntry(
-    cardKey: 'orman2-pilot',
+    cardKey: 'orman2',
     route: WordHuntOrman2Content.orman2,
     infoCards: WordHuntOrman2Content.infoCards,
-    ordinalLabel: 'Dördüncü rota pilotu',
+    ordinalLabel: 'Dördüncü rota',
     icon: Icons.forest_rounded,
     colors: const <Color>[Color(0xFF173D2A), Color(0xFF162C24)],
     unlockRule: const WordHuntRouteUnlockRule.routeComplete(
       prerequisiteRoute: WordHuntOrmanContent.ormanYolu,
     ),
+    lockedMessage: 'Orman Yolu’nu tamamlayarak aç.',
     presentationKind: WordHuntRoutePresentationKind.themedReusable,
     visualTheme: WordHuntOrman2VisualTheme.production,
   );
 
-  static const List<WordHuntRouteCatalogEntry> entries =
-      <WordHuntRouteCatalogEntry>[starter, gokyuzu, orman];
+  static final List<WordHuntRouteCatalogEntry> entries =
+      <WordHuntRouteCatalogEntry>[starter, gokyuzu, orman, orman2Pilot];
 
   static final List<WordHuntRouteCatalogEntry> _presentationEntries =
-      <WordHuntRouteCatalogEntry>[...entries, orman2Pilot];
+      <WordHuntRouteCatalogEntry>[...entries];
 
   /// Catalog mode dışında doğrudan QA rotası açıldığında da canlı rotaların
-  /// mevcut production presentation'ını korur. Pilot rotalar selector'a
-  /// açılmadan aynı data-driven presentation lookup'a katılabilir.
+  /// mevcut production presentation'ını korur.
   static WordHuntRouteCatalogEntry? entryForRouteId(String routeId) {
     for (final entry in _presentationEntries) {
       if (entry.route.id == routeId) return entry;
