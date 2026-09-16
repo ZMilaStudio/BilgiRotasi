@@ -85,7 +85,7 @@ class WordHuntRouteSelector extends StatelessWidget {
     final unlockRule = entry.unlockRule;
     final subtitle = unlocked
         ? '${entry.ordinalLabel} • 10 bölüm • 30 yıldız'
-        : _lockedSubtitle(unlockRule);
+        : _lockedSubtitle(entry);
     final progressText = unlocked
         ? '${WordHuntRouteProgressEngine.totalStars(entry.route, progress)} / ${entry.route.maximumStars}'
         : _lockedProgressText(unlockRule);
@@ -98,11 +98,15 @@ class WordHuntRouteSelector extends StatelessWidget {
       icon: unlocked ? entry.icon : Icons.lock_rounded,
       colors: entry.colors,
       unlocked: unlocked,
-      onTap: () => onRouteTap(entry),
+      onTap: unlocked ? () => onRouteTap(entry) : null,
     );
   }
 
-  String _lockedSubtitle(WordHuntRouteUnlockRule rule) {
+  String _lockedSubtitle(WordHuntRouteCatalogEntry entry) {
+    final lockedMessage = entry.lockedMessage;
+    if (lockedMessage != null) return lockedMessage;
+
+    final rule = entry.unlockRule;
     final prerequisite = rule.prerequisiteRoute;
     switch (rule.kind) {
       case WordHuntRouteUnlockKind.always:
@@ -150,7 +154,7 @@ class _WordHuntRouteCard extends StatelessWidget {
   final IconData icon;
   final List<Color> colors;
   final bool unlocked;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {

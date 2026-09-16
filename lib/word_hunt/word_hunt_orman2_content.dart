@@ -1,17 +1,17 @@
 import 'word_hunt_models.dart';
 import 'word_hunt_orman_content.dart';
 
-/// Orman 2 asset-reuse pilotunun bağımsız route identity'si.
+/// Kadim Orman'ın bağımsız teknik route identity'si.
 ///
-/// Pilot yalnız runtime/environment ölçeklenmesini kanıtladığı için gameplay
-/// verisini Orman Yolu'ndan reuse eder; level ve route kimlikleri ayrıdır, bu
-/// nedenle progression iki rota arasında karışmaz.
+/// İlk runtime pilotu yalnız environment ölçeklenmesini kanıtladığı için
+/// gameplay verisini Orman Yolu'ndan reuse eder; level ve route kimlikleri
+/// ayrıdır, bu nedenle progression iki rota arasında karışmaz.
 abstract final class WordHuntOrman2Content {
   static const List<WordHuntInfoCard> infoCards = WordHuntOrmanContent.infoCards;
 
   static final WordHuntRouteDefinition orman2 = WordHuntRouteDefinition(
     id: 'orman-2',
-    title: 'Orman 2',
+    title: 'Kadim Orman',
     theme: 'orman',
     unlockStarsRequired: 0,
     routeRewardId: 'reward-orman-2',
