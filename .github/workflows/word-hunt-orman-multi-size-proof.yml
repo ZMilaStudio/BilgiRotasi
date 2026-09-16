@@ -9,6 +9,7 @@ on:
     paths:
       - 'lib/word_hunt/**'
       - 'test/word_hunt_orman_final_polish_test.dart'
+      - 'test/word_hunt_orman2_runtime_integration_test.dart'
       - 'assets/word_hunt/**'
       - 'tools/run_word_hunt_android16_multi_size_proof.sh'
       - 'pubspec.yaml'
@@ -45,13 +46,16 @@ jobs:
           channel: stable
           cache: true
 
-      - name: Orman final polish regresyonlarını doğrula
+      - name: Orman final polish regresyonlarını ve Orman 2 runtime sözleşmesini doğrula
         shell: bash
         run: |
           set -euo pipefail
           flutter pub get
           dart analyze lib/word_hunt
-          flutter test test/word_hunt_orman_final_polish_test.dart --reporter expanded
+          flutter test \
+            test/word_hunt_orman_final_polish_test.dart \
+            test/word_hunt_orman2_runtime_integration_test.dart \
+            --reporter expanded
           git diff --check
 
       - name: Orman proof APK'sını üret
