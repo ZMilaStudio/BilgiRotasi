@@ -5,7 +5,7 @@ import 'word_hunt_progress.dart';
 class WordHuntProgressCodec {
   WordHuntProgressCodec._();
 
-  static const int schemaVersion = 1;
+  static const int schemaVersion = 2;
   static const String _storagePrefix = 'bilgi_rotasi_word_hunt_progress_v1_';
 
   static String scopeForUid(String? uid) {
@@ -29,6 +29,7 @@ class WordHuntProgressCodec {
     final sortedStars = snapshot.bestStarsByLevelId.entries.toList()
       ..sort((a, b) => a.key.compareTo(b.key));
     final sortedCards = snapshot.unlockedInfoCardIds.toList()..sort();
+    final sortedRewards = snapshot.unlockedRouteRewardIds.toList()..sort();
 
     return jsonEncode(<String, dynamic>{
       'schema': schemaVersion,
@@ -37,6 +38,7 @@ class WordHuntProgressCodec {
         for (final entry in sortedStars) entry.key: entry.value,
       },
       'unlockedInfoCardIds': sortedCards,
+      'unlockedRouteRewardIds': sortedRewards,
     });
   }
 
@@ -64,7 +66,7 @@ class WordHuntProgressCodec {
 
     final payload = Map<String, dynamic>.from(decoded);
     final schema = payload['schema'];
-    if (schema != schemaVersion) {
+    if (schema != 1 && schema != schemaVersion) {
       throw FormatException('Desteklenmeyen Kelime Avı şeması: $schema');
     }
 
@@ -107,9 +109,24 @@ class WordHuntProgressCodec {
       cards.add(item.trim());
     }
 
+    final rewards = <String>{};
+    if (schema == schemaVersion) {
+      final rewardsRaw = payload['unlockedRouteRewardIds'];
+      if (rewardsRaw is! List) {
+        throw const FormatException('unlockedRouteRewardIds geçersiz');
+      }
+      for (final item in rewardsRaw) {
+        if (item is! String || item.trim().isEmpty) {
+          throw const FormatException('rota ödülü kimliği geçersiz');
+        }
+        rewards.add(item.trim());
+      }
+    }
+
     return WordHuntProgressSnapshot(
       bestStarsByLevelId: Map<String, int>.unmodifiable(stars),
       unlockedInfoCardIds: Set<String>.unmodifiable(cards),
+      unlockedRouteRewardIds: Set<String>.unmodifiable(rewards),
     );
   }
 }
