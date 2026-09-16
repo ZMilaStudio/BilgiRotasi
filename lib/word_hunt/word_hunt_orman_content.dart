@@ -1,13 +1,57 @@
 import 'word_hunt_models.dart';
 
-/// Deterministic Content Factory stokundan alınan Orman Yolu içeriği.
+/// Deterministic Content Factory stokundan alınan ve production'da
+/// statik olarak tutulan Orman Yolu içeriği.
 ///
-/// Bu dosya yalnız rota/bölüm verisini taşır. Production katalog açılma
-/// kuralı burada tanımlanmaz; `unlockStarsRequired` stok metadata değeridir.
+/// Production katalog açılma kuralı burada tanımlanmaz;
+/// `unlockStarsRequired` stok metadata değeridir.
 class WordHuntOrmanContent {
   WordHuntOrmanContent._();
 
-  static const List<WordHuntInfoCard> infoCards = <WordHuntInfoCard>[];
+  static const List<WordHuntInfoCard> infoCards = <WordHuntInfoCard>[
+    WordHuntInfoCard(
+      id: 'orman-info-agac',
+      word: 'AĞAÇ',
+      title: 'Ağaç',
+      shortFact: 'Ağaçların kökleri su ve mineralleri alırken gövdeleri yaprakları ışığa doğru taşır.',
+      category: 'Doğa',
+    ),
+    WordHuntInfoCard(
+      id: 'orman-info-mese',
+      word: 'MEŞE',
+      title: 'Meşe',
+      shortFact: 'Meşe ağaçlarının meyvesine palamut denir; palamutlar birçok orman canlısı için besin olabilir.',
+      category: 'Doğa',
+    ),
+    WordHuntInfoCard(
+      id: 'orman-info-mantar',
+      word: 'MANTAR',
+      title: 'Mantar',
+      shortFact: 'Mantarlar bitki değildir; birçok mantar, ormandaki organik maddelerin parçalanmasına katkı sağlar.',
+      category: 'Doğa',
+    ),
+    WordHuntInfoCard(
+      id: 'orman-info-kozalak',
+      word: 'KOZALAK',
+      title: 'Kozalak',
+      shortFact: 'Çam gibi bazı iğne yapraklı ağaçların tohumları kozalakların pulları arasında gelişir.',
+      category: 'Doğa',
+    ),
+    WordHuntInfoCard(
+      id: 'orman-info-sincap',
+      word: 'SİNCAP',
+      title: 'Sincap',
+      shortFact: 'Sincaplar bazı tohum ve yemişleri saklar; unutulanların bir kısmı yeni bitkilere dönüşebilir.',
+      category: 'Doğa',
+    ),
+    WordHuntInfoCard(
+      id: 'orman-info-geyik',
+      word: 'GEYİK',
+      title: 'Geyik',
+      shortFact: 'Geyikler ot, yaprak ve sürgünlerle beslenen otçul memelilerdir.',
+      category: 'Doğa',
+    ),
+  ];
 
   static const WordHuntRouteDefinition ormanYolu = WordHuntRouteDefinition(
     id: 'orman-yolu',
@@ -32,6 +76,7 @@ class WordHuntOrmanContent {
           'IZVBLYİÇ',
         ],
         targetWords: <String>['AĞAÇ', 'YAPRAK', 'DAL', 'KÖK', 'ORMAN'],
+        infoCardIds: <String>['orman-info-agac'],
         starRules: WordHuntStarRules(
           twoStarMaxMistakes: 2,
           threeStarMaxMistakes: 0,
@@ -53,6 +98,7 @@ class WordHuntOrmanContent {
           'UÇKNİÖUS',
         ],
         targetWords: <String>['KÖK', 'ORMAN', 'ÇAM', 'MEŞE', 'KUŞ'],
+        infoCardIds: <String>['orman-info-mese'],
         starRules: WordHuntStarRules(
           twoStarMaxMistakes: 2,
           threeStarMaxMistakes: 0,
@@ -96,6 +142,7 @@ class WordHuntOrmanContent {
           'RHJTOĞŞJ',
         ],
         targetWords: <String>['TOPRAK', 'GÖLGE', 'MANTAR', 'KOZALAK', 'DERE'],
+        infoCardIds: <String>['orman-info-mantar'],
         starRules: WordHuntStarRules(
           twoStarMaxMistakes: 2,
           threeStarMaxMistakes: 0,
@@ -117,6 +164,7 @@ class WordHuntOrmanContent {
           'VÖŞĞKPKP',
         ],
         targetWords: <String>['KOZALAK', 'DERE', 'PATİKA', 'ÇİÇEK', 'OTLAR'],
+        infoCardIds: <String>['orman-info-kozalak'],
         timeLimitSeconds: 60,
         starRules: WordHuntStarRules(
           twoStarMaxMistakes: 2,
@@ -140,6 +188,7 @@ class WordHuntOrmanContent {
         ],
         targetWords: <String>['ÇİÇEK', 'OTLAR', 'KAYA', 'SİNCAP'],
         bonusWords: <String>['GEYİK'],
+        infoCardIds: <String>['orman-info-sincap'],
         starRules: WordHuntStarRules(
           twoStarMaxMistakes: 2,
           threeStarMaxMistakes: 0,
@@ -161,6 +210,7 @@ class WordHuntOrmanContent {
           'ÇİHNNEĞD',
         ],
         targetWords: <String>['SİNCAP', 'GEYİK', 'AĞAÇ', 'YAPRAK', 'DAL'],
+        infoCardIds: <String>['orman-info-geyik'],
         starRules: WordHuntStarRules(
           twoStarMaxMistakes: 2,
           threeStarMaxMistakes: 0,
@@ -172,17 +222,17 @@ class WordHuntOrmanContent {
         index: 8,
         type: WordHuntLevelType.normal,
         grid: <String>[
-          'KNZGTŞĞR',
-          'BPVVIUNM',
-          'FRFÜKÖKÇ',
-          'TZODPAAR',
-          'HÖHNAMRO',
-          'ĞCMÖLÖPD',
-          'ĞRJOTYAT',
-          'KBİIİLYF',
+          'IRFHIMNİ',
+          'GUBHSAHĞ',
+          'DMÖÇLLIE',
+          'AĞDÇAMUR',
+          'PATİKAJE',
+          'ŞYPICDDD',
+          'ĞPMFKIBĞ',
+          'DOEÇYÜZÖ',
         ],
-        targetWords: <String>['YAPRAK', 'DAL', 'KÖK', 'ORMAN'],
-        bonusWords: <String>['ÇAM'],
+        targetWords: <String>['YAĞMUR', 'ÇAMUR', 'DAMLA', 'DERE', 'PATİKA'],
+        bonusWords: <String>['ISLAK'],
         starRules: WordHuntStarRules(
           twoStarMaxMistakes: 2,
           threeStarMaxMistakes: 0,
@@ -194,16 +244,17 @@ class WordHuntOrmanContent {
         index: 9,
         type: WordHuntLevelType.normal,
         grid: <String>[
-          'RÜTAĞCÜĞ',
-          'ZŞFJBADA',
-          'BĞDĞZĞÜI',
-          'IPİİNÇYU',
-          'İPYEMİHK',
-          'ZKUŞTÇIT',
-          'ÜHVEANEC',
-          'ÖNAMROKÇ',
+          'LİJEIKTB',
+          'AKUYOOTI',
+          'OUTNYRŞG',
+          'ÖBENEÜBZ',
+          'YAALMÖTD',
+          'ŞKZPİÇRI',
+          'EİIEŞLLH',
+          'ĞMFRDDSO',
         ],
-        targetWords: <String>['ORMAN', 'ÇAM', 'MEŞE', 'KUŞ', 'YUVA'],
+        targetWords: <String>['İZLER', 'TÜY', 'TOYNAK', 'YEMİŞ', 'OYUK'],
+        bonusWords: <String>['KABUK'],
         starRules: WordHuntStarRules(
           twoStarMaxMistakes: 2,
           threeStarMaxMistakes: 0,
@@ -215,16 +266,17 @@ class WordHuntOrmanContent {
         index: 10,
         type: WordHuntLevelType.routeFinal,
         grid: <String>[
-          'FKUEGLÖG',
-          'FŞÜVJMÖH',
-          'ZNİÖAŞİR',
-          'ÜÖTNFKUC',
-          'FMTOPRAK',
-          'VAVUYTDS',
-          'RŞOİZBRP',
-          'ZYOKÜÇSI',
+          'LMKFĞUMU',
+          'TRUİOAYE',
+          'RILŞRUZR',
+          'ÖLUEMRGP',
+          'LNCKAÜVK',
+          'ÇALĞNGBM',
+          'MCOÜEŞOB',
+          'LDYISMKG',
         ],
-        targetWords: <String>['KUŞ', 'YUVA', 'TOPRAK', 'GÖLGE', 'MANTAR'],
+        targetWords: <String>['ORMAN', 'KEŞİF', 'YOLCULUK', 'CANLI', 'DOĞA', 'UYUM'],
+        bonusWords: <String>['MACERA'],
         timeLimitSeconds: 120,
         starRules: WordHuntStarRules(
           twoStarMaxMistakes: 2,

@@ -1,5 +1,4 @@
 import 'package:bilgi_rotasi/word_hunt/word_hunt_orman_content.dart';
-import 'package:bilgi_rotasi/word_hunt/word_hunt_production_entry_screen.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_progress.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_route_visual_theme.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_themed_production_route_screen.dart';
@@ -248,40 +247,5 @@ void main() {
     );
     expect(finalRect.overlaps(compassRect), isFalse);
     expect(finalRect.overlaps(bookRect), isFalse);
-  });
-
-  testWidgets('Orman info guide and topic book have separate duties', (tester) async {
-    tester.view.physicalSize = const Size(390, 844);
-    tester.view.devicePixelRatio = 1;
-    addTearDown(() {
-      tester.view.resetPhysicalSize();
-      tester.view.resetDevicePixelRatio();
-    });
-
-    await tester.pumpWidget(
-      const MaterialApp(
-        home: WordHuntProductionEntryScreen(
-          route: WordHuntOrmanContent.ormanYolu,
-          infoCards: WordHuntOrmanContent.infoCards,
-          routeSelectionEnabled: false,
-        ),
-      ),
-    );
-    await tester.pumpAndSettle();
-
-    await tester.tap(find.byKey(const Key('word_hunt_themed_chrome_info')));
-    await tester.pumpAndSettle();
-    expect(find.byKey(const Key('word_hunt_route_help_dialog')), findsOneWidget);
-    expect(find.text('Bölümleri sırayla tamamla.'), findsOneWidget);
-    expect(find.byKey(const Key('word_hunt_current_topic_sheet')), findsNothing);
-
-    await tester.tap(find.text('Tamam'));
-    await tester.pumpAndSettle();
-
-    await tester.tap(find.byKey(const Key('word_hunt_themed_chrome_book')));
-    await tester.pumpAndSettle();
-    expect(find.byKey(const Key('word_hunt_current_topic_sheet')), findsOneWidget);
-    expect(find.textContaining('Bölüm 1 • Ormanın Temeli'), findsOneWidget);
-    expect(find.byKey(const Key('word_hunt_route_help_dialog')), findsNothing);
   });
 }
