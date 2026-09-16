@@ -103,13 +103,14 @@ Selector/progression sözleşmesi:
 - Kadim Orman selector'da en baştan görünür,
 - fresh progress'te locked,
 - exact copy: **“Orman Yolu’nu tamamlayarak aç.”**,
-- Orman Yolu level 10 completion ile unlock,
-- 30/30 veya toplam yıldız şartı yok,
+- prerequisite Orman Yolu'dur,
 - Kadim Orman kendi içinde 1→10,
 - Orman Yolu ve Kadim Orman progression identity ayrıdır,
-- mevcut generic `WordHuntRouteUnlockRule.routeComplete` kullanılır,
+- generic `WordHuntRouteUnlockRule.routeComplete` kullanılır,
 - route-id özel selector/renderer `if` yoktur,
 - locked copy catalog entry üzerinden data-driven taşınır.
+
+PR #206 sonrasında `routeComplete`, prerequisite rotanın gerçek `WordHuntRouteProgressEngine.isRouteComplete(...)` contract'ını kullanır. Orman Yolu `unlockStarsRequired = 0` olduğu için Kadim Orman kapısında final completion yeterlidir; ek yıldız şartı yoktur.
 
 ## Kadim Orman özgün gameplay/content — TAMAMLANDI / MERGED
 
@@ -199,34 +200,67 @@ Kitap yalnız aktif rotanın `_activeInfoCards` listesindeki unlock edilmiş kar
 
 Info-card unlock semantiği değiştirilmemiştir: gameplay'de eşleşen kelime bulunur → `level.infoCardIds` üzerinden kart unlock olur → `unlockedInfoCardIds` persisted progress'e yazılır.
 
-Bu generic karar sayesinde Kadim Orman'ın PR #204 ile eklenen 6 kartı da production kitap akışında kullanılabilir.
+## Lineer production route progression — TAMAMLANDI / MERGED
 
-### PR #205 test / CI kapanışı
+PR #206 ile daha önce audit konusu olan rota açılma sırası çözüldü ve selector sırasıyla tam lineer hale getirildi.
 
-Exact approved HEAD `c7ac3cc2644cb45b7f1da004ed1de0533ed5d025`:
+- PR: **#206 — `feat(kelime-avi): enforce linear route progression`**
+- approved head: `8998e124eaf2afdffd618b0f60212ba2196172b3`
+- approved head tree: `02e263e0ade579080f7aa8791de3a33373cf1345`
+- squash merge commit: `7d1d699623200601ad867eb6dda852feede587eb`
+- merge tree: `02e263e0ade579080f7aa8791de3a33373cf1345`
+- squash parent: `1ca969a952f44ee72381c4ed704a534c7924cbbd`
+- tree equality: **EVET**
+- source branch `feat/kelime-avi-linear-route-progression` bilerek tutulmaktadır.
 
-- Orman Yolu content gate Run #7 / ID `35114163037`: **SUCCESS**
-- Route catalog gate Run #83 / ID `35114162746`: **SUCCESS**
-- Orman multi-size Run #27 / ID `35114162859`: **SUCCESS**
-- Kelime Avı Android 16 Run #445 / ID `35114162774`: **SUCCESS**
-- AdMob PR validation Run #822 / ID `35114162768`: **SUCCESS**
-- validators, L1–L7 unchanged, info-card copy/mapping, L8–L10 contract, target/bonus validity: **PASS**
-- Orman/Kadim book display + cross-route isolation: **PASS**
-- Başlangıç/Gökyüzü generic book regression: **PASS**
-- selector/unlock regression: **PASS**
+### Authoritative unlock zinciri
+
+Production order ve unlock zinciri:
+
+**Başlangıç Limanı → Gökyüzü Adaları → Orman Yolu → Kadim Orman**
+
+- **Başlangıç Limanı:** `always`.
+- **Gökyüzü Adaları:** `routeComplete(prerequisiteRoute: Başlangıç Limanı)`; Başlangıç final complete + `totalStars >= 18`.
+  - exact locked copy: **“Başlangıç Limanı’nı tamamla ve en az 18 yıldız kazan.”**
+- **Orman Yolu:** `routeComplete(prerequisiteRoute: Gökyüzü Adaları)`; Gökyüzü final complete + `totalStars >= 18`.
+  - exact locked copy: **“Gökyüzü Adaları’nı tamamla ve en az 18 yıldız kazan.”**
+- **Kadim Orman:** `routeComplete(prerequisiteRoute: Orman Yolu)`; Orman Yolu `unlockStarsRequired = 0`, bu nedenle final completion yeterli.
+  - exact locked copy: **“Orman Yolu’nu tamamlayarak aç.”**
+
+`WordHuntRouteUnlockRule.routeComplete` authoritative olarak `WordHuntRouteProgressEngine.isRouteComplete(prerequisiteRoute, progress)` kullanır. `isRouteComplete` final type `routeFinal` + final completed + `totalStars >= route.unlockStarsRequired` sözleşmesini taşır.
+
+### Legacy progress kararı
+
+Grandfather istisnası yoktur. Eski downstream progress silinmez veya migrate edilmez; ancak yeni prerequisite'i bypass ettiremez. Prerequisite sonradan sağlanırsa rota yeniden açılır ve kayıtlı downstream progress aynen korunur.
+
+### PR #206 test / CI kapanışı
+
+Exact approved HEAD `8998e124eaf2afdffd618b0f60212ba2196172b3`:
+
+- Route catalog gate Run #84 / ID `35120880714`: **SUCCESS**
+- Orman multi-size Run #28 / ID `35120880709`: **SUCCESS**
+- Kelime Avı Android 16 Run #446 / ID `35120880717`: **SUCCESS**
+- AdMob PR validation Run #823 / ID `35120880650`: **SUCCESS**
+- threshold/final/zero-threshold routeComplete semantics: **PASS**
+- legacy downstream-progress prerequisite isolation + preservation: **PASS**
+- selector order / ids / ordinal labels / locked copy: **PASS**
 - repo-geneli analyze/tests + release APK + package/manifest + Android 16 cold-start: **SUCCESS**
 
-Source branch `feat/kelime-avi-orman-yolu-content-polish` merge sonrasında bilerek tutulmaktadır.
+## SIRADAKİ AUDIT — Challenge / final yıldız – zaman – ödül dengesi
 
-## SIRADAKİ AUDIT — Rota açılma sırası / tutarlılık
+Henüz yeni star/time/reward kararı verilmemiştir. Bir sonraki inceleme aşağıdaki mevcut sözleşmeleri audit edecektir:
 
-Henüz ürün kararı verilmemiştir. Bir sonraki inceleme mevcut selector sırası ile unlock kurallarının tutarlılığını audit edecektir:
+- Başlangıç Limanı challenge/final star rule'ları,
+- Gökyüzü challenge/final star rule'ları,
+- Orman Yolu challenge/final star rule'ları,
+- Kadim Orman challenge/final star rule'ları,
+- `timeLimitSeconds`,
+- `twoStarMaxMistakes` / `threeStarMaxMistakes`,
+- `twoStarMaxSeconds` / `threeStarMaxSeconds`,
+- `routeFinal` bölümlerin final hissi,
+- `routeRewardId` değerlerinin runtime'da gerçek kullanıcı ödülü üretip üretmediği,
+- rotalar arasında zorluk artışının tutarlılığı.
 
-- Gökyüzü, Başlangıç Limanı'nda **18 yıldızla** açılır.
-- Orman Yolu, Başlangıç Limanı **final bölümünün tamamlanmasıyla** açılır.
-- Bu nedenle teorik olarak kullanıcı Başlangıç Limanı'nı 18 yıldızdan az puanla tamamlayıp Orman Yolu'nu açabilirken Gökyüzü kilitli kalabilir.
-- UI sırası ise **Başlangıç Limanı → Gökyüzü → Orman Yolu → Kadim Orman** şeklinde lineer bir yol izlenimi verir.
+Bu belge henüz yeni denge kararı vermez ve 5. rota tasarlamaz; yalnız sıradaki **CHALLENGE / FINAL YILDIZ – ZAMAN – ÖDÜL DENGESİ AUDITİ** başlangıç noktasını kaydeder.
 
-Bu belge bu noktada yeni unlock çözümü seçmez; yalnız sıradaki **ROTA AÇILMA SIRASI / TUTARLILIK AUDITİ** başlangıç noktasını kaydeder.
-
-**Durum:** REUSABLE 10-LEVEL MAP ARCHITECTURE — OWNER APPROVED / MERGED / CI GREEN. ORMAN 2 RUNTIME — MERGED. KADİM ORMAN PROGRESSION — MERGED. KADİM ORMAN ORIGINAL CONTENT — MERGED. ORMAN YOLU CONTENT POLISH + GENERIC DATA-DRIVEN BOOK — MERGED / CI GREEN. SIRADAKİ KONU — ROTA AÇILMA SIRASI / TUTARLILIK AUDITİ.
+**Durum:** REUSABLE 10-LEVEL MAP ARCHITECTURE — OWNER APPROVED / MERGED / CI GREEN. ORMAN 2 RUNTIME — MERGED. KADİM ORMAN PROGRESSION — MERGED. KADİM ORMAN ORIGINAL CONTENT — MERGED. ORMAN YOLU CONTENT POLISH + GENERIC DATA-DRIVEN BOOK — MERGED / CI GREEN. LINEER ROUTE PROGRESSION — MERGED / CI GREEN. SIRADAKİ KONU — CHALLENGE / FINAL YILDIZ – ZAMAN – ÖDÜL DENGESİ AUDITİ.
