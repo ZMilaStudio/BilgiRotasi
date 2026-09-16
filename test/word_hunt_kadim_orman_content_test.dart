@@ -14,7 +14,7 @@ void main() {
     expect(route.id, 'orman-2');
     expect(route.title, 'Kadim Orman');
     expect(route.theme, 'orman');
-    expect(route.routeRewardId, 'reward-orman-2');
+    expect(route.routeRewardId, 'badge-kadim-orman-kasifi');
     expect(route.levels, hasLength(10));
 
     expect(
