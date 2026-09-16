@@ -1,6 +1,7 @@
 # Kelime Avı — Reusable Harita Mimari Kararı
 
-**Karar tarihi:** 12 Eylül 2026
+**Karar tarihi:** 12 Eylül 2026  
+**Son durum güncellemesi:** 16 Eylül 2026
 
 Bu belge, Kelime Avı'nın yeni 10 bölümlük rotaları için owner tarafından kabul edilip merge edilen harita mimarisi kararını kilitler. Amaç, önceki haritalarda yaşanan rota başına yaklaşık bir haftalık elle koordinat / görsel yerleşim döngüsünün tekrarlanmamasıdır.
 
@@ -16,7 +17,7 @@ Bu belge, Kelime Avı'nın yeni 10 bölümlük rotaları için owner tarafından
 - Görsel skin verisi `WordHuntRouteVisualTheme` içinde tutulur: map theme, motif, palette, seed, dekor yoğunluğu/opacity. Bu veri paketi node koordinatı, hitbox veya progression taşıyamaz.
 - Dekor yerleşimi normalize 0..1 yüzeyde seed tabanlı deterministik üretilir.
 - Dekorlar node-safe bölgelere giremez.
-- Katman sırası sabittir: **dekor → yol → node**.
+- Katman sırası sabittir: **dekor → yol → node**; embedded-route artwork modunda yol raster içinde olduğundan canlı route path ikinci kez çizilmez.
 - Dekor `IgnorePointer` altında olduğundan bölüm dokunmalarını engelleyemez.
 - Forest / Sky / Harbor proof skinleri aynı generic ekran ve aynı geometri ile çalışır; motif türleri ayrı koordinat listesi taşımaz.
 - Yeni rota eklemek için rota-id özel Widget/Painter/koordinat listesi gerekiyorsa bu mimari başarısız sayılır ve bu kalıp çoğaltılmaz.
@@ -76,7 +77,7 @@ Bu mimari merge'i aşağıdakileri **yapmaz**:
 
 - yeni 180 bölümü runtime kataloğuna bağlamaz,
 - 200 bölümün playable olduğunu iddia etmez,
-- Orman Yolu veya diğer yeni rotaları production navigasyona otomatik eklemez,
+- yeni rotaları production navigasyona otomatik açmaz,
 - `assets/questions.json` dosyasını değiştirmez,
 - BoardMap / 67 node'u değiştirmez,
 - Firebase'i değiştirmez,
@@ -88,16 +89,69 @@ Bu mimari merge'i aşağıdakileri **yapmaz**:
 
 Yeni rotalar runtime'a bağlanırken önce bu reusable mimari kullanılacaktır. Rota entegrasyonu yapılırken canonical 1–10 geometri veya progression tekrar rota özel kodla kopyalanmayacaktır. Her yeni rota mümkün olduğunca yalnız **route data + visualTheme data** sağlayacaktır.
 
-## Orman 2 pilot genericization zemini — tamamlandı
+## Orman 2 pilot genericization zemini — TAMAMLANDI
 
 PR #201 ile Orman 2 asset-reuse pilotundan önce gereken minimum generic presentation zemini tamamlandı ve squash merge edildi.
 
 - Onaylı/test edilen PR HEAD: `834ba8458a5493c336d5ac06e1735062100e9a4c`
 - Squash merge commit: `19dd5ffa3a5d4b9d2588ef5030b99459fd04d37e`
 - Approved PR HEAD ile squash merge commit aynı Git tree SHA'sına sahiptir: `73946e2d2b00f21f2e3dc09040ee3330f0696d1f`.
-- **Reference canvas + tall ambient artık config-driven.** Orman 1'in 411×731 reference canvas ve mevcut tall ambient davranışı config üzerinden korunur.
-- **Embedded decorative route + live nodes artık `artworkOverlayMode` ile config-driven.** Orman 1'de raster içindeki dekoratif rota korunurken canlı Flutter node/UI katmanı aynı davranışı sürdürür.
-- **NodeSkin refactor pilot için ertelendi.** Mevcut node skin asset yollarına bu aşamada dokunulmadı.
-- Orman 2 environment üretimi, yeni environment asset entegrasyonu veya Orman 2 production runtime bağlantısı bu adımın parçası değildir ve henüz başlatılmamıştır.
+- **Reference canvas + tall ambient config-driven'dır.**
+- **Embedded decorative route + live nodes `artworkOverlayMode` ile config-driven'dır.**
+- NodeSkin refactor pilot için yapılmadı; mevcut Orman 1 node asset ailesi reuse edilebilir durumda bırakıldı.
 
-**Durum:** REUSABLE 10-LEVEL MAP ARCHITECTURE — OWNER APPROVED / MERGED / CI GREEN. ORMAN 2 PILOT GENERICIZATION ZEMİNİ TAMAMLANDI. ORMAN 2 ENVIRONMENT ENTEGRASYONU HENÜZ BAŞLAMADI.
+## Orman 2 runtime pilotu — TAMAMLANDI / MERGED
+
+PR #202 ile genericization zemini gerçek Orman 2 runtime pilotunda kullanıldı; environment entegrasyonu artık “başlamadı/bekliyor” durumunda değildir.
+
+- PR: **#202 — `feat(kelime-avi): Orman 2 runtime pilot integration`**
+- Approved PR head: `62d33d9a332a281b2d703432472e3d802668c17c`
+- Approved head tree: `a4742ad244ec90a9ae41bf2b55ad48d7ceed14e5`
+- Squash merge commit: `9aa3a2e8392a8fb42646d23c1e89ea9b67789c5a`
+- Merge commit tree: `a4742ad244ec90a9ae41bf2b55ad48d7ceed14e5`
+- Tree equality: **approved PR head ve squash merge tree birebir aynı**.
+
+Merge edilen sözleşme:
+
+- Orman 2 ayrı route identity kullanır.
+- Pilot gameplay verisi Orman 1'den reuse edilir.
+- `referenceCanvasSize = 411×731`.
+- `extendTallAmbientFromArtworkEdges = true`.
+- `artworkOverlayMode = embeddedRouteLiveNodes`.
+- Dekoratif rota raster içindedir; live Flutter route painter kapalıdır.
+- Node/progression/chrome canlı Flutter katmanındadır.
+- Orman 1 node asset ailesi reuse edilir.
+- NodeSkin refactor yoktur.
+- Route/theme-id özel renderer `if` yoktur.
+- Canonical normalized stops değiştirilmemiştir.
+- Başlangıç Limanı / Gökyüzü / Orman 1 davranışı değiştirilmemiştir.
+- Orman 2 selector'da **henüz kullanıcıya açılmamıştır**.
+
+Immutable asset:
+
+`assets/word_hunt/ORMAN2_FINAL_941x1672.webp`
+
+- 941×1672
+- 1.109.268 byte
+- SHA-256: `aede5c6f08b6fe4cd64d17a1ef309e13256dde1c1e97fbee0c53b019f63c6c8d`
+- Git blob SHA: `43233bf2b0e8f16d59a15f0fe0bcda5f5e2bb80c`
+- Re-encode / recompress / resize / crop / recolor yapılmaz.
+
+Android 16 gerçek runtime proof:
+
+- Workflow: `Orman Yolu Android çoklu ekran kanıtı`
+- Run #20 / ID `35082179184`: **SUCCESS**
+- Orman 2 job ID `104748515371`: **SUCCESS**
+- 720×1280 / 1080×1920 / 1080×2400 gerçek emulator PNG proof: **PASS**
+- Aynı exact HEAD'de Orman 1 regression job: **SUCCESS**
+- Owner visual QA: double-route yok, ghost UI yok, node-route hizası kabul, tek header/chrome, tall ambient kabul, bloklayıcı seam/poster/letterbox yok.
+
+Source branch `feat/kelime-avi-orman2-runtime-pilot-20260916` merge sonrası bilerek tutulmaktadır.
+
+## Bir sonraki ürün kararı
+
+**“Orman 2’nin kullanıcıya ne zaman ve nasıl açılacağı / progression içindeki konumu.”**
+
+Bu karar verilene kadar selector veya progression davranışı varsayımla değiştirilmez.
+
+**Durum:** REUSABLE 10-LEVEL MAP ARCHITECTURE — OWNER APPROVED / MERGED / CI GREEN. ORMAN 2 GENERICIZATION — MERGED. ORMAN 2 RUNTIME PILOT — MERGED / ANDROID 16 PROOF PASS / OWNER VISUAL QA PASS. ORMAN 2 SELECTOR — HENÜZ KAPALI.
