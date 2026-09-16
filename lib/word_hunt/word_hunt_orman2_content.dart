@@ -60,7 +60,7 @@ abstract final class WordHuntOrman2Content {
     title: 'Kadim Orman',
     theme: 'orman',
     unlockStarsRequired: 0,
-    routeRewardId: 'reward-orman-2',
+    routeRewardId: 'badge-kadim-orman-kasifi',
     levels: <WordHuntLevelDefinition>[
       // 1. KÖKLERİN KAPISI
       WordHuntLevelDefinition(
