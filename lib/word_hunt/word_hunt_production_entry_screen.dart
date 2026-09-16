@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'word_hunt_deferred_completion_level_screen.dart';
 import 'word_hunt_gokyuzu_gameplay_backgrounds.dart';
 import 'word_hunt_gokyuzu_master_art_screen.dart';
 import 'word_hunt_models.dart';
@@ -214,17 +215,27 @@ class _WordHuntProductionEntryScreenState
       beforeProgress,
     );
     final level = route.levels[levelIndex - 1];
+    final deferFinalCompletion =
+        level.type == WordHuntLevelType.routeFinal && !beforeRouteComplete;
     final result = await Navigator.of(context).push<WordHuntLevelPlayResult>(
       MaterialPageRoute<WordHuntLevelPlayResult>(
-        builder: (_) => WordHuntLevelProductionScreen(
-          level: level,
-          infoCards: _activeInfoCards,
-          backgroundAsset: _gameplayBackgroundForLevel(level.index),
-          routeTitle: route.title,
-          deferCompletionDialogToParent:
-              level.type == WordHuntLevelType.routeFinal &&
-              !beforeRouteComplete,
-        ),
+        builder: (_) {
+          final backgroundAsset = _gameplayBackgroundForLevel(level.index);
+          if (deferFinalCompletion) {
+            return WordHuntDeferredCompletionLevelScreen(
+              level: level,
+              infoCards: _activeInfoCards,
+              backgroundAsset: backgroundAsset,
+              routeTitle: route.title,
+            );
+          }
+          return WordHuntLevelProductionScreen(
+            level: level,
+            infoCards: _activeInfoCards,
+            backgroundAsset: backgroundAsset,
+            routeTitle: route.title,
+          );
+        },
       ),
     );
 
