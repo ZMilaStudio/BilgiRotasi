@@ -8,6 +8,8 @@ import 'word_hunt_progress.dart';
 import 'word_hunt_progress_codec.dart';
 import 'word_hunt_reference_route_screen.dart';
 import 'word_hunt_route_catalog.dart';
+import 'word_hunt_route_completion_dialogs.dart';
+import 'word_hunt_route_rewards.dart';
 import 'word_hunt_route_selector.dart';
 import 'word_hunt_route_visual_theme.dart';
 import 'word_hunt_screens.dart';
@@ -94,6 +96,7 @@ class _WordHuntProductionEntryScreenState
 
   Future<void> _loadProgress() async {
     var loaded = const WordHuntProgressSnapshot();
+    var shouldPersistBackfill = false;
     try {
       final raw = await _preferences.getString(_storageKey);
       if (raw != null && raw.trim().isNotEmpty) {
@@ -102,10 +105,16 @@ class _WordHuntProductionEntryScreenState
           expectedOwnerScope: _ownerScope,
         );
       }
+      final backfilled = WordHuntRouteRewardEngine.backfillCompletedRoutes(
+        loaded,
+      );
+      shouldPersistBackfill = !identical(backfilled, loaded);
+      loaded = backfilled;
     } catch (_) {
-      // Bozuk/eski yerel veri veya kullanılamayan storage katmanı Kelime Avı'nın
+      // Bozuk veya desteklenmeyen yerel veri / storage katmanı Kelime Avı'nın
       // açılmasını engellemez; varsayılan boş progression ile devam edilir.
       loaded = const WordHuntProgressSnapshot();
+      shouldPersistBackfill = false;
     }
 
     if (!mounted) return;
@@ -113,6 +122,9 @@ class _WordHuntProductionEntryScreenState
       _progress = loaded;
       _loading = false;
     });
+    if (shouldPersistBackfill) {
+      await _saveProgress(loaded);
+    }
   }
 
   Future<void> _saveProgress(WordHuntProgressSnapshot progress) async {
@@ -196,6 +208,11 @@ class _WordHuntProductionEntryScreenState
       return;
     }
 
+    final beforeProgress = _progress;
+    final beforeRouteComplete = WordHuntRouteProgressEngine.isRouteComplete(
+      route,
+      beforeProgress,
+    );
     final level = route.levels[levelIndex - 1];
     final result = await Navigator.of(context).push<WordHuntLevelPlayResult>(
       MaterialPageRoute<WordHuntLevelPlayResult>(
@@ -204,19 +221,89 @@ class _WordHuntProductionEntryScreenState
           infoCards: _activeInfoCards,
           backgroundAsset: _gameplayBackgroundForLevel(level.index),
           routeTitle: route.title,
+          deferCompletionDialogToParent:
+              level.type == WordHuntLevelType.routeFinal &&
+              !beforeRouteComplete,
         ),
       ),
     );
 
     if (result == null || !mounted) return;
 
-    final next = _progress.recordLevelResult(
+    final transition = WordHuntRouteRewardEngine.recordLevelResult(
+      route: route,
+      progress: beforeProgress,
       levelId: result.levelId,
       stars: result.stars,
       unlockedInfoCards: result.unlockedInfoCardIds,
     );
+    final next = transition.progress;
     setState(() => _progress = next);
     await _saveProgress(next);
+    if (!mounted) return;
+
+    if (transition.routeCompletedNow) {
+      await _showRouteCompletionCeremony(route, next);
+      return;
+    }
+
+    if (level.type == WordHuntLevelType.routeFinal &&
+        !beforeRouteComplete &&
+        !transition.afterRouteComplete) {
+      await _showFinalIncomplete(route, next);
+    }
+  }
+
+  Future<void> _showRouteCompletionCeremony(
+    WordHuntRouteDefinition route,
+    WordHuntProgressSnapshot progress,
+  ) async {
+    final reward = WordHuntRouteRewardCatalog.forRoute(route);
+    if (reward == null || !mounted) return;
+
+    final catalogEntry = WordHuntRouteCatalog.entryForRouteId(route.id);
+    final nextCandidate = WordHuntRouteRewardEngine.nextCatalogEntry(route);
+    final nextEntry = nextCandidate != null && nextCandidate.isUnlocked(progress)
+        ? nextCandidate
+        : null;
+    final routeColors = catalogEntry?.colors ??
+        const <Color>[Color(0xFF17324B), Color(0xFF081623)];
+
+    final action = await showDialog<WordHuntRouteCompletionAction>(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => WordHuntRouteCompletionDialog(
+        route: route,
+        reward: reward,
+        totalStars: WordHuntRouteProgressEngine.totalStars(route, progress),
+        routeColors: routeColors,
+        nextRouteTitle: nextEntry?.route.title,
+      ),
+    );
+
+    if (!mounted) return;
+    if (action == WordHuntRouteCompletionAction.showRouteSelector &&
+        _catalogMode) {
+      setState(() {
+        _selectedRoute = null;
+        _selectedInfoCards = null;
+      });
+    }
+  }
+
+  Future<void> _showFinalIncomplete(
+    WordHuntRouteDefinition route,
+    WordHuntProgressSnapshot progress,
+  ) async {
+    if (!mounted) return;
+    await showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => WordHuntFinalIncompleteDialog(
+        route: route,
+        totalStars: WordHuntRouteProgressEngine.totalStars(route, progress),
+      ),
+    );
   }
 
   void _showInfo() {
