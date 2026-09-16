@@ -102,7 +102,7 @@ PR #201 ile Orman 2 asset-reuse pilotundan önce gereken minimum generic present
 
 ## Orman 2 runtime pilotu — TAMAMLANDI / MERGED
 
-PR #202 ile genericization zemini gerçek Orman 2 runtime pilotunda kullanıldı; environment entegrasyonu artık “başlamadı/bekliyor” durumunda değildir.
+PR #202 ile genericization zemini gerçek Orman 2 runtime pilotunda kullanıldı.
 
 - PR: **#202 — `feat(kelime-avi): Orman 2 runtime pilot integration`**
 - Approved PR head: `62d33d9a332a281b2d703432472e3d802668c17c`
@@ -111,7 +111,7 @@ PR #202 ile genericization zemini gerçek Orman 2 runtime pilotunda kullanıldı
 - Merge commit tree: `a4742ad244ec90a9ae41bf2b55ad48d7ceed14e5`
 - Tree equality: **approved PR head ve squash merge tree birebir aynı**.
 
-Merge edilen sözleşme:
+Merge edilen runtime sözleşmesi:
 
 - Orman 2 ayrı route identity kullanır.
 - Pilot gameplay verisi Orman 1'den reuse edilir.
@@ -125,7 +125,6 @@ Merge edilen sözleşme:
 - Route/theme-id özel renderer `if` yoktur.
 - Canonical normalized stops değiştirilmemiştir.
 - Başlangıç Limanı / Gökyüzü / Orman 1 davranışı değiştirilmemiştir.
-- Orman 2 selector'da **henüz kullanıcıya açılmamıştır**.
 
 Immutable asset:
 
@@ -148,10 +147,50 @@ Android 16 gerçek runtime proof:
 
 Source branch `feat/kelime-avi-orman2-runtime-pilot-20260916` merge sonrası bilerek tutulmaktadır.
 
-## Bir sonraki ürün kararı
+## Kadim Orman progression — TAMAMLANDI / MERGED
 
-**“Orman 2’nin kullanıcıya ne zaman ve nasıl açılacağı / progression içindeki konumu.”**
+PR #203 ile Orman 2'nin kullanıcı-facing progression kararı tamamlandı. Teknik identity değişmeden `orman-2` kaldı; kullanıcı-facing ad **Kadim Orman** oldu.
 
-Bu karar verilene kadar selector veya progression davranışı varsayımla değiştirilmez.
+- PR: **#203 — `feat(kelime-avi): unlock Kadim Orman after Orman Yolu`**
+- Approved PR head: `c89926b270d89f52ca895b82a875c9b732fdb609`
+- Approved head tree: `3e00a2d246f93eb3792a1d63748b2923fe30a13d`
+- Squash merge commit: `f312a2333cb16e9a74f500fcc80c200325634439`
+- Merge commit tree: `3e00a2d246f93eb3792a1d63748b2923fe30a13d`
+- Squash commit parent: `044818e9c66eddc20f20b8a16e9497102736ddfa`
+- Tree equality: **approved PR head ve squash merge tree birebir aynı**.
 
-**Durum:** REUSABLE 10-LEVEL MAP ARCHITECTURE — OWNER APPROVED / MERGED / CI GREEN. ORMAN 2 GENERICIZATION — MERGED. ORMAN 2 RUNTIME PILOT — MERGED / ANDROID 16 PROOF PASS / OWNER VISUAL QA PASS. ORMAN 2 SELECTOR — HENÜZ KAPALI.
+Onaylanan selector/progression sözleşmesi:
+
+- Selector sırası: **Başlangıç Limanı → Gökyüzü → Orman Yolu → Kadim Orman**.
+- Kadim Orman selector'da en baştan görünür.
+- Fresh progress durumunda locked'dır.
+- Exact locked metin: **“Orman Yolu’nu tamamlayarak aç.”**
+- Orman Yolu level 9 tamamken locked kalır.
+- Orman Yolu level 10 tamamlanınca unlocked olur.
+- 30/30 yıldız şartı yoktur; toplam yıldız unlock koşulu değildir.
+- Kadim Orman kendi içinde yine 1→10 progression kullanır.
+- Orman Yolu ve Kadim Orman progression identity'leri ayrıdır.
+
+Mimari uygulama:
+
+- Mevcut generic `WordHuntRouteUnlockRule.routeComplete` kullanılır.
+- Yeni prerequisite engine yoktur.
+- Route-id özel selector/renderer `if` yoktur.
+- Locked ürün metni catalog entry'deki `lockedMessage` üzerinden data-driven taşınır.
+- Kilitli kart seçilemez.
+- Orman 2 runtime theme/geometry/asset baseline'ı değişmemiştir.
+
+CI kapanışı — exact approved HEAD `c89926b270d89f52ca895b82a875c9b732fdb609`:
+
+- Route catalog Run #80 / ID `35092666128`: **SUCCESS**
+- Orman multi-size Run #21 / ID `35092666124`: **SUCCESS**
+- Kelime Avı Android 16 Run #439 / ID `35092666125`: **SUCCESS**
+- AdMob PR validation Run #816 / ID `35092666130`: **SUCCESS**
+- Focused selector tests: **18/18 PASS**
+- Orman 2 runtime regression: **PASS**
+
+Selector'a özel A/B Android screenshot artifact'i üretilmedi; fresh locked ve Orman Yolu final-complete unlocked state'leri gerçek Flutter widget testleriyle doğrulandı ve production'a proof/debug hack eklenmedi.
+
+Source branch `feat/kelime-avi-kadim-orman-progression` merge sonrasında bilerek tutulmaktadır.
+
+**Durum:** REUSABLE 10-LEVEL MAP ARCHITECTURE — OWNER APPROVED / MERGED / CI GREEN. ORMAN 2 GENERICIZATION — MERGED. ORMAN 2 RUNTIME PILOT — MERGED / ANDROID 16 PROOF PASS / OWNER VISUAL QA PASS. KADİM ORMAN PROGRESSION — MERGED / SELECTOR'DA DÖRDÜNCÜ ROTA / ORMAN YOLU LEVEL 10 COMPLETION İLE UNLOCK / YILDIZ ŞARTI YOK / CI GREEN.
