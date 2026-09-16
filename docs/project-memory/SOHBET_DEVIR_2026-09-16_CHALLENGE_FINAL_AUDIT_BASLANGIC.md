@@ -1,143 +1,65 @@
 # SOHBET DEVİR — 16 Eylül 2026 — CHALLENGE / FINAL AUDIT BAŞLANGICI
 
-Bu dosya yeni sohbette BilgiRotasi / Kelime Avı çalışmasını devralmak için authoritative başlangıç notudur.
+> **SUPERSEDED / ARŞİV:** Bu dosya challenge/final auditinin başlangıç notudur. Audit ve implementasyon PR #207 ile tamamlandı. Yeni authoritative devir dosyası:
+>
+> `docs/project-memory/SOHBET_DEVIR_2026-09-17_CHALLENGE_FINAL_BALANCE_KAPANIS.md`
 
-## Yeni sohbette okuma sırası
-
-1. `docs/project-memory/GENEL_PROJE_OZETI.md`
-2. Bu dosya: `docs/project-memory/SOHBET_DEVIR_2026-09-16_CHALLENGE_FINAL_AUDIT_BASLANGIC.md`
-3. `KELIME_AVI_REUSABLE_HARITA_KARARI.md`
-4. Sonra canlı GitHub durumunu doğrula: target branch exact HEAD, açık PR'lar ve ilgili Actions sonuçları.
-
-Çelişki varsa öncelik: **canlı GitHub > proje memory/karar dosyaları > eski sohbetler**.
+Bu dosya artık yeni sohbet için aktif başlangıç kaynağı değildir. Tarihsel başlangıç bağlamını korur; aşağıdaki kapanış bilgileri önceki "audit bekliyor" durumunu supersede eder.
 
 ## Repo / target
 
 - Repo: `ZMilaStudio/BilgiRotasi`
 - Target branch: `release/final-closed-test-aab-1.68.8`
-- Bu devir hazırlanırken canlı target HEAD: `84f965328eb19430b20b95e0a251c3da4f7e27a3`
-- Son product merge baseline: `7d1d699623200601ad867eb6dda852feede587eb`
-- Product baseline PR: #206 — `feat(kelime-avi): enforce linear route progression`
+- Challenge/final product merge: `4ffe63500363e6d976bb211f5e7d547a69859df9`
+- PR #207: **MERGED**
+- Approved head: `9bbc3b8c6303dc390c79a2d178c03b803830c80c`
+- Approved tree / merge tree: `7876ea9455465c3c1842cd391a94af9ab8365f6b`
+- Tree equality: **EVET**
+- Source branch `feat/kelime-avi-progressive-challenge-final-balance` korunur; owner istemeden silinmez.
 
-Bu devir commit'i target HEAD'i ilerleteceği için yeni sohbet exact HEAD'i mutlaka canlı yeniden doğrulamalıdır.
+## Challenge / final audit sonucu
 
-## Kapanmış işler — yeniden açma
+Artık authoritative production contract:
 
-### PR #202 — Kadim Orman runtime/visual baseline
+- Normal levels: mistake odaklı; seconds threshold yok.
+- L5 Challenge: 3★ = 0 hata + rota-specific 3★ süre; 2★ = <=1 hata + rota-specific 2★ süre.
+- L10 Final: 3★ = 0 hata + rota-specific 3★ süre; 2★ = <=2 hata + rota-specific 2★ süre.
+- target tamamlanmadıysa 0★.
+- complete fakat üst eşikler kaçtıysa 1★.
+- mistake + time birlikte varsa AND.
+- sınırlar inclusive (`<=`).
 
-- MERGED
-- squash merge: `9aa3a2e8392a8fb42646d23c1e89ea9b67789c5a`
-- Kadim Orman technical route id: `orman-2`
-- production visual theme: `orman-2-production`
-- immutable asset: `assets/word_hunt/ORMAN2_FINAL_941x1672.webp`
-- asset SHA-256: `aede5c6f08b6fe4cd64d17a1ef309e13256dde1c1e97fbee0c53b019f63c6c8d`
-- asset yeniden encode/resize/crop/recolor/rebuild edilmez.
+Exact süre matrix'i:
 
-### PR #203 — Kadim Orman progression
+| Rota | L5 3★ / 2★ | L10 3★ / 2★ |
+|---|---|---|
+| Başlangıç Limanı | 35 / 50 | 75 / 100 |
+| Gökyüzü Adaları | 35 / 50 | 75 / 100 |
+| Orman Yolu | 25 / 36 | 50 / 66 |
+| Kadim Orman | 24 / 35 | 48 / 64 |
 
-- MERGED
-- squash merge: `f312a2333cb16e9a74f500fcc80c200325634439`
-- Kadim Orman selector'da dördüncü rotadır.
-- Kendi 1→10 progression identity'si vardır.
+L5 mistake matrix tüm rotalarda `0 / <=1`; L10 mistake matrix tüm rotalarda `0 / <=2`.
 
-### PR #204 — Kadim Orman özgün content
+`timeLimitSeconds` 60/120 olarak korunur fakat **hard fail değildir**; timeout/failure/retry veya forced finish yoktur. Scoring engine `timeLimitSeconds` kullanmaz.
 
-- MERGED
-- squash merge: `755e90725d3062b74c0ce228bb1b6d7bbdfda4c0`
-- Orman Yolu gameplay clone/reuse yoktur.
-- 10 özgün deterministic 8×8 grid + özgün target/bonus content + 6 özgün info card production'dadır.
+Kadim Orman artık Orman Yolu timing contract'ının birebir clone'u değildir. Orman/Kadim L5 `twoStarMaxMistakes = 2` ve L5/L10 seconds `null` eski bilgileri superseded edilmiştir.
 
-### PR #205 — Orman Yolu content polish + data-driven book
+## PR #207 CI kapanışı
 
-- MERGED
-- squash merge: `b114bff436fb61912d380dbcb84340d1490f6f4a`
-- Orman Yolu 6 özgün Doğa info card kullanır.
-- L8/L9/L10 content polish tamamlandı.
-- Tüm production rotaları generic/data-driven book akışını kullanır:
-  `_activeInfoCards + _progress.unlockedInfoCardIds`
-- legacy forest özel book sistemi kaldırıldı.
+Approved exact head `9bbc3b8c6303dc390c79a2d178c03b803830c80c`:
 
-### PR #206 — Tam lineer route progression
+- Kelime Avı Orman Yolu içerik kapısı — Run #8 / `35150882939` — SUCCESS
+- Orman Yolu Android çoklu ekran kanıtı — Run #29 / `35150882942` — SUCCESS
+- Kelime Avı Android 16 görsel kanıtı — Run #447 / `35150882917` — SUCCESS
+- AdMob PR doğrulaması — Run #824 / `35150882966` — SUCCESS
+- analyze, focused suite, full tests, release APK, package/manifest, Android 16 cold-start — PASS
 
-- MERGED
-- approved head: `8998e124eaf2afdffd618b0f60212ba2196172b3`
-- approved tree: `02e263e0ade579080f7aa8791de3a33373cf1345`
-- squash merge: `7d1d699623200601ad867eb6dda852feede587eb`
-- merge tree: `02e263e0ade579080f7aa8791de3a33373cf1345`
-- tree equality: EVET
+## Yeni sohbetin aktif başlangıç noktası
 
-Production unlock zinciri artık kesin olarak:
+### ROUTE REWARD + FINAL CEREMONY / ROTA TAMAMLAMA ÖDÜLÜ AUDITİ
 
-**Başlangıç Limanı → Gökyüzü Adaları → Orman Yolu → Kadim Orman**
+İlk tur yalnız audit olacak. Henüz reward sistemi uygulanmayacak, ceremony tasarlanmayacak, `routeRewardId` rename edilmeyecek ve 5. rota oluşturulmayacak.
 
-- Başlangıç: always unlocked.
-- Gökyüzü: Başlangıç `routeComplete` = final complete + en az 18 yıldız.
-- Orman: Gökyüzü `routeComplete` = final complete + en az 18 yıldız.
-- Kadim: Orman `routeComplete`; Orman `unlockStarsRequired = 0`, yani final completion yeterli; ekstra star gate yok.
+Yeni sohbet şuradan başlamalı:
 
-Exact locked copy:
-
-- Gökyüzü: “Başlangıç Limanı’nı tamamla ve en az 18 yıldız kazan.”
-- Orman: “Gökyüzü Adaları’nı tamamla ve en az 18 yıldız kazan.”
-- Kadim: “Orman Yolu’nu tamamlayarak aç.”
-
-`routeComplete` authoritative olarak:
-
-`WordHuntRouteProgressEngine.isRouteComplete(prerequisiteRoute, progress)`
-
-kullanır. Legacy downstream progress silinmez, migrate edilmez ve prerequisite bypass ettiremez.
-
-PR #206 approved exact HEAD CI:
-
-- route catalog #84 / `35120880714` — SUCCESS
-- Orman multi-size #28 / `35120880709` — SUCCESS
-- Kelime Avı Android 16 #446 / `35120880717` — SUCCESS
-- AdMob #823 / `35120880650` — SUCCESS
-- flutter analyze / repo-geneli flutter test / release APK / package-manifest / Android 16 cold-start — PASS
-
-## Source branch koruma
-
-Owner açıkça istemeden silme:
-
-- `feat/kelime-avi-linear-route-progression`
-- `feat/kelime-avi-orman-yolu-content-polish`
-- `feat/kelime-avi-kadim-orman-original-content`
-- `feat/kelime-avi-kadim-orman-progression`
-- `feat/kelime-avi-orman2-runtime-pilot-20260916`
-
-## YENİ SOHBETİN İLK İŞİ
-
-### CHALLENGE / FINAL YILDIZ – ZAMAN – ÖDÜL DENGESİ AUDITİ
-
-Bu konuda henüz ürün çözümü veya yeni değer kararı yoktur. Yeni sohbet önce mevcut kodu ve testleri inceleyerek yalnız audit çıkaracaktır.
-
-İncelenecekler:
-
-- Başlangıç Limanı challenge/final star rule'ları
-- Gökyüzü challenge/final star rule'ları
-- Orman Yolu challenge/final star rule'ları
-- Kadim Orman challenge/final star rule'ları
-- `timeLimitSeconds`
-- `twoStarMaxMistakes` / `threeStarMaxMistakes`
-- `twoStarMaxSeconds` / `threeStarMaxSeconds`
-- routeFinal bölümlerin gerçekten final hissi verip vermediği
-- `routeRewardId` değerlerinin runtime'da gerçek kullanıcı ödülü üretip üretmediği
-- rotalar arasında zorluk artışının tutarlı olup olmadığı
-
-### İlk turda YAPMA
-
-- yeni star/time/reward değeri uydurma
-- runtime/content kodunu değiştirme
-- selector/progression değiştirme
-- asset değiştirme
-- 5. rota oluşturma veya tasarlama
-- source branch silme
-- release/tag oluşturma
-
-Önce mevcut production contract'ı teknik olarak audit et, bulguları ve seçenekleri owner'a getir; ürün kararı owner'dan sonra uygulanır.
-
-## DEVİR CÜMLESİ
-
-Yeni sohbet şu prompt ile başlayabilir:
-
-`GENEL_PROJE_OZETI.md ve SOHBET_DEVIR_2026-09-16_CHALLENGE_FINAL_AUDIT_BASLANGIC.md dosyalarını oku; canlı target HEAD'i doğrula ve CHALLENGE / FINAL YILDIZ – ZAMAN – ÖDÜL DENGESİ auditinden devam et. Şimdilik kod değişikliği yapma.`
+`GENEL_PROJE_OZETI.md ve SOHBET_DEVIR_2026-09-17_CHALLENGE_FINAL_BALANCE_KAPANIS.md dosyalarını oku; canlı target HEAD'i doğrula ve ROUTE REWARD + FINAL CEREMONY / ROTA TAMAMLAMA ÖDÜLÜ auditinden devam et. Şimdilik runtime değişikliği yapma.`
