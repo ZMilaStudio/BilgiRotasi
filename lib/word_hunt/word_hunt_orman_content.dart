@@ -58,7 +58,7 @@ class WordHuntOrmanContent {
     title: 'Orman Yolu',
     theme: 'orman',
     unlockStarsRequired: 0,
-    routeRewardId: 'reward-orman-yolu',
+    routeRewardId: 'badge-orman-kasifi',
     levels: <WordHuntLevelDefinition>[
       WordHuntLevelDefinition(
         id: 'orman-yolu-01',
