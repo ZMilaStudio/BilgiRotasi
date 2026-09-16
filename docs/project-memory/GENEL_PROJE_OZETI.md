@@ -7,77 +7,107 @@
 Yeni sohbette işe başlamadan önce şu sırayı uygula:
 
 1. Bu dosyanın tamamını oku: `docs/project-memory/GENEL_PROJE_OZETI.md`.
-2. Son sohbet devrini oku: `docs/project-memory/SOHBET_DEVIR_2026-09-16_KADIM_ORMAN_PROGRESSION_KAPANIS.md`.
+2. Son authoritative sohbet devrini oku: `docs/project-memory/SOHBET_DEVIR_2026-09-16_KADIM_ORMAN_ORIGINAL_CONTENT_KAPANIS.md`.
 3. İlgili mimari karar için `KELIME_AVI_REUSABLE_HARITA_KARARI.md` dosyasını oku.
 4. Sonra canlı GitHub durumunu kendin doğrula: repo, target branch, exact HEAD, açık PR'lar ve ilgili GitHub Actions sonuçları.
 5. Çelişki varsa öncelik: **canlı GitHub > proje bellek dosyaları > eski sohbetler**.
 
 Repo: `ZMilaStudio/BilgiRotasi`  
-Target branch: `release/final-closed-test-aab-1.68.8`
+Target branch: `release/final-closed-test-aab-1.68.8`  
+PR #204 merge sonrası target HEAD: `755e90725d3062b74c0ce228bb1b6d7bbdfda4c0`
 
-## 16 Eylül 2026 — Kadim Orman progression kararı TAMAMLANDI / MERGED
+## 16 Eylül 2026 — Kadim Orman özgün content TAMAMLANDI / MERGED
 
-Orman 2 runtime pilotunun kullanıcı-facing progression kararı PR #203 ile tamamlandı ve squash merge edildi.
+Kadim Orman'ın Orman Yolu gameplay içeriğini clone/reuse ettiği pilot borcu PR #204 ile kapatıldı. Kadim Orman artık production'da kendi statik ve deterministic gameplay içeriğine sahiptir.
 
-- PR: **#203 — `feat(kelime-avi): unlock Kadim Orman after Orman Yolu`**
-- Approved PR head: `c89926b270d89f52ca895b82a875c9b732fdb609`
-- Approved head tree: `3e00a2d246f93eb3792a1d63748b2923fe30a13d`
-- Squash merge commit / progression kapanış target HEAD: `f312a2333cb16e9a74f500fcc80c200325634439`
-- Merge commit tree: `3e00a2d246f93eb3792a1d63748b2923fe30a13d`
-- Squash commit parent: `044818e9c66eddc20f20b8a16e9497102736ddfa`
+- PR: **#204 — `feat(kelime-avi): give Kadim Orman original content`**
+- Approved PR head: `a17cdcd4dab03dad567852db7421b3ce139f0213`
+- Approved head tree: `a98c7cb23621276d36cd84f0d9055e535328d1cb`
+- Squash merge commit / yeni target HEAD: `755e90725d3062b74c0ce228bb1b6d7bbdfda4c0`
+- Merge commit tree: `a98c7cb23621276d36cd84f0d9055e535328d1cb`
+- Squash commit parent: `47855a96e51567782318f32990c76703813b9341`
 - Approved PR head tree ile squash merge tree **birebir aynıdır**.
-- Source branch `feat/kelime-avi-kadim-orman-progression` bilerek henüz silinmedi.
-- Bu kapanış dokümantasyon commit'i `f312a233...` üstüne docs-only olarak eklenir; yeni sohbette target exact HEAD her zaman canlı GitHub'dan doğrulanmalıdır.
+- Source branch `feat/kelime-avi-kadim-orman-original-content` bilerek henüz silinmedi.
 
-### Onaylanan ürün davranışı
+### Korunan teknik kimlikler
 
-Teknik route identity değişmedi:
+- route id: `orman-2`
+- user-facing title: **Kadim Orman**
+- theme: `orman`
+- reward id: `reward-orman-2`
+- level id'leri: `orman-2-01` … `orman-2-10`
+- level indexleri: `1..10`
+- type sırası: normal, normal, normal, normal, challenge, normal, normal, normal, normal, routeFinal
 
-`orman-2`
+### Kadim Orman production content
 
-Kullanıcı-facing ad:
+10 bölümün tamamı artık özgün **statik 8×8 grid + targetWords + bonusWords** kullanır:
 
-**Kadim Orman**
+1. Köklerin Kapısı
+2. Sis Koridoru
+3. Eski Köprü
+4. Mantar Çemberi
+5. Gece Gözleri — challenge / 60 sn
+6. Unutulmuş Harabe
+7. Gizli Kaynak
+8. Kadim İşaretler
+9. Ormanın Hafızası
+10. Ormanın Kalbi — routeFinal / 120 sn
 
-Selector sırası:
+Artık geçersiz pilot borcu:
 
-**Başlangıç Limanı → Gökyüzü → Orman Yolu → Kadim Orman**
+- `WordHuntOrmanContent` gameplay import/reuse yok,
+- `WordHuntOrmanContent.infoCards` reuse yok,
+- `WordHuntOrmanContent.ormanYolu.levels` clone/map yok,
+- `_clonePilotLevels()` yok,
+- “Kadim Orman gameplay verisini Orman Yolu'ndan reuse eder” bilgisi **SUPERSEDED / GEÇERSİZ**.
 
-Kadim Orman progression sözleşmesi:
+Kadim Orman'ın kendi 6 bilgi kartı vardır:
 
-- selector'da en baştan görünür,
+- `kadim-info-egrelti` — L1
+- `kadim-info-sis` — L2
+- `kadim-info-misel` — L4
+- `kadim-info-baykus` — L5
+- `kadim-info-kaynak` — L7
+- `kadim-info-cinar` — L9
+
+### Kalite / CI kapanışı — PASS
+
+Exact approved HEAD: `a17cdcd4dab03dad567852db7421b3ce139f0213`
+
+- 10/10 Kadim Orman grid'i kendi içinde unique: **PASS**
+- Orman Yolu gridleriyle birebir eşleşme yok: **PASS**
+- corresponding targetWords listeleri birebir aynı değil: **PASS**
+- target/bonus overlap yok: **PASS**
+- target ve bonus kelimeler production yön kurallarına göre gridde geçerli: **PASS**
+- `WordHuntDefinitionValidator`: **PASS**
+- `WordHuntContentValidator`: **PASS**
+- info-card ID uniqueness + approved level mapping: **PASS**
+- source-level clone/reuse regression: **PASS**
+- Orman Yolu/Kadim Orman progression isolation: **PASS**
+- fresh selector → Kadim Orman locked: **PASS**
+- Orman Yolu level 10 complete → Kadim Orman unlocked: **PASS**
+- immutable Orman 2 asset / visual theme / normalized stops regression: **PASS**
+- Orman Yolu Android çoklu ekran kanıtı — Run **#22**, ID `35102022425`: **SUCCESS**
+- Kelime Avı Android 16 görsel kanıtı — Run **#440**, ID `35102022388`: **SUCCESS**
+- AdMob PR doğrulaması — Run **#817**, ID `35102022445`: **SUCCESS**
+- Repo-geneli “Analiz ve tüm testler”: **SUCCESS**
+- release APK / package-manifest / Android 16 cold-start: **SUCCESS**
+
+## Kadim Orman selector / progression baseline — KORUNUYOR
+
+PR #203 ile merge edilen progression kararı PR #204 tarafından değiştirilmedi:
+
+- selector sırası: **Başlangıç Limanı → Gökyüzü → Orman Yolu → Kadim Orman**,
+- Kadim Orman selector'da en baştan görünür,
 - fresh progress durumunda kilitlidir,
-- exact locked mesaj: **“Orman Yolu’nu tamamlayarak aç.”**,
-- Orman Yolu level 9 tamamlandığında kilitli kalır,
-- Orman Yolu level 10 tamamlandığında açılır,
-- 30/30 yıldız şartı yoktur,
-- toplam yıldız sayısı unlock koşulu değildir,
-- kendi içinde yine **1→10** progression kullanır; 21–30 numaralandırması yoktur,
-- progression identity Orman Yolu'ndan bağımsızdır.
-
-### Merge edilen mimari karar
-
-- Mevcut generic `WordHuntRouteUnlockRule.routeComplete` kullanılır.
-- Yeni prerequisite engine eklenmedi.
-- Route-id özel selector/renderer `if` eklenmedi.
-- Exact locked metin `WordHuntRouteCatalogEntry.lockedMessage` üzerinden data-driven taşınır.
-- Kilitli selector kartı seçilemez.
-- Başlangıç Limanı / Gökyüzü / Orman Yolu mevcut unlock davranışları korunur.
-- Orman Yolu gameplay/progression verisi değiştirilmedi.
-- Orman 2 visual theme, normalized stops ve immutable asset değiştirilmedi.
-
-### CI / test kapanışı — PASS
-
-Exact approved HEAD: `c89926b270d89f52ca895b82a875c9b732fdb609`
-
-- Kelime Avı route catalog kapısı — Run **#80**, ID `35092666128`: **SUCCESS**
-- Orman Yolu Android çoklu ekran kanıtı — Run **#21**, ID `35092666124`: **SUCCESS**
-- Kelime Avı Android 16 görsel kanıtı — Run **#439**, ID `35092666125`: **SUCCESS**
-- AdMob PR doğrulaması — Run **#816**, ID `35092666130`: **SUCCESS**
-- Focused selector tests: **18/18 PASS**
-- Orman 2 runtime regression: **PASS**
-- Aynı exact HEAD üzerinde Orman Yolu ve Orman 2/Kadim Orman Android 16 multi-size proof job'ları PASS.
-- Selector'a özel A/B Android screenshot artifact'i üretilmedi; bu bloklayıcı değildir. Fresh locked ve Orman Yolu final-complete unlocked state'leri gerçek Flutter widget testleriyle doğrulandı; production'a proof/debug hack eklenmedi.
+- exact locked copy: **“Orman Yolu’nu tamamlayarak aç.”**,
+- Orman Yolu level 9 tamamken kilitli kalır,
+- Orman Yolu level 10 tamamlanınca açılır,
+- 30/30 veya toplam yıldız unlock şartı yoktur,
+- kendi içinde 1→10 progression kullanır,
+- Orman Yolu ve Kadim Orman progression identity'leri ayrıdır,
+- generic `WordHuntRouteUnlockRule.routeComplete` ve data-driven `lockedMessage` korunur.
 
 ## Orman 2 / Kadim Orman immutable asset freeze
 
@@ -92,15 +122,15 @@ Production asset:
 
 Bu asset immutable'dır. **Re-encode / recompress / resize / crop / recolor / yeniden üretme yapılmaz.**
 
-## Orman 2 runtime baseline — KORUNUYOR
+## Kadim Orman runtime baseline — KORUNUYOR
 
-PR #202 ile merge edilen runtime pilotu kapanmıştır ve PR #203 bu baseline'ı değiştirmemiştir.
+PR #202 ile merge edilen runtime/presentation baseline'ı PR #204 tarafından değiştirilmedi:
 
-- Technical route id: `orman-2`
-- Visual theme id: `orman-2-production`
-- `referenceCanvasSize = 411×731`
-- `extendTallAmbientFromArtworkEdges = true`
-- `artworkOverlayMode = embeddedRouteLiveNodes`
+- technical route id `orman-2`,
+- visual theme id `orman-2-production`,
+- `referenceCanvasSize = 411×731`,
+- `extendTallAmbientFromArtworkEdges = true`,
+- `artworkOverlayMode = embeddedRouteLiveNodes`,
 - dekoratif rota raster içindedir; live Flutter route painter kapalıdır,
 - node/progression/chrome canlı Flutter katmanındadır,
 - Orman 1 node asset ailesi reuse edilir,
@@ -108,37 +138,33 @@ PR #202 ile merge edilen runtime pilotu kapanmıştır ve PR #203 bu baseline'ı
 - route/theme-id özel renderer `if` yoktur,
 - normalized stops değiştirilmemiştir.
 
-PR #202 kapanış referansı:
-
-- Approved head `62d33d9a332a281b2d703432472e3d802668c17c`
-- Squash merge `9aa3a2e8392a8fb42646d23c1e89ea9b67789c5a`
-- Approved/merge tree `a4742ad244ec90a9ae41bf2b55ad48d7ceed14e5`
-- Android 16 runtime proof + owner visual QA: PASS
-
 ## Source branch durumu
 
-- PR #203 source branch: `feat/kelime-avi-kadim-orman-progression` — bilerek tutuluyor.
-- PR #202 source branch: `feat/kelime-avi-orman2-runtime-pilot-20260916` — daha önce de bilerek tutuluyordu.
+Aşağıdaki branch'ler owner ayrıca istemeden silinmez:
 
-Owner açıkça istemeden bu branch'ler silinmez.
+- PR #204: `feat/kelime-avi-kadim-orman-original-content` — tutuluyor.
+- PR #203: `feat/kelime-avi-kadim-orman-progression` — tutuluyor.
+- PR #202: `feat/kelime-avi-orman2-runtime-pilot-20260916` — tutuluyor.
 
-## Kelime Avı — korunan kanonik progression ve catalog kuralları
+## Sıradaki inceleme konusu — Orman Yolu content / bilgi kartı polish
 
-- Her 10-bölümlük rotada fresh progress: yalnız Bölüm 1 açık/current, Bölüm 2–10 locked.
-- Sıralı unlock: `1→2→3→4→5→6→7→8→9→10`.
+Yeni rota üretmeden önce mevcut rota içerik kalitesi/polish turu devam etmeli. Bir sonraki inceleme konusu:
+
+- Orman Yolu `infoCards` şu anda boş; kitap butonuna gerçek içerik kazandırılması değerlendirilecek.
+- Orman Yolu target kelime havuzundaki tekrarlar kalite açısından incelenecek.
+- Bu devir notu henüz ürün çözümü belirlemez; yalnız sıradaki kalite/polish konusunu sabitler.
+
+## Kelime Avı — korunan kanonik progression ve release kuralları
+
+- Her 10-bölümlük rotada bölüm progression'ı `1→2→3→4→5→6→7→8→9→10` şeklindedir.
 - Ortak motor `WordHuntRouteProgressEngine.isLevelUnlocked`; tema/artwork progression mantığını değiştiremez.
-- Production selector sırası artık: Başlangıç Limanı → Gökyüzü → Orman Yolu → Kadim Orman.
 - Gökyüzü kapısı: Başlangıç Limanı'ndan 18 yıldız.
-- Orman Yolu kapısı: yalnız Başlangıç Limanı Bölüm 10 tamamlandığında açılır.
-- Kadim Orman kapısı: yalnız Orman Yolu Bölüm 10 tamamlandığında açılır; yıldız toplamı şartı yoktur.
-
-## Canonical gameplay/release korumaları
-
+- Orman Yolu kapısı: Başlangıç Limanı Bölüm 10 completion.
+- Kadim Orman kapısı: Orman Yolu Bölüm 10 completion; yıldız toplamı şartı yoktur.
 - Grid: **8×8 / 64 hücre — LOCKED**.
-- 6×10 tarihsel checkpointtir; geri dönmez.
 - B5 60 sn, B10 120 sn soft challenge; hard-fail değildir.
 - Minimum Kelime Avı yayın stoğu: **200 hazır/doğrulanmış bölüm**.
 - 200/200 release-stock gate ve runtime/fiziksel kabul tamamlanmadan yeni Kelime Avı production release'i Play'e yüklenmez.
 - `assets/questions.json`, BoardMap/67 node, Firebase, signing, version ve Play kapsamı açık owner kararı olmadan değiştirilmez.
 
-**DEVİR SON DURUMU:** PR #203 MERGED / approved head `c89926b...` / squash merge `f312a233...` / approved ve merge tree `3e00a2d...` birebir aynı / `orman-2` teknik identity korunuyor / kullanıcı adı Kadim Orman / selector'da dördüncü rota olarak görünür ve Orman Yolu level 10 completion ile açılır / yıldız şartı yok / 1–10 progression korunuyor / generic `routeComplete` + data-driven `lockedMessage` kullanılıyor / tüm ilgili CI SUCCESS / immutable Orman 2 asset freeze aktif / source branch bilerek tutuluyor.
+**DEVİR SON DURUMU:** PR #204 MERGED / target `755e90725d3062b74c0ce228bb1b6d7bbdfda4c0` / approved head `a17cdcd4...` / approved ve merge tree `a98c7cb...` birebir aynı / Kadim Orman artık Orman Yolu gameplay clone/reuse kullanmıyor / 10 özgün statik 8×8 bölüm ve 6 özgün bilgi kartı production'da / teknik route-level-progression identity korunuyor / selector-unlock-map-theme-asset değişmedi / ilgili test ve CI SUCCESS / source branch tutuluyor / sıradaki inceleme Orman Yolu content ve bilgi kartı polish.

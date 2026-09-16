@@ -114,7 +114,7 @@ PR #202 ile genericization zemini gerçek Orman 2 runtime pilotunda kullanıldı
 Merge edilen runtime sözleşmesi:
 
 - Orman 2 ayrı route identity kullanır.
-- Pilot gameplay verisi Orman 1'den reuse edilir.
+- PR #202 zamanındaki pilot gameplay verisi Orman 1'den reuse ediyordu; **bu gameplay reuse durumu PR #204 ile SUPERSEDED edilmiştir.** Runtime/presentation baseline'ı ise korunur.
 - `referenceCanvasSize = 411×731`.
 - `extendTallAmbientFromArtworkEdges = true`.
 - `artworkOverlayMode = embeddedRouteLiveNodes`.
@@ -193,4 +193,56 @@ Selector'a özel A/B Android screenshot artifact'i üretilmedi; fresh locked ve 
 
 Source branch `feat/kelime-avi-kadim-orman-progression` merge sonrasında bilerek tutulmaktadır.
 
-**Durum:** REUSABLE 10-LEVEL MAP ARCHITECTURE — OWNER APPROVED / MERGED / CI GREEN. ORMAN 2 GENERICIZATION — MERGED. ORMAN 2 RUNTIME PILOT — MERGED / ANDROID 16 PROOF PASS / OWNER VISUAL QA PASS. KADİM ORMAN PROGRESSION — MERGED / SELECTOR'DA DÖRDÜNCÜ ROTA / ORMAN YOLU LEVEL 10 COMPLETION İLE UNLOCK / YILDIZ ŞARTI YOK / CI GREEN.
+## Kadim Orman özgün gameplay/content — TAMAMLANDI / MERGED
+
+PR #204 ile pilot dönemindeki Orman Yolu gameplay clone/reuse borcu kaldırıldı. Teknik route/level/progression identity korunurken Kadim Orman kendi production content'ine geçti.
+
+- PR: **#204 — `feat(kelime-avi): give Kadim Orman original content`**
+- Approved PR head: `a17cdcd4dab03dad567852db7421b3ce139f0213`
+- Approved head tree: `a98c7cb23621276d36cd84f0d9055e535328d1cb`
+- Squash merge commit / target HEAD: `755e90725d3062b74c0ce228bb1b6d7bbdfda4c0`
+- Merge commit tree: `a98c7cb23621276d36cd84f0d9055e535328d1cb`
+- Squash commit parent: `47855a96e51567782318f32990c76703813b9341`
+- Tree equality: **approved PR head ve squash merge tree birebir aynı**.
+
+Production content sözleşmesi:
+
+- route id `orman-2`, title **Kadim Orman**, theme `orman`, reward `reward-orman-2` korunur,
+- level id'leri `orman-2-01` … `orman-2-10` ve index 1..10 korunur,
+- 10 bölümün tamamı özgün, statik ve deterministic 8×8 grid kullanır,
+- targetWords ve bonusWords Kadim Orman'a özgüdür,
+- B5 **Gece Gözleri** challenge / 60 sn,
+- B10 **Ormanın Kalbi** routeFinal / 120 sn,
+- runtime random grid generation yoktur,
+- `WordHuntOrmanContent.infoCards` reuse, `WordHuntOrmanContent.ormanYolu.levels` clone/map ve `_clonePilotLevels()` artık yoktur.
+
+Kadim Orman'ın kendi 6 bilgi kartı:
+
+- `kadim-info-egrelti` — L1
+- `kadim-info-sis` — L2
+- `kadim-info-misel` — L4
+- `kadim-info-baykus` — L5
+- `kadim-info-kaynak` — L7
+- `kadim-info-cinar` — L9
+
+Kalite/CI kapanışı — exact approved HEAD `a17cdcd4dab03dad567852db7421b3ce139f0213`:
+
+- 10/10 grid unique: **PASS**
+- Orman Yolu gridleriyle birebir eşleşme yok: **PASS**
+- corresponding targetWords listeleri birebir aynı değil: **PASS**
+- target/bonus overlap yok: **PASS**
+- `WordHuntDefinitionValidator` + `WordHuntContentValidator`: **PASS**
+- info-card uniqueness/mapping + source-level clone/reuse regression + progression isolation: **PASS**
+- selector/unlock, immutable asset, visual theme, normalized stops regressions: **PASS**
+- Orman multi-size Run #22 / ID `35102022425`: **SUCCESS**
+- Kelime Avı Android 16 Run #440 / ID `35102022388`: **SUCCESS**
+- AdMob PR validation Run #817 / ID `35102022445`: **SUCCESS**
+- repo-geneli analiz/tüm testler + release APK + manifest + Android 16 cold-start: **SUCCESS**
+
+PR #204 source branch `feat/kelime-avi-kadim-orman-original-content` merge sonrasında bilerek tutulmaktadır.
+
+## Sıradaki inceleme konusu
+
+Yeni rota üretmeden önce **Orman Yolu content / bilgi kartı kalite-polisajı** incelenecektir. Orman Yolu `infoCards` şu anda boştur; kitap butonuna gerçek içerik kazandırılması ve target kelime havuzundaki tekrarların kalite açısından değerlendirilmesi sıradaki inceleme konusudur. Bu kayıt henüz ürün çözümü belirlemez.
+
+**Durum:** REUSABLE 10-LEVEL MAP ARCHITECTURE — OWNER APPROVED / MERGED / CI GREEN. ORMAN 2 GENERICIZATION — MERGED. ORMAN 2 RUNTIME PILOT — MERGED / ANDROID 16 PROOF PASS / OWNER VISUAL QA PASS. KADİM ORMAN PROGRESSION — MERGED / SELECTOR'DA DÖRDÜNCÜ ROTA / ORMAN YOLU LEVEL 10 COMPLETION İLE UNLOCK / YILDIZ ŞARTI YOK / CI GREEN. KADİM ORMAN ORIGINAL CONTENT — MERGED / 10 ÖZGÜN STATİK 8×8 BÖLÜM / 6 ÖZGÜN INFO CARD / CLONE-REUSE BORCU KAPALI / CI GREEN.
