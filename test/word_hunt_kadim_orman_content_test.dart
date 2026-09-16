@@ -53,8 +53,9 @@ void main() {
     );
   });
 
-  test('Kadim Orman preserves pilot timing and star difficulty contract', () {
+  test('Kadim Orman preserves normal levels and owns progressive L5/L10 balance', () {
     for (var index = 0; index < route.levels.length; index++) {
+      if (index == 4 || index == 9) continue;
       final level = route.levels[index];
       final baseline = ormanYolu.levels[index];
 
@@ -76,6 +77,31 @@ void main() {
         baseline.starRules.threeStarMaxSeconds,
       );
     }
+
+    final l5 = route.levels[4];
+    expect(l5.type, WordHuntLevelType.challenge);
+    expect(l5.timeLimitSeconds, 60);
+    expect(l5.starRules.twoStarMaxMistakes, 1);
+    expect(l5.starRules.threeStarMaxMistakes, 0);
+    expect(l5.starRules.twoStarMaxSeconds, 35);
+    expect(l5.starRules.threeStarMaxSeconds, 24);
+
+    final l10 = route.levels[9];
+    expect(l10.type, WordHuntLevelType.routeFinal);
+    expect(l10.timeLimitSeconds, 120);
+    expect(l10.starRules.twoStarMaxMistakes, 2);
+    expect(l10.starRules.threeStarMaxMistakes, 0);
+    expect(l10.starRules.twoStarMaxSeconds, 64);
+    expect(l10.starRules.threeStarMaxSeconds, 48);
+
+    expect(
+      l5.starRules.threeStarMaxSeconds,
+      isNot(ormanYolu.levels[4].starRules.threeStarMaxSeconds),
+    );
+    expect(
+      l10.starRules.threeStarMaxSeconds,
+      isNot(ormanYolu.levels[9].starRules.threeStarMaxSeconds),
+    );
   });
 
   test('definition and content validators accept all original content', () {
