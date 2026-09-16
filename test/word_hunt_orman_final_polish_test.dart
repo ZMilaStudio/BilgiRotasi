@@ -188,7 +188,9 @@ void main() {
     );
   });
 
-  testWidgets('info guide and Orman topic book remain separate', (tester) async {
+  testWidgets('info guide stays separate from data-driven Orman book', (
+    tester,
+  ) async {
     tester.view.physicalSize = const Size(390, 844);
     tester.view.devicePixelRatio = 1;
     addTearDown(() {
@@ -199,6 +201,7 @@ void main() {
     await tester.pumpWidget(
       const MaterialApp(
         home: WordHuntProductionEntryScreen(
+          ownerUid: 'orman-final-polish-book',
           route: WordHuntOrmanContent.ormanYolu,
           infoCards: WordHuntOrmanContent.infoCards,
           routeSelectionEnabled: false,
@@ -222,14 +225,14 @@ void main() {
       find.text('Kitap bölümün konusu hakkında bilgi verir.'),
       findsOneWidget,
     );
-    expect(find.byKey(const Key('word_hunt_current_topic_sheet')), findsNothing);
+    expect(find.byKey(const Key('word_hunt_unlocked_info_cards')), findsNothing);
 
     await tester.tap(find.text('Tamam'));
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('word_hunt_themed_chrome_book')));
-    await tester.pumpAndSettle();
-    expect(find.byKey(const Key('word_hunt_current_topic_sheet')), findsOneWidget);
-    expect(find.textContaining('Bölüm 1 • Ormanın Temeli'), findsOneWidget);
+    await tester.pump();
+    expect(find.text('Henüz bilgi kartı açılmadı.'), findsOneWidget);
+    expect(find.byKey(const Key('word_hunt_unlocked_info_cards')), findsNothing);
     expect(find.byKey(const Key('word_hunt_route_help_dialog')), findsNothing);
   });
 
