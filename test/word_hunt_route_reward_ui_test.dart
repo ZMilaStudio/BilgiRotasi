@@ -145,7 +145,7 @@ void main() {
     expect(action, WordHuntRouteCompletionAction.returnToRoute);
   });
 
-  testWidgets('earned reward shows Kazanıldı without changing unlocked tap', (
+  testWidgets('earned reward shows Rozet kazanıldı without changing unlocked tap', (
     tester,
   ) async {
     WordHuntRouteCatalogEntry? tapped;
@@ -163,7 +163,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('Kazanıldı'), findsOneWidget);
+    expect(find.text('Rozet kazanıldı'), findsOneWidget);
     expect(
       find.byKey(
         const Key(
@@ -191,7 +191,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('Kazanıldı'), findsNothing);
+    expect(find.text('Rozet kazanıldı'), findsNothing);
   });
 
   testWidgets('legacy inconsistent locked reward never bypasses route lock', (
