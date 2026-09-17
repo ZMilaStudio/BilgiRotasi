@@ -1,0 +1,277 @@
+name: Kristal Vadisi final validation
+
+on:
+  push:
+    branches:
+      - ci/kristal-final-validation-20260917
+    paths:
+      - .github/workflows/kristal-final-validation.yml
+
+permissions:
+  contents: read
+
+jobs:
+  full-and-android:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 55
+    env:
+      PROOF_SHA: 43b1416ce877a45ab4cb1bbc2c984dc7db6ea59b
+      PACKAGE: com.leventua.bilgirotasi
+      MAIN_ACTIVITY: com.leventua.bilgirotasi/.MainActivity
+
+    steps:
+      - name: Exact final feature HEAD checkout
+        uses: actions/checkout@v4
+        with:
+          ref: 43b1416ce877a45ab4cb1bbc2c984dc7db6ea59b
+          fetch-depth: 0
+
+      - name: Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Flutter 3.44.6
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.6'
+          channel: stable
+          cache: true
+
+      - name: Exact artwork byte gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          ASSET='assets/word_hunt/KRISTAL_VADISI_ENV_941x1672.webp'
+          test -s "$ASSET"
+          test "$(wc -c < "$ASSET")" -eq 2793116
+          test "$(sha256sum "$ASSET" | awk '{print $1}')" = '189dec3f731f66e72449625457d35d28500fe5cbd5a69ab1f2f04f303ca1bc20'
+          python3 - "$ASSET" <<'PY'
+          import struct, sys
+          data = open(sys.argv[1], 'rb').read()
+          if data[:8] != b'\x89PNG\r\n\x1a\n':
+              raise SystemExit('approved bytes are not PNG codec')
+          w, h = struct.unpack('>II', data[16:24])
+          if (w, h) != (941, 1672):
+              raise SystemExit(f'unexpected dimensions: {w}x{h}')
+          print(f'ARTWORK_GATE=PASS width={w} height={h} bytes={len(data)}')
+          PY
+          test "$(git hash-object "$ASSET")" = '3f96949385dba4b43b6a4062693e899c47b2f71d'
+
+      - name: Full analyze and full test
+        shell: bash
+        run: |
+          set -euo pipefail
+          flutter pub get
+          flutter analyze
+          flutter test --reporter expanded
+          git diff --check
+          test "$(git rev-parse HEAD)" = "$PROOF_SHA"
+
+      - name: Generate runtime proof target
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > lib/word_hunt/word_hunt_kristal_final_proof_main.dart <<'DART'
+          import 'dart:ui' as ui;
+          import 'package:flutter/material.dart';
+          import 'package:flutter/services.dart';
+          import 'word_hunt_kristal_content.dart';
+          import 'word_hunt_kristal_visual_theme.dart';
+          import 'word_hunt_progress.dart';
+          import 'word_hunt_themed_production_route_screen.dart';
+
+          const activeFinal = bool.fromEnvironment('KRISTAL_ACTIVE_FINAL');
+
+          Future<void> main() async {
+            WidgetsFlutterBinding.ensureInitialized();
+            await SystemChrome.setPreferredOrientations(<DeviceOrientation>[DeviceOrientation.portraitUp]);
+            await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+            runApp(const _ProofApp());
+          }
+
+          class _ProofApp extends StatelessWidget {
+            const _ProofApp();
+            @override
+            Widget build(BuildContext context) {
+              final route = WordHuntKristalContent.kristalVadisi;
+              final progress = WordHuntProgressSnapshot(
+                bestStarsByLevelId: <String, int>{
+                  for (final level in route.levels.take(activeFinal ? 9 : 4))
+                    level.id: activeFinal ? 1 : 3,
+                },
+              );
+              return MaterialApp(
+                debugShowCheckedModeBanner: false,
+                home: _ProofProbe(
+                  child: WordHuntThemedProductionRouteScreen(
+                    route: route,
+                    visualTheme: WordHuntKristalVisualTheme.production,
+                    progress: progress,
+                    onBack: _noop,
+                    onInfo: _noop,
+                    onCompass: _noop,
+                    onBook: _noop,
+                    onLevelTap: _noopLevel,
+                  ),
+                ),
+              );
+            }
+            static void _noop() {}
+            static void _noopLevel(int _) {}
+          }
+
+          class _ProofProbe extends StatefulWidget {
+            const _ProofProbe({required this.child});
+            final Widget child;
+            @override
+            State<_ProofProbe> createState() => _ProofProbeState();
+          }
+
+          class _ProofProbeState extends State<_ProofProbe> {
+            bool scheduled = false;
+            @override
+            void didChangeDependencies() {
+              super.didChangeDependencies();
+              if (scheduled) return;
+              scheduled = true;
+              WidgetsBinding.instance.addPostFrameCallback((_) async {
+                try {
+                  const asset = 'assets/word_hunt/KRISTAL_VADISI_ENV_941x1672.webp';
+                  final data = await rootBundle.load(asset);
+                  final bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
+                  if (bytes.length != 2793116) throw StateError('bytes=${bytes.length}');
+                  final codec = await ui.instantiateImageCodec(bytes);
+                  final frame = await codec.getNextFrame();
+                  if (frame.image.width != 941 || frame.image.height != 1672) {
+                    throw StateError('size=${frame.image.width}x${frame.image.height}');
+                  }
+                  frame.image.dispose();
+                  codec.dispose();
+                  await Future<void>.delayed(const Duration(milliseconds: 900));
+                  await WidgetsBinding.instance.endOfFrame;
+                  debugPrint('[KRISTAL_FINAL_PROOF_READY] activeFinal=$activeFinal bytes=${bytes.length} size=941x1672');
+                } catch (e, st) {
+                  debugPrint('[KRISTAL_FINAL_PROOF_ERROR] $e');
+                  debugPrintStack(stackTrace: st);
+                }
+              });
+            }
+            @override
+            Widget build(BuildContext context) => widget.child;
+          }
+          DART
+          dart format lib/word_hunt/word_hunt_kristal_final_proof_main.dart
+
+      - name: Build locked and active proof APKs
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p reports
+          flutter build apk --debug -t lib/word_hunt/word_hunt_kristal_final_proof_main.dart \
+            --dart-define=KRISTAL_ACTIVE_FINAL=false --dart-define=ADMOB_ENVIRONMENT=test
+          cp build/app/outputs/flutter-apk/app-debug.apk reports/KRISTAL_LOCKED_PROOF.apk
+          flutter build apk --debug -t lib/word_hunt/word_hunt_kristal_final_proof_main.dart \
+            --dart-define=KRISTAL_ACTIVE_FINAL=true --dart-define=ADMOB_ENVIRONMENT=test
+          cp build/app/outputs/flutter-apk/app-debug.apk reports/KRISTAL_ACTIVE_FINAL_PROOF.apk
+          sha256sum reports/KRISTAL_*_PROOF.apk | tee reports/KRISTAL_APK_SHA256.txt
+          printf '%s\n' "$PROOF_SHA" > reports/KRISTAL_FEATURE_HEAD.txt
+
+      - name: Enable KVM
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -e /dev/kvm
+          sudo chmod 666 /dev/kvm
+          ./android/gradlew --stop || true
+
+      - name: Android 16 visual proof
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 36
+          target: aosp_atd
+          arch: x86_64
+          profile: pixel_2
+          cores: 2
+          ram-size: 2048M
+          heap-size: 512M
+          emulator-boot-timeout: 1200
+          disable-animations: false
+          script: |
+            set -euo pipefail
+            mkdir -p reports
+            a() { timeout "$1" adb "${@:2}"; }
+            reset_display() { a 15 shell wm size reset >/dev/null 2>&1 || true; a 15 shell wm density reset >/dev/null 2>&1 || true; }
+            wait_ready() {
+              local label="$1"
+              for _ in $(seq 1 60); do
+                a 15 logcat -d -v threadtime > "reports/${label}_LOGCAT.txt" 2>/dev/null || true
+                if grep -Fq '[KRISTAL_FINAL_PROOF_READY]' "reports/${label}_LOGCAT.txt"; then return 0; fi
+                sleep 1
+              done
+              tail -n 180 "reports/${label}_LOGCAT.txt" >&2 || true
+              return 1
+            }
+            capture() {
+              local label="$1" size="$2" density="$3"
+              reset_display
+              a 15 shell wm size "$size"
+              a 15 shell wm density "$density"
+              a 15 shell am force-stop "$PACKAGE" >/dev/null 2>&1 || true
+              a 15 logcat -c >/dev/null 2>&1 || true
+              a 15 shell am start -n "$MAIN_ACTIVITY" > "reports/${label}_LAUNCH.txt" 2>&1
+              wait_ready "$label"
+              sleep 2
+              a 30 exec-out screencap -p > "reports/${label}.png"
+              test -s "reports/${label}.png"
+            }
+            a 20 wait-for-device
+            a 120 install -r reports/KRISTAL_LOCKED_PROOF.apk | tee reports/KRISTAL_LOCKED_INSTALL.txt
+            grep -Fq Success reports/KRISTAL_LOCKED_INSTALL.txt
+            capture KRISTAL_LOCKED_411x731 411x731 160
+            capture KRISTAL_LOCKED_720x1280 720x1280 320
+            capture KRISTAL_LOCKED_1080x1920 1080x1920 420
+            capture KRISTAL_LOCKED_1080x2400 1080x2400 440
+            a 120 install -r reports/KRISTAL_ACTIVE_FINAL_PROOF.apk | tee reports/KRISTAL_ACTIVE_INSTALL.txt
+            grep -Fq Success reports/KRISTAL_ACTIVE_INSTALL.txt
+            capture KRISTAL_ACTIVE_FINAL_1080x1920 1080x1920 420
+            reset_display
+            python3 - <<'PY'
+            from pathlib import Path
+            import struct
+            expected = {
+              'KRISTAL_LOCKED_411x731.png': (411, 731),
+              'KRISTAL_LOCKED_720x1280.png': (720, 1280),
+              'KRISTAL_LOCKED_1080x1920.png': (1080, 1920),
+              'KRISTAL_LOCKED_1080x2400.png': (1080, 2400),
+              'KRISTAL_ACTIVE_FINAL_1080x1920.png': (1080, 1920),
+            }
+            for name, dims in expected.items():
+              data = Path('reports', name).read_bytes()
+              if data[:8] != b'\x89PNG\r\n\x1a\n': raise SystemExit(f'{name}: not PNG')
+              actual = struct.unpack('>II', data[16:24])
+              if actual != dims: raise SystemExit(f'{name}: {actual} != {dims}')
+              print(name, actual)
+            PY
+            printf '%s\n' 'RESULT=SUCCESS' > reports/KRISTAL_ANDROID_PROOF_RESULT.txt
+
+      - name: Upload final validation evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Kristal-Final-Validation-43b1416ce877a45ab4cb1bbc2c984dc7db6ea59b
+          path: |
+            reports/KRISTAL_FEATURE_HEAD.txt
+            reports/KRISTAL_APK_SHA256.txt
+            reports/KRISTAL_ANDROID_PROOF_RESULT.txt
+            reports/KRISTAL_LOCKED_411x731.png
+            reports/KRISTAL_LOCKED_720x1280.png
+            reports/KRISTAL_LOCKED_1080x1920.png
+            reports/KRISTAL_LOCKED_1080x2400.png
+            reports/KRISTAL_ACTIVE_FINAL_1080x1920.png
+            reports/*_LOGCAT.txt
+            reports/*_LAUNCH.txt
+            reports/*_INSTALL.txt
+          if-no-files-found: warn
+          retention-days: 30
