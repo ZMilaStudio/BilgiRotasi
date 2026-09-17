@@ -8,10 +8,9 @@ import 'word_hunt_screens.dart';
 /// Route final henüz tamamlanmamışken generic level-result dialog'unu kullanıcıya
 /// göstermeden mevcut production gameplay sonucunu parent orchestration'a taşır.
 ///
-/// Mevcut gameplay ekranına scoring/content branch'i eklemez. Yalnız onun
-/// non-dismissible completion dialog'unu aynı event-loop içinde onaylayıp görünür
-/// completion yüzeyini parent'a bırakır; exit confirmation gibi dismissible
-/// dialog'lara dokunmaz.
+/// Mevcut gameplay ekranının scoring/content davranışını değiştirmez. Yalnız
+/// presentation-level defer opt-in'ini açar ve sonucu parent completion yüzeyine
+/// iletir; exit confirmation normal production davranışını korur.
 class WordHuntDeferredCompletionLevelScreen extends StatefulWidget {
   const WordHuntDeferredCompletionLevelScreen({
     super.key,
@@ -47,7 +46,6 @@ class _WordHuntDeferredCompletionLevelScreenState
   Widget build(BuildContext context) {
     return Navigator(
       key: const Key('word_hunt_deferred_completion_navigator'),
-      observers: <NavigatorObserver>[_DeferredCompletionDialogObserver()],
       onGenerateRoute: (_) => MaterialPageRoute<void>(
         builder: (_) => _DeferredCompletionShell(
           level: widget.level,
@@ -100,6 +98,7 @@ class _DeferredCompletionShellState extends State<_DeferredCompletionShell> {
           infoCards: widget.infoCards,
           backgroundAsset: widget.backgroundAsset,
           routeTitle: widget.routeTitle,
+          deferCompletionDialog: true,
         ),
       ),
     );
@@ -112,17 +111,5 @@ class _DeferredCompletionShellState extends State<_DeferredCompletionShell> {
       color: Color(0xFF061425),
       child: SizedBox.expand(),
     );
-  }
-}
-
-class _DeferredCompletionDialogObserver extends NavigatorObserver {
-  @override
-  void didPush(Route<dynamic> route, Route<dynamic>? previousRoute) {
-    super.didPush(route, previousRoute);
-    if (route is! DialogRoute<bool> || route.barrierDismissible) return;
-
-    scheduleMicrotask(() {
-      if (route.isActive) route.navigator?.pop(true);
-    });
   }
 }
