@@ -584,7 +584,6 @@ void main() {
     tester,
   ) async {
     final semantics = tester.ensureSemantics();
-    addTearDown(semantics.dispose);
 
     final progress = progressWith(
       stars: completedRouteStars(starter),
@@ -616,6 +615,8 @@ void main() {
       find.bySemanticsLabel(RegExp(r'^Rozet kazanıldı')),
       findsNothing,
     );
+
+    semantics.dispose();
   });
 
   testWidgets('locked Kadim keeps forest identity and a separate lock treatment', (
