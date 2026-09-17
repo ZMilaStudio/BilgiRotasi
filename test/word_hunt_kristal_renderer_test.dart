@@ -23,7 +23,7 @@ void main() {
     expect(theme.nodeVisualStyle, WordHuntRouteNodeVisualStyle.facetedCrystal);
     expect(WordHuntFacetedCrystalMetrics.normalScale, 1.00);
     expect(WordHuntFacetedCrystalMetrics.challengeScale, 1.06);
-    expect(WordHuntFacetedCrystalMetrics.finalScale, 1.13);
+    expect(WordHuntFacetedCrystalMetrics.finalScale, 1.11);
     expect(
       WordHuntFacetedCrystalMetrics.finalScale,
       greaterThan(WordHuntFacetedCrystalMetrics.challengeScale),
@@ -58,7 +58,7 @@ void main() {
   });
 
   testWidgets(
-    'completed L1-L4, current L5 and locked L10 use live crystal skin',
+    'completed L1-L4, current L5 and locked crystal seals use premium medallion structure',
     (tester) async {
       final progress = WordHuntProgressSnapshot(
         bestStarsByLevelId: <String, int>{
@@ -81,6 +81,10 @@ void main() {
           find.byKey(Key('word_hunt_reusable_node_${i}_completed')),
           findsOneWidget,
         );
+        expect(
+          find.byKey(Key('word_hunt_faceted_medallion_$i')),
+          findsOneWidget,
+        );
         expect(find.byKey(Key('word_hunt_faceted_stars_$i')), findsOneWidget);
       }
       expect(
@@ -88,15 +92,40 @@ void main() {
         findsOneWidget,
       );
       expect(
+        find.byKey(const Key('word_hunt_faceted_medallion_5')),
+        findsOneWidget,
+      );
+      expect(
         find.byKey(const Key('word_hunt_faceted_challenge_glow')),
         findsOneWidget,
       );
+
+      for (var i = 6; i <= 9; i++) {
+        expect(
+          find.byKey(Key('word_hunt_reusable_node_${i}_locked')),
+          findsOneWidget,
+        );
+        expect(
+          find.byKey(Key('word_hunt_faceted_medallion_$i')),
+          findsOneWidget,
+        );
+        expect(find.byKey(Key('word_hunt_faceted_lock_$i')), findsOneWidget);
+      }
+
       expect(
         find.byKey(const Key('word_hunt_reusable_node_10_locked')),
         findsOneWidget,
       );
       expect(
+        find.byKey(const Key('word_hunt_faceted_medallion_10')),
+        findsOneWidget,
+      );
+      expect(
         find.byKey(const Key('word_hunt_faceted_final_crest')),
+        findsOneWidget,
+      );
+      expect(
+        find.byKey(const Key('word_hunt_faceted_final_crest_state_locked')),
         findsOneWidget,
       );
       expect(
@@ -108,7 +137,7 @@ void main() {
     },
   );
 
-  testWidgets('unlocked current L10 keeps unique active final treatment', (
+  testWidgets('unlocked current L10 keeps unique active crystal-throne treatment', (
     tester,
   ) async {
     final progress = WordHuntProgressSnapshot(
@@ -132,11 +161,19 @@ void main() {
       findsOneWidget,
     );
     expect(
+      find.byKey(const Key('word_hunt_faceted_medallion_10')),
+      findsOneWidget,
+    );
+    expect(
       find.byKey(const Key('word_hunt_faceted_final_active_glow')),
       findsOneWidget,
     );
     expect(
       find.byKey(const Key('word_hunt_faceted_final_crest')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const Key('word_hunt_faceted_final_crest_state_active')),
       findsOneWidget,
     );
     expect(find.byKey(const Key('word_hunt_faceted_lock_10')), findsNothing);
