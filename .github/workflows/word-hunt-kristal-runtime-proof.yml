@@ -1,0 +1,136 @@
+name: Kelime Avı Kristal Vadisi runtime proof
+
+on:
+  push:
+    branches:
+      - feat/kelime-avi-kristal-runtime-proof
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  kristal-runtime-proof:
+    name: Kristal Vadisi gerçek Android 16 runtime proof
+    runs-on: ubuntu-22.04
+    timeout-minutes: 45
+    env:
+      PROOF_SHA: ${{ github.sha }}
+      ARTWORK_PATH: assets/word_hunt/KRISTAL_VADISI_RUNTIME_PROOF_SOURCE.png
+      ARTWORK_SHA256: 189dec3f731f66e72449625457d35d28500fe5cbd5a69ab1f2f04f303ca1bc20
+      ARTWORK_URL: 'https://sdmntprdenmarkeast.oaiusercontent.com/files/00000000-924c-8210-9a17-9efe9b6e1839/raw?se=2026-09-17T16%3A02%3A32Z&sp=r&sv=2026-02-06&sr=b&scid=cd20e209-392a-5387-803a-6b355f633e72&skoid=d294dba5-36f7-432b-aab8-935656489847&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-09-17T06%3A15%3A57Z&ske=2026-09-18T06%3A15%3A57Z&sks=b&skv=2026-02-06&sig=24P8K2rEMNdFcrYeNbP1p2xbqVkkMQRCCbBvQoc8Bh0%3D'
+
+    steps:
+      - name: Exact proof HEAD'i indir
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.PROOF_SHA }}
+
+      - name: Owner-approved exact artwork bytes'ını proof workspace'e al
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p assets/word_hunt reports
+          curl --fail --location --retry 3 --retry-delay 2 \
+            "$ARTWORK_URL" -o "$ARTWORK_PATH"
+          test "$(wc -c < "$ARTWORK_PATH")" -eq 2793116
+          echo "$ARTWORK_SHA256  $ARTWORK_PATH" | sha256sum -c -
+          sha256sum "$ARTWORK_PATH" | tee reports/KRISTAL_VADISI_ARTWORK_SHA256.txt
+          file "$ARTWORK_PATH" | tee reports/KRISTAL_VADISI_ARTWORK_FILE.txt
+
+      - name: Proof-only generic renderer patch'ini uygula
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/apply_word_hunt_kristal_runtime_proof_patch.py
+          git diff --check
+
+      - name: Java 17 kur
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Flutter 3.44.6 kur
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.44.6
+          channel: stable
+          cache: true
+
+      - name: Generic renderer + mevcut Orman/Kadim regresyonlarını doğrula
+        shell: bash
+        run: |
+          set -euo pipefail
+          flutter pub get
+          dart analyze lib/word_hunt
+          flutter test \
+            test/word_hunt_kristal_runtime_proof_test.dart \
+            test/word_hunt_orman_final_polish_test.dart \
+            test/word_hunt_orman2_runtime_integration_test.dart \
+            --reporter expanded
+          git diff --check
+
+      - name: Kristal runtime proof APK'sını üret
+        shell: bash
+        run: |
+          set -euo pipefail
+          flutter build apk --debug \
+            -t lib/word_hunt/word_hunt_kristal_runtime_proof_main.dart \
+            --dart-define=ADMOB_ENVIRONMENT=test
+          test -s build/app/outputs/flutter-apk/app-debug.apk
+          cp build/app/outputs/flutter-apk/app-debug.apk \
+            reports/WORD_HUNT_KRISTAL_RUNTIME_PROOF.apk
+          git rev-parse HEAD | tee reports/WORD_HUNT_KRISTAL_RUNTIME_PROOF_HEAD_SHA.txt
+          sha256sum reports/WORD_HUNT_KRISTAL_RUNTIME_PROOF.apk \
+            | tee reports/WORD_HUNT_KRISTAL_RUNTIME_PROOF_APK_SHA256.txt
+
+      - name: Android emulator KVM erişimini hazırla
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -e /dev/kvm
+          sudo chmod 666 /dev/kvm
+          test -r /dev/kvm
+          test -w /dev/kvm
+          ./android/gradlew --stop || true
+
+      - name: Android 16 dört ekran boyutunda gerçek renderer proof
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 36
+          target: aosp_atd
+          arch: x86_64
+          profile: pixel_2
+          cores: 2
+          ram-size: 2048M
+          heap-size: 512M
+          emulator-boot-timeout: 1200
+          disable-animations: false
+          script: bash tools/run_word_hunt_kristal_android16_multi_size_proof.sh
+
+      - name: Proof artifact'larını yükle
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: BilgiRotasi-KelimeAvi-Kristal-Runtime-${{ env.PROOF_SHA }}
+          path: |
+            reports/WORD_HUNT_KRISTAL_ANDROID16_REFERENCE_411x731.png
+            reports/WORD_HUNT_KRISTAL_ANDROID16_REFERENCE_411x731_METRICS.txt
+            reports/WORD_HUNT_KRISTAL_ANDROID16_COMPACT_720x1280.png
+            reports/WORD_HUNT_KRISTAL_ANDROID16_COMPACT_720x1280_METRICS.txt
+            reports/WORD_HUNT_KRISTAL_ANDROID16_STANDARD_1080x1920.png
+            reports/WORD_HUNT_KRISTAL_ANDROID16_STANDARD_1080x1920_METRICS.txt
+            reports/WORD_HUNT_KRISTAL_ANDROID16_TALL_1080x2400.png
+            reports/WORD_HUNT_KRISTAL_ANDROID16_TALL_1080x2400_METRICS.txt
+            reports/WORD_HUNT_KRISTAL_RUNTIME_PROOF_RESULT.txt
+            reports/WORD_HUNT_KRISTAL_RUNTIME_PROOF_HEAD_SHA.txt
+            reports/WORD_HUNT_KRISTAL_RUNTIME_PROOF_APK_SHA256.txt
+            reports/WORD_HUNT_KRISTAL_RUNTIME_PROOF_INSTALL.txt
+            reports/KRISTAL_VADISI_ARTWORK_SHA256.txt
+            reports/KRISTAL_VADISI_ARTWORK_FILE.txt
+            reports/WORD_HUNT_KRISTAL_*_LAUNCH.txt
+            reports/WORD_HUNT_KRISTAL_*_ACTIVITY.txt
+            reports/WORD_HUNT_KRISTAL_*_LOGCAT.txt
+          if-no-files-found: warn
+          retention-days: 30
