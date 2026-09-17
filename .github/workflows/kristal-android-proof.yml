@@ -137,10 +137,73 @@ jobs:
           cp build/app/outputs/flutter-apk/app-debug.apk reports/KRISTAL_ACTIVE.apk
           printf '%s\n' "$FEATURE_SHA" > reports/FEATURE_SHA.txt
       - name: Enable KVM
+        shell: bash
         run: |
+          set -euo pipefail
           test -e /dev/kvm
           sudo chmod 666 /dev/kvm
           ./android/gradlew --stop || true
+      - name: Prepare Android capture script
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > reports/run_kristal_capture.sh <<'SH'
+          #!/usr/bin/env bash
+          set -euo pipefail
+
+          reset_display() {
+            timeout 15 adb shell wm size reset >/dev/null 2>&1 || true
+            timeout 15 adb shell wm density reset >/dev/null 2>&1 || true
+          }
+
+          wait_ready() {
+            local label="$1"
+            local i
+            for i in $(seq 1 60); do
+              timeout 15 adb logcat -d -v threadtime > "reports/${label}_LOGCAT.txt" 2>/dev/null || true
+              if grep -Fq '[KRISTAL_FINAL_PROOF_ERROR]' "reports/${label}_LOGCAT.txt"; then
+                tail -n 120 "reports/${label}_LOGCAT.txt" || true
+                return 1
+              fi
+              if grep -Fq '[KRISTAL_FINAL_PROOF_READY]' "reports/${label}_LOGCAT.txt"; then
+                return 0
+              fi
+              sleep 1
+            done
+            tail -n 160 "reports/${label}_LOGCAT.txt" || true
+            return 1
+          }
+
+          capture() {
+            local label="$1"
+            local size="$2"
+            local density="$3"
+            reset_display
+            timeout 15 adb shell wm size "$size"
+            timeout 15 adb shell wm density "$density"
+            timeout 15 adb shell am force-stop "$PACKAGE" >/dev/null 2>&1 || true
+            timeout 15 adb logcat -c >/dev/null 2>&1 || true
+            timeout 15 adb shell am start -n "$ACTIVITY" > "reports/${label}_LAUNCH.txt" 2>&1
+            wait_ready "$label"
+            sleep 2
+            timeout 30 adb exec-out screencap -p > "reports/${label}.png"
+            test -s "reports/${label}.png"
+          }
+
+          timeout 20 adb wait-for-device
+          timeout 120 adb install -r reports/KRISTAL_LOCKED.apk > reports/LOCKED_INSTALL.txt
+          grep -Fq Success reports/LOCKED_INSTALL.txt
+          capture KRISTAL_LOCKED_411x731 411x731 160
+          capture KRISTAL_LOCKED_720x1280 720x1280 320
+          capture KRISTAL_LOCKED_1080x1920 1080x1920 420
+          capture KRISTAL_LOCKED_1080x2400 1080x2400 440
+          timeout 120 adb install -r reports/KRISTAL_ACTIVE.apk > reports/ACTIVE_INSTALL.txt
+          grep -Fq Success reports/ACTIVE_INSTALL.txt
+          capture KRISTAL_ACTIVE_FINAL_1080x1920 1080x1920 420
+          reset_display
+          printf '%s\n' 'RESULT=SUCCESS' > reports/RESULT.txt
+          SH
+          chmod +x reports/run_kristal_capture.sh
       - name: Capture Android 16 screenshots
         uses: reactivecircus/android-emulator-runner@v2
         with:
@@ -153,59 +216,19 @@ jobs:
           heap-size: 512M
           emulator-boot-timeout: 1200
           disable-animations: false
-          script: |
-            set -eu
-            reset_display() {
-              timeout 15 adb shell wm size reset >/dev/null 2>&1 || true
-              timeout 15 adb shell wm density reset >/dev/null 2>&1 || true
-            }
-            wait_ready() {
-              label="$1"
-              i=1
-              while [ "$i" -le 60 ]; do
-                timeout 15 adb logcat -d -v threadtime > "reports/${label}_LOGCAT.txt" 2>/dev/null || true
-                if grep -Fq '[KRISTAL_FINAL_PROOF_ERROR]' "reports/${label}_LOGCAT.txt"; then
-                  tail -n 120 "reports/${label}_LOGCAT.txt" || true
-                  return 1
-                fi
-                if grep -Fq '[KRISTAL_FINAL_PROOF_READY]' "reports/${label}_LOGCAT.txt"; then
-                  return 0
-                fi
-                i=$((i + 1))
-                sleep 1
-              done
-              tail -n 160 "reports/${label}_LOGCAT.txt" || true
-              return 1
-            }
-            capture() {
-              label="$1"
-              size="$2"
-              density="$3"
-              reset_display
-              timeout 15 adb shell wm size "$size"
-              timeout 15 adb shell wm density "$density"
-              timeout 15 adb shell am force-stop "$PACKAGE" >/dev/null 2>&1 || true
-              timeout 15 adb logcat -c >/dev/null 2>&1 || true
-              timeout 15 adb shell am start -n "$ACTIVITY" > "reports/${label}_LAUNCH.txt" 2>&1
-              wait_ready "$label"
-              sleep 2
-              timeout 30 adb exec-out screencap -p > "reports/${label}.png"
-              test -s "reports/${label}.png"
-            }
-            timeout 20 adb wait-for-device
-            timeout 120 adb install -r reports/KRISTAL_LOCKED.apk > reports/LOCKED_INSTALL.txt
-            grep -Fq Success reports/LOCKED_INSTALL.txt
-            capture KRISTAL_LOCKED_411x731 411x731 160
-            capture KRISTAL_LOCKED_720x1280 720x1280 320
-            capture KRISTAL_LOCKED_1080x1920 1080x1920 420
-            capture KRISTAL_LOCKED_1080x2400 1080x2400 440
-            timeout 120 adb install -r reports/KRISTAL_ACTIVE.apk > reports/ACTIVE_INSTALL.txt
-            grep -Fq Success reports/ACTIVE_INSTALL.txt
-            capture KRISTAL_ACTIVE_FINAL_1080x1920 1080x1920 420
-            reset_display
-            printf '%s\n' 'RESULT=SUCCESS' > reports/RESULT.txt
+          script: ./reports/run_kristal_capture.sh
+      - name: Verify proof output
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s reports/KRISTAL_LOCKED_411x731.png
+          test -s reports/KRISTAL_LOCKED_720x1280.png
+          test -s reports/KRISTAL_LOCKED_1080x1920.png
+          test -s reports/KRISTAL_LOCKED_1080x2400.png
+          test -s reports/KRISTAL_ACTIVE_FINAL_1080x1920.png
+          grep -Fxq 'RESULT=SUCCESS' reports/RESULT.txt
+          grep -Fxq '43b1416ce877a45ab4cb1bbc2c984dc7db6ea59b' reports/FEATURE_SHA.txt
       - name: Upload proof
-        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: Kristal-Android-Proof-43b1416
@@ -220,5 +243,5 @@ jobs:
             reports/*_LOGCAT.txt
             reports/*_LAUNCH.txt
             reports/*_INSTALL.txt
-          if-no-files-found: warn
+          if-no-files-found: error
           retention-days: 30
