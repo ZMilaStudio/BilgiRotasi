@@ -100,7 +100,6 @@ PR #208 — `feat(kelime-avi): add route rewards and completion ceremony`
 - merge tree: `93c2858d3a37903564ec0cf4993d100c5442e9aa`
 - tree equality: **EVET**
 - squash parent: `62969dfe17d660beae58aafca95168eaa64f057c`
-- source branch: `feat/kelime-avi-route-reward-ceremony` — owner istemeden silinmez.
 
 ### Authoritative reward catalog
 
@@ -111,71 +110,147 @@ PR #208 — `feat(kelime-avi): add route rewards and completion ceremony`
 | Orman Yolu | `badge-orman-kasifi` | Orman Kaşifi |
 | Kadim Orman | `badge-kadim-orman-kasifi` | Kadim Orman Kaşifi |
 
-Eski `reward-orman-yolu` ve `reward-orman-2` superseded'dır. Reward display metadata data-driven catalog üzerinden `routeRewardId` ile çözülür.
+Reward grant yalnız gerçek `routeComplete false → true` transition'ında olur. `WordHuntProgressSnapshot` kalıcı `bestStarsByLevelId`, `unlockedInfoCardIds`, `unlockedRouteRewardIds` taşır.
 
-### Reward grant / persistence contract
+Payload schema **2**'dir. Decoder schema **1 ve 2**'yi destekler; unknown future schema fail-closed kalır. Storage prefix: `bilgi_rotasi_word_hunt_progress_v1_`.
 
-Reward grant yalnız gerçek `routeComplete false → true` transition'ında olur. Trigger `WordHuntRouteProgressEngine.isRouteComplete(route, progress)` kullanır; L10 completion tek başına reward sebebi değildir.
+Historical schema-v1 progress stars/infoCards kaybetmeden açılır; eksik reward'lar sessiz, sadece-ekleme ve idempotent backfill ile tamamlanır.
 
-`WordHuntProgressSnapshot` kalıcı olarak `bestStarsByLevelId`, `unlockedInfoCardIds` ve `unlockedRouteRewardIds` taşır. Reward ownership persisted achievement state'tir ve idempotent'tır.
+Route-final presentation:
+- Normal level: **`Bölüm Tamamlandı`**
+- Incomplete first final: **`Final Tamamlandı`** + `Rotayı tamamlamak için X yıldız daha kazan.`
+- Gerçek routeComplete: **`Rota Tamamlandı!`** + reward + varsa `<Gelecek rota adı> açıldı.`
+- Kadim terminal copy: **`Tüm mevcut rotaları tamamladın.`**
 
-Payload schema **2**'dir. Decoder schema **1 ve 2**'yi destekler; future unknown schema fail-closed kalır. Storage prefix korunur: `bilgi_rotasi_word_hunt_progress_v1_`.
-
-Schema-v1 progress stars/infoCards kaybetmeden açılır; historical routeComplete state'lerinden eksik reward'lar sessiz, sadece-ekleme ve idempotent backfill ile tamamlanır. Backfill ceremony göstermez.
-
-### Route-final presentation contract
-
-- Normal level: generic **`Bölüm Tamamlandı`** korunur.
-- Route final complete fakat routeComplete=false: **`Final Tamamlandı`** + `Rotayı tamamlamak için X yıldız daha kazan.`; reward yok.
-- Gerçek false→true routeComplete: **`Rota Tamamlandı!`**, rota adı, `Rozet Kazandın`, reward display name, toplam/max yıldız, varsa `<Gelecek rota adı> açıldı.`
-- Primary CTA: **`Yeni Rotayı Gör`**
-- Secondary CTA: **`Rotaya Dön`**
-- Kadim terminal copy: **`Tüm mevcut rotaları tamamladın.`**; next-route CTA yok.
-
-`WordHuntLevelProductionScreen.deferCompletionDialog` default `false` presentation contract'ıdır. Deferred first-route-final success generic completion dialog'u suppress eder ve aynı gameplay result parent orchestration'a döner. Exit confirmation korunur. Eski nested Navigator observer/auto-pop interception yaklaşımı superseded'dır.
-
-Selector kartında persisted reward varsa icon + **`Kazanıldı`** görünür; bu state unlock/tap/progression mantığını değiştirmez.
-
-### PR #208 CI baseline
-
-Approved exact head `0d724e7544811cf74c85b9058800cee8396fea67`:
-
-- Kelime Avı Orman Yolu içerik kapısı — Run #13 / ID `35207375685` — SUCCESS
-- Kelime Avı route catalog kapısı — Run #89 / ID `35207375718` — SUCCESS
-- Orman Yolu Android çoklu ekran kanıtı — Run #34 / ID `35207375778` — SUCCESS
-- Kelime Avı Android 16 görsel kanıtı — Run #452 / ID `35207375795` — SUCCESS
-- AdMob PR doğrulaması — Run #829 / ID `35207375767` — SUCCESS
-- analyze/full tests, release APK, package/merged manifest, Android 16 cold-start deneme 1 ve final AdMob uygulama kapısı — PASS
-
-Regression test baseline: v1 save preserved; v2 reward roundtrip; duplicate reward yok; historical backfill idempotent; reward set level result sırasında kaybolmaz; Başlangıç final+17★ reward vermez; later replay 18★ reward verir; Orman/Kadim final reward verir; already-earned replay duplicate reveal yapmaz; route-final double-dialog yok; deferred exit confirmation korunur; selector indicator unlock logic'i değiştirmez.
+`WordHuntLevelProductionScreen.deferCompletionDialog` first-route-final double-dialog'u önler; exit confirmation korunur.
 
 ---
 
-## Sıradaki audit — KELİME AVI / ROUTE SELECTOR POLISH
+## Guided route selector progression — TAMAMLANDI / MERGED
 
-İlk tur yalnız audit olacak. Henüz selector redesign veya runtime değişikliği yapılmaz.
+PR #209 — `feat(kelime-avi): guide route selector progression`
 
-İncelenecekler:
+- approved head: `5da106f4c52d7e8533d91878c8482b835a8b9dca`
+- approved head tree: `a71691ecfe04ff2850aa67fa0b6f08aafaa667bf`
+- squash merge commit: `92135e01a2c22f37441a4d7192265f3d9902ebc0`
+- squash merge tree: `a71691ecfe04ff2850aa67fa0b6f08aafaa667bf`
+- tree equality: **EVET**
+- squash parent: `8c810d46f4d2fb12616e97bfba310c2a2e2716a4`
+- source branch: `feat/kelime-avi-route-selector-guided-polish` — owner istemeden silinmez.
 
-1. Dört rota kartının hierarchy'si.
-2. Locked / unlocked / completed / reward-earned state'leri.
-3. Ordinal ve route title ağırlığı.
-4. Progress / stars gösterimi.
-5. `Kazanıldı` indicator'ın kart kalabalığına etkisi.
-6. Locked copy okunabilirliği.
-7. Current/next route vurgusu.
-8. Kartların birbirinden görsel ayrımı.
-9. Kadim Orman premium/final-route hissi.
-10. Küçük/büyük ekran davranışı.
-11. Accessibility / semantics ve tap target'lar.
-12. Route state'lerinin kullanıcı tarafından hızlı anlaşılması.
+### Recommended / completed / reward state
 
-**5. rota selector polish konusu kapanmadan açılmaz veya tasarlanmaz.**
+Selector'daki tek recommended rota catalog sırasındaki ilk:
+
+`unlocked && !routeComplete`
+
+rotadır.
+
+- progress yok → **`Sıradaki`**
+- progress var → **`Devam Et`**
+- routeComplete → **`Tamamlandı`**
+- rewardEarned → **`Rozet kazanıldı`**
+
+Completion ve reward ownership ayrı hesaplanır. Reward state unlock/progression üretmez.
+
+Bütün mevcut production rotalar complete ise recommended rota yoktur ve selector header exact:
+
+**`Tüm mevcut rotaları tamamladın.`**
+
+### Progress / locked requirement contract
+
+Unlocked rota progress'i:
+
+**`X / Y yıldız`**
+
+ve maximum `route.maximumStars` üzerinden türetilir.
+
+`routeComplete` prerequisite locked progress:
+
+- prerequisite final incomplete → **`X / Y bölüm`**
+- prerequisite final complete + yıldız gate eksik → **`X / required yıldız`**
+- prerequisite `unlockStarsRequired == 0` → bölüm/final progress
+
+Kritik örnek:
+
+Başlangıç final complete +17★:
+- Başlangıç **`Devam Et`**, `17 / 30 yıldız`
+- Gökyüzü locked, authoritative locked copy + **`17 / 18 yıldız`**
+
+Gökyüzü final complete +17★ → Orman **`17 / 18 yıldız`**.
+
+Orman→Kadim için yapay 18★ gate yoktur.
+
+### Locked identity / interaction / ordinal
+
+Locked route identity icon korunur; generic büyük leading lock ile değiştirilmez. Lock ayrı treatment ile anlatılır.
+
+Locked card tap:
+- route açmaz,
+- `onRouteTap` çağırmaz,
+- authoritative locked reason SnackBar gösterir.
+
+Ordinal bütün state'lerde görünür:
+
+**İlk rota / İkinci rota / Üçüncü rota / Dördüncü rota**
+
+### Responsive / semantics baseline
+
+Focused regression:
+- 320×640 PASS
+- 360×800 PASS
+- 411×731 PASS
+- 480 px reachability PASS
+- 320 px + 1.5 text scale PASS
+- semantics PASS
+
+Status chip overflow testle yakalanmış, test gevşetilmeden `Wrap` tabanlı production presentation ile düzeltilmiştir.
+
+Card-level tek authoritative semantics label kullanılır; nested visual children semantics'ten dışlanır ve duplicate reward announce oluşmaz.
+
+### PR #209 CI baseline
+
+Approved exact head `5da106f4c52d7e8533d91878c8482b835a8b9dca`:
+
+- Kelime Avı route catalog kapısı — Run #92 / ID `35217743668` — SUCCESS
+- Orman Yolu Android çoklu ekran kanıtı — Run #37 / ID `35217743501` — SUCCESS
+- Kelime Avı Android 16 görsel kanıtı — Run #455 / ID `35217743468` — SUCCESS
+- AdMob PR doğrulaması — Run #832 / ID `35217743499` — SUCCESS
+- analyze/full tests, release APK, package/merged manifest, Android 16 cold-start deneme 1 ve final application gate — SUCCESS
+
+Kelime Avı Orman Yolu içerik kapısı selector-only path filter nedeniyle yeni run üretmedi.
+
+---
+
+## Sıradaki audit — KELİME AVI / 5. ROTA READINESS / ÜRÜN + TEKNİK AUDIT
+
+İlk tur yalnız audit olacak. Owner kararı verilmeden route/content/asset/branch/PR oluşturulmaz.
+
+İncelenecek ana başlıklar:
+
+1. Mevcut dört rota progression zinciri.
+2. Catalog'un 5. entry eklemeye hazır olup olmadığı.
+3. Selector recommended algoritmasının 5. rotayı otomatik kapsayıp kapsamadığı.
+4. `Tüm mevcut rotaları tamamladın.` state'inin data-driven taşınması.
+5. Kadim terminal ceremony'nin 5. rota eklenince next-route ceremony'ye dönüşmesi.
+6. `WordHuntRouteRewardEngine.nextCatalogEntry()` davranışı.
+7. Kadim→5. rota unlock prerequisite contract'ı.
+8. 5. rota routeRewardId / reward metadata.
+9. Progress schema ve historical users/backfill etkisi.
+10. Reusable themed renderer / map architecture ve asset yaklaşımı.
+11. Content difficulty curve, L5 challenge / L10 final balance ve info-card contract.
+12. Rota adı / tema / atmosfer alternatifleri ve mevcut rotalarla ayrışma.
+13. Kadim terminal copy/testlerinin gelecekteki etkisi.
+14. Terminal all-routes-complete state'in 5. rotaya taşınması.
+15. Test / CI kapsamı.
+
+**Audit sonrası owner kararı olmadan 5. rota implementasyonu yapılmaz.**
 
 ## Source branch koruma
 
 Owner açıkça istemeden silinmez:
 
+- `feat/kelime-avi-route-selector-guided-polish`
 - `feat/kelime-avi-route-reward-ceremony`
 - `feat/kelime-avi-progressive-challenge-final-balance`
 - `feat/kelime-avi-linear-route-progression`
@@ -184,4 +259,4 @@ Owner açıkça istemeden silinmez:
 - `feat/kelime-avi-kadim-orman-progression`
 - `feat/kelime-avi-orman2-runtime-pilot-20260916`
 
-**Durum:** REUSABLE 10-LEVEL MAP ARCHITECTURE — MERGED. KADİM ORMAN RUNTIME/CONTENT — MERGED. LINEER ROUTE PROGRESSION — MERGED. CHALLENGE/FINAL BALANCE — MERGED. ROUTE REWARD + FINAL CEREMONY — MERGED / CI GREEN. SIRADAKİ KONU — ROUTE SELECTOR POLISH AUDIT.
+**Durum:** REUSABLE 10-LEVEL MAP ARCHITECTURE — MERGED. KADİM ORMAN RUNTIME/CONTENT — MERGED. LINEER ROUTE PROGRESSION — MERGED. CHALLENGE/FINAL BALANCE — MERGED. ROUTE REWARD + FINAL CEREMONY — MERGED. GUIDED ROUTE SELECTOR POLISH — MERGED / CI GREEN. SIRADAKİ KONU — 5. ROTA READINESS / ÜRÜN + TEKNİK AUDIT.
