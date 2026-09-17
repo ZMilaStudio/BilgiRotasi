@@ -44,7 +44,9 @@ class WordHuntRouteVisualTheme {
        assert(backgroundScale >= 1),
        assert(backgroundContrast >= 0),
        assert(backgroundSaturation >= 0),
-       assert(backgroundVignetteStrength >= 0 && backgroundVignetteStrength <= 1);
+       assert(
+         backgroundVignetteStrength >= 0 && backgroundVignetteStrength <= 1,
+       );
 
   final String id;
   final WordHuntRouteMapTheme mapTheme;
@@ -260,6 +262,8 @@ class WordHuntThemedRouteMapScreen extends StatelessWidget {
       pathUnderlayColor: source.pathUnderlayColor,
       nodeShadowColor: source.nodeShadowColor,
       sceneDepth: 0,
+      finalAccentColor: source.finalAccentColor,
+      nodeVisualStyle: source.nodeVisualStyle,
     );
   }
 }
@@ -437,6 +441,9 @@ abstract final class WordHuntRouteVisualThemeProofs {
     ),
   );
 
-  static const List<WordHuntRouteVisualTheme> all =
-      <WordHuntRouteVisualTheme>[forest, sky, harbor];
+  static const List<WordHuntRouteVisualTheme> all = <WordHuntRouteVisualTheme>[
+    forest,
+    sky,
+    harbor,
+  ];
 }

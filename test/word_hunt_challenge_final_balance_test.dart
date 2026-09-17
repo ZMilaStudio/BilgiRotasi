@@ -1,4 +1,5 @@
 import 'package:bilgi_rotasi/word_hunt/word_hunt_gokyuzu_content.dart';
+import 'package:bilgi_rotasi/word_hunt/word_hunt_kristal_content.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_models.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_orman2_content.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_orman_content.dart';
@@ -12,6 +13,7 @@ void main() {
     WordHuntGokyuzuContent.gokyuzuAdalari,
     WordHuntOrmanContent.ormanYolu,
     WordHuntOrman2Content.orman2,
+    WordHuntKristalContent.kristalVadisi,
   ];
 
   test('challenge/final progressive star-time matrix is exact', () {
@@ -90,6 +92,25 @@ void main() {
       threeStarMaxSeconds: 48,
       twoStarMaxSeconds: 64,
     );
+
+    _expectBalance(
+      WordHuntKristalContent.kristalVadisi.levels[4],
+      type: WordHuntLevelType.challenge,
+      timeLimitSeconds: 60,
+      threeStarMaxMistakes: 0,
+      twoStarMaxMistakes: 1,
+      threeStarMaxSeconds: 30,
+      twoStarMaxSeconds: 44,
+    );
+    _expectBalance(
+      WordHuntKristalContent.kristalVadisi.levels[9],
+      type: WordHuntLevelType.routeFinal,
+      timeLimitSeconds: 120,
+      threeStarMaxMistakes: 0,
+      twoStarMaxMistakes: 2,
+      threeStarMaxSeconds: 58,
+      twoStarMaxSeconds: 78,
+    );
   });
 
   test('normal levels remain mistake-only across all production routes', () {
@@ -141,21 +162,35 @@ void main() {
     _expectScore(level, seconds: 65, mistakes: 0, stars: 1);
   });
 
-  test('incomplete target set remains zero stars regardless of time or mistakes', () {
-    for (final level in <WordHuntLevelDefinition>[
-      WordHuntOrmanContent.ormanYolu.levels[4],
-      WordHuntOrman2Content.orman2.levels[9],
-    ]) {
-      final result = WordHuntScoringEngine.calculate(
-        level: level,
-        foundTargetCount: level.targetWords.length - 1,
-        mistakes: 0,
-        elapsedSeconds: 0,
-      );
-      expect(result.completed, isFalse, reason: level.id);
-      expect(result.stars, 0, reason: level.id);
-    }
+  test('Kristal L5/L10 scoring boundaries are inclusive', () {
+    final l5 = WordHuntKristalContent.kristalVadisi.levels[4];
+    _expectScore(l5, seconds: 30, mistakes: 0, stars: 3);
+    _expectScore(l5, seconds: 44, mistakes: 1, stars: 2);
+    _expectScore(l5, seconds: 45, mistakes: 0, stars: 1);
+    final l10 = WordHuntKristalContent.kristalVadisi.levels[9];
+    _expectScore(l10, seconds: 58, mistakes: 0, stars: 3);
+    _expectScore(l10, seconds: 78, mistakes: 2, stars: 2);
+    _expectScore(l10, seconds: 79, mistakes: 0, stars: 1);
   });
+
+  test(
+    'incomplete target set remains zero stars regardless of time or mistakes',
+    () {
+      for (final level in <WordHuntLevelDefinition>[
+        WordHuntOrmanContent.ormanYolu.levels[4],
+        WordHuntOrman2Content.orman2.levels[9],
+      ]) {
+        final result = WordHuntScoringEngine.calculate(
+          level: level,
+          foundTargetCount: level.targetWords.length - 1,
+          mistakes: 0,
+          elapsedSeconds: 0,
+        );
+        expect(result.completed, isFalse, reason: level.id);
+        expect(result.stars, 0, reason: level.id);
+      }
+    },
+  );
 }
 
 void _expectBalance(

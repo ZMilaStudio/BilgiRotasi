@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math' as math;
-import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
@@ -220,6 +219,10 @@ class _WordHuntThemedProductionRouteScreenState
       artwork = ColoredBox(color: theme.backgroundColor);
     }
 
+    final ambientEdge = theme.backgroundColor.withValues(alpha: 0.34);
+    final ambientMid = theme.backgroundColor.withValues(alpha: 0.10);
+    final ambientClear = theme.backgroundColor.withValues(alpha: 0);
+
     return IgnorePointer(
       child: ClipRect(
         child: Stack(
@@ -233,16 +236,8 @@ class _WordHuntThemedProductionRouteScreenState
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     colors: isTop
-                        ? const <Color>[
-                            Color(0x24030B07),
-                            Color(0x0806110A),
-                            Color(0x0006110A),
-                          ]
-                        : const <Color>[
-                            Color(0x0006110A),
-                            Color(0x0806110A),
-                            Color(0x24030B07),
-                          ],
+                        ? <Color>[ambientEdge, ambientMid, ambientClear]
+                        : <Color>[ambientClear, ambientMid, ambientEdge],
                     stops: const <double>[0, 0.68, 1],
                   ),
                 ),
@@ -307,14 +302,8 @@ class _WordHuntThemedProductionRouteScreenState
           ).destination;
           final left = math.max(0.0, (available.width - fitted.width) / 2);
           final top = math.max(0.0, (available.height - fitted.height) / 2);
-          final right = math.max(
-            0.0,
-            available.width - left - fitted.width,
-          );
-          final bottom = math.max(
-            0.0,
-            available.height - top - fitted.height,
-          );
+          final right = math.max(0.0, available.width - left - fitted.width);
+          final bottom = math.max(0.0, available.height - top - fitted.height);
           final boardMediaQuery = MediaQuery.of(context).copyWith(
             size: referenceCanvasSize,
             padding: EdgeInsets.zero,
@@ -325,9 +314,7 @@ class _WordHuntThemedProductionRouteScreenState
           return Stack(
             fit: StackFit.expand,
             children: <Widget>[
-              Positioned.fill(
-                child: ColoredBox(color: theme.backgroundColor),
-              ),
+              Positioned.fill(child: ColoredBox(color: theme.backgroundColor)),
               Positioned(
                 left: left,
                 top: top,
@@ -344,9 +331,7 @@ class _WordHuntThemedProductionRouteScreenState
                       child: Stack(
                         fit: StackFit.expand,
                         children: <Widget>[
-                          Positioned.fill(
-                            child: _withOpeningTransition(map),
-                          ),
+                          Positioned.fill(child: _withOpeningTransition(map)),
                           Positioned.fill(child: _artworkFrame(theme)),
                         ],
                       ),
@@ -625,10 +610,7 @@ class _ArtworkChromeButton extends StatelessWidget {
                         gradient: const LinearGradient(
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
-                          colors: <Color>[
-                            Color(0xD91C2E20),
-                            Color(0xE308120C),
-                          ],
+                          colors: <Color>[Color(0xD91C2E20), Color(0xE308120C)],
                         ),
                         border: Border.all(
                           color: accent.withValues(alpha: 0.76),

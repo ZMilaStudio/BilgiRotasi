@@ -1,3 +1,4 @@
+import 'package:bilgi_rotasi/word_hunt/word_hunt_kristal_content.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_orman2_content.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_progress.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_route_catalog.dart';
@@ -74,7 +75,7 @@ void main() {
     );
   });
 
-  testWidgets('Kadim ceremony uses exact terminal copy and no next-route CTA', (
+  testWidgets('Kadim ceremony now announces Kristal as next route', (
     tester,
   ) async {
     final reward = WordHuntRouteRewardCatalog.forRoute(
@@ -87,15 +88,88 @@ void main() {
         reward: reward,
         totalStars: 25,
         routeColors: WordHuntRouteCatalog.orman2Pilot.colors,
+        nextRouteTitle: 'Kristal Vadisi',
       ),
     );
 
     expect(find.text('Rota Tamamlandı!'), findsOneWidget);
     expect(find.text('Kadim Orman'), findsOneWidget);
     expect(find.text('Kadim Orman Kaşifi'), findsOneWidget);
+    expect(find.text('Kristal Vadisi açıldı.'), findsOneWidget);
+    expect(find.text('Tüm mevcut rotaları tamamladın.'), findsNothing);
+    expect(find.text('Yeni Rotayı Gör'), findsOneWidget);
+    expect(find.text('Rotaya Dön'), findsOneWidget);
+  });
+
+  testWidgets('Kristal ceremony owns exact terminal copy and reward', (
+    tester,
+  ) async {
+    final reward = WordHuntRouteRewardCatalog.forRoute(
+      WordHuntKristalContent.kristalVadisi,
+    )!;
+    await pumpDialog(
+      tester,
+      WordHuntRouteCompletionDialog(
+        route: WordHuntKristalContent.kristalVadisi,
+        reward: reward,
+        totalStars: 21,
+        routeColors: WordHuntRouteCatalog.kristal.colors,
+      ),
+    );
+
+    expect(find.text('Rota Tamamlandı!'), findsOneWidget);
+    expect(find.text('Kristal Vadisi'), findsOneWidget);
+    expect(find.text('Kristal Kaşifi'), findsOneWidget);
     expect(find.text('Tüm mevcut rotaları tamamladın.'), findsOneWidget);
     expect(find.text('Yeni Rotayı Gör'), findsNothing);
     expect(find.text('Rotaya Dön'), findsOneWidget);
+  });
+
+  testWidgets('Kadim to Kristal ceremony is compact-height scroll safe', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(360, 480));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final reward = WordHuntRouteRewardCatalog.forRoute(
+      WordHuntOrman2Content.orman2,
+    )!;
+    await pumpDialog(
+      tester,
+      WordHuntRouteCompletionDialog(
+        route: WordHuntOrman2Content.orman2,
+        reward: reward,
+        totalStars: 25,
+        routeColors: WordHuntRouteCatalog.orman2Pilot.colors,
+        nextRouteTitle: 'Kristal Vadisi',
+      ),
+    );
+
+    expect(tester.takeException(), isNull);
+    expect(find.text('Kristal Vadisi açıldı.'), findsOneWidget);
+    expect(find.byKey(const Key('word_hunt_show_new_route')), findsOneWidget);
+  });
+
+  testWidgets('Kristal terminal ceremony is compact-height scroll safe', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(360, 480));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final reward = WordHuntRouteRewardCatalog.forRoute(
+      WordHuntKristalContent.kristalVadisi,
+    )!;
+    await pumpDialog(
+      tester,
+      WordHuntRouteCompletionDialog(
+        route: WordHuntKristalContent.kristalVadisi,
+        reward: reward,
+        totalStars: 21,
+        routeColors: WordHuntRouteCatalog.kristal.colors,
+      ),
+    );
+
+    expect(tester.takeException(), isNull);
+    expect(find.text('Tüm mevcut rotaları tamamladın.'), findsOneWidget);
+    expect(find.byKey(const Key('word_hunt_show_new_route')), findsNothing);
   });
 
   testWidgets('ceremony CTA results are exact', (tester) async {
@@ -145,40 +219,37 @@ void main() {
     expect(action, WordHuntRouteCompletionAction.returnToRoute);
   });
 
-  testWidgets('earned reward shows Rozet kazanıldı without changing unlocked tap', (
-    tester,
-  ) async {
-    WordHuntRouteCatalogEntry? tapped;
-    const progress = WordHuntProgressSnapshot(
-      unlockedRouteRewardIds: <String>{'badge-kelime-yolcusu'},
-    );
+  testWidgets(
+    'earned reward shows Rozet kazanıldı without changing unlocked tap',
+    (tester) async {
+      WordHuntRouteCatalogEntry? tapped;
+      const progress = WordHuntProgressSnapshot(
+        unlockedRouteRewardIds: <String>{'badge-kelime-yolcusu'},
+      );
 
-    await tester.pumpWidget(
-      MaterialApp(
-        home: WordHuntRouteSelector(
-          progress: progress,
-          onRouteTap: (entry) => tapped = entry,
+      await tester.pumpWidget(
+        MaterialApp(
+          home: WordHuntRouteSelector(
+            progress: progress,
+            onRouteTap: (entry) => tapped = entry,
+          ),
         ),
-      ),
-    );
-    await tester.pumpAndSettle();
+      );
+      await tester.pumpAndSettle();
 
-    expect(find.text('Rozet kazanıldı'), findsOneWidget);
-    expect(
-      find.byKey(
-        const Key(
-          'word_hunt_route_reward_earned_badge-kelime-yolcusu',
+      expect(find.text('Rozet kazanıldı'), findsOneWidget);
+      expect(
+        find.byKey(
+          const Key('word_hunt_route_reward_earned_badge-kelime-yolcusu'),
         ),
-      ),
-      findsOneWidget,
-    );
+        findsOneWidget,
+      );
 
-    await tester.tap(
-      find.byKey(const Key('word_hunt_route_card_starter')),
-    );
-    await tester.pump();
-    expect(tapped, same(WordHuntRouteCatalog.starter));
-  });
+      await tester.tap(find.byKey(const Key('word_hunt_route_card_starter')));
+      await tester.pump();
+      expect(tapped, same(WordHuntRouteCatalog.starter));
+    },
+  );
 
   testWidgets('reward not earned shows no indicator', (tester) async {
     await tester.pumpWidget(
@@ -214,9 +285,7 @@ void main() {
 
     expect(
       find.byKey(
-        const Key(
-          'word_hunt_route_reward_earned_badge-gokyuzu-kasifi',
-        ),
+        const Key('word_hunt_route_reward_earned_badge-gokyuzu-kasifi'),
       ),
       findsOneWidget,
     );
