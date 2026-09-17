@@ -1,6 +1,6 @@
 # Bilgi Rotası — Genel Proje Özeti
 
-**Son güncelleme:** 17 Eylül 2026 — Kristal Vadisi / PR #210 production merge kapanışı
+**Son güncelleme:** 17 Eylül 2026 — Kristal Vadisi production kapanışı + Kayıp Şehir Evreni owner ürün kararı
 
 ## YENİ SOHBETTE ÖNCE BUNLARI OKU
 
@@ -201,6 +201,143 @@ Verified PNG set:
 
 ---
 
+# YENİ OWNER ÜRÜN KARARI — KAYIP ŞEHİR EVRENİ
+
+**Durum:** OWNER PRODUCT DECISION / DESIGN-ONLY NEXT PHASE
+
+Kristal Vadisi sonrasında gelecek yeni dünya için yapı kesinleşmiştir:
+
+**KAYIP ŞEHİR EVRENİ = 3 ayrı rota × 10 bölüm = 30 yeni bölüm.**
+
+Bu dünya tek 10 bölümlük rota olarak tasarlanmayacaktır.
+
+Mevcut production kapsamı:
+- 5 rota
+- 50 bölüm
+
+Kayıp Şehir Evreni tamamlandığında planlanan toplam:
+- 8 rota
+- 80 bölüm
+
+### Üçlemeli rota yapısı
+
+6. **Kayıp Şehir** — 10 bölüm
+7. **Yeraltı Krallığı** — 10 bölüm
+8. **Güneş İmparatorluğu** — 10 bölüm
+
+Bu üç isim owner ürün kararının mevcut design baseline'ıdır. Implementation başlamadan önceki ürün tasarımı aşamasında adlar ayrıca son kez doğrulanıp freeze edilecektir.
+
+Üç rota aynı anlatı evreninde birbirinin devamıdır; ancak her rota **ayrı görsel, tematik ve atmosferik kimlik** taşımalıdır.
+
+### 6. rota — Kayıp Şehir
+
+Tematik yön:
+- yüzey keşfi
+- çöl
+- kum altında kalmış şehir
+- eski kapılar
+- çarşılar
+- avlular
+- saray kalıntıları
+- tapınak kalıntıları
+
+Görsel palet / materyal yönü:
+- sıcak kum
+- terracotta
+- turkuaz
+- eski altın
+
+Duygusal/narrative işlev:
+**ŞEHRİ BUL.**
+
+### 7. rota — Yeraltı Krallığı
+
+Tematik yön:
+- şehrin altındaki ikinci dünya
+- tüneller
+- sarnıçlar
+- mühürlü odalar
+- antik mekanizmalar
+- gizli geçitler
+- mezar odaları
+- hazine odaları
+
+Görsel palet / ışık yönü:
+- lacivert
+- bakır
+- turkuaz
+- meşale ışığı
+
+Atmosfer:
+- gizemli
+- keşif odaklı
+- **korku DEĞİL**
+
+Duygusal/narrative işlev:
+**ŞEHRİN ALTINDAKİ SIRRI KEŞFET.**
+
+### 8. rota — Güneş İmparatorluğu
+
+Üçlemenin büyük final rotasıdır.
+
+Tematik yön:
+- kayıp uygarlığın merkezi
+- astronomi
+- kutsal alanlar
+- dev tapınaklar
+- kraliyet salonları
+- altın mekanizmalar
+- görkemli final
+
+Görsel palet / materyal yönü:
+- eski altın
+- kızıl
+- koyu mavi
+- açık taş tonları
+
+L10 büyük final yönü:
+**Güneş Tahtı 👑**
+
+Duygusal/narrative işlev:
+**KAYIP İMPARATORLUĞUN MERKEZİNE ULAŞ.**
+
+### Narrative progression
+
+**ŞEHRİ BUL**
+→ **ŞEHRİN ALTINDAKİ SIRRI KEŞFET**
+→ **KAYIP İMPARATORLUĞUN MERKEZİNE ULAŞ**
+
+Bu progression üç rotanın birbirini takip eden tek bir büyük macera gibi hissedilmesini sağlamalı; buna rağmen rota bazında görsel kimlikler birbirine karışmamalıdır.
+
+### Şimdilik kesinlikle yapılmayacaklar
+
+Bu ürün kararı aşamasında:
+- kod yazılmayacak,
+- branch açılmayacak,
+- PR açılmayacak,
+- asset üretilmeyecek,
+- test kapsamı eklenmeyecek,
+- mevcut production rotalar değiştirilmeyecek,
+- unlock/reward/schema/runtime implementasyonu yapılmayacak.
+
+### Sonraki aşama — yalnız ürün tasarımı
+
+Owner yeni komut verdiğinde yalnız şu konular tasarlanacaktır:
+- üç rotanın kesin adlarının son doğrulaması,
+- 30 bölümün adları,
+- 30 bölümün tema dağılımı,
+- target / bonus kelime setleri,
+- info card planı,
+- her rotanın L5 challenge yapısı,
+- her rotanın L10 final yapısı,
+- üç haritanın ayrı görsel kimliği,
+- üç rota için unlock zinciri,
+- üç rota için reward isimleri.
+
+Bu maddeler tasarım aşamasında netleşmeden implementation başlamaz.
+
+---
+
 ## SOURCE BRANCH KORUMA
 
 Owner açıkça istemeden source branch silinmez.
@@ -216,4 +353,14 @@ release/tag kapsamında ayrıca owner komutu gerekir.
 
 **Kristal Vadisi rollout production merge + docs kapanışı tamamlandı.**
 
-Yeni feature, release veya tag owner yeni prompt vermeden başlatılmaz.
+**Kayıp Şehir Evreni için 3×10 / 30 bölüm owner ürün kararı kaydedildi.**
+
+Bir sonraki aşama yalnız **ürün tasarımıdır**. Owner yeni prompt vermeden:
+- kod yazılmaz,
+- branch/PR açılmaz,
+- asset üretilmez,
+- production rotalar değiştirilmez,
+- implementation başlatılmaz,
+- release/tag yapılmaz.
+
+**Owner komutu beklenir.**
