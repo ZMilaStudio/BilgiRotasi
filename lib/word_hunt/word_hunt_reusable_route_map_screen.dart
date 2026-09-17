@@ -54,6 +54,16 @@ abstract final class WordHuntFacetedCrystalMetrics {
   static const double normalScale = 1.00;
   static const double challengeScale = 1.06;
   static const double finalScale = 1.11;
+
+  // 411 px proof'ta okunabilir gerçek çizim footprint'leri. Hitbox sabittir.
+  static const double normalBodyWidth = 48;
+  static const double normalBodyHeight = 46;
+  static const double normalShardSilhouette = 58;
+  static const double finalBodyWidth = 52;
+  static const double finalBodyHeight = 50;
+  static const double finalShardSilhouette = 62;
+  static const double finalCrestWidth = 52;
+  static const double finalCrestHeight = 32;
 }
 
 /// Görsel tema yalnız boya ve metin token'larını taşır; geometri taşıyamaz.
@@ -793,13 +803,15 @@ class _ReusableRouteNode extends StatelessWidget {
     final crystalFill = unlocked
         ? theme.nodeColor
         : Color.alphaBlend(
-            theme.nodeColor.withValues(alpha: 0.28),
+            theme.nodeColor.withValues(alpha: 0.34),
             theme.lockedNodeColor,
           );
+    final nodeCanvasWidth = isFinal ? 64.0 : 60.0;
+    final nodeCanvasHeight = isFinal ? 60.0 : 58.0;
 
     return SizedBox(
       key: Key('word_hunt_reusable_node_${level.index}_$_visualState'),
-      width: 68,
+      width: 72,
       height: WordHuntReusableRouteMapScreen._nodeDiameter,
       child: Stack(
         clipBehavior: Clip.none,
@@ -821,9 +833,9 @@ class _ReusableRouteNode extends StatelessWidget {
                           (isFinal
                                   ? theme.resolvedFinalAccentColor
                                   : theme.accentColor)
-                              .withValues(alpha: isFinal ? 0.25 : 0.17),
-                      blurRadius: isFinal ? 13 : 9,
-                      spreadRadius: isFinal ? 0.4 : 0.0,
+                              .withValues(alpha: isFinal ? 0.24 : 0.15),
+                      blurRadius: isFinal ? 13 : 8,
+                      spreadRadius: isFinal ? 0.35 : 0,
                     ),
                   ],
                 ),
@@ -833,8 +845,8 @@ class _ReusableRouteNode extends StatelessWidget {
             scale: scale,
             child: SizedBox(
               key: Key('word_hunt_faceted_node_${level.index}'),
-              width: 54,
-              height: 46,
+              width: nodeCanvasWidth,
+              height: nodeCanvasHeight,
               child: Stack(
                 fit: StackFit.expand,
                 clipBehavior: Clip.none,
@@ -847,7 +859,7 @@ class _ReusableRouteNode extends StatelessWidget {
                       innerRimColor: isFinal && unlocked
                           ? theme.pathColor
                           : theme.textColor.withValues(
-                              alpha: unlocked ? 0.24 : 0.18,
+                              alpha: unlocked ? 0.28 : 0.22,
                             ),
                       accentColor: theme.accentColor,
                       shadowColor: theme.nodeShadowColor,
@@ -859,13 +871,13 @@ class _ReusableRouteNode extends StatelessWidget {
                     ),
                   ),
                   Align(
-                    alignment: Alignment(0, completed ? -0.12 : -0.04),
+                    alignment: Alignment(0, completed ? -0.10 : -0.02),
                     child: Text(
                       '${level.index}',
                       key: Key('word_hunt_faceted_number_${level.index}'),
                       style: TextStyle(
                         color: theme.textColor,
-                        fontSize: isFinal ? 17.5 : 17,
+                        fontSize: isFinal ? 18 : 17.5,
                         height: 1,
                         fontWeight: FontWeight.w900,
                         shadows: <Shadow>[
@@ -884,38 +896,23 @@ class _ReusableRouteNode extends StatelessWidget {
                     Positioned(
                       left: 0,
                       right: 0,
-                      bottom: 0.5,
+                      bottom: 2,
                       child: Center(
-                        child: Container(
-                          key: Key('word_hunt_faceted_lock_${level.index}'),
-                          width: 16,
-                          height: 12,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(5),
-                            gradient: LinearGradient(
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                              colors: <Color>[
-                                theme.lockedPathColor.withValues(alpha: 0.28),
-                                theme.nodeShadowColor.withValues(alpha: 0.86),
-                              ],
+                        child: SizedBox(
+                          width: 20,
+                          height: 15,
+                          child: CustomPaint(
+                            key: Key('word_hunt_faceted_lock_${level.index}'),
+                            painter: _CrystalLockBadgePainter(
+                              fillColor: crystalFill,
+                              edgeColor: theme.lockedPathColor,
+                              shadowColor: theme.nodeShadowColor,
                             ),
-                            border: Border.all(
-                              color: theme.lockedPathColor.withValues(alpha: 0.70),
-                              width: 0.8,
+                            child: Icon(
+                              Icons.lock_rounded,
+                              size: 9,
+                              color: theme.textColor.withValues(alpha: 0.86),
                             ),
-                            boxShadow: <BoxShadow>[
-                              BoxShadow(
-                                color: theme.nodeShadowColor.withValues(alpha: 0.72),
-                                blurRadius: 2.2,
-                                offset: const Offset(0, 1),
-                              ),
-                            ],
-                          ),
-                          child: Icon(
-                            Icons.lock_rounded,
-                            size: 7.5,
-                            color: theme.textColor.withValues(alpha: 0.86),
                           ),
                         ),
                       ),
@@ -924,36 +921,34 @@ class _ReusableRouteNode extends StatelessWidget {
                     Positioned(
                       left: 0,
                       right: 0,
-                      bottom: 0.5,
+                      bottom: -1,
                       child: Center(
                         child: Container(
                           key: Key('word_hunt_faceted_stars_${level.index}'),
-                          width: 28,
-                          height: 9,
-                          padding: const EdgeInsets.symmetric(horizontal: 2),
+                          width: 31,
+                          height: 10,
+                          alignment: Alignment.center,
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(6),
-                            gradient: LinearGradient(
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                              colors: <Color>[
-                                theme.accentColor.withValues(alpha: 0.24),
-                                theme.nodeShadowColor.withValues(alpha: 0.80),
-                              ],
+                            color: theme.nodeShadowColor.withValues(
+                              alpha: 0.56,
                             ),
+                            borderRadius: BorderRadius.circular(6),
                             border: Border.all(
-                              color: theme.accentColor.withValues(alpha: 0.58),
+                              color: theme.accentColor.withValues(alpha: 0.52),
                               width: 0.7,
                             ),
                           ),
                           child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: List<Widget>.generate(
                               3,
                               (_) => Icon(
                                 Icons.star_rounded,
-                                size: 6.2,
-                                color: theme.accentColor.withValues(alpha: 0.96),
+                                size: 8,
+                                color: theme.accentColor.withValues(
+                                  alpha: 0.96,
+                                ),
                               ),
                             ),
                           ),
@@ -969,21 +964,19 @@ class _ReusableRouteNode extends StatelessWidget {
               key: Key(
                 'word_hunt_faceted_final_crest_state_${activeFinal ? 'active' : 'locked'}',
               ),
-              top: -18,
-              width: 44,
-              height: 25,
+              top: -24,
+              width: WordHuntFacetedCrystalMetrics.finalCrestWidth,
+              height: WordHuntFacetedCrystalMetrics.finalCrestHeight,
               child: CustomPaint(
                 key: const Key('word_hunt_faceted_final_crest'),
                 painter: _CrystalFinalCrestPainter(
-                  crystalColor: activeFinal
-                      ? theme.nodeColor
-                      : crystalFill,
+                  crystalColor: activeFinal ? theme.nodeColor : crystalFill,
                   edgeColor: activeFinal
                       ? theme.resolvedFinalAccentColor
                       : theme.lockedPathColor,
                   accentColor: activeFinal
                       ? theme.pathColor
-                      : theme.lockedPathColor.withValues(alpha: 0.48),
+                      : theme.lockedPathColor.withValues(alpha: 0.70),
                   shadowColor: theme.nodeShadowColor,
                   active: activeFinal,
                 ),
@@ -1125,26 +1118,55 @@ class _FacetedCrystalNodePainter extends CustomPainter {
   final bool finalNode;
   final bool active;
 
-  Path _shard({
-    required Offset center,
-    required double angle,
-    required double innerRadius,
-    required double outerRadius,
-    required double halfWidth,
-  }) {
+  Path _gemPath(Rect rect) {
+    final cx = rect.center.dx;
+    final cy = rect.center.dy;
+    final left = rect.left;
+    final right = rect.right;
+    final top = rect.top;
+    final bottom = rect.bottom;
+    return Path()
+      ..moveTo(cx, top)
+      ..lineTo(right - rect.width * 0.18, top + rect.height * 0.10)
+      ..lineTo(right, cy - rect.height * 0.12)
+      ..lineTo(right - rect.width * 0.05, cy + rect.height * 0.24)
+      ..lineTo(cx + rect.width * 0.26, bottom)
+      ..lineTo(cx - rect.width * 0.26, bottom)
+      ..lineTo(left + rect.width * 0.05, cy + rect.height * 0.24)
+      ..lineTo(left, cy - rect.height * 0.12)
+      ..lineTo(left + rect.width * 0.18, top + rect.height * 0.10)
+      ..close();
+  }
+
+  Path _shardPath(
+    Offset center,
+    double angle,
+    double innerRadius,
+    double outerRadius,
+    double halfWidth,
+  ) {
     final direction = Offset(math.cos(angle), math.sin(angle));
-    final normal = Offset(-direction.dy, direction.dx);
+    final perpendicular = Offset(-direction.dy, direction.dx);
     final base = center + direction * innerRadius;
+    final shoulder = center + direction * (outerRadius - 6.5);
     final tip = center + direction * outerRadius;
     return Path()
       ..moveTo(
-        base.dx + normal.dx * halfWidth,
-        base.dy + normal.dy * halfWidth,
+        base.dx + perpendicular.dx * halfWidth,
+        base.dy + perpendicular.dy * halfWidth,
+      )
+      ..lineTo(
+        shoulder.dx + perpendicular.dx * halfWidth * 0.42,
+        shoulder.dy + perpendicular.dy * halfWidth * 0.42,
       )
       ..lineTo(tip.dx, tip.dy)
       ..lineTo(
-        base.dx - normal.dx * halfWidth,
-        base.dy - normal.dy * halfWidth,
+        shoulder.dx - perpendicular.dx * halfWidth * 0.42,
+        shoulder.dy - perpendicular.dy * halfWidth * 0.42,
+      )
+      ..lineTo(
+        base.dx - perpendicular.dx * halfWidth,
+        base.dy - perpendicular.dy * halfWidth,
       )
       ..close();
   }
@@ -1152,196 +1174,192 @@ class _FacetedCrystalNodePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width * 0.50, size.height * 0.49);
-    final medallionRect = Rect.fromCenter(
+    final bodyWidth = finalNode
+        ? WordHuntFacetedCrystalMetrics.finalBodyWidth
+        : WordHuntFacetedCrystalMetrics.normalBodyWidth;
+    final bodyHeight = finalNode
+        ? WordHuntFacetedCrystalMetrics.finalBodyHeight
+        : WordHuntFacetedCrystalMetrics.normalBodyHeight;
+    final shardSilhouette = finalNode
+        ? WordHuntFacetedCrystalMetrics.finalShardSilhouette
+        : WordHuntFacetedCrystalMetrics.normalShardSilhouette;
+    final bodyRect = Rect.fromCenter(
       center: center,
-      width: finalNode ? 38 : 36,
-      height: finalNode ? 36 : 34,
+      width: bodyWidth,
+      height: bodyHeight,
     );
-    final coreRect = medallionRect.deflate(finalNode ? 5.0 : 4.5);
-    final baseOuterRadius = finalNode
-        ? 21.5
-        : challenge
-        ? 20.5
-        : 20.0;
+    final bodyPath = _gemPath(bodyRect);
+    final innerRadius = math.min(bodyWidth, bodyHeight) * 0.39;
+    final outerRadius = shardSilhouette * 0.50;
+    final shardHalfWidth = finalNode ? 6.2 : 5.4;
 
-    final shardShadowPaint = Paint()
-      ..color = shadowColor.withValues(alpha: locked ? 0.48 : 0.66);
-    final shardPaint = Paint()
-      ..style = PaintingStyle.fill
-      ..color = rimColor.withValues(alpha: locked ? 0.46 : 0.84);
-    final shardEdgePaint = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 0.65
-      ..strokeJoin = StrokeJoin.round
-      ..color = textColor.withValues(alpha: locked ? 0.10 : 0.26);
+    final shadowPath = bodyPath.shift(const Offset(1.4, 2.4));
+    canvas.drawPath(
+      shadowPath,
+      Paint()..color = shadowColor.withValues(alpha: locked ? 0.62 : 0.84),
+    );
 
-    for (var i = 0; i < 8; i++) {
-      final angle = -math.pi / 2 + (math.pi * 2 * i / 8);
-      final horizontalFinal = finalNode && (i == 2 || i == 6);
-      final outerRadius = horizontalFinal ? 24.0 : baseOuterRadius;
-      final shard = _shard(
-        center: center,
-        angle: angle,
-        innerRadius: finalNode ? 17.2 : 16.4,
-        outerRadius: outerRadius,
-        halfWidth: finalNode ? 2.5 : 2.1,
+    for (var i = 0; i < 6; i++) {
+      final angle = -math.pi / 2 + i * math.pi / 3;
+      final shard = _shardPath(
+        center,
+        angle,
+        innerRadius,
+        outerRadius,
+        shardHalfWidth,
       );
-      canvas.drawPath(shard.shift(const Offset(0.8, 1.4)), shardShadowPaint);
-      final useChallengeGold = challenge && !locked && i.isEven;
+      final goldShard = challenge && !locked && (i == 0 || i == 2 || i == 4);
+      final shardColor = goldShard ? accentColor : rimColor;
       canvas.drawPath(
         shard,
-        useChallengeGold
-            ? (Paint()
-                ..color = accentColor.withValues(alpha: active ? 0.92 : 0.76))
-            : shardPaint,
+        Paint()
+          ..shader = LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: <Color>[
+              Color.alphaBlend(
+                textColor.withValues(alpha: locked ? 0.04 : 0.14),
+                shardColor,
+              ),
+              shardColor.withValues(alpha: locked ? 0.70 : 0.92),
+            ],
+          ).createShader(shard.getBounds()),
       );
-      canvas.drawPath(shard, shardEdgePaint);
+      canvas.drawPath(
+        shard,
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = finalNode ? 1.35 : 1.15
+          ..strokeJoin = StrokeJoin.round
+          ..color = innerRimColor.withValues(alpha: locked ? 0.46 : 0.72),
+      );
     }
 
-    canvas.drawOval(
-      medallionRect.shift(const Offset(1.1, 2.0)),
-      Paint()..color = shadowColor.withValues(alpha: locked ? 0.62 : 0.82),
-    );
-
     final mineralBase = Color.alphaBlend(
-      Colors.black.withValues(alpha: locked ? 0.28 : 0.18),
+      Colors.black.withValues(alpha: locked ? 0.32 : 0.18),
       fillColor,
     );
-    canvas.drawOval(medallionRect, Paint()..color = mineralBase);
-    canvas.drawOval(
-      medallionRect,
+    canvas.drawPath(bodyPath, Paint()..color = mineralBase);
+    canvas.drawPath(
+      bodyPath,
+      Paint()
+        ..shader = RadialGradient(
+          center: const Alignment(-0.30, -0.32),
+          radius: 0.95,
+          colors: <Color>[
+            Color.alphaBlend(
+              textColor.withValues(alpha: locked ? 0.06 : 0.20),
+              fillColor,
+            ),
+            fillColor,
+            Color.alphaBlend(
+              Colors.black.withValues(alpha: locked ? 0.36 : 0.24),
+              fillColor,
+            ),
+          ],
+          stops: const <double>[0.0, 0.52, 1.0],
+        ).createShader(bodyRect),
+    );
+    canvas.drawPath(
+      bodyPath,
       Paint()
         ..style = PaintingStyle.stroke
         ..strokeWidth = finalNode
-            ? 3.4
+            ? 3.6
             : challenge
-            ? 2.8
-            : 2.5
-        ..color = rimColor.withValues(alpha: locked ? 0.70 : 0.96),
+            ? 3.1
+            : 2.9
+        ..strokeJoin = StrokeJoin.round
+        ..color = rimColor.withValues(alpha: locked ? 0.76 : 0.98),
     );
 
+    final innerRect = bodyRect.deflate(finalNode ? 5.0 : 4.5);
+    canvas.drawPath(
+      _gemPath(innerRect),
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = finalNode ? 2.0 : 1.7
+        ..strokeJoin = StrokeJoin.round
+        ..color = innerRimColor.withValues(alpha: locked ? 0.60 : 0.92),
+    );
     if (finalNode) {
-      canvas.drawOval(
-        medallionRect.deflate(2.6),
+      canvas.drawPath(
+        _gemPath(bodyRect.inflate(2.2)),
         Paint()
           ..style = PaintingStyle.stroke
-          ..strokeWidth = 1.25
-          ..color = innerRimColor.withValues(alpha: locked ? 0.52 : 0.94),
+          ..strokeWidth = 1.4
+          ..strokeJoin = StrokeJoin.round
+          ..color = rimColor.withValues(alpha: locked ? 0.50 : 0.86),
       );
     }
 
-    final light = Color.alphaBlend(
-      textColor.withValues(alpha: locked ? 0.06 : 0.22),
-      fillColor,
-    );
-    final dark = Color.alphaBlend(
-      Colors.black.withValues(alpha: locked ? 0.44 : 0.30),
-      fillColor,
-    );
-    canvas.drawOval(
-      coreRect,
-      Paint()
-        ..shader = RadialGradient(
-          center: const Alignment(-0.34, -0.40),
-          radius: 1.0,
-          colors: <Color>[light, fillColor, dark],
-          stops: const <double>[0.0, 0.54, 1.0],
-        ).createShader(coreRect),
+    canvas.save();
+    canvas.clipPath(bodyPath);
+    final top = Offset(center.dx, bodyRect.top);
+    final left = Offset(bodyRect.left, center.dy - bodyHeight * 0.10);
+    final right = Offset(bodyRect.right, center.dy - bodyHeight * 0.10);
+    final bottom = Offset(center.dx, bodyRect.bottom);
+    final centerPoint = Offset(center.dx, center.dy + 1);
+
+    final leftPlane = Path()
+      ..moveTo(top.dx, top.dy)
+      ..lineTo(centerPoint.dx, centerPoint.dy)
+      ..lineTo(left.dx, left.dy)
+      ..lineTo(
+        bodyRect.left + bodyWidth * 0.20,
+        bodyRect.top + bodyHeight * 0.12,
+      )
+      ..close();
+    canvas.drawPath(
+      leftPlane,
+      Paint()..color = textColor.withValues(alpha: locked ? 0.045 : 0.13),
     );
 
-    final corePath = Path()..addOval(coreRect);
-    canvas.save();
-    canvas.clipPath(corePath);
-    final c = coreRect.center;
-    final top = Offset(c.dx, coreRect.top);
-    final right = Offset(coreRect.right, c.dy);
-    final bottom = Offset(c.dx, coreRect.bottom);
-    final left = Offset(coreRect.left, c.dy);
-    final facetPlanes = <(Path, Color)>[
-      (
-        Path()
-          ..moveTo(c.dx, c.dy)
-          ..lineTo(left.dx, left.dy)
-          ..lineTo(coreRect.left + coreRect.width * 0.22, coreRect.top)
-          ..lineTo(top.dx, top.dy)
-          ..close(),
-        textColor.withValues(alpha: locked ? 0.025 : 0.10),
-      ),
-      (
-        Path()
-          ..moveTo(c.dx, c.dy)
-          ..lineTo(top.dx, top.dy)
-          ..lineTo(coreRect.right - coreRect.width * 0.18, coreRect.top + 1)
-          ..lineTo(right.dx, right.dy)
-          ..close(),
-        innerRimColor.withValues(alpha: locked ? 0.035 : 0.12),
-      ),
-      (
-        Path()
-          ..moveTo(c.dx, c.dy)
-          ..lineTo(right.dx, right.dy)
-          ..lineTo(coreRect.right - coreRect.width * 0.18, coreRect.bottom - 1)
-          ..lineTo(bottom.dx, bottom.dy)
-          ..close(),
-        Colors.black.withValues(alpha: locked ? 0.12 : 0.08),
-      ),
-      (
-        Path()
-          ..moveTo(c.dx, c.dy)
-          ..lineTo(bottom.dx, bottom.dy)
-          ..lineTo(coreRect.left + coreRect.width * 0.18, coreRect.bottom - 1)
-          ..lineTo(left.dx, left.dy)
-          ..close(),
-        rimColor.withValues(alpha: locked ? 0.025 : 0.07),
-      ),
-    ];
-    for (final plane in facetPlanes) {
-      canvas.drawPath(plane.$1, Paint()..color = plane.$2);
-    }
+    final rightPlane = Path()
+      ..moveTo(top.dx, top.dy)
+      ..lineTo(
+        bodyRect.right - bodyWidth * 0.18,
+        bodyRect.top + bodyHeight * 0.12,
+      )
+      ..lineTo(right.dx, right.dy)
+      ..lineTo(centerPoint.dx, centerPoint.dy)
+      ..close();
+    canvas.drawPath(
+      rightPlane,
+      Paint()..color = innerRimColor.withValues(alpha: locked ? 0.04 : 0.10),
+    );
+
+    final bottomPlane = Path()
+      ..moveTo(left.dx, left.dy)
+      ..lineTo(centerPoint.dx, centerPoint.dy)
+      ..lineTo(right.dx, right.dy)
+      ..lineTo(bottom.dx, bottom.dy)
+      ..close();
+    canvas.drawPath(
+      bottomPlane,
+      Paint()..color = Colors.black.withValues(alpha: locked ? 0.16 : 0.10),
+    );
     canvas.restore();
 
-    canvas.drawOval(
-      coreRect,
+    final highlight = Path()
+      ..moveTo(
+        bodyRect.left + bodyWidth * 0.18,
+        bodyRect.top + bodyHeight * 0.18,
+      )
+      ..quadraticBezierTo(
+        center.dx,
+        bodyRect.top - 1,
+        bodyRect.right - bodyWidth * 0.18,
+        bodyRect.top + bodyHeight * 0.16,
+      );
+    canvas.drawPath(
+      highlight,
       Paint()
         ..style = PaintingStyle.stroke
-        ..strokeWidth = finalNode ? 1.35 : 1.05
-        ..color = innerRimColor.withValues(alpha: locked ? 0.40 : 0.82),
-    );
-
-    final facetLine = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 0.65
-      ..strokeCap = StrokeCap.round
-      ..color = textColor.withValues(alpha: locked ? 0.08 : 0.20);
-    canvas.drawLine(coreRect.topLeft + const Offset(4, 3), c, facetLine);
-    canvas.drawLine(coreRect.topRight + const Offset(-4, 3), c, facetLine);
-    canvas.drawLine(c, coreRect.bottomRight + const Offset(-4, -3), facetLine);
-    canvas.drawLine(c, coreRect.bottomLeft + const Offset(4, -3), facetLine);
-
-    canvas.drawArc(
-      coreRect.deflate(1.2),
-      math.pi * 1.05,
-      math.pi * 0.55,
-      false,
-      Paint()
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 1.0
+        ..strokeWidth = 1.45
         ..strokeCap = StrokeCap.round
-        ..color = textColor.withValues(alpha: locked ? 0.10 : 0.34),
+        ..color = textColor.withValues(alpha: locked ? 0.16 : 0.34),
     );
-
-    if (challenge && !locked) {
-      final studPaint = Paint()
-        ..color = accentColor.withValues(alpha: active ? 0.96 : 0.78);
-      for (final point in <Offset>[
-        Offset(center.dx, medallionRect.top + 1.4),
-        Offset(medallionRect.right - 1.4, center.dy),
-        Offset(center.dx, medallionRect.bottom - 1.4),
-        Offset(medallionRect.left + 1.4, center.dy),
-      ]) {
-        canvas.drawCircle(point, 1.05, studPaint);
-      }
-    }
   }
 
   @override
@@ -1356,6 +1374,59 @@ class _FacetedCrystalNodePainter extends CustomPainter {
       old.challenge != challenge ||
       old.finalNode != finalNode ||
       old.active != active;
+}
+
+class _CrystalLockBadgePainter extends CustomPainter {
+  const _CrystalLockBadgePainter({
+    required this.fillColor,
+    required this.edgeColor,
+    required this.shadowColor,
+  });
+
+  final Color fillColor;
+  final Color edgeColor;
+  final Color shadowColor;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final path = Path()
+      ..moveTo(size.width * 0.22, 1)
+      ..lineTo(size.width * 0.78, 1)
+      ..lineTo(size.width - 1, size.height * 0.34)
+      ..lineTo(size.width * 0.86, size.height - 1)
+      ..lineTo(size.width * 0.14, size.height - 1)
+      ..lineTo(1, size.height * 0.34)
+      ..close();
+    canvas.drawPath(
+      path.shift(const Offset(0.7, 1.0)),
+      Paint()..color = shadowColor.withValues(alpha: 0.78),
+    );
+    canvas.drawPath(
+      path,
+      Paint()
+        ..shader = LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: <Color>[
+            Color.alphaBlend(edgeColor.withValues(alpha: 0.18), fillColor),
+            Color.alphaBlend(Colors.black.withValues(alpha: 0.28), fillColor),
+          ],
+        ).createShader(Offset.zero & size),
+    );
+    canvas.drawPath(
+      path,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1.1
+        ..color = edgeColor.withValues(alpha: 0.84),
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant _CrystalLockBadgePainter old) =>
+      old.fillColor != fillColor ||
+      old.edgeColor != edgeColor ||
+      old.shadowColor != shadowColor;
 }
 
 class _CrystalFinalCrestPainter extends CustomPainter {
@@ -1373,180 +1444,155 @@ class _CrystalFinalCrestPainter extends CustomPainter {
   final Color shadowColor;
   final bool active;
 
-  Path _prism({
-    required Size size,
-    required double centerX,
-    required double tipY,
-    required double baseLeft,
-    required double baseRight,
-    required double shoulderY,
-  }) {
-    final shoulderHalf = (baseRight - baseLeft) * 0.28;
-    final cx = size.width * centerX;
+  Path _prism(double cx, double baseY, double height, double width) {
+    final top = baseY - height;
     return Path()
-      ..moveTo(size.width * baseLeft, size.height * 0.84)
-      ..lineTo(
-        cx - size.width * shoulderHalf,
-        size.height * shoulderY,
-      )
-      ..lineTo(cx, size.height * tipY)
-      ..lineTo(
-        cx + size.width * shoulderHalf,
-        size.height * shoulderY,
-      )
-      ..lineTo(size.width * baseRight, size.height * 0.84)
+      ..moveTo(cx, top)
+      ..lineTo(cx + width * 0.50, top + height * 0.24)
+      ..lineTo(cx + width * 0.38, baseY)
+      ..lineTo(cx - width * 0.38, baseY)
+      ..lineTo(cx - width * 0.50, top + height * 0.24)
       ..close();
   }
 
-  @override
-  void paint(Canvas canvas, Size size) {
-    final prisms = <Path>[
-      _prism(
-        size: size,
-        centerX: .15,
-        tipY: .47,
-        baseLeft: .07,
-        baseRight: .27,
-        shoulderY: .62,
-      ),
-      _prism(
-        size: size,
-        centerX: .33,
-        tipY: .22,
-        baseLeft: .22,
-        baseRight: .44,
-        shoulderY: .47,
-      ),
-      _prism(
-        size: size,
-        centerX: .50,
-        tipY: .02,
-        baseLeft: .38,
-        baseRight: .62,
-        shoulderY: .38,
-      ),
-      _prism(
-        size: size,
-        centerX: .67,
-        tipY: .22,
-        baseLeft: .56,
-        baseRight: .78,
-        shoulderY: .47,
-      ),
-      _prism(
-        size: size,
-        centerX: .85,
-        tipY: .47,
-        baseLeft: .73,
-        baseRight: .93,
-        shoulderY: .62,
-      ),
-    ];
-
-    final crystalPaint = Paint()
+  void _paintPrism(
+    Canvas canvas,
+    Path prism,
+    Rect bounds, {
+    required bool centerPrism,
+  }) {
+    final fillBase = centerPrism
+        ? crystalColor
+        : Color.alphaBlend(
+            accentColor.withValues(alpha: active ? 0.16 : 0.10),
+            crystalColor,
+          );
+    final fillPaint = Paint()
       ..shader = LinearGradient(
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
         colors: <Color>[
           Color.alphaBlend(
-            Colors.white.withValues(alpha: active ? .24 : .08),
-            crystalColor,
+            Colors.white.withValues(alpha: active ? 0.22 : 0.10),
+            fillBase,
           ),
-          crystalColor,
-          Color.alphaBlend(
-            Colors.black.withValues(alpha: active ? .18 : .30),
-            crystalColor,
-          ),
+          fillBase,
+          Color.alphaBlend(Colors.black.withValues(alpha: 0.24), fillBase),
         ],
-        stops: const <double>[0, .52, 1],
-      ).createShader(Offset.zero & size);
-    final edgePaint = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = active ? 1.35 : 1.05
-      ..strokeJoin = StrokeJoin.round
-      ..color = edgeColor.withValues(alpha: active ? .98 : .72);
+        stops: const <double>[0, 0.56, 1],
+      ).createShader(bounds);
+    canvas.drawPath(prism, fillPaint);
+    canvas.drawPath(
+      prism,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = centerPrism ? 1.45 : 1.2
+        ..strokeJoin = StrokeJoin.round
+        ..color = edgeColor.withValues(alpha: active ? 0.98 : 0.82),
+    );
+
+    final top = Offset(bounds.center.dx, bounds.top);
+    final base = Offset(bounds.center.dx, bounds.bottom - 0.5);
+    canvas.drawLine(
+      top,
+      base,
+      Paint()
+        ..strokeWidth = 0.85
+        ..color = accentColor.withValues(alpha: active ? 0.62 : 0.30),
+    );
+  }
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final baseY = size.height * 0.79;
+    final prisms = <(Path, Rect, bool)>[];
+
+    void addPrism(double cx, double height, double width, bool centerPrism) {
+      final prism = _prism(cx, baseY, height, width);
+      prisms.add((prism, prism.getBounds(), centerPrism));
+    }
+
+    addPrism(size.width * 0.50, 28, 13, true);
+    addPrism(size.width * 0.30, 21, 11, false);
+    addPrism(size.width * 0.70, 21, 11, false);
+    addPrism(size.width * 0.14, 15, 9, false);
+    addPrism(size.width * 0.86, 15, 9, false);
+
+    final shadowPath = Path();
+    for (final prism in prisms) {
+      shadowPath.addPath(prism.$1, const Offset(1.0, 1.5));
+    }
+    canvas.drawPath(
+      shadowPath,
+      Paint()..color = shadowColor.withValues(alpha: active ? 0.82 : 0.68),
+    );
 
     for (final prism in prisms) {
-      canvas.drawPath(
-        prism.shift(const Offset(0.8, 1.35)),
-        Paint()..color = shadowColor.withValues(alpha: active ? .78 : .62),
-      );
-      canvas.drawPath(prism, crystalPaint);
-      canvas.drawPath(prism, edgePaint);
+      _paintPrism(canvas, prism.$1, prism.$2, centerPrism: prism.$3);
     }
 
-    final facetPaint = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 0.62
-      ..strokeCap = StrokeCap.round
-      ..color = active
-          ? accentColor.withValues(alpha: .58)
-          : edgeColor.withValues(alpha: .24);
-    final prismCenters = <(double, double, double)>[
-      (.15, .47, .17),
-      (.33, .22, .33),
-      (.50, .02, .50),
-      (.67, .22, .67),
-      (.85, .47, .83),
-    ];
-    for (final p in prismCenters) {
-      canvas.drawLine(
-        Offset(size.width * p.$1, size.height * p.$2),
-        Offset(size.width * p.$3, size.height * .80),
-        facetPaint,
-      );
-    }
-
-    final setting = Path()
-      ..moveTo(size.width * .11, size.height * .80)
+    final base = Path()
+      ..moveTo(size.width * 0.07, size.height * 0.75)
       ..quadraticBezierTo(
-        size.width * .50,
-        size.height * 1.00,
-        size.width * .89,
-        size.height * .80,
-      );
+        size.width * 0.50,
+        size.height * 0.91,
+        size.width * 0.93,
+        size.height * 0.75,
+      )
+      ..lineTo(size.width * 0.86, size.height * 0.95)
+      ..quadraticBezierTo(
+        size.width * 0.50,
+        size.height,
+        size.width * 0.14,
+        size.height * 0.95,
+      )
+      ..close();
     canvas.drawPath(
-      setting,
+      base,
+      Paint()..color = edgeColor.withValues(alpha: active ? 0.92 : 0.76),
+    );
+    canvas.drawPath(
+      base,
       Paint()
         ..style = PaintingStyle.stroke
-        ..strokeWidth = active ? 2.0 : 1.55
-        ..strokeCap = StrokeCap.round
-        ..color = edgeColor.withValues(alpha: active ? .94 : .64),
-    );
-    final innerSetting = Path()
-      ..moveTo(size.width * .22, size.height * .82)
-      ..quadraticBezierTo(
-        size.width * .50,
-        size.height * .93,
-        size.width * .78,
-        size.height * .82,
-      );
-    canvas.drawPath(
-      innerSetting,
-      Paint()
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = .8
-        ..strokeCap = StrokeCap.round
-        ..color = accentColor.withValues(alpha: active ? .76 : .28),
+        ..strokeWidth = 1.0
+        ..color = accentColor.withValues(alpha: active ? 0.86 : 0.40),
     );
 
-    final gemCenter = Offset(size.width * .50, size.height * .82);
+    final settingLine = Path()
+      ..moveTo(size.width * 0.18, size.height * 0.81)
+      ..quadraticBezierTo(
+        size.width * 0.50,
+        size.height * 0.91,
+        size.width * 0.82,
+        size.height * 0.81,
+      );
+    canvas.drawPath(
+      settingLine,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1.0
+        ..strokeCap = StrokeCap.round
+        ..color = accentColor.withValues(alpha: active ? 0.82 : 0.36),
+    );
+
+    final gemCenter = Offset(size.width * 0.50, size.height * 0.84);
     final gem = Path()
-      ..moveTo(gemCenter.dx, gemCenter.dy - 2.2)
-      ..lineTo(gemCenter.dx + 2.2, gemCenter.dy)
-      ..lineTo(gemCenter.dx, gemCenter.dy + 2.2)
-      ..lineTo(gemCenter.dx - 2.2, gemCenter.dy)
+      ..moveTo(gemCenter.dx, gemCenter.dy - 3.2)
+      ..lineTo(gemCenter.dx + 3.2, gemCenter.dy)
+      ..lineTo(gemCenter.dx, gemCenter.dy + 3.2)
+      ..lineTo(gemCenter.dx - 3.2, gemCenter.dy)
       ..close();
     canvas.drawPath(
       gem,
-      Paint()..color = accentColor.withValues(alpha: active ? .92 : .42),
+      Paint()..color = accentColor.withValues(alpha: active ? 0.96 : 0.50),
     );
     canvas.drawPath(
       gem,
       Paint()
         ..style = PaintingStyle.stroke
-        ..strokeWidth = .7
-        ..color = edgeColor.withValues(alpha: active ? .96 : .62),
+        ..strokeWidth = 0.8
+        ..color = edgeColor.withValues(alpha: active ? 0.98 : 0.72),
     );
   }
 

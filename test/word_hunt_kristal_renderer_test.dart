@@ -24,6 +24,13 @@ void main() {
     expect(WordHuntFacetedCrystalMetrics.normalScale, 1.00);
     expect(WordHuntFacetedCrystalMetrics.challengeScale, 1.06);
     expect(WordHuntFacetedCrystalMetrics.finalScale, 1.11);
+    expect(WordHuntFacetedCrystalMetrics.normalBodyWidth, 48);
+    expect(WordHuntFacetedCrystalMetrics.normalBodyHeight, 46);
+    expect(WordHuntFacetedCrystalMetrics.normalShardSilhouette, 58);
+    expect(WordHuntFacetedCrystalMetrics.finalBodyWidth, 52);
+    expect(WordHuntFacetedCrystalMetrics.finalBodyHeight, 50);
+    expect(WordHuntFacetedCrystalMetrics.finalCrestWidth, 52);
+    expect(WordHuntFacetedCrystalMetrics.finalCrestHeight, 32);
     expect(
       WordHuntFacetedCrystalMetrics.finalScale,
       greaterThan(WordHuntFacetedCrystalMetrics.challengeScale),
@@ -137,47 +144,48 @@ void main() {
     },
   );
 
-  testWidgets('unlocked current L10 keeps unique active crystal-throne treatment', (
-    tester,
-  ) async {
-    final progress = WordHuntProgressSnapshot(
-      bestStarsByLevelId: <String, int>{
-        for (final level in route.levels.take(9)) level.id: 1,
-      },
-    );
-    await tester.pumpWidget(
-      MaterialApp(
-        home: WordHuntThemedRouteMapScreen(
-          route: route,
-          visualTheme: visualTheme,
-          progress: progress,
+  testWidgets(
+    'unlocked current L10 keeps unique active crystal-throne treatment',
+    (tester) async {
+      final progress = WordHuntProgressSnapshot(
+        bestStarsByLevelId: <String, int>{
+          for (final level in route.levels.take(9)) level.id: 1,
+        },
+      );
+      await tester.pumpWidget(
+        MaterialApp(
+          home: WordHuntThemedRouteMapScreen(
+            route: route,
+            visualTheme: visualTheme,
+            progress: progress,
+          ),
         ),
-      ),
-    );
-    await tester.pump();
+      );
+      await tester.pump();
 
-    expect(
-      find.byKey(const Key('word_hunt_reusable_node_10_current')),
-      findsOneWidget,
-    );
-    expect(
-      find.byKey(const Key('word_hunt_faceted_medallion_10')),
-      findsOneWidget,
-    );
-    expect(
-      find.byKey(const Key('word_hunt_faceted_final_active_glow')),
-      findsOneWidget,
-    );
-    expect(
-      find.byKey(const Key('word_hunt_faceted_final_crest')),
-      findsOneWidget,
-    );
-    expect(
-      find.byKey(const Key('word_hunt_faceted_final_crest_state_active')),
-      findsOneWidget,
-    );
-    expect(find.byKey(const Key('word_hunt_faceted_lock_10')), findsNothing);
-  });
+      expect(
+        find.byKey(const Key('word_hunt_reusable_node_10_current')),
+        findsOneWidget,
+      );
+      expect(
+        find.byKey(const Key('word_hunt_faceted_medallion_10')),
+        findsOneWidget,
+      );
+      expect(
+        find.byKey(const Key('word_hunt_faceted_final_active_glow')),
+        findsOneWidget,
+      );
+      expect(
+        find.byKey(const Key('word_hunt_faceted_final_crest')),
+        findsOneWidget,
+      );
+      expect(
+        find.byKey(const Key('word_hunt_faceted_final_crest_state_active')),
+        findsOneWidget,
+      );
+      expect(find.byKey(const Key('word_hunt_faceted_lock_10')), findsNothing);
+    },
+  );
 
   testWidgets(
     'artwork-hosted reusable map keeps one live back control contract',
