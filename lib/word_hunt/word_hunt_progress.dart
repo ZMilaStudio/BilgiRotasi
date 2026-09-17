@@ -4,10 +4,12 @@ class WordHuntProgressSnapshot {
   const WordHuntProgressSnapshot({
     this.bestStarsByLevelId = const <String, int>{},
     this.unlockedInfoCardIds = const <String>{},
+    this.unlockedRouteRewardIds = const <String>{},
   });
 
   final Map<String, int> bestStarsByLevelId;
   final Set<String> unlockedInfoCardIds;
+  final Set<String> unlockedRouteRewardIds;
 
   int starsFor(String levelId) => bestStarsByLevelId[levelId] ?? 0;
 
@@ -28,6 +30,24 @@ class WordHuntProgressSnapshot {
       unlockedInfoCardIds: <String>{
         ...unlockedInfoCardIds,
         ...unlockedInfoCards.where((id) => id.trim().isNotEmpty),
+      },
+      unlockedRouteRewardIds: unlockedRouteRewardIds,
+    );
+  }
+
+  WordHuntProgressSnapshot grantRouteReward(String rewardId) {
+    final normalized = rewardId.trim();
+    if (normalized.isEmpty) {
+      throw ArgumentError.value(rewardId, 'rewardId', 'boş olamaz');
+    }
+    if (unlockedRouteRewardIds.contains(normalized)) return this;
+
+    return WordHuntProgressSnapshot(
+      bestStarsByLevelId: bestStarsByLevelId,
+      unlockedInfoCardIds: unlockedInfoCardIds,
+      unlockedRouteRewardIds: <String>{
+        ...unlockedRouteRewardIds,
+        normalized,
       },
     );
   }

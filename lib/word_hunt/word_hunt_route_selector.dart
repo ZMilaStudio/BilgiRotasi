@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'word_hunt_progress.dart';
 import 'word_hunt_route_catalog.dart';
+import 'word_hunt_route_rewards.dart';
 
 /// Production Kelime Avı rota seçicisi.
 ///
@@ -83,6 +84,10 @@ class WordHuntRouteSelector extends StatelessWidget {
   Widget _buildCatalogCard(WordHuntRouteCatalogEntry entry) {
     final unlocked = entry.isUnlocked(progress);
     final unlockRule = entry.unlockRule;
+    final reward = WordHuntRouteRewardCatalog.forRoute(entry.route);
+    final rewardEarned = progress.unlockedRouteRewardIds.contains(
+      entry.route.routeRewardId,
+    );
     final subtitle = unlocked
         ? '${entry.ordinalLabel} • 10 bölüm • 30 yıldız'
         : _lockedSubtitle(entry);
@@ -98,6 +103,7 @@ class WordHuntRouteSelector extends StatelessWidget {
       icon: unlocked ? entry.icon : Icons.lock_rounded,
       colors: entry.colors,
       unlocked: unlocked,
+      earnedReward: rewardEarned ? reward : null,
       onTap: unlocked ? () => onRouteTap(entry) : null,
     );
   }
@@ -145,6 +151,7 @@ class _WordHuntRouteCard extends StatelessWidget {
     required this.icon,
     required this.colors,
     required this.unlocked,
+    required this.earnedReward,
     required this.onTap,
   });
 
@@ -154,14 +161,16 @@ class _WordHuntRouteCard extends StatelessWidget {
   final IconData icon;
   final List<Color> colors;
   final bool unlocked;
+  final WordHuntRouteRewardDefinition? earnedReward;
   final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
+    final reward = earnedReward;
     return Semantics(
       button: true,
       enabled: unlocked,
-      label: '$title, $subtitle, $progressText',
+      label: '$title, $subtitle, $progressText${reward == null ? '' : ', Kazanıldı, ${reward.displayName}'}',
       child: Material(
         color: Colors.transparent,
         child: InkWell(
@@ -233,6 +242,32 @@ class _WordHuntRouteCard extends StatelessWidget {
                           fontWeight: FontWeight.w900,
                         ),
                       ),
+                      if (reward != null) ...<Widget>[
+                        const SizedBox(height: 8),
+                        Semantics(
+                          label: 'Kazanıldı, ${reward.displayName}',
+                          child: Row(
+                            key: Key('word_hunt_route_reward_earned_${reward.id}'),
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              Icon(
+                                reward.icon,
+                                size: 16,
+                                color: const Color(0xFFFFE082),
+                              ),
+                              const SizedBox(width: 5),
+                              const Text(
+                                'Kazanıldı',
+                                style: TextStyle(
+                                  color: Color(0xFFFFE082),
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w900,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ],
                   ),
                 ),

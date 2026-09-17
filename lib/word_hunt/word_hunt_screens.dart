@@ -42,6 +42,7 @@ class WordHuntLevelProductionScreen extends StatefulWidget {
     required this.infoCards,
     this.backgroundAsset,
     this.routeTitle = 'Başlangıç Limanı',
+    this.deferCompletionDialog = false,
     this.now,
   });
 
@@ -49,6 +50,7 @@ class WordHuntLevelProductionScreen extends StatefulWidget {
   final List<WordHuntInfoCard> infoCards;
   final String? backgroundAsset;
   final String routeTitle;
+  final bool deferCompletionDialog;
   final DateTime Function()? now;
 
   @override
@@ -359,8 +361,18 @@ class _WordHuntLevelProductionScreenState
       mistakes: _scoredMistakes,
       elapsedSeconds: elapsed,
     );
+    final result = WordHuntLevelPlayResult(
+      levelId: widget.level.id,
+      stars: score.stars,
+      unlockedInfoCardIds: Set<String>.unmodifiable(_unlockedInfoCards),
+    );
 
     if (!mounted) return;
+    if (widget.deferCompletionDialog) {
+      _resultDelivered = true;
+      Navigator.of(context).pop(result);
+      return;
+    }
     final leave = await showDialog<bool>(
       context: context,
       barrierDismissible: false,
@@ -379,13 +391,7 @@ class _WordHuntLevelProductionScreenState
     if (!mounted) return;
     if (leave == true && !_resultDelivered) {
       _resultDelivered = true;
-      Navigator.of(context).pop(
-        WordHuntLevelPlayResult(
-          levelId: widget.level.id,
-          stars: score.stars,
-          unlockedInfoCardIds: Set<String>.unmodifiable(_unlockedInfoCards),
-        ),
-      );
+      Navigator.of(context).pop(result);
       return;
     }
     _completionDialogOpen = false;
