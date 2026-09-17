@@ -1,0 +1,83 @@
+name: Apply Kristal silhouette polish
+
+on:
+  push:
+    branches:
+      - ci/kristal-final-validation-20260917
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apply-and-validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout CI tools
+        uses: actions/checkout@v4
+        with:
+          ref: ci/kristal-final-validation-20260917
+          path: ci-tools
+          fetch-depth: 1
+
+      - name: Checkout feature branch
+        uses: actions/checkout@v4
+        with:
+          ref: feat/kelime-avi-kristal-vadisi
+          path: feature
+          fetch-depth: 0
+
+      - name: Guard feature HEAD
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C feature rev-parse HEAD)" = "bbce317939dbf24916c86d869fcdadcecba778c3"
+
+      - name: Apply silhouette polish
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 ci-tools/tools/apply_kristal_silhouette_polish.py feature
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Format only affected Dart files
+        shell: bash
+        working-directory: feature
+        run: |
+          set -euo pipefail
+          dart format \
+            lib/word_hunt/word_hunt_reusable_route_map_screen.dart \
+            test/word_hunt_kristal_renderer_test.dart
+
+      - name: Validate affected renderer
+        shell: bash
+        working-directory: feature
+        run: |
+          set -euo pipefail
+          flutter pub get
+          dart analyze lib/word_hunt
+          flutter test test/word_hunt_kristal_renderer_test.dart --reporter expanded
+          git diff --check
+          mapfile -t files < <(git diff --name-only | sort)
+          printf '%s\n' "${files[@]}"
+          test "${#files[@]}" -eq 2
+          test "${files[0]}" = "lib/word_hunt/word_hunt_reusable_route_map_screen.dart"
+          test "${files[1]}" = "test/word_hunt_kristal_renderer_test.dart"
+
+      - name: Commit and push visual polish
+        shell: bash
+        working-directory: feature
+        run: |
+          set -euo pipefail
+          git config user.name "ZMilaStudio"
+          git config user.email "levent.ua@gmail.com"
+          git add \
+            lib/word_hunt/word_hunt_reusable_route_map_screen.dart \
+            test/word_hunt_kristal_renderer_test.dart
+          git commit -m "feat(kelime-avi): enlarge crystal node silhouettes"
+          git push origin HEAD:feat/kelime-avi-kristal-vadisi
