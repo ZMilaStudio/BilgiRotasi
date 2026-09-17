@@ -1,0 +1,213 @@
+name: Kristal Vadisi Android proof
+
+on:
+  push:
+    branches:
+      - ci/kristal-final-validation-20260917
+    paths:
+      - .github/workflows/kristal-android-proof.yml
+
+permissions:
+  contents: read
+
+jobs:
+  android-proof:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 45
+    env:
+      FEATURE_SHA: 43b1416ce877a45ab4cb1bbc2c984dc7db6ea59b
+      PACKAGE: com.leventua.bilgirotasi
+      ACTIVITY: com.leventua.bilgirotasi/.MainActivity
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: 43b1416ce877a45ab4cb1bbc2c984dc7db6ea59b
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.6'
+          channel: stable
+          cache: true
+      - name: Prepare exact production proof target
+        shell: bash
+        run: |
+          set -euo pipefail
+          flutter pub get
+          cat > lib/word_hunt/word_hunt_kristal_final_proof_main.dart <<'DART'
+          import 'dart:ui' as ui;
+          import 'package:flutter/material.dart';
+          import 'package:flutter/services.dart';
+          import 'word_hunt_kristal_content.dart';
+          import 'word_hunt_kristal_visual_theme.dart';
+          import 'word_hunt_progress.dart';
+          import 'word_hunt_themed_production_route_screen.dart';
+
+          const activeFinal = bool.fromEnvironment('KRISTAL_ACTIVE_FINAL');
+
+          Future<void> main() async {
+            WidgetsFlutterBinding.ensureInitialized();
+            await SystemChrome.setPreferredOrientations(<DeviceOrientation>[DeviceOrientation.portraitUp]);
+            await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+            runApp(const ProofApp());
+          }
+
+          class ProofApp extends StatelessWidget {
+            const ProofApp({super.key});
+            static void noop() {}
+            static void noopLevel(int _) {}
+            @override
+            Widget build(BuildContext context) {
+              final route = WordHuntKristalContent.kristalVadisi;
+              final progress = WordHuntProgressSnapshot(
+                bestStarsByLevelId: <String, int>{
+                  for (final level in route.levels.take(activeFinal ? 9 : 4))
+                    level.id: activeFinal ? 1 : 3,
+                },
+              );
+              return MaterialApp(
+                debugShowCheckedModeBanner: false,
+                home: ProofProbe(
+                  child: WordHuntThemedProductionRouteScreen(
+                    route: route,
+                    visualTheme: WordHuntKristalVisualTheme.production,
+                    progress: progress,
+                    onBack: noop,
+                    onInfo: noop,
+                    onCompass: noop,
+                    onBook: noop,
+                    onLevelTap: noopLevel,
+                  ),
+                ),
+              );
+            }
+          }
+
+          class ProofProbe extends StatefulWidget {
+            const ProofProbe({super.key, required this.child});
+            final Widget child;
+            @override
+            State<ProofProbe> createState() => ProofProbeState();
+          }
+
+          class ProofProbeState extends State<ProofProbe> {
+            bool scheduled = false;
+            @override
+            void didChangeDependencies() {
+              super.didChangeDependencies();
+              if (scheduled) return;
+              scheduled = true;
+              WidgetsBinding.instance.addPostFrameCallback((_) async {
+                try {
+                  const asset = 'assets/word_hunt/KRISTAL_VADISI_ENV_941x1672.webp';
+                  final data = await rootBundle.load(asset);
+                  final bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
+                  if (bytes.length != 2793116) throw StateError('bytes=${bytes.length}');
+                  final codec = await ui.instantiateImageCodec(bytes);
+                  final frame = await codec.getNextFrame();
+                  if (frame.image.width != 941 || frame.image.height != 1672) {
+                    throw StateError('size=${frame.image.width}x${frame.image.height}');
+                  }
+                  frame.image.dispose();
+                  codec.dispose();
+                  await Future<void>.delayed(const Duration(milliseconds: 900));
+                  await WidgetsBinding.instance.endOfFrame;
+                  debugPrint('[KRISTAL_FINAL_PROOF_READY] activeFinal=$activeFinal bytes=${bytes.length} size=941x1672');
+                } catch (e, st) {
+                  debugPrint('[KRISTAL_FINAL_PROOF_ERROR] $e');
+                  debugPrintStack(stackTrace: st);
+                }
+              });
+            }
+            @override
+            Widget build(BuildContext context) => widget.child;
+          }
+          DART
+          dart format lib/word_hunt/word_hunt_kristal_final_proof_main.dart
+          mkdir -p reports
+      - name: Build proof APKs
+        shell: bash
+        run: |
+          set -euo pipefail
+          flutter build apk --debug -t lib/word_hunt/word_hunt_kristal_final_proof_main.dart --dart-define=KRISTAL_ACTIVE_FINAL=false --dart-define=ADMOB_ENVIRONMENT=test
+          cp build/app/outputs/flutter-apk/app-debug.apk reports/KRISTAL_LOCKED.apk
+          flutter build apk --debug -t lib/word_hunt/word_hunt_kristal_final_proof_main.dart --dart-define=KRISTAL_ACTIVE_FINAL=true --dart-define=ADMOB_ENVIRONMENT=test
+          cp build/app/outputs/flutter-apk/app-debug.apk reports/KRISTAL_ACTIVE.apk
+          printf '%s\n' "$FEATURE_SHA" > reports/FEATURE_SHA.txt
+      - name: Enable KVM
+        run: |
+          test -e /dev/kvm
+          sudo chmod 666 /dev/kvm
+          ./android/gradlew --stop || true
+      - name: Capture Android 16 screenshots
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 36
+          target: aosp_atd
+          arch: x86_64
+          profile: pixel_2
+          cores: 2
+          ram-size: 2048M
+          heap-size: 512M
+          emulator-boot-timeout: 1200
+          disable-animations: false
+          script: |
+            set -euo pipefail
+            a() { timeout "$1" adb "${@:2}"; }
+            reset_display() { a 15 shell wm size reset >/dev/null 2>&1 || true; a 15 shell wm density reset >/dev/null 2>&1 || true; }
+            wait_ready() {
+              local label="$1"
+              for _ in $(seq 1 60); do
+                a 15 logcat -d -v threadtime > "reports/${label}_LOGCAT.txt" 2>/dev/null || true
+                grep -Fq '[KRISTAL_FINAL_PROOF_ERROR]' "reports/${label}_LOGCAT.txt" && { tail -n 120 "reports/${label}_LOGCAT.txt"; return 1; }
+                if grep -Fq '[KRISTAL_FINAL_PROOF_READY]' "reports/${label}_LOGCAT.txt"; then return 0; fi
+                sleep 1
+              done
+              tail -n 160 "reports/${label}_LOGCAT.txt" || true
+              return 1
+            }
+            capture() {
+              local label="$1" size="$2" density="$3"
+              reset_display
+              a 15 shell wm size "$size"
+              a 15 shell wm density "$density"
+              a 15 shell am force-stop "$PACKAGE" >/dev/null 2>&1 || true
+              a 15 logcat -c >/dev/null 2>&1 || true
+              a 15 shell am start -n "$ACTIVITY" > "reports/${label}_LAUNCH.txt" 2>&1
+              wait_ready "$label"
+              sleep 2
+              a 30 exec-out screencap -p > "reports/${label}.png"
+              test -s "reports/${label}.png"
+            }
+            a 20 wait-for-device
+            a 120 install -r reports/KRISTAL_LOCKED.apk | tee reports/LOCKED_INSTALL.txt
+            grep -Fq Success reports/LOCKED_INSTALL.txt
+            capture KRISTAL_LOCKED_411x731 411x731 160
+            capture KRISTAL_LOCKED_720x1280 720x1280 320
+            capture KRISTAL_LOCKED_1080x1920 1080x1920 420
+            capture KRISTAL_LOCKED_1080x2400 1080x2400 440
+            a 120 install -r reports/KRISTAL_ACTIVE.apk | tee reports/ACTIVE_INSTALL.txt
+            grep -Fq Success reports/ACTIVE_INSTALL.txt
+            capture KRISTAL_ACTIVE_FINAL_1080x1920 1080x1920 420
+            reset_display
+            printf '%s\n' 'RESULT=SUCCESS' > reports/RESULT.txt
+      - name: Upload proof
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Kristal-Android-Proof-43b1416
+          path: |
+            reports/FEATURE_SHA.txt
+            reports/RESULT.txt
+            reports/KRISTAL_LOCKED_411x731.png
+            reports/KRISTAL_LOCKED_720x1280.png
+            reports/KRISTAL_LOCKED_1080x1920.png
+            reports/KRISTAL_LOCKED_1080x2400.png
+            reports/KRISTAL_ACTIVE_FINAL_1080x1920.png
+            reports/*_LOGCAT.txt
+            reports/*_LAUNCH.txt
+            reports/*_INSTALL.txt
+          if-no-files-found: warn
+          retention-days: 30
