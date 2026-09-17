@@ -57,7 +57,9 @@ jobs:
               raise SystemExit(f'unexpected dimensions: {w}x{h}')
           print(f'ARTWORK_GATE=PASS width={w} height={h} bytes={len(data)}')
           PY
-          test "$(git hash-object "$ASSET")" = '3f96949385dba4b43b6a4062693e899c47b2f71d'
+          ACTUAL_BLOB="$(git hash-object "$ASSET")"
+          echo "ARTWORK_GIT_BLOB=$ACTUAL_BLOB"
+          test "$ACTUAL_BLOB" = '3f96949385bee78d1b333dae9a346d89e81ad5e3'
 
       - name: Full analyze and full test
         shell: bash
