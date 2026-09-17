@@ -46,6 +46,26 @@ abstract final class WordHuntRouteMapGeometry {
   }
 }
 
+enum WordHuntRouteNodeVisualStyle { scenicWood, facetedCrystal }
+
+/// facetedCrystal skin'in owner-approved görsel hiyerarşi metrikleri.
+/// Hitbox ve canonical node merkezleri bu değerlerden etkilenmez.
+abstract final class WordHuntFacetedCrystalMetrics {
+  static const double normalScale = 1.00;
+  static const double challengeScale = 1.06;
+  static const double finalScale = 1.11;
+
+  // 411 px proof'ta okunabilir gerçek çizim footprint'leri. Hitbox sabittir.
+  static const double normalBodyWidth = 48;
+  static const double normalBodyHeight = 46;
+  static const double normalShardSilhouette = 58;
+  static const double finalBodyWidth = 52;
+  static const double finalBodyHeight = 50;
+  static const double finalShardSilhouette = 62;
+  static const double finalCrestWidth = 52;
+  static const double finalCrestHeight = 32;
+}
+
 /// Görsel tema yalnız boya ve metin token'larını taşır; geometri taşıyamaz.
 @immutable
 class WordHuntRouteMapTheme {
@@ -63,6 +83,8 @@ class WordHuntRouteMapTheme {
     this.pathUnderlayColor = const Color(0x66000000),
     this.nodeShadowColor = const Color(0x99000000),
     this.sceneDepth = 0.28,
+    this.finalAccentColor,
+    this.nodeVisualStyle = WordHuntRouteNodeVisualStyle.scenicWood,
   }) : assert(sceneDepth >= 0 && sceneDepth <= 1);
 
   final String id;
@@ -80,8 +102,11 @@ class WordHuntRouteMapTheme {
   final Color pathUnderlayColor;
   final Color nodeShadowColor;
   final double sceneDepth;
+  final Color? finalAccentColor;
+  final WordHuntRouteNodeVisualStyle nodeVisualStyle;
 
   Color get resolvedSceneGlowColor => sceneGlowColor ?? accentColor;
+  Color get resolvedFinalAccentColor => finalAccentColor ?? accentColor;
 
   /// Raster artwork bağlandığında themed wrapper arka plan ve yüzeyi
   /// transparanlaştırır. Bu generic işaret route-id kontrolü olmadan renderer'ın
@@ -154,6 +179,7 @@ class WordHuntReusableRouteMapScreen extends StatelessWidget {
     this.decorationSpec,
     this.decorationPalette,
     this.decorationOpacity = 0.42,
+    this.hostedByArtworkChrome = false,
   }) : assert(
          (decorationSpec == null) == (decorationPalette == null),
          'Decoration spec ve palette birlikte verilmelidir.',
@@ -166,6 +192,7 @@ class WordHuntReusableRouteMapScreen extends StatelessWidget {
   final WordHuntRouteDecorationSpec? decorationSpec;
   final WordHuntRouteDecorationPalette? decorationPalette;
   final double decorationOpacity;
+  final bool hostedByArtworkChrome;
 
   // Hitbox sözleşmesi değişmez. Scenic skin yalnız bu kutunun içindeki görsel
   // medalyonu küçültür; test/tap geometrisi aynı kalır.
@@ -180,10 +207,8 @@ class WordHuntReusableRouteMapScreen extends StatelessWidget {
       'Reusable Kelime Avı rota haritası tam 10 bölüm bekler.',
     );
     final stars = WordHuntRouteProgressEngine.totalStars(route, progress);
-    final currentLevelIndex = WordHuntRouteProgressEngine.nextPlayableLevelIndex(
-      route,
-      progress,
-    );
+    final currentLevelIndex =
+        WordHuntRouteProgressEngine.nextPlayableLevelIndex(route, progress);
     final scenic = theme.artworkMode;
 
     return Scaffold(
@@ -193,10 +218,15 @@ class WordHuntReusableRouteMapScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
+            if (hostedByArtworkChrome) const SizedBox(height: 48),
             Padding(
               padding: EdgeInsets.fromLTRB(
                 scenic ? 10 : 12,
-                scenic ? 8 : 10,
+                hostedByArtworkChrome
+                    ? 2
+                    : scenic
+                    ? 8
+                    : 10,
                 scenic ? 10 : 12,
                 scenic ? 6 : 9,
               ),
@@ -205,6 +235,7 @@ class WordHuntReusableRouteMapScreen extends StatelessWidget {
                 stars: stars,
                 maximumStars: route.maximumStars,
                 theme: theme,
+                showBackButton: !hostedByArtworkChrome,
               ),
             ),
             Expanded(
@@ -298,9 +329,7 @@ class WordHuntReusableRouteMapScreen extends StatelessWidget {
                             Positioned.fill(
                               key: const Key('word_hunt_reusable_path_layer'),
                               child: CustomPaint(
-                                key: const Key(
-                                  'word_hunt_reusable_route_path',
-                                ),
+                                key: const Key('word_hunt_reusable_route_path'),
                                 painter: _ReusableRoutePathPainter(
                                   points: points,
                                   unlocked: unlocked,
@@ -318,7 +347,8 @@ class WordHuntReusableRouteMapScreen extends StatelessWidget {
                                       route.levels[index],
                                       progress,
                                     ),
-                                current: unlocked[index] &&
+                                current:
+                                    unlocked[index] &&
                                     index + 1 == currentLevelIndex &&
                                     !WordHuntRouteProgressEngine.isLevelCompleted(
                                       route.levels[index],
@@ -381,12 +411,14 @@ class _ReusableRouteHeader extends StatelessWidget {
     required this.stars,
     required this.maximumStars,
     required this.theme,
+    this.showBackButton = true,
   });
 
   final String title;
   final int stars;
   final int maximumStars;
   final WordHuntRouteMapTheme theme;
+  final bool showBackButton;
 
   @override
   Widget build(BuildContext context) {
@@ -414,43 +446,41 @@ class _ReusableRouteHeader extends StatelessWidget {
 
     return Row(
       children: <Widget>[
-        Material(
-          color: Colors.transparent,
-          child: InkWell(
-            customBorder: const CircleBorder(),
-            onTap: Navigator.of(context).canPop()
-                ? () => Navigator.of(context).pop()
-                : null,
-            child: Container(
-              width: scenic ? 44 : 50,
-              height: scenic ? 44 : 50,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: <Color>[panelTop, panelBottom],
-                ),
-                border: Border.all(
-                  color: edgeColor,
-                  width: scenic ? 1.4 : 2,
-                ),
-                boxShadow: <BoxShadow>[
-                  BoxShadow(
-                    color: shadowColor,
-                    blurRadius: scenic ? 8 : 10,
-                    offset: Offset(0, scenic ? 3 : 5),
+        if (showBackButton)
+          Material(
+            color: Colors.transparent,
+            child: InkWell(
+              customBorder: const CircleBorder(),
+              onTap: Navigator.of(context).canPop()
+                  ? () => Navigator.of(context).pop()
+                  : null,
+              child: Container(
+                width: scenic ? 44 : 50,
+                height: scenic ? 44 : 50,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: <Color>[panelTop, panelBottom],
                   ),
-                ],
-              ),
-              child: Icon(
-                Icons.arrow_back_ios_new_rounded,
-                color: theme.textColor,
-                size: scenic ? 20 : 24,
+                  border: Border.all(color: edgeColor, width: scenic ? 1.4 : 2),
+                  boxShadow: <BoxShadow>[
+                    BoxShadow(
+                      color: shadowColor,
+                      blurRadius: scenic ? 8 : 10,
+                      offset: Offset(0, scenic ? 3 : 5),
+                    ),
+                  ],
+                ),
+                child: Icon(
+                  Icons.arrow_back_ios_new_rounded,
+                  color: theme.textColor,
+                  size: scenic ? 20 : 24,
+                ),
               ),
             ),
           ),
-        ),
         SizedBox(width: scenic ? 6 : 8),
         Expanded(
           child: Container(
@@ -463,10 +493,7 @@ class _ReusableRouteHeader extends StatelessWidget {
                 colors: <Color>[panelTop, panelBottom],
               ),
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: edgeColor,
-                width: scenic ? 1.2 : 1.6,
-              ),
+              border: Border.all(color: edgeColor, width: scenic ? 1.2 : 1.6),
               boxShadow: <BoxShadow>[
                 BoxShadow(
                   color: shadowColor,
@@ -511,10 +538,7 @@ class _ReusableRouteHeader extends StatelessWidget {
               colors: <Color>[panelTop, panelBottom],
             ),
             borderRadius: BorderRadius.circular(scenic ? 14 : 15),
-            border: Border.all(
-              color: edgeColor,
-              width: scenic ? 1.1 : 1.5,
-            ),
+            border: Border.all(color: edgeColor, width: scenic ? 1.1 : 1.5),
             boxShadow: <BoxShadow>[
               BoxShadow(
                 color: shadowColor,
@@ -590,7 +614,11 @@ class _ReusableRouteNode extends StatelessWidget {
       enabled: unlocked,
       label:
           'Bölüm ${level.index}${unlocked ? ', açık' : ', kilitli'}'
-          '${completed ? ', tamamlandı' : current ? ', sıradaki' : ''}',
+          '${completed
+              ? ', tamamlandı'
+              : current
+              ? ', sıradaki'
+              : ''}',
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: onTap,
@@ -598,7 +626,9 @@ class _ReusableRouteNode extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             if (scenic) _buildScenicNode() else _buildOrbNode(),
-            if (completed) ...<Widget>[
+            if (completed &&
+                theme.nodeVisualStyle !=
+                    WordHuntRouteNodeVisualStyle.facetedCrystal) ...<Widget>[
               SizedBox(height: scenic ? 0 : 1),
               SizedBox(
                 height: scenic ? 10 : 12,
@@ -623,7 +653,13 @@ class _ReusableRouteNode extends StatelessWidget {
               ),
             ],
             if (endpointLabel != null) ...<Widget>[
-              SizedBox(height: completed ? 0 : scenic ? 2 : 3),
+              SizedBox(
+                height: completed
+                    ? 0
+                    : scenic
+                    ? 2
+                    : 3,
+              ),
               FittedBox(
                 fit: BoxFit.scaleDown,
                 child: Text(
@@ -653,6 +689,9 @@ class _ReusableRouteNode extends StatelessWidget {
   }
 
   Widget _buildScenicNode() {
+    if (theme.nodeVisualStyle == WordHuntRouteNodeVisualStyle.facetedCrystal) {
+      return _buildFacetedCrystalNode();
+    }
     final fillColor = unlocked ? theme.nodeColor : theme.lockedNodeColor;
     final borderColor = current
         ? theme.accentColor
@@ -740,6 +779,214 @@ class _ReusableRouteNode extends StatelessWidget {
     );
   }
 
+  Widget _buildFacetedCrystalNode() {
+    final isFinal = level.type == WordHuntLevelType.routeFinal;
+    final isChallenge = level.type == WordHuntLevelType.challenge;
+    final activeFinal = isFinal && unlocked;
+    final activeChallenge = isChallenge && current && unlocked;
+    final scale = isFinal
+        ? WordHuntFacetedCrystalMetrics.finalScale
+        : isChallenge
+        ? WordHuntFacetedCrystalMetrics.challengeScale
+        : WordHuntFacetedCrystalMetrics.normalScale;
+    final rimColor = isFinal
+        ? activeFinal
+              ? theme.resolvedFinalAccentColor
+              : theme.lockedPathColor
+        : isChallenge
+        ? unlocked
+              ? theme.accentColor
+              : theme.lockedPathColor
+        : unlocked
+        ? theme.pathColor
+        : theme.lockedPathColor;
+    final crystalFill = unlocked
+        ? theme.nodeColor
+        : Color.alphaBlend(
+            theme.nodeColor.withValues(alpha: 0.34),
+            theme.lockedNodeColor,
+          );
+    final nodeCanvasWidth = isFinal ? 64.0 : 60.0;
+    final nodeCanvasHeight = isFinal ? 60.0 : 58.0;
+
+    return SizedBox(
+      key: Key('word_hunt_reusable_node_${level.index}_$_visualState'),
+      width: 72,
+      height: WordHuntReusableRouteMapScreen._nodeDiameter,
+      child: Stack(
+        clipBehavior: Clip.none,
+        alignment: Alignment.center,
+        children: <Widget>[
+          if (activeChallenge || (activeFinal && current))
+            Positioned.fill(
+              child: DecoratedBox(
+                key: Key(
+                  isFinal
+                      ? 'word_hunt_faceted_final_active_glow'
+                      : 'word_hunt_faceted_challenge_glow',
+                ),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  boxShadow: <BoxShadow>[
+                    BoxShadow(
+                      color:
+                          (isFinal
+                                  ? theme.resolvedFinalAccentColor
+                                  : theme.accentColor)
+                              .withValues(alpha: isFinal ? 0.24 : 0.15),
+                      blurRadius: isFinal ? 13 : 8,
+                      spreadRadius: isFinal ? 0.35 : 0,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          Transform.scale(
+            scale: scale,
+            child: SizedBox(
+              key: Key('word_hunt_faceted_node_${level.index}'),
+              width: nodeCanvasWidth,
+              height: nodeCanvasHeight,
+              child: Stack(
+                fit: StackFit.expand,
+                clipBehavior: Clip.none,
+                children: <Widget>[
+                  CustomPaint(
+                    key: Key('word_hunt_faceted_medallion_${level.index}'),
+                    painter: _FacetedCrystalNodePainter(
+                      fillColor: crystalFill,
+                      rimColor: rimColor,
+                      innerRimColor: isFinal && unlocked
+                          ? theme.pathColor
+                          : theme.textColor.withValues(
+                              alpha: unlocked ? 0.28 : 0.22,
+                            ),
+                      accentColor: theme.accentColor,
+                      shadowColor: theme.nodeShadowColor,
+                      textColor: theme.textColor,
+                      locked: !unlocked,
+                      challenge: isChallenge,
+                      finalNode: isFinal,
+                      active: current && unlocked,
+                    ),
+                  ),
+                  Align(
+                    alignment: Alignment(0, completed ? -0.10 : -0.02),
+                    child: Text(
+                      '${level.index}',
+                      key: Key('word_hunt_faceted_number_${level.index}'),
+                      style: TextStyle(
+                        color: theme.textColor,
+                        fontSize: isFinal ? 18 : 17.5,
+                        height: 1,
+                        fontWeight: FontWeight.w900,
+                        shadows: <Shadow>[
+                          Shadow(
+                            color: theme.nodeShadowColor.withValues(
+                              alpha: 0.96,
+                            ),
+                            blurRadius: 3,
+                            offset: const Offset(0, 1.2),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  if (!unlocked)
+                    Positioned(
+                      left: 0,
+                      right: 0,
+                      bottom: 2,
+                      child: Center(
+                        child: SizedBox(
+                          width: 20,
+                          height: 15,
+                          child: CustomPaint(
+                            key: Key('word_hunt_faceted_lock_${level.index}'),
+                            painter: _CrystalLockBadgePainter(
+                              fillColor: crystalFill,
+                              edgeColor: theme.lockedPathColor,
+                              shadowColor: theme.nodeShadowColor,
+                            ),
+                            child: Icon(
+                              Icons.lock_rounded,
+                              size: 9,
+                              color: theme.textColor.withValues(alpha: 0.86),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  if (completed)
+                    Positioned(
+                      left: 0,
+                      right: 0,
+                      bottom: -1,
+                      child: Center(
+                        child: Container(
+                          key: Key('word_hunt_faceted_stars_${level.index}'),
+                          width: 31,
+                          height: 10,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: theme.nodeShadowColor.withValues(
+                              alpha: 0.56,
+                            ),
+                            borderRadius: BorderRadius.circular(6),
+                            border: Border.all(
+                              color: theme.accentColor.withValues(alpha: 0.52),
+                              width: 0.7,
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: List<Widget>.generate(
+                              3,
+                              (_) => Icon(
+                                Icons.star_rounded,
+                                size: 8,
+                                color: theme.accentColor.withValues(
+                                  alpha: 0.96,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ),
+          if (isFinal)
+            Positioned(
+              key: Key(
+                'word_hunt_faceted_final_crest_state_${activeFinal ? 'active' : 'locked'}',
+              ),
+              top: -24,
+              width: WordHuntFacetedCrystalMetrics.finalCrestWidth,
+              height: WordHuntFacetedCrystalMetrics.finalCrestHeight,
+              child: CustomPaint(
+                key: const Key('word_hunt_faceted_final_crest'),
+                painter: _CrystalFinalCrestPainter(
+                  crystalColor: activeFinal ? theme.nodeColor : crystalFill,
+                  edgeColor: activeFinal
+                      ? theme.resolvedFinalAccentColor
+                      : theme.lockedPathColor,
+                  accentColor: activeFinal
+                      ? theme.pathColor
+                      : theme.lockedPathColor.withValues(alpha: 0.70),
+                  shadowColor: theme.nodeShadowColor,
+                  active: activeFinal,
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildOrbNode() {
     final fillColor = unlocked ? theme.nodeColor : theme.lockedNodeColor;
     final borderColor = current
@@ -769,10 +1016,7 @@ class _ReusableRouteNode extends StatelessWidget {
           colors: <Color>[lightFill, fillColor, darkFill],
           stops: const <double>[0.0, 0.58, 1.0],
         ),
-        border: Border.all(
-          color: borderColor,
-          width: current ? 4.2 : 3.2,
-        ),
+        border: Border.all(color: borderColor, width: current ? 4.2 : 3.2),
         boxShadow: <BoxShadow>[
           BoxShadow(
             color: theme.nodeShadowColor.withValues(alpha: 0.78),
@@ -847,6 +1091,518 @@ class _ReusableRouteNode extends StatelessWidget {
       ),
     );
   }
+}
+
+class _FacetedCrystalNodePainter extends CustomPainter {
+  const _FacetedCrystalNodePainter({
+    required this.fillColor,
+    required this.rimColor,
+    required this.innerRimColor,
+    required this.accentColor,
+    required this.shadowColor,
+    required this.textColor,
+    required this.locked,
+    required this.challenge,
+    required this.finalNode,
+    required this.active,
+  });
+
+  final Color fillColor;
+  final Color rimColor;
+  final Color innerRimColor;
+  final Color accentColor;
+  final Color shadowColor;
+  final Color textColor;
+  final bool locked;
+  final bool challenge;
+  final bool finalNode;
+  final bool active;
+
+  Path _gemPath(Rect rect) {
+    final cx = rect.center.dx;
+    final cy = rect.center.dy;
+    final left = rect.left;
+    final right = rect.right;
+    final top = rect.top;
+    final bottom = rect.bottom;
+    return Path()
+      ..moveTo(cx, top)
+      ..lineTo(right - rect.width * 0.18, top + rect.height * 0.10)
+      ..lineTo(right, cy - rect.height * 0.12)
+      ..lineTo(right - rect.width * 0.05, cy + rect.height * 0.24)
+      ..lineTo(cx + rect.width * 0.26, bottom)
+      ..lineTo(cx - rect.width * 0.26, bottom)
+      ..lineTo(left + rect.width * 0.05, cy + rect.height * 0.24)
+      ..lineTo(left, cy - rect.height * 0.12)
+      ..lineTo(left + rect.width * 0.18, top + rect.height * 0.10)
+      ..close();
+  }
+
+  Path _shardPath(
+    Offset center,
+    double angle,
+    double innerRadius,
+    double outerRadius,
+    double halfWidth,
+  ) {
+    final direction = Offset(math.cos(angle), math.sin(angle));
+    final perpendicular = Offset(-direction.dy, direction.dx);
+    final base = center + direction * innerRadius;
+    final shoulder = center + direction * (outerRadius - 6.5);
+    final tip = center + direction * outerRadius;
+    return Path()
+      ..moveTo(
+        base.dx + perpendicular.dx * halfWidth,
+        base.dy + perpendicular.dy * halfWidth,
+      )
+      ..lineTo(
+        shoulder.dx + perpendicular.dx * halfWidth * 0.42,
+        shoulder.dy + perpendicular.dy * halfWidth * 0.42,
+      )
+      ..lineTo(tip.dx, tip.dy)
+      ..lineTo(
+        shoulder.dx - perpendicular.dx * halfWidth * 0.42,
+        shoulder.dy - perpendicular.dy * halfWidth * 0.42,
+      )
+      ..lineTo(
+        base.dx - perpendicular.dx * halfWidth,
+        base.dy - perpendicular.dy * halfWidth,
+      )
+      ..close();
+  }
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width * 0.50, size.height * 0.49);
+    final bodyWidth = finalNode
+        ? WordHuntFacetedCrystalMetrics.finalBodyWidth
+        : WordHuntFacetedCrystalMetrics.normalBodyWidth;
+    final bodyHeight = finalNode
+        ? WordHuntFacetedCrystalMetrics.finalBodyHeight
+        : WordHuntFacetedCrystalMetrics.normalBodyHeight;
+    final shardSilhouette = finalNode
+        ? WordHuntFacetedCrystalMetrics.finalShardSilhouette
+        : WordHuntFacetedCrystalMetrics.normalShardSilhouette;
+    final bodyRect = Rect.fromCenter(
+      center: center,
+      width: bodyWidth,
+      height: bodyHeight,
+    );
+    final bodyPath = _gemPath(bodyRect);
+    final innerRadius = math.min(bodyWidth, bodyHeight) * 0.39;
+    final outerRadius = shardSilhouette * 0.50;
+    final shardHalfWidth = finalNode ? 6.2 : 5.4;
+
+    final shadowPath = bodyPath.shift(const Offset(1.4, 2.4));
+    canvas.drawPath(
+      shadowPath,
+      Paint()..color = shadowColor.withValues(alpha: locked ? 0.62 : 0.84),
+    );
+
+    for (var i = 0; i < 6; i++) {
+      final angle = -math.pi / 2 + i * math.pi / 3;
+      final shard = _shardPath(
+        center,
+        angle,
+        innerRadius,
+        outerRadius,
+        shardHalfWidth,
+      );
+      final goldShard = challenge && !locked && (i == 0 || i == 2 || i == 4);
+      final shardColor = goldShard ? accentColor : rimColor;
+      canvas.drawPath(
+        shard,
+        Paint()
+          ..shader = LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: <Color>[
+              Color.alphaBlend(
+                textColor.withValues(alpha: locked ? 0.04 : 0.14),
+                shardColor,
+              ),
+              shardColor.withValues(alpha: locked ? 0.70 : 0.92),
+            ],
+          ).createShader(shard.getBounds()),
+      );
+      canvas.drawPath(
+        shard,
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = finalNode ? 1.35 : 1.15
+          ..strokeJoin = StrokeJoin.round
+          ..color = innerRimColor.withValues(alpha: locked ? 0.46 : 0.72),
+      );
+    }
+
+    final mineralBase = Color.alphaBlend(
+      Colors.black.withValues(alpha: locked ? 0.32 : 0.18),
+      fillColor,
+    );
+    canvas.drawPath(bodyPath, Paint()..color = mineralBase);
+    canvas.drawPath(
+      bodyPath,
+      Paint()
+        ..shader = RadialGradient(
+          center: const Alignment(-0.30, -0.32),
+          radius: 0.95,
+          colors: <Color>[
+            Color.alphaBlend(
+              textColor.withValues(alpha: locked ? 0.06 : 0.20),
+              fillColor,
+            ),
+            fillColor,
+            Color.alphaBlend(
+              Colors.black.withValues(alpha: locked ? 0.36 : 0.24),
+              fillColor,
+            ),
+          ],
+          stops: const <double>[0.0, 0.52, 1.0],
+        ).createShader(bodyRect),
+    );
+    canvas.drawPath(
+      bodyPath,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = finalNode
+            ? 3.6
+            : challenge
+            ? 3.1
+            : 2.9
+        ..strokeJoin = StrokeJoin.round
+        ..color = rimColor.withValues(alpha: locked ? 0.76 : 0.98),
+    );
+
+    final innerRect = bodyRect.deflate(finalNode ? 5.0 : 4.5);
+    canvas.drawPath(
+      _gemPath(innerRect),
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = finalNode ? 2.0 : 1.7
+        ..strokeJoin = StrokeJoin.round
+        ..color = innerRimColor.withValues(alpha: locked ? 0.60 : 0.92),
+    );
+    if (finalNode) {
+      canvas.drawPath(
+        _gemPath(bodyRect.inflate(2.2)),
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 1.4
+          ..strokeJoin = StrokeJoin.round
+          ..color = rimColor.withValues(alpha: locked ? 0.50 : 0.86),
+      );
+    }
+
+    canvas.save();
+    canvas.clipPath(bodyPath);
+    final top = Offset(center.dx, bodyRect.top);
+    final left = Offset(bodyRect.left, center.dy - bodyHeight * 0.10);
+    final right = Offset(bodyRect.right, center.dy - bodyHeight * 0.10);
+    final bottom = Offset(center.dx, bodyRect.bottom);
+    final centerPoint = Offset(center.dx, center.dy + 1);
+
+    final leftPlane = Path()
+      ..moveTo(top.dx, top.dy)
+      ..lineTo(centerPoint.dx, centerPoint.dy)
+      ..lineTo(left.dx, left.dy)
+      ..lineTo(
+        bodyRect.left + bodyWidth * 0.20,
+        bodyRect.top + bodyHeight * 0.12,
+      )
+      ..close();
+    canvas.drawPath(
+      leftPlane,
+      Paint()..color = textColor.withValues(alpha: locked ? 0.045 : 0.13),
+    );
+
+    final rightPlane = Path()
+      ..moveTo(top.dx, top.dy)
+      ..lineTo(
+        bodyRect.right - bodyWidth * 0.18,
+        bodyRect.top + bodyHeight * 0.12,
+      )
+      ..lineTo(right.dx, right.dy)
+      ..lineTo(centerPoint.dx, centerPoint.dy)
+      ..close();
+    canvas.drawPath(
+      rightPlane,
+      Paint()..color = innerRimColor.withValues(alpha: locked ? 0.04 : 0.10),
+    );
+
+    final bottomPlane = Path()
+      ..moveTo(left.dx, left.dy)
+      ..lineTo(centerPoint.dx, centerPoint.dy)
+      ..lineTo(right.dx, right.dy)
+      ..lineTo(bottom.dx, bottom.dy)
+      ..close();
+    canvas.drawPath(
+      bottomPlane,
+      Paint()..color = Colors.black.withValues(alpha: locked ? 0.16 : 0.10),
+    );
+    canvas.restore();
+
+    final highlight = Path()
+      ..moveTo(
+        bodyRect.left + bodyWidth * 0.18,
+        bodyRect.top + bodyHeight * 0.18,
+      )
+      ..quadraticBezierTo(
+        center.dx,
+        bodyRect.top - 1,
+        bodyRect.right - bodyWidth * 0.18,
+        bodyRect.top + bodyHeight * 0.16,
+      );
+    canvas.drawPath(
+      highlight,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1.45
+        ..strokeCap = StrokeCap.round
+        ..color = textColor.withValues(alpha: locked ? 0.16 : 0.34),
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant _FacetedCrystalNodePainter old) =>
+      old.fillColor != fillColor ||
+      old.rimColor != rimColor ||
+      old.innerRimColor != innerRimColor ||
+      old.accentColor != accentColor ||
+      old.shadowColor != shadowColor ||
+      old.textColor != textColor ||
+      old.locked != locked ||
+      old.challenge != challenge ||
+      old.finalNode != finalNode ||
+      old.active != active;
+}
+
+class _CrystalLockBadgePainter extends CustomPainter {
+  const _CrystalLockBadgePainter({
+    required this.fillColor,
+    required this.edgeColor,
+    required this.shadowColor,
+  });
+
+  final Color fillColor;
+  final Color edgeColor;
+  final Color shadowColor;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final path = Path()
+      ..moveTo(size.width * 0.22, 1)
+      ..lineTo(size.width * 0.78, 1)
+      ..lineTo(size.width - 1, size.height * 0.34)
+      ..lineTo(size.width * 0.86, size.height - 1)
+      ..lineTo(size.width * 0.14, size.height - 1)
+      ..lineTo(1, size.height * 0.34)
+      ..close();
+    canvas.drawPath(
+      path.shift(const Offset(0.7, 1.0)),
+      Paint()..color = shadowColor.withValues(alpha: 0.78),
+    );
+    canvas.drawPath(
+      path,
+      Paint()
+        ..shader = LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: <Color>[
+            Color.alphaBlend(edgeColor.withValues(alpha: 0.18), fillColor),
+            Color.alphaBlend(Colors.black.withValues(alpha: 0.28), fillColor),
+          ],
+        ).createShader(Offset.zero & size),
+    );
+    canvas.drawPath(
+      path,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1.1
+        ..color = edgeColor.withValues(alpha: 0.84),
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant _CrystalLockBadgePainter old) =>
+      old.fillColor != fillColor ||
+      old.edgeColor != edgeColor ||
+      old.shadowColor != shadowColor;
+}
+
+class _CrystalFinalCrestPainter extends CustomPainter {
+  const _CrystalFinalCrestPainter({
+    required this.crystalColor,
+    required this.edgeColor,
+    required this.accentColor,
+    required this.shadowColor,
+    required this.active,
+  });
+
+  final Color crystalColor;
+  final Color edgeColor;
+  final Color accentColor;
+  final Color shadowColor;
+  final bool active;
+
+  Path _prism(double cx, double baseY, double height, double width) {
+    final top = baseY - height;
+    return Path()
+      ..moveTo(cx, top)
+      ..lineTo(cx + width * 0.50, top + height * 0.24)
+      ..lineTo(cx + width * 0.38, baseY)
+      ..lineTo(cx - width * 0.38, baseY)
+      ..lineTo(cx - width * 0.50, top + height * 0.24)
+      ..close();
+  }
+
+  void _paintPrism(
+    Canvas canvas,
+    Path prism,
+    Rect bounds, {
+    required bool centerPrism,
+  }) {
+    final fillBase = centerPrism
+        ? crystalColor
+        : Color.alphaBlend(
+            accentColor.withValues(alpha: active ? 0.16 : 0.10),
+            crystalColor,
+          );
+    final fillPaint = Paint()
+      ..shader = LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: <Color>[
+          Color.alphaBlend(
+            Colors.white.withValues(alpha: active ? 0.22 : 0.10),
+            fillBase,
+          ),
+          fillBase,
+          Color.alphaBlend(Colors.black.withValues(alpha: 0.24), fillBase),
+        ],
+        stops: const <double>[0, 0.56, 1],
+      ).createShader(bounds);
+    canvas.drawPath(prism, fillPaint);
+    canvas.drawPath(
+      prism,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = centerPrism ? 1.45 : 1.2
+        ..strokeJoin = StrokeJoin.round
+        ..color = edgeColor.withValues(alpha: active ? 0.98 : 0.82),
+    );
+
+    final top = Offset(bounds.center.dx, bounds.top);
+    final base = Offset(bounds.center.dx, bounds.bottom - 0.5);
+    canvas.drawLine(
+      top,
+      base,
+      Paint()
+        ..strokeWidth = 0.85
+        ..color = accentColor.withValues(alpha: active ? 0.62 : 0.30),
+    );
+  }
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final baseY = size.height * 0.79;
+    final prisms = <(Path, Rect, bool)>[];
+
+    void addPrism(double cx, double height, double width, bool centerPrism) {
+      final prism = _prism(cx, baseY, height, width);
+      prisms.add((prism, prism.getBounds(), centerPrism));
+    }
+
+    addPrism(size.width * 0.50, 28, 13, true);
+    addPrism(size.width * 0.30, 21, 11, false);
+    addPrism(size.width * 0.70, 21, 11, false);
+    addPrism(size.width * 0.14, 15, 9, false);
+    addPrism(size.width * 0.86, 15, 9, false);
+
+    final shadowPath = Path();
+    for (final prism in prisms) {
+      shadowPath.addPath(prism.$1, const Offset(1.0, 1.5));
+    }
+    canvas.drawPath(
+      shadowPath,
+      Paint()..color = shadowColor.withValues(alpha: active ? 0.82 : 0.68),
+    );
+
+    for (final prism in prisms) {
+      _paintPrism(canvas, prism.$1, prism.$2, centerPrism: prism.$3);
+    }
+
+    final base = Path()
+      ..moveTo(size.width * 0.07, size.height * 0.75)
+      ..quadraticBezierTo(
+        size.width * 0.50,
+        size.height * 0.91,
+        size.width * 0.93,
+        size.height * 0.75,
+      )
+      ..lineTo(size.width * 0.86, size.height * 0.95)
+      ..quadraticBezierTo(
+        size.width * 0.50,
+        size.height,
+        size.width * 0.14,
+        size.height * 0.95,
+      )
+      ..close();
+    canvas.drawPath(
+      base,
+      Paint()..color = edgeColor.withValues(alpha: active ? 0.92 : 0.76),
+    );
+    canvas.drawPath(
+      base,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1.0
+        ..color = accentColor.withValues(alpha: active ? 0.86 : 0.40),
+    );
+
+    final settingLine = Path()
+      ..moveTo(size.width * 0.18, size.height * 0.81)
+      ..quadraticBezierTo(
+        size.width * 0.50,
+        size.height * 0.91,
+        size.width * 0.82,
+        size.height * 0.81,
+      );
+    canvas.drawPath(
+      settingLine,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1.0
+        ..strokeCap = StrokeCap.round
+        ..color = accentColor.withValues(alpha: active ? 0.82 : 0.36),
+    );
+
+    final gemCenter = Offset(size.width * 0.50, size.height * 0.84);
+    final gem = Path()
+      ..moveTo(gemCenter.dx, gemCenter.dy - 3.2)
+      ..lineTo(gemCenter.dx + 3.2, gemCenter.dy)
+      ..lineTo(gemCenter.dx, gemCenter.dy + 3.2)
+      ..lineTo(gemCenter.dx - 3.2, gemCenter.dy)
+      ..close();
+    canvas.drawPath(
+      gem,
+      Paint()..color = accentColor.withValues(alpha: active ? 0.96 : 0.50),
+    );
+    canvas.drawPath(
+      gem,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 0.8
+        ..color = edgeColor.withValues(alpha: active ? 0.98 : 0.72),
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant _CrystalFinalCrestPainter old) =>
+      old.crystalColor != crystalColor ||
+      old.edgeColor != edgeColor ||
+      old.accentColor != accentColor ||
+      old.shadowColor != shadowColor ||
+      old.active != active;
 }
 
 class _ScenicRouteNodePainter extends CustomPainter {
@@ -1123,20 +1879,18 @@ class _ReusableRoutePathPainter extends CustomPainter {
       ..color = theme.pathColor.withValues(alpha: artworkMode ? 0.86 : 1)
       ..style = PaintingStyle.fill;
     final lockedStonePaint = Paint()
-      ..color = theme.lockedPathColor.withValues(
-        alpha: artworkMode ? 0.48 : 1,
-      )
+      ..color = theme.lockedPathColor.withValues(alpha: artworkMode ? 0.48 : 1)
       ..style = PaintingStyle.fill;
     final stoneHighlightPaint = Paint()
-      ..color = theme.textColor.withValues(
-        alpha: artworkMode ? 0.12 : 0.30,
-      )
+      ..color = theme.textColor.withValues(alpha: artworkMode ? 0.12 : 0.30)
       ..style = PaintingStyle.stroke
       ..strokeWidth = artworkMode ? 0.7 : 1.2;
 
-    for (var index = 0;
-        index < WordHuntRouteMapGeometry.connections.length;
-        index++) {
+    for (
+      var index = 0;
+      index < WordHuntRouteMapGeometry.connections.length;
+      index++
+    ) {
       final connection = WordHuntRouteMapGeometry.connections[index];
       final fromIndex = connection.$1 - 1;
       final toIndex = connection.$2 - 1;
@@ -1209,10 +1963,7 @@ class _ReusableRoutePathPainter extends CustomPainter {
       return Path()..moveTo(start.dx, start.dy);
     }
 
-    final midpoint = Offset(
-      (start.dx + end.dx) / 2,
-      (start.dy + end.dy) / 2,
-    );
+    final midpoint = Offset((start.dx + end.dx) / 2, (start.dy + end.dy) / 2);
     final normal = Offset(-delta.dy / length, delta.dx / length);
     final direction = segmentIndex.isEven ? 1.0 : -1.0;
     final control = midpoint + normal * (length * 0.08 * direction);

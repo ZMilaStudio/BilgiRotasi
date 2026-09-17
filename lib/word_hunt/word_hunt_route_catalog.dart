@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import 'word_hunt_gokyuzu_content.dart';
+import 'word_hunt_kristal_content.dart';
+import 'word_hunt_kristal_visual_theme.dart';
 import 'word_hunt_models.dart';
 import 'word_hunt_orman2_content.dart';
 import 'word_hunt_orman2_visual_theme.dart';
@@ -29,9 +31,9 @@ enum WordHuntRoutePresentationKind {
 @immutable
 class WordHuntRouteUnlockRule {
   const WordHuntRouteUnlockRule.always()
-      : kind = WordHuntRouteUnlockKind.always,
-        prerequisiteRoute = null,
-        requiredStars = 0;
+    : kind = WordHuntRouteUnlockKind.always,
+      prerequisiteRoute = null,
+      requiredStars = 0;
 
   const WordHuntRouteUnlockRule.routeStars({
     required this.prerequisiteRoute,
@@ -39,10 +41,9 @@ class WordHuntRouteUnlockRule {
   }) : kind = WordHuntRouteUnlockKind.routeStars,
        assert(requiredStars > 0);
 
-  const WordHuntRouteUnlockRule.routeComplete({
-    required this.prerequisiteRoute,
-  }) : kind = WordHuntRouteUnlockKind.routeComplete,
-       requiredStars = 0;
+  const WordHuntRouteUnlockRule.routeComplete({required this.prerequisiteRoute})
+    : kind = WordHuntRouteUnlockKind.routeComplete,
+      requiredStars = 0;
 
   final WordHuntRouteUnlockKind kind;
   final WordHuntRouteDefinition? prerequisiteRoute;
@@ -75,10 +76,8 @@ class WordHuntRouteUnlockRule {
     if (prerequisite == null) return 0;
     return prerequisite.levels
         .where(
-          (level) => WordHuntRouteProgressEngine.isLevelCompleted(
-            level,
-            progress,
-          ),
+          (level) =>
+              WordHuntRouteProgressEngine.isLevelCompleted(level, progress),
         )
         .length;
   }
@@ -175,23 +174,47 @@ abstract final class WordHuntRouteCatalog {
   /// Kadim Orman teknik olarak `orman-2` kimliğini korur ve Orman Yolu'nun
   /// route-complete contract'ı sağlandığında açılır. Orman Yolu için ekstra
   /// yıldız eşiği yoktur; final bölümünün en az bir yıldızla bitmesi yeterlidir.
-  static final WordHuntRouteCatalogEntry orman2Pilot = WordHuntRouteCatalogEntry(
-    cardKey: 'orman2',
-    route: WordHuntOrman2Content.orman2,
-    infoCards: WordHuntOrman2Content.infoCards,
-    ordinalLabel: 'Dördüncü rota',
-    icon: Icons.forest_rounded,
-    colors: const <Color>[Color(0xFF173D2A), Color(0xFF162C24)],
+  static final WordHuntRouteCatalogEntry orman2Pilot =
+      WordHuntRouteCatalogEntry(
+        cardKey: 'orman2',
+        route: WordHuntOrman2Content.orman2,
+        infoCards: WordHuntOrman2Content.infoCards,
+        ordinalLabel: 'Dördüncü rota',
+        icon: Icons.forest_rounded,
+        colors: const <Color>[Color(0xFF173D2A), Color(0xFF162C24)],
+        unlockRule: const WordHuntRouteUnlockRule.routeComplete(
+          prerequisiteRoute: WordHuntOrmanContent.ormanYolu,
+        ),
+        lockedMessage: 'Orman Yolu’nu tamamlayarak aç.',
+        presentationKind: WordHuntRoutePresentationKind.themedReusable,
+        visualTheme: WordHuntOrman2VisualTheme.production,
+      );
+
+  /// Beşinci production rota yalnız Kadim Orman route-complete olduğunda açılır.
+  /// Kadim ve Kristal rotalarında ek yıldız kapısı yoktur.
+  static final WordHuntRouteCatalogEntry kristal = WordHuntRouteCatalogEntry(
+    cardKey: 'kristal',
+    route: WordHuntKristalContent.kristalVadisi,
+    infoCards: WordHuntKristalContent.infoCards,
+    ordinalLabel: 'Beşinci rota',
+    icon: Icons.diamond_rounded,
+    colors: const <Color>[Color(0xFF6D4BB3), Color(0xFF237D83)],
     unlockRule: const WordHuntRouteUnlockRule.routeComplete(
-      prerequisiteRoute: WordHuntOrmanContent.ormanYolu,
+      prerequisiteRoute: WordHuntOrman2Content.orman2,
     ),
-    lockedMessage: 'Orman Yolu’nu tamamlayarak aç.',
+    lockedMessage: 'Kadim Orman’ı tamamlayarak aç.',
     presentationKind: WordHuntRoutePresentationKind.themedReusable,
-    visualTheme: WordHuntOrman2VisualTheme.production,
+    visualTheme: WordHuntKristalVisualTheme.production,
   );
 
   static final List<WordHuntRouteCatalogEntry> entries =
-      <WordHuntRouteCatalogEntry>[starter, gokyuzu, orman, orman2Pilot];
+      <WordHuntRouteCatalogEntry>[
+        starter,
+        gokyuzu,
+        orman,
+        orman2Pilot,
+        kristal,
+      ];
 
   static final List<WordHuntRouteCatalogEntry> _presentationEntries =
       <WordHuntRouteCatalogEntry>[...entries];

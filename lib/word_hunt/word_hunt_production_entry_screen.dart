@@ -85,6 +85,9 @@ class _WordHuntProductionEntryScreenState
   String get _storageKey =>
       WordHuntProgressCodec.storageKeyForUid(widget.ownerUid);
 
+  String get _kristalRevealSeenKey =>
+      'bilgi_rotasi_word_hunt_seen_kristal_vadisi_reveal_v1_$_ownerScope';
+
   @override
   void initState() {
     super.initState();
@@ -98,13 +101,29 @@ class _WordHuntProductionEntryScreenState
   Future<void> _loadProgress() async {
     var loaded = const WordHuntProgressSnapshot();
     var shouldPersistBackfill = false;
+    var shouldRevealHistoricalKristal = false;
     try {
       final raw = await _preferences.getString(_storageKey);
-      if (raw != null && raw.trim().isNotEmpty) {
+      final hadPersistedProgress = raw != null && raw.trim().isNotEmpty;
+      if (hadPersistedProgress) {
         loaded = WordHuntProgressCodec.decode(
           raw,
           expectedOwnerScope: _ownerScope,
         );
+      }
+
+      if (_catalogMode && hadPersistedProgress) {
+        final kristal = WordHuntRouteCatalog.kristal;
+        final kristalHasProgress = kristal.route.levels.any(
+          (level) => loaded.starsFor(level.id) > 0,
+        );
+        final revealSeen =
+            await _preferences.getBool(_kristalRevealSeenKey) ?? false;
+        shouldRevealHistoricalKristal =
+            kristal.isUnlocked(loaded) && !kristalHasProgress && !revealSeen;
+        if (shouldRevealHistoricalKristal) {
+          await _preferences.setBool(_kristalRevealSeenKey, true);
+        }
       }
       final backfilled = WordHuntRouteRewardEngine.backfillCompletedRoutes(
         loaded,
@@ -116,6 +135,7 @@ class _WordHuntProductionEntryScreenState
       // açılmasını engellemez; varsayılan boş progression ile devam edilir.
       loaded = const WordHuntProgressSnapshot();
       shouldPersistBackfill = false;
+      shouldRevealHistoricalKristal = false;
     }
 
     if (!mounted) return;
@@ -125,6 +145,26 @@ class _WordHuntProductionEntryScreenState
     });
     if (shouldPersistBackfill) {
       await _saveProgress(loaded);
+    }
+    if (shouldRevealHistoricalKristal && mounted) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Yeni rota açıldı: Kristal Vadisi')),
+        );
+      });
+    }
+  }
+
+  Future<void> _markKristalRevealSeenForNextRoute(
+    WordHuntRouteDefinition completedRoute,
+  ) async {
+    final next = WordHuntRouteRewardEngine.nextCatalogEntry(completedRoute);
+    if (next?.cardKey != WordHuntRouteCatalog.kristal.cardKey) return;
+    try {
+      await _preferences.setBool(_kristalRevealSeenKey, true);
+    } catch (_) {
+      // Bu marker progression değildir; yazılamaması completion'ı engellemez.
     }
   }
 
@@ -254,6 +294,7 @@ class _WordHuntProductionEntryScreenState
     if (!mounted) return;
 
     if (transition.routeCompletedNow) {
+      await _markKristalRevealSeenForNextRoute(route);
       await _showRouteCompletionCeremony(route, next);
       return;
     }
@@ -274,10 +315,12 @@ class _WordHuntProductionEntryScreenState
 
     final catalogEntry = WordHuntRouteCatalog.entryForRouteId(route.id);
     final nextCandidate = WordHuntRouteRewardEngine.nextCatalogEntry(route);
-    final nextEntry = nextCandidate != null && nextCandidate.isUnlocked(progress)
+    final nextEntry =
+        nextCandidate != null && nextCandidate.isUnlocked(progress)
         ? nextCandidate
         : null;
-    final routeColors = catalogEntry?.colors ??
+    final routeColors =
+        catalogEntry?.colors ??
         const <Color>[Color(0xFF17324B), Color(0xFF081623)];
 
     final action = await showDialog<WordHuntRouteCompletionAction>(
@@ -350,9 +393,9 @@ class _WordHuntProductionEntryScreenState
     if (!WordHuntRouteProgressEngine.isRouteComplete(route, _progress)) {
       return;
     }
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('${route.title} tamamlandı.')),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text('${route.title} tamamlandı.')));
   }
 
   void _showBook() {

@@ -44,6 +44,11 @@ abstract final class WordHuntRouteRewardCatalog {
           displayName: 'Kadim Orman Kaşifi',
           icon: Icons.park_rounded,
         ),
+        WordHuntRouteRewardDefinition(
+          id: 'badge-kristal-kasifi',
+          displayName: 'Kristal Kaşifi',
+          icon: Icons.diamond_rounded,
+        ),
       ];
 
   static WordHuntRouteRewardDefinition? forId(String rewardId) {

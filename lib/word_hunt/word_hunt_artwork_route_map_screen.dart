@@ -42,6 +42,7 @@ class WordHuntArtworkRouteMapScreen extends StatelessWidget {
         theme: theme,
         progress: progress,
         onLevelTap: onLevelTap,
+        hostedByArtworkChrome: true,
       );
     }
 
@@ -104,9 +105,9 @@ class WordHuntArtworkRouteMapScreen extends StatelessWidget {
                           ),
                           completed:
                               WordHuntRouteProgressEngine.isLevelCompleted(
-                            route.levels[i],
-                            progress,
-                          ),
+                                route.levels[i],
+                                progress,
+                              ),
                           current: current == i + 1,
                           highlighted: ux?.highlightedLevelIndex == i + 1,
                           highlightEpoch: ux?.highlightEpoch ?? 0,
@@ -142,10 +143,10 @@ class WordHuntArtworkRouteMapScreen extends StatelessWidget {
     final state = completed
         ? 'completed'
         : current && unlocked
-            ? 'current'
-            : unlocked
-                ? 'open'
-                : 'locked';
+        ? 'current'
+        : unlocked
+        ? 'open'
+        : 'locked';
     final isFinal = level.type == WordHuntLevelType.routeFinal;
 
     return Positioned(
@@ -181,13 +182,9 @@ class WordHuntArtworkRouteMapScreen extends StatelessWidget {
               ),
             ),
             if (level.type == WordHuntLevelType.challenge)
-              const SizedBox.shrink(
-                key: Key('word_hunt_route_stop_plaque_5'),
-              ),
+              const SizedBox.shrink(key: Key('word_hunt_route_stop_plaque_5')),
             if (isFinal)
-              const SizedBox.shrink(
-                key: Key('word_hunt_route_stop_plaque_10'),
-              ),
+              const SizedBox.shrink(key: Key('word_hunt_route_stop_plaque_10')),
             Positioned.fill(
               child: GestureDetector(
                 key: Key('word_hunt_reusable_level_${level.index}'),
@@ -230,9 +227,13 @@ class _ForestStop extends StatelessWidget {
     final asset = isFinal
         ? 'assets/word_hunt/orman_node_final.b64'
         : unlocked
-            ? 'assets/word_hunt/orman_node_open.b64'
-            : 'assets/word_hunt/orman_node_locked.b64';
-    final size = isFinal ? 112.0 : unlocked ? 84.0 : 88.0;
+        ? 'assets/word_hunt/orman_node_open.b64'
+        : 'assets/word_hunt/orman_node_locked.b64';
+    final size = isFinal
+        ? 112.0
+        : unlocked
+        ? 84.0
+        : 88.0;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -355,10 +356,7 @@ class _CompassPulse extends StatelessWidget {
       builder: (context, value, child) {
         return Opacity(
           opacity: (1 - value).clamp(0, 1),
-          child: Transform.scale(
-            scale: .86 + (.44 * value),
-            child: child,
-          ),
+          child: Transform.scale(scale: .86 + (.44 * value), child: child),
         );
       },
       child: DecoratedBox(
@@ -386,51 +384,48 @@ class _Stars extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => DecoratedBox(
-        decoration: BoxDecoration(
-          color: const Color(0xE8070A08),
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 1),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: List<Widget>.generate(3, (i) {
-              final filled = i < stars;
-              final color = muted
-                  ? const Color(0xFFA7ADA6)
-                  : filled
-                      ? const Color(0xFFFFC928)
-                      : const Color(0xFF9DA39C);
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 1),
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: <Widget>[
-                    Icon(
-                      Icons.star_rounded,
-                      size: size + 4,
-                      color: const Color(0xE5231C12),
-                    ),
-                    Icon(
-                      Icons.star_rounded,
-                      size: size,
-                      color: color,
-                      shadows: filled
-                          ? const <Shadow>[
-                              Shadow(
-                                color: Color(0xCCF58D00),
-                                blurRadius: 5,
-                              ),
-                            ]
-                          : null,
-                    ),
-                  ],
+    decoration: BoxDecoration(
+      color: const Color(0xE8070A08),
+      borderRadius: BorderRadius.circular(10),
+    ),
+    child: Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 1),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: List<Widget>.generate(3, (i) {
+          final filled = i < stars;
+          final color = muted
+              ? const Color(0xFFA7ADA6)
+              : filled
+              ? const Color(0xFFFFC928)
+              : const Color(0xFF9DA39C);
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 1),
+            child: Stack(
+              alignment: Alignment.center,
+              children: <Widget>[
+                Icon(
+                  Icons.star_rounded,
+                  size: size + 4,
+                  color: const Color(0xE5231C12),
                 ),
-              );
-            }),
-          ),
-        ),
-      );
+                Icon(
+                  Icons.star_rounded,
+                  size: size,
+                  color: color,
+                  shadows: filled
+                      ? const <Shadow>[
+                          Shadow(color: Color(0xCCF58D00), blurRadius: 5),
+                        ]
+                      : null,
+                ),
+              ],
+            ),
+          );
+        }),
+      ),
+    ),
+  );
 }
 
 class _ForestHeader extends StatelessWidget {
@@ -449,112 +444,107 @@ class _ForestHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 338),
-          child: Container(
-            padding: const EdgeInsets.all(2),
-            decoration: BoxDecoration(
-              color: const Color(0xF20A2115),
-              borderRadius: BorderRadius.circular(15),
-              border: Border.all(
-                color: accent.withValues(alpha: .84),
-                width: 1.4,
-              ),
-              boxShadow: const <BoxShadow>[
-                BoxShadow(
-                  color: Color(0x92000000),
-                  blurRadius: 16,
-                  offset: Offset(0, 7),
-                ),
-              ],
+    child: ConstrainedBox(
+      constraints: const BoxConstraints(maxWidth: 338),
+      child: Container(
+        padding: const EdgeInsets.all(2),
+        decoration: BoxDecoration(
+          color: const Color(0xF20A2115),
+          borderRadius: BorderRadius.circular(15),
+          border: Border.all(color: accent.withValues(alpha: .84), width: 1.4),
+          boxShadow: const <BoxShadow>[
+            BoxShadow(
+              color: Color(0x92000000),
+              blurRadius: 16,
+              offset: Offset(0, 7),
             ),
-            child: Container(
-              key: const Key('word_hunt_orman_header_panel'),
-              height: 47,
-              padding: const EdgeInsets.fromLTRB(12, 3, 10, 4),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: const Color(0x38FFF2C2)),
-                gradient: const LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: <Color>[Color(0xF01B3A24), Color(0xF00A1A10)],
+          ],
+        ),
+        child: Container(
+          key: const Key('word_hunt_orman_header_panel'),
+          height: 47,
+          padding: const EdgeInsets.fromLTRB(12, 3, 10, 4),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: const Color(0x38FFF2C2)),
+            gradient: const LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: <Color>[Color(0xF01B3A24), Color(0xF00A1A10)],
+            ),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Text(
+                'KELİME AVI',
+                style: TextStyle(
+                  color: accent.withValues(alpha: .96),
+                  fontFamily: 'serif',
+                  fontSize: 8.5,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 1.8,
                 ),
               ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+              const SizedBox(height: 1),
+              Row(
                 children: <Widget>[
-                  Text(
-                    'KELİME AVI',
-                    style: TextStyle(
-                      color: accent.withValues(alpha: .96),
-                      fontFamily: 'serif',
-                      fontSize: 8.5,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 1.8,
+                  Expanded(
+                    child: Text(
+                      title,
+                      key: const Key('word_hunt_reusable_route_title'),
+                      textAlign: TextAlign.center,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: textColor,
+                        fontFamily: 'serif',
+                        fontSize: 19,
+                        height: 1,
+                        fontWeight: FontWeight.w800,
+                        shadows: const <Shadow>[
+                          Shadow(color: Color(0xCC000000), blurRadius: 5),
+                        ],
+                      ),
                     ),
                   ),
-                  const SizedBox(height: 1),
-                  Row(
-                    children: <Widget>[
-                      Expanded(
-                        child: Text(
-                          title,
-                          key: const Key('word_hunt_reusable_route_title'),
-                          textAlign: TextAlign.center,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+                  Container(
+                    key: const Key('word_hunt_reusable_route_stars'),
+                    margin: const EdgeInsets.only(left: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 2,
+                    ),
+                    decoration: BoxDecoration(
+                      color: const Color(0xD006130C),
+                      borderRadius: BorderRadius.circular(11),
+                      border: Border.all(color: accent.withValues(alpha: .62)),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        Icon(Icons.star_rounded, color: accent, size: 14),
+                        const SizedBox(width: 3),
+                        Text(
+                          '$stars / $maximumStars',
                           style: TextStyle(
                             color: textColor,
                             fontFamily: 'serif',
-                            fontSize: 19,
-                            height: 1,
+                            fontSize: 11,
                             fontWeight: FontWeight.w800,
-                            shadows: const <Shadow>[
-                              Shadow(color: Color(0xCC000000), blurRadius: 5),
-                            ],
                           ),
                         ),
-                      ),
-                      Container(
-                        key: const Key('word_hunt_reusable_route_stars'),
-                        margin: const EdgeInsets.only(left: 8),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 2,
-                        ),
-                        decoration: BoxDecoration(
-                          color: const Color(0xD006130C),
-                          borderRadius: BorderRadius.circular(11),
-                          border: Border.all(
-                            color: accent.withValues(alpha: .62),
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            Icon(Icons.star_rounded, color: accent, size: 14),
-                            const SizedBox(width: 3),
-                            Text(
-                              '$stars / $maximumStars',
-                              style: TextStyle(
-                                color: textColor,
-                                fontFamily: 'serif',
-                                fontSize: 11,
-                                fontWeight: FontWeight.w800,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ],
               ),
-            ),
+            ],
           ),
         ),
-      );
+      ),
+    ),
+  );
 }
 
 class _Base64Image extends StatefulWidget {
@@ -585,14 +575,14 @@ class _Base64ImageState extends State<_Base64Image> {
 
   @override
   Widget build(BuildContext context) => FutureBuilder<Uint8List>(
-        future: bytes,
-        builder: (context, snapshot) => snapshot.data == null
-            ? const SizedBox.expand()
-            : Image.memory(
-                snapshot.data!,
-                fit: BoxFit.contain,
-                filterQuality: FilterQuality.high,
-                gaplessPlayback: true,
-              ),
-      );
+    future: bytes,
+    builder: (context, snapshot) => snapshot.data == null
+        ? const SizedBox.expand()
+        : Image.memory(
+            snapshot.data!,
+            fit: BoxFit.contain,
+            filterQuality: FilterQuality.high,
+            gaplessPlayback: true,
+          ),
+  );
 }

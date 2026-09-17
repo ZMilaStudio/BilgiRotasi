@@ -1,4 +1,5 @@
 import 'package:bilgi_rotasi/word_hunt/word_hunt_gokyuzu_content.dart';
+import 'package:bilgi_rotasi/word_hunt/word_hunt_kristal_content.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_models.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_orman2_content.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_orman_content.dart';
@@ -14,11 +15,10 @@ void main() {
   final sky = WordHuntGokyuzuContent.gokyuzuAdalari;
   final forest = WordHuntOrmanContent.ormanYolu;
   final ancient = WordHuntOrman2Content.orman2;
+  final crystal = WordHuntKristalContent.kristalVadisi;
 
   Map<String, int> completedRouteStars(WordHuntRouteDefinition route) {
-    final stars = <String, int>{
-      for (final level in route.levels) level.id: 1,
-    };
+    final stars = <String, int>{for (final level in route.levels) level.id: 1};
     var remaining = route.unlockStarsRequired - route.levels.length;
     for (final level in route.levels) {
       if (remaining <= 0) break;
@@ -35,9 +35,7 @@ void main() {
   ) {
     assert(targetStars >= route.levels.length);
     assert(targetStars <= route.maximumStars);
-    final stars = <String, int>{
-      for (final level in route.levels) level.id: 1,
-    };
+    final stars = <String, int>{for (final level in route.levels) level.id: 1};
     var remaining = targetStars - route.levels.length;
     for (final level in route.levels) {
       if (remaining <= 0) break;
@@ -59,9 +57,7 @@ void main() {
   }
 
   Map<String, int> mergeStars(Iterable<Map<String, int>> parts) {
-    return <String, int>{
-      for (final part in parts) ...part,
-    };
+    return <String, int>{for (final part in parts) ...part};
   }
 
   Future<void> pumpSelector(
@@ -90,8 +86,7 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  Finder card(String key) =>
-      find.byKey(Key('word_hunt_route_card_$key'));
+  Finder card(String key) => find.byKey(Key('word_hunt_route_card_$key'));
 
   Finder progressText(String key) =>
       find.byKey(Key('word_hunt_route_progress_$key'));
@@ -125,9 +120,7 @@ void main() {
     testWidgets(
       'STATE B starter final complete at 17 stars stays incomplete and recommends Devam Et',
       (tester) async {
-        final progress = progressWith(
-          stars: allLevelsAtTotal(starter, 17),
-        );
+        final progress = progressWith(stars: allLevelsAtTotal(starter, 17));
         expect(
           WordHuntRouteProgressEngine.isRouteComplete(starter, progress),
           isFalse,
@@ -136,17 +129,11 @@ void main() {
         await pumpSelector(tester, progress);
 
         expect(
-          find.descendant(
-            of: card('starter'),
-            matching: find.text('Devam Et'),
-          ),
+          find.descendant(of: card('starter'), matching: find.text('Devam Et')),
           findsOneWidget,
         );
         expect(
-          find.descendant(
-            of: card('gokyuzu'),
-            matching: find.text('Kilitli'),
-          ),
+          find.descendant(of: card('gokyuzu'), matching: find.text('Kilitli')),
           findsOneWidget,
         );
       },
@@ -159,17 +146,11 @@ void main() {
       await pumpSelector(tester, progress);
 
       expect(
-        find.descendant(
-          of: card('starter'),
-          matching: find.text('Tamamlandı'),
-        ),
+        find.descendant(of: card('starter'), matching: find.text('Tamamlandı')),
         findsOneWidget,
       );
       expect(
-        find.descendant(
-          of: card('gokyuzu'),
-          matching: find.text('Sıradaki'),
-        ),
+        find.descendant(of: card('gokyuzu'), matching: find.text('Sıradaki')),
         findsOneWidget,
       );
     });
@@ -186,10 +167,7 @@ void main() {
       await pumpSelector(tester, progress);
 
       expect(
-        find.descendant(
-          of: card('orman'),
-          matching: find.text('Sıradaki'),
-        ),
+        find.descendant(of: card('orman'), matching: find.text('Sıradaki')),
         findsOneWidget,
       );
     });
@@ -208,15 +186,12 @@ void main() {
 
       await tester.ensureVisible(card('orman2'));
       expect(
-        find.descendant(
-          of: card('orman2'),
-          matching: find.text('Sıradaki'),
-        ),
+        find.descendant(of: card('orman2'), matching: find.text('Sıradaki')),
         findsOneWidget,
       );
     });
 
-    testWidgets('STATE F all routes complete has no recommendation and terminal header', (
+    testWidgets('STATE F Kadim complete recommends Kristal as Sıradaki', (
       tester,
     ) async {
       final progress = progressWith(
@@ -229,12 +204,49 @@ void main() {
       );
       await pumpSelector(tester, progress);
 
+      await tester.ensureVisible(card('kristal'));
+      expect(
+        find.descendant(of: card('kristal'), matching: find.text('Sıradaki')),
+        findsOneWidget,
+      );
+      expect(find.text('Tüm mevcut rotaları tamamladın.'), findsNothing);
+    });
+
+    testWidgets('STATE G Kristal partial uses Devam Et', (tester) async {
+      final progress = progressWith(
+        stars: mergeStars(<Map<String, int>>[
+          completedRouteStars(starter),
+          completedRouteStars(sky),
+          completedRouteStars(forest),
+          completedRouteStars(ancient),
+          <String, int>{crystal.levels.first.id: 2},
+        ]),
+      );
+      await pumpSelector(tester, progress);
+      await tester.ensureVisible(card('kristal'));
+      expect(
+        find.descendant(of: card('kristal'), matching: find.text('Devam Et')),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('STATE H all five routes complete has terminal header', (
+      tester,
+    ) async {
+      final progress = progressWith(
+        stars: mergeStars(<Map<String, int>>[
+          completedRouteStars(starter),
+          completedRouteStars(sky),
+          completedRouteStars(forest),
+          completedRouteStars(ancient),
+          completedRouteStars(crystal),
+        ]),
+      );
+      await pumpSelector(tester, progress);
       expect(find.text('Sıradaki'), findsNothing);
       expect(find.text('Devam Et'), findsNothing);
-      expect(find.text('Tamamlandı'), findsNWidgets(4));
+      expect(find.text('Tamamlandı'), findsNWidgets(5));
       expect(find.text('Tüm mevcut rotaları tamamladın.'), findsOneWidget);
-      expect(find.textContaining('Yakında'), findsNothing);
-      expect(find.textContaining('Yeni rota'), findsNothing);
     });
 
     testWidgets('partial next route uses Devam Et instead of Sıradaki', (
@@ -243,26 +255,17 @@ void main() {
       final progress = progressWith(
         stars: mergeStars(<Map<String, int>>[
           completedRouteStars(starter),
-          <String, int>{
-            sky.levels[0].id: 3,
-            sky.levels[1].id: 3,
-          },
+          <String, int>{sky.levels[0].id: 3, sky.levels[1].id: 3},
         ]),
       );
       await pumpSelector(tester, progress);
 
       expect(
-        find.descendant(
-          of: card('gokyuzu'),
-          matching: find.text('Devam Et'),
-        ),
+        find.descendant(of: card('gokyuzu'), matching: find.text('Devam Et')),
         findsOneWidget,
       );
       expect(
-        find.descendant(
-          of: card('starter'),
-          matching: find.text('Tamamlandı'),
-        ),
+        find.descendant(of: card('starter'), matching: find.text('Tamamlandı')),
         findsOneWidget,
       );
       expect(
@@ -273,28 +276,29 @@ void main() {
   });
 
   group('locked unmet requirement presentation', () {
-    testWidgets('starter final complete at 17 shows 17 / 18 stars on sky lock', (
-      tester,
-    ) async {
-      final progress = progressWith(stars: allLevelsAtTotal(starter, 17));
-      await pumpSelector(tester, progress);
+    testWidgets(
+      'starter final complete at 17 shows 17 / 18 stars on sky lock',
+      (tester) async {
+        final progress = progressWith(stars: allLevelsAtTotal(starter, 17));
+        await pumpSelector(tester, progress);
 
-      expect(
-        find.text('Başlangıç Limanı’nı tamamla ve en az 18 yıldız kazan.'),
-        findsOneWidget,
-      );
-      expect(
-        tester.widget<Text>(progressText('gokyuzu')).data,
-        '17 / 18 yıldız',
-      );
-      expect(
-        find.descendant(
-          of: card('gokyuzu'),
-          matching: find.text('10 / 10 bölüm'),
-        ),
-        findsNothing,
-      );
-    });
+        expect(
+          find.text('Başlangıç Limanı’nı tamamla ve en az 18 yıldız kazan.'),
+          findsOneWidget,
+        );
+        expect(
+          tester.widget<Text>(progressText('gokyuzu')).data,
+          '17 / 18 yıldız',
+        );
+        expect(
+          find.descendant(
+            of: card('gokyuzu'),
+            matching: find.text('10 / 10 bölüm'),
+          ),
+          findsNothing,
+        );
+      },
+    );
 
     testWidgets('sky final complete at 17 shows 17 / 18 stars on forest lock', (
       tester,
@@ -307,10 +311,7 @@ void main() {
       );
       await pumpSelector(tester, progress);
 
-      expect(
-        tester.widget<Text>(progressText('orman')).data,
-        '17 / 18 yıldız',
-      );
+      expect(tester.widget<Text>(progressText('orman')).data, '17 / 18 yıldız');
       expect(
         find.descendant(
           of: card('orman'),
@@ -330,10 +331,7 @@ void main() {
       );
       await pumpSelector(tester, progress);
 
-      expect(
-        tester.widget<Text>(progressText('gokyuzu')).data,
-        '8 / 10 bölüm',
-      );
+      expect(tester.widget<Text>(progressText('gokyuzu')).data, '8 / 10 bölüm');
       expect(
         find.descendant(
           of: card('gokyuzu'),
@@ -350,18 +348,13 @@ void main() {
         stars: mergeStars(<Map<String, int>>[
           completedRouteStars(starter),
           completedRouteStars(sky),
-          <String, int>{
-            for (final level in forest.levels.take(9)) level.id: 1,
-          },
+          <String, int>{for (final level in forest.levels.take(9)) level.id: 1},
         ]),
       );
       await pumpSelector(tester, progress);
 
       await tester.ensureVisible(card('orman2'));
-      expect(
-        tester.widget<Text>(progressText('orman2')).data,
-        '9 / 10 bölüm',
-      );
+      expect(tester.widget<Text>(progressText('orman2')).data, '9 / 10 bölüm');
       expect(
         find.descendant(
           of: card('orman2'),
@@ -386,32 +379,35 @@ void main() {
     expect(find.text('Üçüncü rota'), findsOneWidget);
     await tester.ensureVisible(card('orman2'));
     expect(find.text('Dördüncü rota'), findsOneWidget);
+    await tester.ensureVisible(card('kristal'));
+    expect(find.text('Beşinci rota'), findsOneWidget);
   });
 
-  testWidgets('locked tap gives exact reason but never calls route navigation', (
-    tester,
-  ) async {
-    WordHuntRouteCatalogEntry? tapped;
-    await pumpSelector(
-      tester,
-      const WordHuntProgressSnapshot(),
-      onRouteTap: (entry) => tapped = entry,
-    );
+  testWidgets(
+    'locked tap gives exact reason but never calls route navigation',
+    (tester) async {
+      WordHuntRouteCatalogEntry? tapped;
+      await pumpSelector(
+        tester,
+        const WordHuntProgressSnapshot(),
+        onRouteTap: (entry) => tapped = entry,
+      );
 
-    await tester.tap(card('gokyuzu'));
-    await tester.pump();
+      await tester.tap(card('gokyuzu'));
+      await tester.pump();
 
-    expect(tapped, isNull);
-    expect(
-      find.descendant(
-        of: find.byType(SnackBar),
-        matching: find.text(
-          'Başlangıç Limanı’nı tamamla ve en az 18 yıldız kazan.',
+      expect(tapped, isNull);
+      expect(
+        find.descendant(
+          of: find.byType(SnackBar),
+          matching: find.text(
+            'Başlangıç Limanı’nı tamamla ve en az 18 yıldız kazan.',
+          ),
         ),
-      ),
-      findsOneWidget,
-    );
-  });
+        findsOneWidget,
+      );
+    },
+  );
 
   testWidgets('complete and reward remain separate selector states', (
     tester,
@@ -422,10 +418,7 @@ void main() {
     await pumpSelector(tester, completedWithoutReward);
 
     expect(
-      find.descendant(
-        of: card('starter'),
-        matching: find.text('Tamamlandı'),
-      ),
+      find.descendant(of: card('starter'), matching: find.text('Tamamlandı')),
       findsOneWidget,
     );
     expect(
@@ -443,10 +436,7 @@ void main() {
     await pumpSelector(tester, withReward);
 
     expect(
-      find.descendant(
-        of: card('starter'),
-        matching: find.text('Tamamlandı'),
-      ),
+      find.descendant(of: card('starter'), matching: find.text('Tamamlandı')),
       findsOneWidget,
     );
     expect(
@@ -458,46 +448,39 @@ void main() {
     );
   });
 
-  testWidgets('inconsistent locked earned reward never unlocks or recommends route', (
-    tester,
-  ) async {
-    WordHuntRouteCatalogEntry? tapped;
-    final progress = progressWith(
-      rewards: <String>{sky.routeRewardId},
-    );
-    await pumpSelector(
-      tester,
-      progress,
-      onRouteTap: (entry) => tapped = entry,
-    );
+  testWidgets(
+    'inconsistent locked earned reward never unlocks or recommends route',
+    (tester) async {
+      WordHuntRouteCatalogEntry? tapped;
+      final progress = progressWith(rewards: <String>{sky.routeRewardId});
+      await pumpSelector(
+        tester,
+        progress,
+        onRouteTap: (entry) => tapped = entry,
+      );
 
-    expect(WordHuntRouteCatalog.gokyuzu.isUnlocked(progress), isFalse);
-    expect(
-      find.descendant(
-        of: card('starter'),
-        matching: find.text('Sıradaki'),
-      ),
-      findsOneWidget,
-    );
-    expect(
-      find.descendant(
-        of: card('gokyuzu'),
-        matching: find.text('Kilitli'),
-      ),
-      findsOneWidget,
-    );
-    expect(
-      find.descendant(
-        of: card('gokyuzu'),
-        matching: find.text('Rozet kazanıldı'),
-      ),
-      findsOneWidget,
-    );
+      expect(WordHuntRouteCatalog.gokyuzu.isUnlocked(progress), isFalse);
+      expect(
+        find.descendant(of: card('starter'), matching: find.text('Sıradaki')),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(of: card('gokyuzu'), matching: find.text('Kilitli')),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(
+          of: card('gokyuzu'),
+          matching: find.text('Rozet kazanıldı'),
+        ),
+        findsOneWidget,
+      );
 
-    await tester.tap(card('gokyuzu'));
-    await tester.pump();
-    expect(tapped, isNull);
-  });
+      await tester.tap(card('gokyuzu'));
+      await tester.pump();
+      expect(tapped, isNull);
+    },
+  );
 
   group('responsive selector layout', () {
     final sizes = <Size>[
@@ -507,34 +490,32 @@ void main() {
     ];
 
     for (final size in sizes) {
-      testWidgets('${size.width.toInt()} px renders guided worst-case without overflow', (
-        tester,
-      ) async {
-        final progress = progressWith(
-          stars: mergeStars(<Map<String, int>>[
-            completedRouteStars(starter),
-            <String, int>{
-              sky.levels[0].id: 3,
-              sky.levels[1].id: 3,
-            },
-          ]),
-          rewards: <String>{starter.routeRewardId},
-        );
+      testWidgets(
+        '${size.width.toInt()} px renders guided worst-case without overflow',
+        (tester) async {
+          final progress = progressWith(
+            stars: mergeStars(<Map<String, int>>[
+              completedRouteStars(starter),
+              <String, int>{sky.levels[0].id: 3, sky.levels[1].id: 3},
+            ]),
+            rewards: <String>{starter.routeRewardId},
+          );
 
-        await pumpSelector(tester, progress, size: size);
+          await pumpSelector(tester, progress, size: size);
 
-        expect(tester.takeException(), isNull);
-        expect(card('starter'), findsOneWidget);
-        expect(find.text('Devam Et'), findsOneWidget);
-        expect(
-          find.text('Gökyüzü Adaları’nı tamamla ve en az 18 yıldız kazan.'),
-          findsOneWidget,
-        );
-        await tester.ensureVisible(card('orman2'));
-        await tester.pumpAndSettle();
-        expect(card('orman2'), findsOneWidget);
-        expect(tester.takeException(), isNull);
-      });
+          expect(tester.takeException(), isNull);
+          expect(card('starter'), findsOneWidget);
+          expect(find.text('Devam Et'), findsOneWidget);
+          expect(
+            find.text('Gökyüzü Adaları’nı tamamla ve en az 18 yıldız kazan.'),
+            findsOneWidget,
+          );
+          await tester.ensureVisible(card('orman2'));
+          await tester.pumpAndSettle();
+          expect(card('orman2'), findsOneWidget);
+          expect(tester.takeException(), isNull);
+        },
+      );
     }
 
     testWidgets('480 px keeps selector scrollable and reachable', (
@@ -611,33 +592,31 @@ void main() {
     );
     expect(forestNode.label, contains('0 / 10 bölüm'));
 
-    expect(
-      find.bySemanticsLabel(RegExp(r'^Rozet kazanıldı')),
-      findsNothing,
-    );
+    expect(find.bySemanticsLabel(RegExp(r'^Rozet kazanıldı')), findsNothing);
 
     semantics.dispose();
   });
 
-  testWidgets('locked Kadim keeps forest identity and a separate lock treatment', (
-    tester,
-  ) async {
-    await pumpSelector(tester, const WordHuntProgressSnapshot());
+  testWidgets(
+    'locked Kadim keeps forest identity and a separate lock treatment',
+    (tester) async {
+      await pumpSelector(tester, const WordHuntProgressSnapshot());
 
-    await tester.ensureVisible(card('orman2'));
-    expect(
-      find.descendant(
-        of: card('orman2'),
-        matching: find.byIcon(Icons.forest_rounded),
-      ),
-      findsOneWidget,
-    );
-    expect(
-      find.descendant(
-        of: card('orman2'),
-        matching: find.byIcon(Icons.lock_outline_rounded),
-      ),
-      findsWidgets,
-    );
-  });
+      await tester.ensureVisible(card('orman2'));
+      expect(
+        find.descendant(
+          of: card('orman2'),
+          matching: find.byIcon(Icons.forest_rounded),
+        ),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(
+          of: card('orman2'),
+          matching: find.byIcon(Icons.lock_outline_rounded),
+        ),
+        findsWidgets,
+      );
+    },
+  );
 }
