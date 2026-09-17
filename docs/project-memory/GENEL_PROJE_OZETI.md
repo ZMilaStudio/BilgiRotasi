@@ -1,219 +1,329 @@
 # Bilgi Rotası — Genel Proje Özeti
 
-**Son güncelleme:** 17 Eylül 2026
+**Son güncelleme:** 17 Eylül 2026 — Kristal Vadisi / PR #210 owner visual review devri
 
 ## YENİ SOHBETTE ÖNCE BUNLARI OKU
 
 1. `docs/project-memory/GENEL_PROJE_OZETI.md`
-2. `docs/project-memory/SOHBET_DEVIR_2026-09-17_ROUTE_SELECTOR_GUIDED_POLISH_KAPANIS.md`
-3. `KELIME_AVI_REUSABLE_HARITA_KARARI.md`
-4. Ardından canlı GitHub durumunu yeniden doğrula: target branch exact HEAD, ilgili PR'lar ve Actions sonuçları.
+2. `docs/project-memory/SOHBET_DEVIR_2026-09-17_KRISTAL_VADISI_PR210_OWNER_VISUAL_REVIEW.md`
+3. `docs/project-memory/SOHBET_DEVIR_2026-09-17_ROUTE_SELECTOR_GUIDED_POLISH_KAPANIS.md`
+4. `docs/project-memory/SOHBET_DEVIR_2026-09-17_ROUTE_REWARD_FINAL_CEREMONY_KAPANIS.md`
+5. `KELIME_AVI_REUSABLE_HARITA_KARARI.md`
 
-Çelişki varsa öncelik: **canlı GitHub > proje memory/karar dosyaları > eski sohbetler**.
+Çelişki halinde öncelik: **canlı GitHub > son sohbet devir notu > project-memory / karar docs > eski sohbetler**.
 
-Repo: `ZMilaStudio/BilgiRotasi`  
-Target branch: `release/final-closed-test-aab-1.68.8`  
-PR #207 challenge/final balance merge: `4ffe63500363e6d976bb211f5e7d547a69859df9`  
-PR #208 route reward/final ceremony merge: `c880550ef41841608d8aa664f6c24c54f3dd067d`  
-PR #209 guided route selector polish merge: `92135e01a2c22f37441a4d7192265f3d9902ebc0`  
-Bu dosyayı güncelleyen docs commit target HEAD'i ayrıca ilerletecektir; yeni sohbette exact HEAD mutlaka canlı doğrulanmalıdır.
+> **YENİ SOHBET DUR KURALI:** Dosyaları okuduktan sonra kullanıcı yeni prompt vermeden hiçbir işe devam etme. CI takip etme, commit/PR/merge yapma, kod/test/docs/asset değiştirme. Bağlamı devral ve komut bekle.
 
 ---
 
-## KELİME AVI — AUTHORITATIVE PRODUCTION DURUMU
+## REPO / CANLI BASELINE
 
-Production rota sırası ve unlock zinciri:
+Repo: `ZMilaStudio/BilgiRotasi`
+
+Production target:
+`release/final-closed-test-aab-1.68.8`
+
+Target HEAD, bu özet hazırlanırken:
+`89b4d4bae4af4bda35d77e7e8c52026fce4c271c`
+
+Target'ta merge edilmiş son büyük Kelime Avı işleri:
+- PR #207 challenge/final balance → `4ffe63500363e6d976bb211f5e7d547a69859df9`
+- PR #208 route reward/final ceremony → `c880550ef41841608d8aa664f6c24c54f3dd067d`
+- PR #209 guided route selector polish → `92135e01a2c22f37441a4d7192265f3d9902ebc0`
+- PR #209 docs closure → target HEAD `89b4d4bae4af4bda35d77e7e8c52026fce4c271c`
+
+**Production target henüz dört rota taşır. Kristal Vadisi PR #210 merge edilmemiştir.**
+
+Production rota sırası target'ta:
 
 **Başlangıç Limanı → Gökyüzü Adaları → Orman Yolu → Kadim Orman**
 
-- Başlangıç Limanı: `always`.
-- Gökyüzü Adaları: Başlangıç `routeComplete`; final complete + en az 18 yıldız.
-- Orman Yolu: Gökyüzü `routeComplete`; final complete + en az 18 yıldız.
-- Kadim Orman: Orman Yolu `routeComplete`; Orman Yolu `unlockStarsRequired = 0`, dolayısıyla final completion yeterli.
-
-`routeComplete` authoritative olarak `WordHuntRouteProgressEngine.isRouteComplete(route, progress)` ile hesaplanır. Final type `routeFinal` olmalı, final tamamlanmış olmalı ve rota yıldız eşiği sağlanmalıdır.
-
-Legacy/grandfather unlock istisnası yoktur. Eski downstream progress silinmez veya migrate edilmez; prerequisite'i bypass ettiremez.
-
 ---
 
-## PR #207 — CHALLENGE / FINAL PROGRESSIVE STAR-TIME BALANCE — MERGED
+## MERGED AUTHORITATIVE KELİME AVI CONTRACT'LARI
 
-PR: **#207 — `feat(kelime-avi): balance challenge and final stars`**
+### Progression
 
-- Approved feature head: `9bbc3b8c6303dc390c79a2d178c03b803830c80c`
-- Approved head tree: `7876ea9455465c3c1842cd391a94af9ab8365f6b`
-- Squash merge commit: `4ffe63500363e6d976bb211f5e7d547a69859df9`
-- Merge commit tree: `7876ea9455465c3c1842cd391a94af9ab8365f6b`
-- Tree equality: **EVET**
+- Her rota 10 bölüm; canonical progression `1→2→3→4→5→6→7→8→9→10`.
+- Grid: **8×8 / 64 hücre**.
+- Başlangıç Limanı: always unlocked.
+- Gökyüzü Adaları: Başlangıç routeComplete; final + en az 18★.
+- Orman Yolu: Gökyüzü routeComplete; final + en az 18★.
+- Kadim Orman: Orman Yolu routeComplete; `unlockStarsRequired = 0`, final completion yeterli.
+- `routeComplete`: `WordHuntRouteProgressEngine.isRouteComplete(route, progress)`.
 
-Normal bölümler (`L1-L4`, `L6-L9`) mistake odaklıdır; seconds threshold yoktur.
+### Challenge / final star-time contract
 
-L5 Challenge:
-- 3★ = `0 hata` + rota-specific 3★ süre
-- 2★ = `<=1 hata` + rota-specific 2★ süre
-- targetWords tamamlandı fakat üst eşikler kaçtıysa 1★
+Normal seviyeler seconds threshold kullanmaz.
 
-L10 Final:
-- 3★ = `0 hata` + rota-specific 3★ süre
-- 2★ = `<=2 hata` + rota-specific 2★ süre
-- targetWords tamamlandı fakat üst eşikler kaçtıysa 1★
+L5 challenge:
+- 3★ = 0 hata + route-specific 3★ süre
+- 2★ = <=1 hata + route-specific 2★ süre
+- completion fallback = 1★
 
-Target tamamlanmadıysa 0★. Mistake + time birlikte varsa **AND** uygulanır. Sınırlar inclusive (`<=`).
+L10 routeFinal:
+- 3★ = 0 hata + route-specific 3★ süre
+- 2★ = <=2 hata + route-specific 2★ süre
+- completion fallback = 1★
 
-| Rota | L5 3★ | L5 2★ | L5 timeLimit | L10 3★ | L10 2★ | L10 timeLimit |
-|---|---:|---:|---:|---:|---:|---:|
-| Başlangıç Limanı | 35 sn / 0 hata | 50 sn / <=1 hata | 60 | 75 sn / 0 hata | 100 sn / <=2 hata | 120 |
-| Gökyüzü Adaları | 35 sn / 0 hata | 50 sn / <=1 hata | 60 | 75 sn / 0 hata | 100 sn / <=2 hata | 120 |
-| Orman Yolu | 25 sn / 0 hata | 36 sn / <=1 hata | 60 | 50 sn / 0 hata | 66 sn / <=2 hata | 120 |
-| Kadim Orman | 24 sn / 0 hata | 35 sn / <=1 hata | 60 | 48 sn / 0 hata | 64 sn / <=2 hata | 120 |
+`timeLimitSeconds` soft metadata'dır; hard timeout değildir.
 
-`timeLimitSeconds` hard fail değildir; süre dolunca oyun bitmez, input kapanmaz ve scoring engine bu alanı kullanmaz.
+Merged dört rota matrix:
 
----
+| Rota | L5 3★ | L5 2★ | L10 3★ | L10 2★ |
+|---|---:|---:|---:|---:|
+| Başlangıç | 35 sn / 0 hata | 50 sn / <=1 | 75 sn / 0 hata | 100 sn / <=2 |
+| Gökyüzü | 35 / 0 | 50 / <=1 | 75 / 0 | 100 / <=2 |
+| Orman | 25 / 0 | 36 / <=1 | 50 / 0 | 66 / <=2 |
+| Kadim | 24 / 0 | 35 / <=1 | 48 / 0 | 64 / <=2 |
 
-## PR #208 — ROUTE REWARD + FINAL CEREMONY — MERGED
+### Reward / persistence
 
-PR: **#208 — `feat(kelime-avi): add route rewards and completion ceremony`**
-
-- Approved exact head: `0d724e7544811cf74c85b9058800cee8396fea67`
-- Approved head tree: `93c2858d3a37903564ec0cf4993d100c5442e9aa`
-- Squash merge commit: `c880550ef41841608d8aa664f6c24c54f3dd067d`
-- Merge tree: `93c2858d3a37903564ec0cf4993d100c5442e9aa`
-- Tree equality: **EVET**
-- Squash parent: `62969dfe17d660beae58aafca95168eaa64f057c`
-
-### Authoritative reward IDs
+Authoritative merged reward IDs:
 
 | Rota | routeRewardId | Display |
 |---|---|---|
 | Başlangıç Limanı | `badge-kelime-yolcusu` | Kelime Yolcusu |
 | Gökyüzü Adaları | `badge-gokyuzu-kasifi` | Gökyüzü Kaşifi |
 | Orman Yolu | `badge-orman-kasifi` | Orman Kaşifi |
-| Kadim Orman (`orman-2`) | `badge-kadim-orman-kasifi` | Kadim Orman Kaşifi |
+| Kadim Orman | `badge-kadim-orman-kasifi` | Kadim Orman Kaşifi |
 
-Reward grant L10'a değil gerçek `routeComplete false → true` transition'ına bağlıdır. `WordHuntProgressSnapshot` kalıcı `unlockedRouteRewardIds` taşır. Payload schema **2**; decoder schema **1 ve 2** destekler, unknown future schema fail-closed kalır. Storage key/prefix korunur: `bilgi_rotasi_word_hunt_progress_v1_`.
+Reward grant yalnız gerçek `routeComplete false → true` transition'ında olur. Duplicate grant/reveal yoktur.
 
-Schema-v1 save stars/infoCards kaybetmeden açılır; historical routeComplete durumlarından eksik reward'lar sessiz ve idempotent biçimde backfill edilir.
+`WordHuntProgressSnapshot`:
+- `bestStarsByLevelId`
+- `unlockedInfoCardIds`
+- `unlockedRouteRewardIds`
 
-Normal level **`Bölüm Tamamlandı`** davranışını korur. Incomplete first route-final: **`Final Tamamlandı`** + `Rotayı tamamlamak için X yıldız daha kazan.`. Gerçek false→true routeComplete: **`Rota Tamamlandı!`**, reward reveal ve varsa `<Gelecek rota adı> açıldı.`. Kadim terminal copy: **`Tüm mevcut rotaları tamamladın.`**
+taşır.
 
-`WordHuntLevelProductionScreen.deferCompletionDialog` ile route-final double-dialog engellenir; exit confirmation korunur.
+Payload schema **2**; schema **1 ve 2** decode edilir, unknown future schema fail-closed. Storage prefix korunur:
+`bilgi_rotasi_word_hunt_progress_v1_`
 
----
+Schema-v1 historical save için stars/infoCards korunur; reward backfill sessiz ve idempotent'tır.
 
-## PR #209 — GUIDED ROUTE SELECTOR POLISH — MERGED
+### Completion ceremony
 
-PR: **#209 — `feat(kelime-avi): guide route selector progression`**
+Normal level: **`Bölüm Tamamlandı`**.
 
-- Approved exact head: `5da106f4c52d7e8533d91878c8482b835a8b9dca`
-- Approved head tree: `a71691ecfe04ff2850aa67fa0b6f08aafaa667bf`
-- Squash merge commit: `92135e01a2c22f37441a4d7192265f3d9902ebc0`
-- Squash merge tree: `a71691ecfe04ff2850aa67fa0b6f08aafaa667bf`
-- Tree equality: **EVET**
-- Squash parent: `8c810d46f4d2fb12616e97bfba310c2a2e2716a4`
-- Source branch: `feat/kelime-avi-route-selector-guided-polish` — owner istemeden silinmez.
+Route final tamamlandı ama routeComplete değil: **`Final Tamamlandı`** + eksik yıldız copy'si.
 
-### Guided progression selector contract
+Gerçek routeComplete transition: **`Rota Tamamlandı!`** + reward + varsa `<Gelecek rota> açıldı.`.
+
+Route-final generic double dialog `deferCompletionDialog` ile suppress edilir; exit confirmation korunur.
+
+Target'ta Kadim mevcut son rota olduğu için terminal copy:
+**`Tüm mevcut rotaları tamamladın.`**
+
+### Guided selector
 
 Tek recommended rota catalog sırasındaki ilk:
 
-`entry.isUnlocked(progress) && !WordHuntRouteProgressEngine.isRouteComplete(entry.route, progress)`
+`unlocked && !routeComplete`
 
-entry'dir. Route-id hardcode yoktur.
+- progress yok → **Sıradaki**
+- progress var → **Devam Et**
+- complete → **Tamamlandı**
+- reward owned → **Rozet kazanıldı**
 
-- Recommended + progress yok: **`Sıradaki`**
-- Recommended + yıldız progress var: **`Devam Et`**
-- `routeComplete=true`: **`Tamamlandı`**
-- Persisted reward earned: **`Rozet kazanıldı`**
-- Bütün production rotalar complete: recommended rota yok ve header **`Tüm mevcut rotaları tamamladın.`**
+Locked requirement:
+- prerequisite final incomplete → `X / Y bölüm`
+- final complete + star gate eksik → `X / required yıldız`
+- threshold 0 → bölüm/final progress
 
-Completion ve reward ownership ayrı hesaplanır; reward state unlock/progression oluşturmaz.
+Kritik örnek:
+Başlangıç final +17★ → Başlangıç **Devam Et**, Gökyüzü locked **17 / 18 yıldız**.
 
-### Progress / locked requirement presentation
+Locked tap route açmaz; authoritative reason SnackBar verir. Route identity ve ordinal locked halde korunur.
 
-Unlocked rota progress'i:
-
-**`X / Y yıldız`**
-
-olarak gösterilir; maximum `route.maximumStars` üzerinden türetilir.
-
-`routeComplete` prerequisite için locked requirement:
-
-1. prerequisite final incomplete → **`X / Y bölüm`**
-2. final complete + `unlockStarsRequired > 0` + stars eksik → **`X / required yıldız`**
-3. `unlockStarsRequired == 0` → bölüm/final progress korunur.
-
-Kritik authoritative örnek:
-
-Başlangıç final complete + 17★:
-- Başlangıç: **`Devam Et`**, `17 / 30 yıldız`
-- Gökyüzü: locked, authoritative locked copy + **`17 / 18 yıldız`**
-
-Eski `10 / 10 bölüm` presentation'ı bu durumda superseded'dır.
-
-Gökyüzü final complete +17★ → Orman locked **`17 / 18 yıldız`**.
-
-Orman→Kadim için yapay 18★ gate yoktur.
-
-### Locked / ordinal / identity
-
-Authoritative locked copy'ler değişmedi.
-
-Locked karta tap:
-- route açmaz,
-- `onRouteTap` çağırmaz,
-- authoritative locked reason SnackBar ile tekrar gösterilir.
-
-Locked leading icon artık generic büyük lock'a dönüşmez; route identity korunur:
-- Başlangıç anchor
-- Gökyüzü cloud
-- Orman park
-- Kadim forest
-
-Ordinal bütün state'lerde görünür: **İlk rota / İkinci rota / Üçüncü rota / Dördüncü rota**.
-
-### Responsive / accessibility
-
-Selector focused regression baseline:
-- 320×640 PASS
-- 360×800 PASS
-- 411×731 PASS
-- 480 px reachability PASS
-- 320 px + 1.5 text scale PASS
-
-Status chip overflow gerçek olarak yakalanmış, test gevşetilmeden production chip `Wrap` tabanlı hale getirilmiştir.
-
-Kart seviyesinde tek authoritative semantic label kullanılır. Recommended/complete/reward/locked state, reason ve unmet requirement semantics'e taşınır; nested visual children semantics'ten dışlanarak duplicate reward announce temizlenmiştir.
-
-### PR #209 exact-head CI
-
-Approved exact head `5da106f4c52d7e8533d91878c8482b835a8b9dca`:
-
-- Kelime Avı route catalog kapısı — Run #92 / ID `35217743668` — **SUCCESS**
-- Orman Yolu Android çoklu ekran kanıtı — Run #37 / ID `35217743501` — **SUCCESS**
-- Kelime Avı Android 16 görsel kanıtı — Run #455 / ID `35217743468` — **SUCCESS**
-- AdMob PR doğrulaması — Run #832 / ID `35217743499` — **SUCCESS**
-- AdMob: analyze+full tests, release APK, package/merged manifest, Android 16 cold-start deneme 1 ve final application gate — **SUCCESS**
-
-Kelime Avı Orman Yolu içerik kapısı selector-only path filter nedeniyle bu exact HEAD'de yeni run üretmedi.
+Selector responsive regression baseline:
+- 320×640
+- 360×800
+- 411×731
+- 480 reachability
+- 320 + 1.5 text scale
 
 ---
 
-## KORUNAN GENEL KELİME AVI KURALLARI
+# AKTİF İŞ — PR #210 / KRİSTAL VADİSİ
 
-- Her rota 10 bölüm; canonical progression `1→2→3→4→5→6→7→8→9→10`.
-- Grid: **8×8 / 64 hücre — LOCKED**.
-- Production selector sırası: Başlangıç → Gökyüzü → Orman → Kadim.
-- Tüm production rotaları generic/data-driven bilgi kartı sistemini kullanır: `_activeInfoCards + _progress.unlockedInfoCardIds`.
-- Kadim Orman özgün deterministic content kullanır; Orman Yolu gameplay clone'u değildir.
-- `assets/questions.json`, BoardMap/67 node, Firebase, signing, version ve Play kapsamı açık owner kararı olmadan değiştirilmez.
-- Minimum Kelime Avı yayın stoğu: **200 hazır/doğrulanmış bölüm**.
+PR:
+`#210 — feat(kelime-avi): add Kristal Vadisi route`
+
+Feature branch:
+`feat/kelime-avi-kristal-vadisi`
+
+PR durumu bu özet hazırlanırken:
+- OPEN
+- DRAFT
+- merged=false
+- mergeable=true
+
+PR base:
+`release/final-closed-test-aab-1.68.8`
+
+Son runtime feature HEAD, docs devrinden hemen önce:
+`22b4995a88e0f8937bf716954edba79319d7ec99`
+
+Parent visual polish commit:
+`3c5ff74c16d53ac5acba29ea95406ddf7d8df158`
+
+`22b4995…` yalnız tree-identical CI retrigger commit'idir; changed file yoktur. Runtime tree:
+`4485b108c5b36d00af9e08897963c35cfde3dfeb`
+
+Bu summary + handoff docs commit'leri feature branch HEAD'ini yalnız docs değişikliğiyle ilerletebilir. Yeni sohbet canlı HEAD'i doğrulamalı ve runtime tree ile docs-only HEAD'i ayırmalıdır.
+
+## Kristal route identity
+
+- title: **Kristal Vadisi**
+- technical ID: `kristal-vadisi`
+- ordinal: **Beşinci rota**
+- presentation: `themedReusable`
+- unlock: Kadim Orman routeComplete
+- locked copy: **`Kadim Orman’ı tamamlayarak aç.`**
+- own `unlockStarsRequired = 0`
+- reward ID: `badge-kristal-kasifi`
+- reward display: **Kristal Kaşifi**
+
+Feature merge edilirse rota sırası:
+
+**Başlangıç → Gökyüzü → Orman → Kadim → Kristal**
+
+Kadim non-terminal olur; Kristal terminal olur.
+
+Historical four-complete user için Kristal generic progression üzerinden unlocked + recommended olur. Historical reveal implementation varsa schema/progression hack yapmamalı ve normal Kadim→Kristal ceremony ile duplicate mesaj üretmemelidir.
+
+## Kristal content — owner approved
+
+- 10 levels
+- 56 mandatory target
+- 14 bonus
+- 70 unique route-internal word
+- deterministic 8×8 grids
+- `straightEightDirections`
+- listed target/bonus exact-one physical occurrence
+- L5 = challenge
+- L10 = routeFinal
+
+L5:
+- 3★ <=30 sec + 0 mistake
+- 2★ <=44 sec + <=1 mistake
+
+L10:
+- 3★ <=58 sec + 0 mistake
+- 2★ <=78 sec + <=2 mistakes
+
+Info cards:
+`kristal-info-mineral`, `kristal-info-kuvars`, `kristal-info-kristal`, `kristal-info-obsidyen`, `kristal-info-fay`, `kristal-info-ametist`.
+
+## Kristal approved environment artwork
+
+Path:
+`assets/word_hunt/KRISTAL_VADISI_ENV_941x1672.webp`
+
+Exact immutable candidate contract:
+- 941×1672
+- 2,793,116 bytes
+- SHA-256 `189dec3f731f66e72449625457d35d28500fe5cbd5a69ab1f2f04f303ca1bc20`
+- Git blob `3f96949385dba4b43b6a4062693e899c47b2f71d`
+
+**Artwork değiştirilmez:** regenerate/re-encode/resize/crop/recolor/edit yok.
+
+Owner visual review'da background, broken/stepping turquoise path ve tall ambient **APPROVED**. Yeni prompt açıkça istemedikçe bunları kurcalama.
+
+## Kristal node renderer — son owner talebi ve implementation
+
+Run #4 Android artifact teknik PASS olmasına rağmen owner node visual'ı reddetti. Root visual problem:
+
+**Painter detayı değil, gerçek pixel footprint ve silhouette küçüktü.**
+
+Owner son hedefi:
+**BIGGER + SIMPLER + STRONGER SILHOUETTE**; 411×731 ana referans.
+
+Son visual polish implementation (`3c5ff74…`) generic `facetedCrystal` renderer'a şu metrikleri verdi:
+
+- normalScale `1.00`
+- challengeScale `1.06`
+- finalScale `1.11`
+- normal body `48×46`
+- normal shard silhouette `58`
+- final body `52×50`
+- final shard silhouette `62`
+- final crest `52×32`
+
+Canonical geometry ve hitbox değişmedi.
+
+Normal node:
+- büyük amethyst gem body
+- 6 belirgin shard
+- daha az fakat büyük facet planes
+- turquoise/mineral ring
+
+Locked normal:
+- smoky violet/obsidian gem
+- silver/lavender ring/shards
+- integrated crystal lock badge
+
+L5:
+- %6 civarı scale
+- gold accent
+- finalden daha basit silhouette
+
+L10:
+- final medallion + double/faceted ring
+- **5 filled crystal prism crest**
+- locked dormant silver/lavender
+- active amethyst + gold edge + turquoise accent
+- outline crown / Material crown yok
+
+Hierarchy contract:
+**L10 FINAL > L5 CHALLENGE > NORMAL**
+
+## Son Android proof
+
+Visual runtime tree `3c5ff74…` üzerinde:
+
+Run ID: `35267683267` — **SUCCESS**
+
+Artifact:
+- ID `10518395359`
+- `Kristal-Android-Proof-3c5ff74`
+- 13,688,635 bytes
+
+PNG set:
+- `KRISTAL_LOCKED_411x731.png`
+- `KRISTAL_LOCKED_720x1280.png`
+- `KRISTAL_LOCKED_1080x1920.png`
+- `KRISTAL_LOCKED_1080x2400.png`
+- `KRISTAL_ACTIVE_FINAL_1080x1920.png`
+
+Asistanın son inspection sonucu: 411 px'de medallion/shard formu daha belirgin; locked seals daha kristal/obsidyen; L10 crest artık dolu 5-prism formation; active L10 en prestijli treatment olarak okunuyor.
+
+**Owner bu son artifact setine henüz final görsel onay vermedi. PR #210 merge-ready kabul edilmez.**
+
+## CI snapshot
+
+Runtime HEAD `22b4995…` üzerinde devir hazırlanırken:
+
+- Route catalog gate — Run #96 / `35268797339` — **SUCCESS**
+- Kelime Avı Android 16 — Run #459 / `35268797332` — **IN PROGRESS**
+- Orman multi-screen — Run #41 / `35268797356` — **IN PROGRESS**
+- AdMob PR validation — Run #836 / `35268797543` — **IN PROGRESS**
+
+Exact runtime-head Android proof rerun:
+- Run `35268889739`
+- Job `105362896300`
+- devir anında capture süreci henüz tamamlanmamıştı.
+
+Bunlar snapshot'tır. Prompt geldiğinde live GitHub yeniden doğrulanmalıdır.
+
+---
 
 ## SOURCE BRANCH KORUMA
 
 Owner açıkça istemeden silinmez:
 
+- `feat/kelime-avi-kristal-vadisi`
 - `feat/kelime-avi-route-selector-guided-polish`
 - `feat/kelime-avi-route-reward-ceremony`
 - `feat/kelime-avi-progressive-challenge-final-balance`
@@ -225,31 +335,21 @@ Owner açıkça istemeden silinmez:
 
 ---
 
-## SIRADAKİ BAŞLANGIÇ NOKTASI
+## ŞİMDİKİ DURMA NOKTASI
 
-### KELİME AVI — 5. ROTA READINESS / ÜRÜN + TEKNİK AUDIT
+Aktif iş: **PR #210 Kristal Vadisi owner visual + technical approval bekliyor.**
 
-İlk tur **yalnız audit** olacak. Owner kararı verilmeden route/content/asset/branch/PR oluşturulmayacak.
+Yeni sohbet bu noktada **kendiliğinden devam etmeyecek**.
 
-Audit özellikle şunları incelemeli:
+Kullanıcı prompt vermeden:
+- CI takip etme,
+- yeni artifact indirme,
+- screenshot inceleme,
+- kod/test/docs değiştirme,
+- commit atma,
+- PR body/state değiştirme,
+- merge etme,
+- source branch silme,
+- release/tag oluşturma.
 
-- dört rota progression zinciri ve catalog'un 5. entry hazırlığı,
-- selector recommended algoritmasının 5. rotayı otomatik kapsaması,
-- `Tüm mevcut rotaları tamamladın.` state'inin data-driven taşınması,
-- Kadim'in terminal ceremony davranışının 5. rota ile next-route ceremony'ye dönüşmesi,
-- `WordHuntRouteRewardEngine.nextCatalogEntry()` davranışı,
-- Kadim→5. rota unlock prerequisite contract'ı,
-- 5. rota routeRewardId / reward metadata,
-- progress schema ve historical user/backfill etkisi,
-- reusable themed renderer / map architecture,
-- asset yaklaşımı,
-- content difficulty curve,
-- L5 challenge / L10 final balance,
-- info-card contract,
-- rota adı / tema / atmosfer alternatifleri,
-- mevcut dört rota ile görsel/içerik ayrışması,
-- Kadim terminal copy/testlerinin gelecekteki etkisi,
-- terminal all-routes-complete state'in 5. rotaya taşınması,
-- test / CI kapsamı.
-
-**İlk audit kapanmadan 5. rota implementasyonu yapılmaz.**
+**Sadece devri al ve owner komutunu bekle.**
