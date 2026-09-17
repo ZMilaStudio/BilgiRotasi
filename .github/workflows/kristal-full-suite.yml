@@ -1,0 +1,45 @@
+name: Kristal Vadisi full suite
+
+on:
+  push:
+    branches:
+      - ci/kristal-final-validation-20260917
+    paths:
+      - .github/workflows/kristal-full-suite.yml
+
+permissions:
+  contents: read
+
+jobs:
+  full-suite:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: 43b1416ce877a45ab4cb1bbc2c984dc7db6ea59b
+          fetch-depth: 0
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.6'
+          channel: stable
+          cache: true
+      - name: Verify exact feature head and artwork
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = '43b1416ce877a45ab4cb1bbc2c984dc7db6ea59b'
+          ASSET='assets/word_hunt/KRISTAL_VADISI_ENV_941x1672.webp'
+          test "$(wc -c < "$ASSET")" -eq 2793116
+          test "$(sha256sum "$ASSET" | awk '{print $1}')" = '189dec3f731f66e72449625457d35d28500fe5cbd5a69ab1f2f04f303ca1bc20'
+          test "$(git hash-object "$ASSET")" = '3f96949385bee78d1b333dae9a346d89e81ad5e3'
+      - name: Full repo analyze using canonical repo policy
+        run: |
+          flutter pub get
+          flutter analyze --no-fatal-warnings --no-fatal-infos
+      - name: Full flutter test
+        run: flutter test --reporter expanded
+      - name: Diff guard
+        run: |
+          git diff --check
+          test "$(git rev-parse HEAD)" = '43b1416ce877a45ab4cb1bbc2c984dc7db6ea59b'
