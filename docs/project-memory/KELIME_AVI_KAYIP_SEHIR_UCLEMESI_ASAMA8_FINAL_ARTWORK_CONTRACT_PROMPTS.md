@@ -14,17 +14,17 @@
 Canlı production source audit’inde doğrulanan temel contract:
 
 - Kristal Vadisi environment asset path:
-  \`assets/word_hunt/KRISTAL_VADISI_ENV_941x1672.webp\`
+  `assets/word_hunt/KRISTAL_VADISI_ENV_941x1672.webp`
 - Kristal production artwork dimensions:
-  \`941×1672\`
+  `941×1672`
 - Kristal production artwork bytes:
-  \`2,793,116\`
+  `2,793,116`
 - Reference canvas:
-  \`411×731\`
+  `411×731`
 - Background fit:
-  \`BoxFit.cover\`
+  `BoxFit.cover`
 - Background alignment:
-  \`Alignment.center\`
+  `Alignment.center`
 - Artwork filter quality:
   high
 - Tall ambient extension:
@@ -47,7 +47,7 @@ Production Word Hunt asset klasöründe tarihsel olarak farklı formatlar birlik
 - JPEG environment/background assetleri
 - gerçek WebP assetleri
 - base64-embedded artwork
-- Kristal Vadisi historical anomaly: dosya adı \`.webp\` olmasına rağmen payload ile extension geçmişte mismatch yaşamıştır
+- Kristal Vadisi historical anomaly: dosya adı `.webp` olmasına rağmen payload ile extension geçmişte mismatch yaşamıştır
 
 Yeni üç asset için bu anomaly owner-approved değildir.
 
@@ -55,13 +55,13 @@ Yeni üç asset için bu anomaly owner-approved değildir.
 
 Yeni üç artwork için:
 
-> \`.webp\` extension kullanılıyorsa gerçek encoded payload da WebP olacaktır.
+> `.webp` extension kullanılıyorsa gerçek encoded payload da WebP olacaktır.
 
-PNG bytes + \`.webp\` filename YOK.
+PNG bytes + `.webp` filename YOK.
 
 ## Loader / codec compatibility
 
-Current Flutter path direct \`Image.asset(...)\` üzerinden decode eder ve encoded image bytes’ını Flutter codec ile açar.
+Current Flutter path direct `Image.asset(...)` üzerinden decode eder ve encoded image bytes’ını Flutter codec ile açar.
 
 Bu nedenle historical mismatch runtime’da açılabilmiş olsa bile yeni production contract bunu kabul etmez.
 
@@ -69,17 +69,17 @@ Bu nedenle historical mismatch runtime’da açılabilmiş olsa bile yeni produc
 
 Current themed production renderer:
 
-- \`referenceCanvasSize = 411×731\`
-- reference canvas’ı available screen içine \`BoxFit.contain\` ile yerleştirir
-- artwork reference canvas içinde kendi \`BoxFit.cover\` contract’ıyla render edilir
+- `referenceCanvasSize = 411×731`
+- reference canvas’ı available screen içine `BoxFit.contain` ile yerleştirir
+- artwork reference canvas içinde kendi `BoxFit.cover` contract’ıyla render edilir
 - tall screen’de üst ve alt extra alan kalırsa artwork kenarlarından ambient band üretir
 
 Tall ambient extension current behavior:
 
 - artwork edge kullanımı
 - vertical mirror/flip
-- yaklaşık \`1.08×\` scale
-- blur yaklaşık \`sigma 10\`
+- yaklaşık `1.08×` scale
+- blur yaklaşık `sigma 10`
 - theme background tint
 - feather overlap yaklaşık 8 px
 
@@ -103,19 +103,19 @@ Chrome global sistem olarak korunur; artwork içine faux chrome bake edilmez.
 
 ## Kayıp Şehir
 
-\`assets/word_hunt/KAYIP_SEHIR_ENV_941x1672.webp\`
+`assets/word_hunt/KAYIP_SEHIR_ENV_941x1672.webp`
 
 ## Yeraltı Krallığı
 
-\`assets/word_hunt/YERALTI_KRALLIGI_ENV_941x1672.webp\`
+`assets/word_hunt/YERALTI_KRALLIGI_ENV_941x1672.webp`
 
 ## Güneş İmparatorluğu
 
-\`assets/word_hunt/GUNES_IMPARATORLUGU_ENV_941x1672.webp\`
+`assets/word_hunt/GUNES_IMPARATORLUGU_ENV_941x1672.webp`
 
 ## Final production asset properties
 
-- exact final canvas: \`941×1672\`
+- exact final canvas: `941×1672`
 - portrait
 - static WebP
 - real WebP payload
@@ -129,11 +129,11 @@ Chrome global sistem olarak korunur; artwork içine faux chrome bake edilmez.
 
 ### Preferred byte size
 
-\`0.8–1.8 MB / asset\`
+`0.8–1.8 MB / asset`
 
 ### Recommended soft maximum
 
-\`2.5 MB / asset\`
+`2.5 MB / asset`
 
 Bu hard rejection değildir.
 
@@ -143,9 +143,9 @@ Bu hard rejection değildir.
 
 # 3. FINAL OWNER KARARI — GENERATION SIZE ≠ FINAL EXPORT SIZE
 
-\`941×1672\` **FINAL PRODUCTION ASSET CANVAS** contract’ıdır.
+`941×1672` **FINAL PRODUCTION ASSET CANVAS** contract’ıdır.
 
-Image-generation modelinin ilk candidate çıktısından pixel-perfect \`941×1672\` üretmesi zorunlu değildir.
+Image-generation modelinin ilk candidate çıktısından pixel-perfect `941×1672` üretmesi zorunlu değildir.
 
 Candidate:
 
@@ -159,7 +159,7 @@ Owner candidate seçildikten ve gerekiyorsa refinement yapıldıktan sonra final
 
 1. composition korunur
 2. controlled crop/resize yapılır
-3. exact canvas = \`941×1672\`
+3. exact canvas = `941×1672`
 4. canonical node-safe overlay tekrar kontrol edilir
 5. L5/L10 composition tekrar kontrol edilir
 6. top/bottom tall-safe strips tekrar kontrol edilir
@@ -215,13 +215,13 @@ Existing reference composition/header geometry’nin artwork-space audit karşı
 
 Normal L1–L4 ve L6–L9 için:
 
-- yaklaşık \`96×92 px\` @ 411 reference
-- yaklaşık \`220×210 px\` @ 941 asset
+- yaklaşık `96×92 px` @ 411 reference
+- yaklaşık `220×210 px` @ 941 asset
 
 L5 ve L10 için:
 
-- yaklaşık \`112×106 px\` @ 411 reference
-- yaklaşık \`256×242 px\` @ 941 asset
+- yaklaşık `112×106 px` @ 411 reference
+- yaklaşık `256×242 px` @ 941 asset
 
 Bu alanlar literal boş daire olarak çizilmez.
 
@@ -242,9 +242,9 @@ Node renderer artwork üstünde rahat okunmalıdır.
 
 # 5. TALL-SCREEN SAFE-ZONE CONTRACT
 
-Artwork baştan \`1080×2400\` proof düşünülerek hazırlanır.
+Artwork baştan `1080×2400` proof düşünülerek hazırlanır.
 
-941×1672 final artwork’ün yaklaşık top ve bottom \`200–220 px\` bölgeleri nötr/extendable ambient karakterde olmalıdır.
+941×1672 final artwork’ün yaklaşık top ve bottom `200–220 px` bölgeleri nötr/extendable ambient karakterde olmalıdır.
 
 Tanımlanabilir mimariyi blur/mirror extension’a bağımlı bırakma.
 
@@ -1015,7 +1015,7 @@ Owner candidate seçimi ve olası refinement sonrasında:
 1. owner-approved visual direction dondurulur
 2. composition korunur
 3. controlled crop/resize hazırlanır
-4. exact canvas = \`941×1672\`
+4. exact canvas = `941×1672`
 5. canonical node-safe overlay yeniden uygulanır
 6. 10 node safe-zone review yapılır
 7. L5 environmental milestone review yapılır
@@ -1025,9 +1025,9 @@ Owner candidate seçimi ve olası refinement sonrasında:
 11. image opaque 8-bit sRGB RGB’ye hazırlanır
 12. static WebP encode edilir
 13. magic-byte / codec doğrulanır:
-   \`RIFF ... WEBP\`
+   `RIFF ... WEBP`
 14. dimensions doğrulanır:
-   \`941×1672\`
+   `941×1672`
 15. frame count = 1 doğrulanır
 16. alpha absent doğrulanır
 17. EXIF/XMP/orientation dependency ve metadata surprise kontrol edilir
