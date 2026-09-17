@@ -26,8 +26,8 @@ Sıra:
 Unlock contract:
 
 - Başlangıç Limanı: `always`.
-- Gökyüzü Adaları: Başlangıç `routeComplete`, final complete + en az 18 yıldız.
-- Orman Yolu: Gökyüzü `routeComplete`, final complete + en az 18 yıldız.
+- Gökyüzü Adaları: Başlangıç `routeComplete`; final complete + en az 18 yıldız.
+- Orman Yolu: Gökyüzü `routeComplete`; final complete + en az 18 yıldız.
 - Kadim Orman: Orman Yolu `routeComplete`; `unlockStarsRequired = 0`, final completion yeterli.
 
 `WordHuntRouteUnlockRule.routeComplete`, `WordHuntRouteProgressEngine.isRouteComplete(prerequisiteRoute, progress)` kullanır. Legacy downstream progress prerequisite'i bypass ettiremez; ancak silinmez ve prerequisite sağlanınca korunur.
@@ -37,7 +37,8 @@ Unlock contract:
 - technical route id: `orman-2`
 - user-facing title: **Kadim Orman**
 - visual theme id: `orman-2-production`
-- route reward id: `reward-orman-2`
+- route reward id: `badge-kadim-orman-kasifi`
+- reward display: **Kadim Orman Kaşifi**
 - özgün level id'leri: `orman-2-01` … `orman-2-10`
 - 10 özgün deterministic 8×8 grid + özgün target/bonus content + 6 özgün info card
 - Orman Yolu gameplay clone/reuse yoktur.
@@ -71,107 +72,111 @@ PR #207 — `feat(kelime-avi): balance challenge and final stars`
 - squash merge commit: `4ffe63500363e6d976bb211f5e7d547a69859df9`
 - merge tree: `7876ea9455465c3c1842cd391a94af9ab8365f6b`
 - tree equality: **EVET**
-- squash parent: `d81b6777065e88d3a1eba8716364e12bac071975`
-- source branch: `feat/kelime-avi-progressive-challenge-final-balance` — owner istemeden silinmez.
 
-### Authoritative scoring semantiği
+Normal levels (`L1-L4`, `L6-L9`) mistake odaklıdır ve seconds threshold yoktur.
 
-Normal levels (`L1-L4`, `L6-L9`):
+L5 Challenge: 3★ = 0 hata + rota-specific 3★ süre; 2★ = <=1 hata + rota-specific 2★ süre.  
+L10 Final: 3★ = 0 hata + rota-specific 3★ süre; 2★ = <=2 hata + rota-specific 2★ süre.  
+Target tamamlanmadıysa 0★; mistake+time birlikte varsa AND; boundary inclusive (`<=`).
 
-- mistake odaklı,
-- seconds threshold yok,
-- mevcut normal-level contract korunur.
+| Rota | L5 3★ sec | L5 2★ sec | L10 3★ sec | L10 2★ sec |
+|---|---:|---:|---:|---:|
+| Başlangıç Limanı | 35 | 50 | 75 | 100 |
+| Gökyüzü Adaları | 35 | 50 | 75 | 100 |
+| Orman Yolu | 25 | 36 | 50 | 66 |
+| Kadim Orman | 24 | 35 | 48 | 64 |
 
-L5 Challenge:
-
-- 3★ = 0 hata + rota-specific `threeStarMaxSeconds`
-- 2★ = <=1 hata + rota-specific `twoStarMaxSeconds`
-- üst eşikler kaçarsa ama bölüm complete ise 1★
-
-L10 Final:
-
-- 3★ = 0 hata + rota-specific `threeStarMaxSeconds`
-- 2★ = <=2 hata + rota-specific `twoStarMaxSeconds`
-- üst eşikler kaçarsa ama bölüm complete ise 1★
-
-Target tamamlanmadıysa 0★. Mistake ve time threshold birlikte varsa **AND** uygulanır. Boundary inclusive (`<=`). `WordHuntScoringEngine` route id/type özel branch kullanmaz; zorluk yalnız `starRules` datasından gelir.
-
-### Exact production matrix
-
-| Rota | L5 3★ sec | L5 2★ sec | L5 mistakes 3★/2★ | L5 timeLimit | L10 3★ sec | L10 2★ sec | L10 mistakes 3★/2★ | L10 timeLimit |
-|---|---:|---:|---|---:|---:|---:|---|---:|
-| Başlangıç Limanı | 35 | 50 | 0 / <=1 | 60 | 75 | 100 | 0 / <=2 | 120 |
-| Gökyüzü Adaları | 35 | 50 | 0 / <=1 | 60 | 75 | 100 | 0 / <=2 | 120 |
-| Orman Yolu | 25 | 36 | 0 / <=1 | 60 | 50 | 66 | 0 / <=2 | 120 |
-| Kadim Orman | 24 | 35 | 0 / <=1 | 60 | 48 | 64 | 0 / <=2 | 120 |
-
-Kadim artık Orman Yolu timing contract'ının exact clone'u değildir.
-
-### `timeLimitSeconds` authoritative semantiği
-
-`timeLimitSeconds` **hard fail değildir**:
-
-- süre dolunca oyun bitmez,
-- timeout/failure/retry yok,
-- input kapanmaz,
-- scoring engine `timeLimitSeconds` kullanmaz,
-- star scoring yalnız `threeStarMaxSeconds` / `twoStarMaxSeconds` üzerinden çalışır.
-
-60 / 120 değerleri şimdilik metadata olarak korunur. Future cleanup'ta remove/rename değerlendirilebilir; mevcut closure'da refactor yapılmaz.
-
-### Bonus/content koruması
-
-- bonus kelimeler optional,
-- completion veya star için zorunlu değil,
-- grid / targetWords / bonusWords / infoCards değişmedi,
-- scoring engine / progression / selector / route unlock değişmedi,
-- asset / visual theme / renderer / map geometry / NodeSkin değişmedi.
-
-### PR #207 exact-head CI
-
-Approved exact head `9bbc3b8c6303dc390c79a2d178c03b803830c80c`:
-
-- Kelime Avı Orman Yolu içerik kapısı — Run #8 / ID `35150882939` — SUCCESS
-- Orman Yolu Android çoklu ekran kanıtı — Run #29 / ID `35150882942` — SUCCESS
-- Kelime Avı Android 16 görsel kanıtı — Run #447 / ID `35150882917` — SUCCESS
-- AdMob PR doğrulaması — Run #824 / ID `35150882966` — SUCCESS
-- code analyze / focused Kelime Avı suite / full tests / release APK / package-manifest / Android 16 cold-start — PASS
-
-Boundary regression:
-
-- Orman L5: `25s/0 → 3★`, `36s/1 → 2★`, `37s/0 → 1★`
-- Kadim L5: `24s/0 → 3★`, `35s/1 → 2★`, `36s/0 → 1★`
-- Orman L10: `50s/0 → 3★`, `66s/2 → 2★`, `67s/0 → 1★`
-- Kadim L10: `48s/0 → 3★`, `64s/2 → 2★`, `65s/0 → 1★`
-- incomplete target set → `0★`
+`timeLimitSeconds` 60/120 soft metadata'dır; hard fail değildir ve scoring engine tarafından kullanılmaz.
 
 ---
 
-## Sıradaki audit — ROUTE REWARD + FINAL CEREMONY / ROTA TAMAMLAMA ÖDÜLÜ
+## Route reward + final ceremony — TAMAMLANDI / MERGED
 
-İlk tur yalnız audit olacak. Henüz reward sistemi uygulanmaz, final ceremony tasarlanmaz, `routeRewardId` rename edilmez ve 5. rota oluşturulmaz.
+PR #208 — `feat(kelime-avi): add route rewards and completion ceremony`
+
+- approved head: `0d724e7544811cf74c85b9058800cee8396fea67`
+- approved head tree: `93c2858d3a37903564ec0cf4993d100c5442e9aa`
+- squash merge commit: `c880550ef41841608d8aa664f6c24c54f3dd067d`
+- merge tree: `93c2858d3a37903564ec0cf4993d100c5442e9aa`
+- tree equality: **EVET**
+- squash parent: `62969dfe17d660beae58aafca95168eaa64f057c`
+- source branch: `feat/kelime-avi-route-reward-ceremony` — owner istemeden silinmez.
+
+### Authoritative reward catalog
+
+| Rota | routeRewardId | Display |
+|---|---|---|
+| Başlangıç Limanı | `badge-kelime-yolcusu` | Kelime Yolcusu |
+| Gökyüzü Adaları | `badge-gokyuzu-kasifi` | Gökyüzü Kaşifi |
+| Orman Yolu | `badge-orman-kasifi` | Orman Kaşifi |
+| Kadim Orman | `badge-kadim-orman-kasifi` | Kadim Orman Kaşifi |
+
+Eski `reward-orman-yolu` ve `reward-orman-2` superseded'dır. Reward display metadata data-driven catalog üzerinden `routeRewardId` ile çözülür.
+
+### Reward grant / persistence contract
+
+Reward grant yalnız gerçek `routeComplete false → true` transition'ında olur. Trigger `WordHuntRouteProgressEngine.isRouteComplete(route, progress)` kullanır; L10 completion tek başına reward sebebi değildir.
+
+`WordHuntProgressSnapshot` kalıcı olarak `bestStarsByLevelId`, `unlockedInfoCardIds` ve `unlockedRouteRewardIds` taşır. Reward ownership persisted achievement state'tir ve idempotent'tır.
+
+Payload schema **2**'dir. Decoder schema **1 ve 2**'yi destekler; future unknown schema fail-closed kalır. Storage prefix korunur: `bilgi_rotasi_word_hunt_progress_v1_`.
+
+Schema-v1 progress stars/infoCards kaybetmeden açılır; historical routeComplete state'lerinden eksik reward'lar sessiz, sadece-ekleme ve idempotent backfill ile tamamlanır. Backfill ceremony göstermez.
+
+### Route-final presentation contract
+
+- Normal level: generic **`Bölüm Tamamlandı`** korunur.
+- Route final complete fakat routeComplete=false: **`Final Tamamlandı`** + `Rotayı tamamlamak için X yıldız daha kazan.`; reward yok.
+- Gerçek false→true routeComplete: **`Rota Tamamlandı!`**, rota adı, `Rozet Kazandın`, reward display name, toplam/max yıldız, varsa `<Gelecek rota adı> açıldı.`
+- Primary CTA: **`Yeni Rotayı Gör`**
+- Secondary CTA: **`Rotaya Dön`**
+- Kadim terminal copy: **`Tüm mevcut rotaları tamamladın.`**; next-route CTA yok.
+
+`WordHuntLevelProductionScreen.deferCompletionDialog` default `false` presentation contract'ıdır. Deferred first-route-final success generic completion dialog'u suppress eder ve aynı gameplay result parent orchestration'a döner. Exit confirmation korunur. Eski nested Navigator observer/auto-pop interception yaklaşımı superseded'dır.
+
+Selector kartında persisted reward varsa icon + **`Kazanıldı`** görünür; bu state unlock/tap/progression mantığını değiştirmez.
+
+### PR #208 CI baseline
+
+Approved exact head `0d724e7544811cf74c85b9058800cee8396fea67`:
+
+- Kelime Avı Orman Yolu içerik kapısı — Run #13 / ID `35207375685` — SUCCESS
+- Kelime Avı route catalog kapısı — Run #89 / ID `35207375718` — SUCCESS
+- Orman Yolu Android çoklu ekran kanıtı — Run #34 / ID `35207375778` — SUCCESS
+- Kelime Avı Android 16 görsel kanıtı — Run #452 / ID `35207375795` — SUCCESS
+- AdMob PR doğrulaması — Run #829 / ID `35207375767` — SUCCESS
+- analyze/full tests, release APK, package/merged manifest, Android 16 cold-start deneme 1 ve final AdMob uygulama kapısı — PASS
+
+Regression test baseline: v1 save preserved; v2 reward roundtrip; duplicate reward yok; historical backfill idempotent; reward set level result sırasında kaybolmaz; Başlangıç final+17★ reward vermez; later replay 18★ reward verir; Orman/Kadim final reward verir; already-earned replay duplicate reveal yapmaz; route-final double-dialog yok; deferred exit confirmation korunur; selector indicator unlock logic'i değiştirmez.
+
+---
+
+## Sıradaki audit — KELİME AVI / ROUTE SELECTOR POLISH
+
+İlk tur yalnız audit olacak. Henüz selector redesign veya runtime değişikliği yapılmaz.
 
 İncelenecekler:
 
-1. Dört rotanın exact `routeRewardId` değerleri.
-2. Runtime consumer var mı?
-3. Route complete olduğunda reward/badge grant var mı?
-4. Progress'e persist ediliyor mu?
-5. UI/selector/completion dialog bunu kullanıyor mu?
-6. `routeRewardId metadata-only` bulgusunu canlı koddan yeniden doğrula.
-7. L10 routeFinal tamamlanınca oyuncuya bugün ne gösteriliyor?
-8. Normal completion ve routeFinal completion UX farkı nedir?
-9. Özel başlık, kutlama, reward reveal, badge, animation, next-route unlocked messaging ve CTA parçaları mevcut mu?
-10. Route completion snackbar/dialog/navigation davranışı nedir?
-11. Reward sistemi eklenirse progress codec/persistence etkisi ne olur?
-12. `badge-*` / `reward-*` karışık ID ailelerinin etkisi nedir?
+1. Dört rota kartının hierarchy'si.
+2. Locked / unlocked / completed / reward-earned state'leri.
+3. Ordinal ve route title ağırlığı.
+4. Progress / stars gösterimi.
+5. `Kazanıldı` indicator'ın kart kalabalığına etkisi.
+6. Locked copy okunabilirliği.
+7. Current/next route vurgusu.
+8. Kartların birbirinden görsel ayrımı.
+9. Kadim Orman premium/final-route hissi.
+10. Küçük/büyük ekran davranışı.
+11. Accessibility / semantics ve tap target'lar.
+12. Route state'lerinin kullanıcı tarafından hızlı anlaşılması.
 
-Önce audit + owner seçenekleri. **5. rota reward/final ceremony konusu kapanmadan tasarlanmaz.**
+**5. rota selector polish konusu kapanmadan açılmaz veya tasarlanmaz.**
 
 ## Source branch koruma
 
 Owner açıkça istemeden silinmez:
 
+- `feat/kelime-avi-route-reward-ceremony`
 - `feat/kelime-avi-progressive-challenge-final-balance`
 - `feat/kelime-avi-linear-route-progression`
 - `feat/kelime-avi-orman-yolu-content-polish`
@@ -179,4 +184,4 @@ Owner açıkça istemeden silinmez:
 - `feat/kelime-avi-kadim-orman-progression`
 - `feat/kelime-avi-orman2-runtime-pilot-20260916`
 
-**Durum:** REUSABLE 10-LEVEL MAP ARCHITECTURE — MERGED. KADİM ORMAN RUNTIME/CONTENT — MERGED. LINEER ROUTE PROGRESSION — MERGED. CHALLENGE / FINAL PROGRESSIVE STAR-TIME BALANCE — MERGED / CI GREEN. SIRADAKİ KONU — ROUTE REWARD + FINAL CEREMONY AUDITİ.
+**Durum:** REUSABLE 10-LEVEL MAP ARCHITECTURE — MERGED. KADİM ORMAN RUNTIME/CONTENT — MERGED. LINEER ROUTE PROGRESSION — MERGED. CHALLENGE/FINAL BALANCE — MERGED. ROUTE REWARD + FINAL CEREMONY — MERGED / CI GREEN. SIRADAKİ KONU — ROUTE SELECTOR POLISH AUDIT.
