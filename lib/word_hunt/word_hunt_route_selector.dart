@@ -523,13 +523,15 @@ class _RouteStatusChip extends StatelessWidget {
         borderRadius: BorderRadius.circular(999),
         border: Border.all(color: accent.withAlpha(122)),
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
+      child: Wrap(
+        crossAxisAlignment: WrapCrossAlignment.center,
+        spacing: 4,
+        runSpacing: 2,
         children: <Widget>[
           Icon(icon, size: compact ? 14 : 15, color: accent),
-          const SizedBox(width: 4),
           Text(
             label,
+            softWrap: true,
             style: TextStyle(
               color: accent,
               fontSize: compact ? 11.5 : 12,
