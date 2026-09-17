@@ -60,6 +60,7 @@ jobs:
         run: |
           set -euo pipefail
           flutter pub get
+          git restore --source=HEAD -- analysis_options.yaml pubspec.lock
           dart analyze lib/word_hunt
           flutter test test/word_hunt_kristal_renderer_test.dart --reporter expanded
           git diff --check
