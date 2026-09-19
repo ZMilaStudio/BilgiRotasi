@@ -123,18 +123,26 @@ void main() {
 
       final back = find.byKey(const Key('word_hunt_themed_chrome_back'));
       final info = find.byKey(const Key('word_hunt_themed_chrome_info'));
+      final backVisual = find.byKey(
+        const Key('word_hunt_reference_back_visual_control'),
+      );
+      final infoVisual = find.byKey(
+        const Key('word_hunt_reference_info_visual_control'),
+      );
       final title = find.byKey(const Key('word_hunt_reusable_route_title'));
       final stars = find.byKey(const Key('word_hunt_reusable_route_stars'));
 
-      final backRect = tester.getRect(back);
-      final infoRect = tester.getRect(info);
+      final backVisualRect = tester.getRect(backVisual);
+      final infoVisualRect = tester.getRect(infoVisual);
       final titleRect = tester.getRect(title);
       final starsRect = tester.getRect(stars);
 
-      expect(backRect.overlaps(titleRect), isFalse);
-      expect(infoRect.overlaps(starsRect), isFalse);
-      expect(tester.getSize(back).shortestSide, greaterThanOrEqualTo(40));
-      expect(tester.getSize(info).shortestSide, greaterThanOrEqualTo(40));
+      expect(backVisualRect.overlaps(titleRect), isFalse);
+      expect(infoVisualRect.overlaps(starsRect), isFalse);
+      expect(tester.getSize(back).shortestSide, greaterThanOrEqualTo(48));
+      expect(tester.getSize(info).shortestSide, greaterThanOrEqualTo(48));
+      expect(tester.getSize(backVisual).shortestSide, 40);
+      expect(tester.getSize(infoVisual).shortestSide, 40);
       expect(tester.takeException(), isNull);
     },
   );
