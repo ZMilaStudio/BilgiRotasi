@@ -8,6 +8,7 @@ REPORT_TSV='reports/TRILOGY_RUNTIME_VISUAL_PROOF_RECORDS.tsv'
 RESULT_TXT='reports/TRILOGY_RUNTIME_VISUAL_PROOF_RESULT.txt'
 RESULT_JSON='reports/TRILOGY_RUNTIME_VISUAL_PROOF_RESULT.json'
 COMBINED_LOG='reports/TRILOGY_RUNTIME_VISUAL_PROOF_LOGCAT.txt'
+TECHNICAL_FAIL=0
 
 mkdir -p reports
 : > "$REPORT_TSV"
@@ -170,32 +171,6 @@ wait_for_scenario_ready() {
   grep -Fq "completedLevels=$completed" "$log"
   grep -Fq "[WORD_HUNT_TRILOGY_PROOF_ARTWORK_READY] route=$route state=$state width=941 height=1672" "$log"
   grep -Fq "head=$(cat reports/TRILOGY_RUNTIME_VISUAL_PROOF_HEAD_SHA.txt)" "$log"
-  ! grep -Fq '[WORD_HUNT_TRILOGY_PROOF_ERROR]' "$log"
-  ! grep -Fq '[WORD_HUNT_TRILOGY_PROOF_FLUTTER_ERROR]' "$log"
-  ! grep -Fq '[WORD_HUNT_TRILOGY_PROOF_PLATFORM_ERROR]' "$log"
-}
-
-scan_runtime_health() {
-  local log="$1"
-  local activity="$2"
-  local pid
-  pid="$(a 15 shell pidof "$PACKAGE" | tr -d '\r' || true)"
-  test -n "$pid"
-  grep -Fq "$MAIN_ACTIVITY" "$activity"
-
-  if grep -Eqi \
-      'FATAL EXCEPTION|ANR in com\.leventua\.bilgirotasi|am_crash.*com\.leventua\.bilgirotasi|am_proc_died.*com\.leventua\.bilgirotasi|Process com\.leventua\.bilgirotasi .*has died' \
-      "$log"; then
-    echo 'Application crash/ANR/process death detected.' >&2
-    return 1
-  fi
-
-  if grep -Eqi \
-      'A RenderFlex overflowed|overflowed by [0-9.]+ pixels|Exception caught by rendering library' \
-      "$log"; then
-    echo 'Flutter layout overflow/rendering exception detected.' >&2
-    return 1
-  fi
 }
 
 record_result() {
@@ -203,8 +178,13 @@ record_result() {
   local route="$2"
   local state="$3"
   local resolution="$4"
-  printf '%s\t%s\t%s\t%s\tPASS\tPASS\tPASS\n' \
-    "$filename" "$route" "$state" "$resolution" >> "$REPORT_TSV"
+  local resolution_exact="$5"
+  local render_status="$6"
+  local overflow_status="$7"
+  local crash_status="$8"
+  printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' \
+    "$filename" "$route" "$state" "$resolution" "$resolution_exact" \
+    "$render_status" "$overflow_status" "$crash_status" >> "$REPORT_TSV"
 }
 
 capture_profile() {
@@ -220,6 +200,11 @@ capture_profile() {
   local log="reports/${label}_LOGCAT.txt"
   local activity="reports/${label}_ACTIVITY.txt"
   local metrics="reports/${label}_METRICS.txt"
+  local render_status='PASS'
+  local overflow_status='PASS'
+  local crash_status='PASS'
+  local resolution_exact='PASS'
+  local pid
 
   a 15 shell wm size "$size" >/dev/null
   a 15 shell wm density "$density" >/dev/null
@@ -227,13 +212,59 @@ capture_profile() {
 
   a 15 shell dumpsys activity activities > "$activity" 2>/dev/null || true
   a 15 logcat -d -v threadtime > "$log" 2>/dev/null || true
-  scan_runtime_health "$log" "$activity"
-  grep -Fq "[WORD_HUNT_TRILOGY_PROOF_FRAME_READY] route=$route state=$state" "$log"
 
-  capture_png "reports/$filename"
-  validate_png_size "reports/$filename" "$width" "$height" "$metrics"
+  pid="$(a 15 shell pidof "$PACKAGE" | tr -d '\r' || true)"
+  if [ -z "$pid" ]; then
+    render_status='FAIL'
+    crash_status='FAIL'
+  fi
+  if ! grep -Fq "$MAIN_ACTIVITY" "$activity"; then
+    render_status='FAIL'
+  fi
+  if ! grep -Fq "[WORD_HUNT_TRILOGY_PROOF_FRAME_READY] route=$route state=$state" "$log"; then
+    render_status='FAIL'
+  fi
+
+  if grep -Eqi \
+      'FATAL EXCEPTION|ANR in com\.leventua\.bilgirotasi|am_crash.*com\.leventua\.bilgirotasi|am_proc_died.*com\.leventua\.bilgirotasi|Process com\.leventua\.bilgirotasi .*has died' \
+      "$log"; then
+    crash_status='FAIL'
+    render_status='FAIL'
+  fi
+
+  if grep -Eqi \
+      'A RenderFlex overflowed|overflowed by [0-9.]+ pixels|Exception caught by rendering library' \
+      "$log"; then
+    overflow_status='FAIL'
+  fi
+
+  if grep -Fq '[WORD_HUNT_TRILOGY_PROOF_PLATFORM_ERROR]' "$log"; then
+    render_status='FAIL'
+  fi
+  if grep -F '[WORD_HUNT_TRILOGY_PROOF_FLUTTER_ERROR]' "$log" \
+      | grep -Evq 'A RenderFlex overflowed|overflowed by [0-9.]+ pixels'; then
+    render_status='FAIL'
+  fi
+
+  if ! capture_png "reports/$filename"; then
+    render_status='FAIL'
+    resolution_exact='FAIL'
+  elif ! validate_png_size "reports/$filename" "$width" "$height" "$metrics"; then
+    render_status='FAIL'
+    resolution_exact='FAIL'
+  fi
+
+  if [ "$render_status" != 'PASS' ] \
+      || [ "$overflow_status" != 'PASS' ] \
+      || [ "$crash_status" != 'PASS' ] \
+      || [ "$resolution_exact" != 'PASS' ]; then
+    TECHNICAL_FAIL=1
+  fi
+
   cat "$log" >> "$COMBINED_LOG"
-  record_result "$filename" "$route" "$state" "${width}x${height}"
+  record_result \
+    "$filename" "$route" "$state" "${width}x${height}" "$resolution_exact" \
+    "$render_status" "$overflow_status" "$crash_status"
 }
 
 restart_menu() {
@@ -347,49 +378,99 @@ finalize_reports() {
   head="$(cat reports/TRILOGY_RUNTIME_VISUAL_PROOF_HEAD_SHA.txt)"
   apk_sha="$(cut -d' ' -f1 reports/TRILOGY_RUNTIME_VISUAL_PROOF_APK_SHA256.txt)"
 
-  {
-    echo 'TECHNICAL_RUNTIME_PROOF=PASS'
-    echo 'OWNER_VISUAL_GATE=PENDING'
-    echo "PROOF_HEAD=$head"
-    echo "APK_SHA256=$apk_sha"
-    echo 'SCREENSHOT_COUNT=15'
-    echo 'REQUESTED_RESOLUTIONS=PASS'
-    echo 'CRASH_ANR=PASS'
-    echo 'OVERFLOW=PASS'
-    echo 'CATALOG_THEME_RESOLUTION=PASS'
-    echo
-    printf 'filename\troute\tstate\tresolution\trender\toverflow\tcrash\n'
-    cat "$REPORT_TSV"
-  } > "$RESULT_TXT"
-
-  python3 - "$REPORT_TSV" "$head" "$apk_sha" > "$RESULT_JSON" <<'PY'
+  python3 - \
+    "$REPORT_TSV" "$head" "$apk_sha" "$RESULT_TXT" "$RESULT_JSON" <<'PY'
 import csv
 import json
 import sys
 
-tsv, head, apk_sha = sys.argv[1:]
+tsv, head, apk_sha, txt_path, json_path = sys.argv[1:]
 records = []
 with open(tsv, encoding='utf-8') as handle:
     for row in csv.reader(handle, delimiter='\t'):
-        filename, route, state, resolution, render, overflow, crash = row
+        (
+            filename,
+            route,
+            state,
+            resolution,
+            resolution_exact,
+            render,
+            overflow,
+            crash,
+        ) = row
         records.append({
             'filename': filename,
             'route': route,
             'state': state,
             'resolution': resolution,
+            'resolution_exact': resolution_exact,
             'render': render,
             'overflow': overflow,
             'crash': crash,
         })
 
-json.dump({
-    'technical_runtime_proof': 'PASS',
-    'owner_visual_gate': 'PENDING',
-    'proof_head': head,
-    'apk_sha256': apk_sha,
-    'screenshots': records,
-}, sys.stdout, ensure_ascii=False, indent=2)
-print()
+count_ok = len(records) == 15
+resolution_ok = count_ok and all(
+    record['resolution_exact'] == 'PASS' for record in records
+)
+render_ok = count_ok and all(record['render'] == 'PASS' for record in records)
+overflow_ok = count_ok and all(
+    record['overflow'] == 'PASS' for record in records
+)
+crash_ok = count_ok and all(record['crash'] == 'PASS' for record in records)
+technical = (
+    'PASS'
+    if count_ok and resolution_ok and render_ok and overflow_ok and crash_ok
+    else 'FAIL'
+)
+
+lines = [
+    f'TECHNICAL_RUNTIME_PROOF={technical}',
+    'OWNER_VISUAL_GATE=PENDING',
+    f'PROOF_HEAD={head}',
+    f'APK_SHA256={apk_sha}',
+    f'SCREENSHOT_COUNT={len(records)}',
+    f'REQUESTED_RESOLUTIONS={"PASS" if resolution_ok else "FAIL"}',
+    f'RENDER={"PASS" if render_ok else "FAIL"}',
+    f'CRASH_ANR={"PASS" if crash_ok else "FAIL"}',
+    f'OVERFLOW={"PASS" if overflow_ok else "FAIL"}',
+    'CATALOG_THEME_RESOLUTION=PASS',
+    '',
+    (
+        'filename\troute\tstate\tresolution\tresolution_exact\t'
+        'render\toverflow\tcrash'
+    ),
+]
+for record in records:
+    lines.append('\t'.join([
+        record['filename'],
+        record['route'],
+        record['state'],
+        record['resolution'],
+        record['resolution_exact'],
+        record['render'],
+        record['overflow'],
+        record['crash'],
+    ]))
+
+with open(txt_path, 'w', encoding='utf-8') as handle:
+    handle.write('\n'.join(lines) + '\n')
+
+with open(json_path, 'w', encoding='utf-8') as handle:
+    json.dump({
+        'technical_runtime_proof': technical,
+        'owner_visual_gate': 'PENDING',
+        'proof_head': head,
+        'apk_sha256': apk_sha,
+        'screenshot_count': len(records),
+        'requested_resolutions': 'PASS' if resolution_ok else 'FAIL',
+        'render': 'PASS' if render_ok else 'FAIL',
+        'crash_anr': 'PASS' if crash_ok else 'FAIL',
+        'overflow': 'PASS' if overflow_ok else 'FAIL',
+        'catalog_theme_resolution': 'PASS',
+        'screenshots': records,
+    }, handle, ensure_ascii=False, indent=2)
+    handle.write('\n')
 PY
 
   test "$(wc -l < "$REPORT_TSV")" -eq 15
@@ -421,3 +502,10 @@ capture_route 'gunes-imparatorlugu' 'GUNES'
 
 make_contact_sheets
 finalize_reports
+
+if grep -Fxq 'TECHNICAL_RUNTIME_PROOF=PASS' "$RESULT_TXT"; then
+  exit 0
+fi
+
+echo 'Technical runtime proof completed with one or more recorded failures.' >&2
+exit 1
