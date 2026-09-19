@@ -202,14 +202,20 @@ void main() {
     expect(reverse.first.dy, greaterThan(reverse.last.dy));
   });
 
-  test('production catalog intentionally remains five routes', () {
-    expect(WordHuntRouteCatalog.entries, hasLength(5));
-    final routeIds = WordHuntRouteCatalog.entries
-        .map((entry) => entry.route.id)
-        .toSet();
-    expect(routeIds, isNot(contains('kayip-sehir')));
-    expect(routeIds, isNot(contains('yeralti-kralligi')));
-    expect(routeIds, isNot(contains('gunes-imparatorlugu')));
+  test('production registration preserves exact trilogy theme bindings', () {
+    expect(WordHuntRouteCatalog.entries, hasLength(8));
+    expect(
+      WordHuntRouteCatalog.kayipSehir.visualTheme,
+      same(WordHuntKayipSehirVisualTheme.production),
+    );
+    expect(
+      WordHuntRouteCatalog.yeraltiKralligi.visualTheme,
+      same(WordHuntYeraltiKralligiVisualTheme.production),
+    );
+    expect(
+      WordHuntRouteCatalog.gunesImparatorlugu.visualTheme,
+      same(WordHuntGunesImparatorluguVisualTheme.production),
+    );
   });
 }
 

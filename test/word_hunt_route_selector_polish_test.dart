@@ -230,7 +230,7 @@ void main() {
       );
     });
 
-    testWidgets('STATE H all five routes complete has terminal header', (
+    testWidgets('STATE H all five legacy routes complete recommends Kayıp', (
       tester,
     ) async {
       final progress = progressWith(
@@ -243,10 +243,17 @@ void main() {
         ]),
       );
       await pumpSelector(tester, progress);
-      expect(find.text('Sıradaki'), findsNothing);
+      await tester.ensureVisible(card('kayip-sehir'));
+      expect(
+        find.descendant(
+          of: card('kayip-sehir'),
+          matching: find.text('Sıradaki'),
+        ),
+        findsOneWidget,
+      );
       expect(find.text('Devam Et'), findsNothing);
       expect(find.text('Tamamlandı'), findsNWidgets(5));
-      expect(find.text('Tüm mevcut rotaları tamamladın.'), findsOneWidget);
+      expect(find.text('Tüm mevcut rotaları tamamladın.'), findsNothing);
     });
 
     testWidgets('partial next route uses Devam Et instead of Sıradaki', (
