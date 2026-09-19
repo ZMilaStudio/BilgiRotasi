@@ -200,6 +200,11 @@ class _WordHuntProductionEntryScreenState
   }
 
   String _lockedRouteMessage(WordHuntRouteCatalogEntry entry) {
+    final lockedMessage = entry.lockedMessage;
+    if (lockedMessage != null && lockedMessage.trim().isNotEmpty) {
+      return lockedMessage;
+    }
+
     final rule = entry.unlockRule;
     final prerequisite = rule.prerequisiteRoute;
     if (prerequisite == null) {
