@@ -49,6 +49,21 @@ abstract final class WordHuntRouteRewardCatalog {
           displayName: 'Kristal Kaşifi',
           icon: Icons.diamond_rounded,
         ),
+        WordHuntRouteRewardDefinition(
+          id: 'badge-kayip-sehir-kasifi',
+          displayName: 'Kayıp Şehir Kaşifi',
+          icon: Icons.account_balance_rounded,
+        ),
+        WordHuntRouteRewardDefinition(
+          id: 'badge-yeralti-kasifi',
+          displayName: 'Yeraltı Kaşifi',
+          icon: Icons.vpn_key_rounded,
+        ),
+        WordHuntRouteRewardDefinition(
+          id: 'badge-gunes-kasifi',
+          displayName: 'Güneş Kaşifi',
+          icon: Icons.wb_sunny_rounded,
+        ),
       ];
 
   static WordHuntRouteRewardDefinition? forId(String rewardId) {

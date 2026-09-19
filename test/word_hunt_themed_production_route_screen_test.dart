@@ -1,5 +1,10 @@
+import 'dart:io';
+
+import 'package:bilgi_rotasi/word_hunt/word_hunt_edge_ambient.dart';
+import 'package:bilgi_rotasi/word_hunt/word_hunt_kristal_visual_theme.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_orman_content.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_progress.dart';
+import 'package:bilgi_rotasi/word_hunt/word_hunt_route_chrome_theme.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_route_visual_theme.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_themed_production_route_screen.dart';
 import 'package:flutter/material.dart';
@@ -197,6 +202,157 @@ void main() {
     );
     await tester.pump();
     expect(tappedLevel, 0);
+    expect(tester.takeException(), isNull);
+  });
+
+  test('edge-derived ambient source has no mirror or vertical flip transform', () {
+    final source = File(
+      'lib/word_hunt/word_hunt_edge_ambient.dart',
+    ).readAsStringSync();
+    expect(source, isNot(contains('Matrix4.diagonal3Values')));
+    expect(source, isNot(contains('Transform.flip')));
+    expect(source, isNot(contains('scaleY: -1')));
+  });
+
+  testWidgets(
+    'edge-derived tall bands and configured icon chrome render without overflow',
+    (tester) async {
+      tester.view.physicalSize = const Size(1080, 2400);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(() {
+        tester.view.resetPhysicalSize();
+        tester.view.resetDevicePixelRatio();
+      });
+
+      final base = WordHuntKristalVisualTheme.production;
+      final foundationTheme = WordHuntRouteVisualTheme(
+        id: 'wave1-foundation-test',
+        mapTheme: base.mapTheme,
+        decorationSpec: base.decorationSpec,
+        decorationPalette: base.decorationPalette,
+        decorationOpacity: 0,
+        backgroundAsset: base.backgroundAsset,
+        backgroundFit: base.backgroundFit,
+        backgroundAlignment: base.backgroundAlignment,
+        artworkOverlayMode: base.artworkOverlayMode,
+        referenceCanvasSize: const Size(411, 731),
+        extendTallAmbientFromArtworkEdges: true,
+        tallAmbientMode: WordHuntTallAmbientMode.edgeDerivedLowFrequency,
+        chromeTheme: WordHuntRouteChromeTheme.iconFoundation,
+      );
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: WordHuntThemedProductionRouteScreen(
+            route: WordHuntOrmanContent.ormanYolu,
+            visualTheme: foundationTheme,
+            progress: progressThroughSeven,
+            onBack: () {},
+            onInfo: () {},
+            onCompass: () {},
+            onBook: () {},
+            onLevelTap: (_) {},
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(
+        find.byKey(const Key('word_hunt_edge_ambient_top')),
+        findsOneWidget,
+      );
+      expect(
+        find.byKey(const Key('word_hunt_edge_ambient_bottom')),
+        findsOneWidget,
+      );
+
+      final compass = find.byKey(
+        const Key('word_hunt_themed_chrome_compass'),
+      );
+      final codex = find.byKey(const Key('word_hunt_themed_chrome_book'));
+      expect(
+        find.descendant(
+          of: compass,
+          matching: find.byIcon(Icons.explore_rounded),
+        ),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(
+          of: codex,
+          matching: find.byIcon(Icons.menu_book_rounded),
+        ),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(of: compass, matching: find.byType(Image)),
+        findsNothing,
+      );
+      expect(
+        find.descendant(of: codex, matching: find.byType(Image)),
+        findsNothing,
+      );
+      final header = tester.widget<Container>(
+        find.byKey(const Key('word_hunt_reusable_route_header_panel')),
+      );
+      final headerDecoration = header.decoration! as BoxDecoration;
+      final headerGradient = headerDecoration.gradient! as LinearGradient;
+      expect(
+        headerGradient.colors.first,
+        WordHuntRouteChromeTheme.iconFoundation.headerTint.withValues(
+          alpha: 0.90,
+        ),
+      );
+      expect(
+        headerGradient.colors.last,
+        WordHuntRouteChromeTheme.iconFoundation.surfaceTint.withValues(
+          alpha: 0.94,
+        ),
+      );
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets('existing route keeps legacy Harbor asset controls by default', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+    });
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: WordHuntThemedProductionRouteScreen(
+          route: WordHuntOrmanContent.ormanYolu,
+          visualTheme: WordHuntRouteVisualThemes.ormanYolu,
+          progress: progressThroughSeven,
+          onBack: () {},
+          onInfo: () {},
+          onCompass: () {},
+          onBook: () {},
+          onLevelTap: (_) {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(
+      find.descendant(
+        of: find.byKey(const Key('word_hunt_themed_chrome_compass')),
+        matching: find.byType(Image),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(
+        of: find.byKey(const Key('word_hunt_themed_chrome_book')),
+        matching: find.byType(Image),
+      ),
+      findsOneWidget,
+    );
     expect(tester.takeException(), isNull);
   });
 

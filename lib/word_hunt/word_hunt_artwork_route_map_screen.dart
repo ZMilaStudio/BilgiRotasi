@@ -6,8 +6,11 @@ import 'package:flutter/services.dart';
 
 import 'word_hunt_artwork_presentation.dart';
 import 'word_hunt_models.dart';
+import 'word_hunt_path_renderer.dart';
 import 'word_hunt_progress.dart';
 import 'word_hunt_reusable_route_map_screen.dart';
+import 'word_hunt_route_chrome_theme.dart';
+import 'word_hunt_seal_renderer.dart';
 import 'word_hunt_route_ux_scope.dart';
 
 /// Raster artwork üstünde ortak 1→10 geometriyi ve gerçek progression hitbox'ını
@@ -20,6 +23,10 @@ class WordHuntArtworkRouteMapScreen extends StatelessWidget {
     this.overlayMode = WordHuntArtworkOverlayMode.reusable,
     this.progress = const WordHuntProgressSnapshot(),
     this.onLevelTap,
+    this.sealSpec,
+    this.pathSpec,
+    this.chromeTheme,
+    this.presentationOrder = WordHuntRoutePresentationOrder.forward,
   });
 
   final WordHuntRouteDefinition route;
@@ -27,6 +34,10 @@ class WordHuntArtworkRouteMapScreen extends StatelessWidget {
   final WordHuntArtworkOverlayMode overlayMode;
   final WordHuntProgressSnapshot progress;
   final ValueChanged<int>? onLevelTap;
+  final WordHuntSealVisualSpec? sealSpec;
+  final WordHuntPathVisualSpec? pathSpec;
+  final WordHuntRouteChromeTheme? chromeTheme;
+  final WordHuntRoutePresentationOrder presentationOrder;
 
   // Orman reference canvas compact ekranlarda birlikte ölçeklendiği için
   // görünmeyen hitbox biraz daha geniş tutulur. Görsel node offsetleri aşağıda
@@ -43,6 +54,10 @@ class WordHuntArtworkRouteMapScreen extends StatelessWidget {
         progress: progress,
         onLevelTap: onLevelTap,
         hostedByArtworkChrome: true,
+        sealSpec: sealSpec,
+        pathSpec: pathSpec,
+        chromeTheme: chromeTheme,
+        presentationOrder: presentationOrder,
       );
     }
 
@@ -74,7 +89,10 @@ class WordHuntArtworkRouteMapScreen extends StatelessWidget {
               child: LayoutBuilder(
                 builder: (context, constraints) {
                   final size = constraints.biggest;
-                  final points = WordHuntRouteMapGeometry.pointsFor(size);
+                  final points = WordHuntRouteMapGeometry.pointsFor(
+                    size,
+                    presentationOrder: presentationOrder,
+                  );
                   return Stack(
                     key: const Key('word_hunt_reusable_layer_stack'),
                     fit: StackFit.expand,

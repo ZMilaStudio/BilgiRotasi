@@ -1,3 +1,4 @@
+import 'package:bilgi_rotasi/word_hunt/word_hunt_gunes_imparatorlugu_content.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_kristal_content.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_orman2_content.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_progress.dart';
@@ -101,7 +102,7 @@ void main() {
     expect(find.text('Rotaya Dön'), findsOneWidget);
   });
 
-  testWidgets('Kristal ceremony owns exact terminal copy and reward', (
+  testWidgets('Kristal ceremony now announces Kayıp instead of terminal', (
     tester,
   ) async {
     final reward = WordHuntRouteRewardCatalog.forRoute(
@@ -114,12 +115,38 @@ void main() {
         reward: reward,
         totalStars: 21,
         routeColors: WordHuntRouteCatalog.kristal.colors,
+        nextRouteTitle: 'Kayıp Şehir',
       ),
     );
 
     expect(find.text('Rota Tamamlandı!'), findsOneWidget);
     expect(find.text('Kristal Vadisi'), findsOneWidget);
     expect(find.text('Kristal Kaşifi'), findsOneWidget);
+    expect(find.text('Kayıp Şehir açıldı.'), findsOneWidget);
+    expect(find.text('Tüm mevcut rotaları tamamladın.'), findsNothing);
+    expect(find.text('Yeni Rotayı Gör'), findsOneWidget);
+    expect(find.text('Rotaya Dön'), findsOneWidget);
+  });
+
+  testWidgets('Güneş ceremony owns exact terminal copy and reward', (
+    tester,
+  ) async {
+    final reward = WordHuntRouteRewardCatalog.forRoute(
+      WordHuntGunesImparatorluguContent.gunesImparatorlugu,
+    )!;
+    await pumpDialog(
+      tester,
+      WordHuntRouteCompletionDialog(
+        route: WordHuntGunesImparatorluguContent.gunesImparatorlugu,
+        reward: reward,
+        totalStars: 1,
+        routeColors: WordHuntRouteCatalog.gunesImparatorlugu.colors,
+      ),
+    );
+
+    expect(find.text('Rota Tamamlandı!'), findsOneWidget);
+    expect(find.text('Güneş İmparatorluğu'), findsOneWidget);
+    expect(find.text('Güneş Kaşifi'), findsOneWidget);
     expect(find.text('Tüm mevcut rotaları tamamladın.'), findsOneWidget);
     expect(find.text('Yeni Rotayı Gör'), findsNothing);
     expect(find.text('Rotaya Dön'), findsOneWidget);
@@ -149,7 +176,7 @@ void main() {
     expect(find.byKey(const Key('word_hunt_show_new_route')), findsOneWidget);
   });
 
-  testWidgets('Kristal terminal ceremony is compact-height scroll safe', (
+  testWidgets('Kristal to Kayıp ceremony is compact-height scroll safe', (
     tester,
   ) async {
     await tester.binding.setSurfaceSize(const Size(360, 480));
@@ -164,12 +191,14 @@ void main() {
         reward: reward,
         totalStars: 21,
         routeColors: WordHuntRouteCatalog.kristal.colors,
+        nextRouteTitle: 'Kayıp Şehir',
       ),
     );
 
     expect(tester.takeException(), isNull);
-    expect(find.text('Tüm mevcut rotaları tamamladın.'), findsOneWidget);
-    expect(find.byKey(const Key('word_hunt_show_new_route')), findsNothing);
+    expect(find.text('Kayıp Şehir açıldı.'), findsOneWidget);
+    expect(find.text('Tüm mevcut rotaları tamamladın.'), findsNothing);
+    expect(find.byKey(const Key('word_hunt_show_new_route')), findsOneWidget);
   });
 
   testWidgets('ceremony CTA results are exact', (tester) async {

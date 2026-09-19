@@ -6,10 +6,12 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'word_hunt_edge_ambient.dart';
 import 'word_hunt_models.dart';
 import 'word_hunt_production_assets.dart';
 import 'word_hunt_progress.dart';
 import 'word_hunt_reusable_route_map_screen.dart';
+import 'word_hunt_route_chrome_theme.dart';
 import 'word_hunt_route_ux_scope.dart';
 import 'word_hunt_route_visual_theme.dart';
 
@@ -44,6 +46,10 @@ class _WordHuntThemedProductionRouteScreenState
     extends State<WordHuntThemedProductionRouteScreen> {
   static const double _ormanAmbientBandThreshold = 12;
   static const double _ormanAmbientFeatherOverlap = 8;
+  static const double _edgeAmbientFeatherOverlap = 48;
+  static const double _compactReferenceScaleThreshold = 0.95;
+  static const double _compactTopControlExtent = 48;
+  static const double _compactTopControlVisualExtent = 40;
 
   int? _highlightedLevelIndex;
   int _highlightEpoch = 0;
@@ -100,14 +106,121 @@ class _WordHuntThemedProductionRouteScreenState
   }
 
   Widget _artworkFrame(WordHuntRouteMapTheme theme) {
+    final chromeTheme = widget.visualTheme.chromeTheme;
+    final frameColor = chromeTheme?.headerTint ?? theme.accentColor;
+    final frameWidth = switch (chromeTheme?.materialFamily) {
+      WordHuntChromeMaterialFamily.engineeredMetal => 1.5,
+      WordHuntChromeMaterialFamily.carvedStone => 1.3,
+      WordHuntChromeMaterialFamily.ceremonialStone => 1.4,
+      WordHuntChromeMaterialFamily.legacyGlass || null => 1.1,
+    };
     return IgnorePointer(
       child: DecoratedBox(
         key: const Key('word_hunt_themed_artwork_frame'),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(22),
           border: Border.all(
-            color: theme.accentColor.withValues(alpha: 0.34),
-            width: 1.1,
+            color: frameColor.withValues(alpha: 0.34),
+            width: frameWidth,
+          ),
+        ),
+      ),
+    );
+  }
+
+  WordHuntChromeControlSpec? _controlSpec(
+    _WordHuntChromeSlot slot,
+  ) {
+    final chrome = widget.visualTheme.chromeTheme;
+    if (chrome == null) return null;
+    return switch (slot) {
+      _WordHuntChromeSlot.back => chrome.back,
+      _WordHuntChromeSlot.info => chrome.info,
+      _WordHuntChromeSlot.compass => chrome.compass,
+      _WordHuntChromeSlot.codex => chrome.codex,
+    };
+  }
+
+  Widget _artworkControl({
+    required Key key,
+    required _WordHuntChromeSlot slot,
+    required String label,
+    required IconData legacyIcon,
+    required WordHuntRouteMapTheme theme,
+    required VoidCallback onPressed,
+    String? legacyAssetPath,
+  }) {
+    final configured = _controlSpec(slot);
+    if (configured == null) {
+      if (legacyAssetPath != null) {
+        return _ArtworkAssetButton(
+          key: key,
+          assetPath: legacyAssetPath,
+          semanticLabel: label,
+          onPressed: onPressed,
+        );
+      }
+      return _ArtworkChromeButton(
+        key: key,
+        icon: legacyIcon,
+        tooltip: label,
+        accent: theme.accentColor,
+        textColor: theme.textColor,
+        surfaceTint: null,
+        materialFamily: WordHuntChromeMaterialFamily.legacyGlass,
+        onPressed: onPressed,
+      );
+    }
+
+    if (configured.kind == WordHuntChromeControlKind.asset) {
+      return _ArtworkAssetButton(
+        key: key,
+        assetPath: configured.assetPath!,
+        semanticLabel: label,
+        onPressed: onPressed,
+      );
+    }
+
+    return _ArtworkChromeButton(
+      key: key,
+      icon: configured.icon!,
+      tooltip: label,
+      accent: theme.accentColor,
+      textColor: theme.textColor,
+      surfaceTint: widget.visualTheme.chromeTheme?.surfaceTint,
+      materialFamily:
+          widget.visualTheme.chromeTheme?.materialFamily ??
+          WordHuntChromeMaterialFamily.legacyGlass,
+      onPressed: onPressed,
+    );
+  }
+
+  Widget _referenceTopArtworkControl({
+    required Key key,
+    required _WordHuntChromeSlot slot,
+    required String label,
+    required IconData legacyIcon,
+    required WordHuntRouteMapTheme theme,
+    required VoidCallback onPressed,
+    required bool compact,
+  }) {
+    final visualExtent = compact ? _compactTopControlVisualExtent : 52.0;
+    return SizedBox.expand(
+      key: key,
+      child: Center(
+        child: SizedBox.square(
+          key: Key('word_hunt_reference_${slot.name}_visual_control'),
+          dimension: visualExtent,
+          child: FittedBox(
+            fit: BoxFit.contain,
+            child: _artworkControl(
+              key: Key('word_hunt_reference_${slot.name}_inner_control'),
+              slot: slot,
+              label: label,
+              legacyIcon: legacyIcon,
+              theme: theme,
+              onPressed: onPressed,
+            ),
           ),
         ),
       ),
@@ -136,41 +249,47 @@ class _WordHuntThemedProductionRouteScreenState
               children: <Widget>[
                 Align(
                   alignment: Alignment.topLeft,
-                  child: _ArtworkChromeButton(
+                  child: _artworkControl(
                     key: const Key('word_hunt_themed_chrome_back'),
-                    icon: Icons.arrow_back_rounded,
-                    tooltip: 'Geri',
-                    accent: theme.accentColor,
-                    textColor: theme.textColor,
+                    slot: _WordHuntChromeSlot.back,
+                    label: 'Geri',
+                    legacyIcon: Icons.arrow_back_rounded,
+                    theme: theme,
                     onPressed: widget.onBack,
                   ),
                 ),
                 Align(
                   alignment: Alignment.topRight,
-                  child: _ArtworkChromeButton(
+                  child: _artworkControl(
                     key: const Key('word_hunt_themed_chrome_info'),
-                    icon: Icons.info_outline_rounded,
-                    tooltip: 'Bilgi',
-                    accent: theme.accentColor,
-                    textColor: theme.textColor,
+                    slot: _WordHuntChromeSlot.info,
+                    label: 'Bilgi',
+                    legacyIcon: Icons.info_outline_rounded,
+                    theme: theme,
                     onPressed: widget.onInfo,
                   ),
                 ),
                 Align(
                   alignment: Alignment.bottomLeft,
-                  child: _ArtworkAssetButton(
+                  child: _artworkControl(
                     key: const Key('word_hunt_themed_chrome_compass'),
-                    assetPath: WordHuntProductionAssets.compassButton,
-                    semanticLabel: 'Pusula',
+                    slot: _WordHuntChromeSlot.compass,
+                    label: 'Pusula',
+                    legacyIcon: Icons.explore_outlined,
+                    legacyAssetPath: WordHuntProductionAssets.compassButton,
+                    theme: theme,
                     onPressed: _handleCompass,
                   ),
                 ),
                 Align(
                   alignment: Alignment.bottomRight,
-                  child: _ArtworkAssetButton(
+                  child: _artworkControl(
                     key: const Key('word_hunt_themed_chrome_book'),
-                    assetPath: WordHuntProductionAssets.bookButton,
-                    semanticLabel: 'Kitap',
+                    slot: _WordHuntChromeSlot.codex,
+                    label: 'Kitap',
+                    legacyIcon: Icons.menu_book_rounded,
+                    legacyAssetPath: WordHuntProductionAssets.bookButton,
+                    theme: theme,
                     onPressed: widget.onBook,
                   ),
                 ),
@@ -255,11 +374,27 @@ class _WordHuntThemedProductionRouteScreenState
     required double featherExtent,
     required bool isTop,
   }) {
-    if (extent <= _ormanAmbientBandThreshold) {
+    if (extent <= _ormanAmbientBandThreshold ||
+        widget.visualTheme.tallAmbientMode == WordHuntTallAmbientMode.none) {
       return const SizedBox.shrink();
     }
 
     final featherRatio = (featherExtent / extent).clamp(0.0, 1.0).toDouble();
+
+    if (widget.visualTheme.tallAmbientMode ==
+        WordHuntTallAmbientMode.edgeDerivedLowFrequency) {
+      final asset = widget.visualTheme.backgroundAsset;
+      if (asset == null) {
+        return ColoredBox(color: theme.backgroundColor);
+      }
+      return WordHuntEdgeDerivedAmbient(
+        assetPath: asset,
+        edge: isTop ? WordHuntAmbientEdge.top : WordHuntAmbientEdge.bottom,
+        fallbackColor: theme.backgroundColor,
+        featherFraction: featherRatio,
+      );
+    }
+
     final stops = isTop
         ? <double>[0, 1 - featherRatio, 1]
         : <double>[0, featherRatio, 1];
@@ -304,6 +439,18 @@ class _WordHuntThemedProductionRouteScreenState
           final top = math.max(0.0, (available.height - fitted.height) / 2);
           final right = math.max(0.0, available.width - left - fitted.width);
           final bottom = math.max(0.0, available.height - top - fitted.height);
+          final referenceScale = fitted.width / referenceCanvasSize.width;
+          final compactTopChrome =
+              referenceScale < _compactReferenceScaleThreshold;
+          final topControlExtent = compactTopChrome
+              ? _compactTopControlExtent
+              : 52.0;
+          final topControlInset = compactTopChrome ? 0.0 : 6.0;
+          final edgeAmbientFeatherOverlap =
+              widget.visualTheme.tallAmbientMode ==
+                  WordHuntTallAmbientMode.edgeDerivedLowFrequency
+              ? _edgeAmbientFeatherOverlap
+              : _ormanAmbientFeatherOverlap;
           final boardMediaQuery = MediaQuery.of(context).copyWith(
             size: referenceCanvasSize,
             padding: EdgeInsets.zero,
@@ -345,11 +492,11 @@ class _WordHuntThemedProductionRouteScreenState
                   left: 0,
                   right: 0,
                   top: 0,
-                  height: top + _ormanAmbientFeatherOverlap,
+                  height: top + edgeAmbientFeatherOverlap,
                   child: _ormanAmbientBand(
                     theme: theme,
-                    extent: top + _ormanAmbientFeatherOverlap,
-                    featherExtent: _ormanAmbientFeatherOverlap,
+                    extent: top + edgeAmbientFeatherOverlap,
+                    featherExtent: edgeAmbientFeatherOverlap,
                     isTop: true,
                   ),
                 ),
@@ -359,55 +506,67 @@ class _WordHuntThemedProductionRouteScreenState
                   left: 0,
                   right: 0,
                   bottom: 0,
-                  height: bottom + _ormanAmbientFeatherOverlap,
+                  height: bottom + edgeAmbientFeatherOverlap,
                   child: _ormanAmbientBand(
                     theme: theme,
-                    extent: bottom + _ormanAmbientFeatherOverlap,
-                    featherExtent: _ormanAmbientFeatherOverlap,
+                    extent: bottom + edgeAmbientFeatherOverlap,
+                    featherExtent: edgeAmbientFeatherOverlap,
                     isTop: false,
                   ),
                 ),
               Positioned(
                 left: left + 8,
-                top: top + 6,
-                child: _ArtworkChromeButton(
+                top: top + topControlInset,
+                width: topControlExtent,
+                height: topControlExtent,
+                child: _referenceTopArtworkControl(
                   key: const Key('word_hunt_themed_chrome_back'),
-                  icon: Icons.arrow_back_rounded,
-                  tooltip: 'Geri',
-                  accent: theme.accentColor,
-                  textColor: theme.textColor,
+                  slot: _WordHuntChromeSlot.back,
+                  label: 'Geri',
+                  legacyIcon: Icons.arrow_back_rounded,
+                  theme: theme,
                   onPressed: widget.onBack,
+                  compact: compactTopChrome,
                 ),
               ),
               Positioned(
                 right: right + 8,
-                top: top + 6,
-                child: _ArtworkChromeButton(
+                top: top + topControlInset,
+                width: topControlExtent,
+                height: topControlExtent,
+                child: _referenceTopArtworkControl(
                   key: const Key('word_hunt_themed_chrome_info'),
-                  icon: Icons.info_outline_rounded,
-                  tooltip: 'Bilgi',
-                  accent: theme.accentColor,
-                  textColor: theme.textColor,
+                  slot: _WordHuntChromeSlot.info,
+                  label: 'Bilgi',
+                  legacyIcon: Icons.info_outline_rounded,
+                  theme: theme,
                   onPressed: widget.onInfo,
+                  compact: compactTopChrome,
                 ),
               ),
               Positioned(
                 left: left + 8,
                 bottom: bottom + 8,
-                child: _ArtworkAssetButton(
+                child: _artworkControl(
                   key: const Key('word_hunt_themed_chrome_compass'),
-                  assetPath: WordHuntProductionAssets.compassButton,
-                  semanticLabel: 'Pusula',
+                  slot: _WordHuntChromeSlot.compass,
+                  label: 'Pusula',
+                  legacyIcon: Icons.explore_outlined,
+                  legacyAssetPath: WordHuntProductionAssets.compassButton,
+                  theme: theme,
                   onPressed: _handleCompass,
                 ),
               ),
               Positioned(
                 right: right + 8,
                 bottom: bottom + 8,
-                child: _ArtworkAssetButton(
+                child: _artworkControl(
                   key: const Key('word_hunt_themed_chrome_book'),
-                  assetPath: WordHuntProductionAssets.bookButton,
-                  semanticLabel: 'Kitap',
+                  slot: _WordHuntChromeSlot.codex,
+                  label: 'Kitap',
+                  legacyIcon: Icons.menu_book_rounded,
+                  legacyAssetPath: WordHuntProductionAssets.bookButton,
+                  theme: theme,
                   onPressed: widget.onBook,
                 ),
               ),
@@ -568,6 +727,8 @@ class _AmbientBase64ArtworkState extends State<_AmbientBase64Artwork> {
   }
 }
 
+enum _WordHuntChromeSlot { back, info, compass, codex }
+
 class _ArtworkChromeButton extends StatelessWidget {
   const _ArtworkChromeButton({
     super.key,
@@ -576,16 +737,33 @@ class _ArtworkChromeButton extends StatelessWidget {
     required this.accent,
     required this.textColor,
     required this.onPressed,
+    this.surfaceTint,
+    this.materialFamily = WordHuntChromeMaterialFamily.legacyGlass,
   });
 
   final IconData icon;
   final String tooltip;
   final Color accent;
   final Color textColor;
+  final Color? surfaceTint;
+  final WordHuntChromeMaterialFamily materialFamily;
   final VoidCallback onPressed;
 
   @override
   Widget build(BuildContext context) {
+    final blurSigma = switch (materialFamily) {
+      WordHuntChromeMaterialFamily.legacyGlass => 7.0,
+      WordHuntChromeMaterialFamily.carvedStone => 4.0,
+      WordHuntChromeMaterialFamily.engineeredMetal => 5.0,
+      WordHuntChromeMaterialFamily.ceremonialStone => 4.5,
+    };
+    final borderWidth = switch (materialFamily) {
+      WordHuntChromeMaterialFamily.legacyGlass => 1.4,
+      WordHuntChromeMaterialFamily.carvedStone => 1.7,
+      WordHuntChromeMaterialFamily.engineeredMetal => 1.6,
+      WordHuntChromeMaterialFamily.ceremonialStone => 1.8,
+    };
+
     return Tooltip(
       message: tooltip,
       child: Semantics(
@@ -601,20 +779,30 @@ class _ArtworkChromeButton extends StatelessWidget {
               child: Center(
                 child: ClipOval(
                   child: BackdropFilter(
-                    filter: ui.ImageFilter.blur(sigmaX: 7, sigmaY: 7),
+                    filter: ui.ImageFilter.blur(
+                      sigmaX: blurSigma,
+                      sigmaY: blurSigma,
+                    ),
                     child: Container(
                       width: 45,
                       height: 45,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        gradient: const LinearGradient(
+                        gradient: LinearGradient(
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
-                          colors: <Color>[Color(0xD91C2E20), Color(0xE308120C)],
+                          colors: <Color>[
+                            (surfaceTint ?? const Color(0xFF1C2E20))
+                                .withValues(alpha: 0.85),
+                            Color.alphaBlend(
+                              Colors.black.withValues(alpha: 0.55),
+                              surfaceTint ?? const Color(0xFF08120C),
+                            ).withValues(alpha: 0.90),
+                          ],
                         ),
                         border: Border.all(
                           color: accent.withValues(alpha: 0.76),
-                          width: 1.4,
+                          width: borderWidth,
                         ),
                         boxShadow: const <BoxShadow>[
                           BoxShadow(

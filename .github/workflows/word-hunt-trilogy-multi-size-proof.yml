@@ -1,0 +1,129 @@
+name: Kelime Avı üçleme Android 16 runtime görsel kanıtı
+
+on:
+  pull_request:
+    branches:
+      - release/final-closed-test-aab-1.68.8
+    paths:
+      - 'lib/word_hunt/word_hunt_trilogy_visual_proof_main.dart'
+      - 'test/word_hunt_trilogy_runtime_visual_proof_test.dart'
+      - 'tools/run_word_hunt_trilogy_android16_multi_size_proof.sh'
+      - '.github/workflows/word-hunt-trilogy-multi-size-proof.yml'
+      - 'lib/word_hunt/word_hunt_route_catalog.dart'
+      - 'lib/word_hunt/word_hunt_reusable_route_map_screen.dart'
+      - 'lib/word_hunt/word_hunt_themed_production_route_screen.dart'
+      - 'lib/word_hunt/word_hunt_edge_ambient.dart'
+      - 'lib/word_hunt/word_hunt_seal_renderer.dart'
+      - 'lib/word_hunt/word_hunt_*_visual_theme.dart'
+      - 'test/word_hunt_trilogy_runtime_layout_regression_test.dart'
+      - 'assets/word_hunt/*_ENV_941x1672.webp'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  trilogy-runtime-proof:
+    name: Üçleme gerçek Flutter Android 16 kanıtı
+    runs-on: ubuntu-22.04
+    timeout-minutes: 55
+    env:
+      PROOF_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+
+    steps:
+      - name: Exact feature HEAD'i indir
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.PROOF_SHA }}
+
+      - name: Java 17 kur
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Flutter 3.44.6 kur
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.6'
+          channel: stable
+          cache: true
+
+      - name: Proof harness ve Word Hunt regresyonlarını doğrula
+        shell: bash
+        run: |
+          set -euo pipefail
+          flutter pub get
+          flutter analyze --no-fatal-warnings --no-fatal-infos
+          flutter test             test/word_hunt_trilogy_runtime_visual_proof_test.dart             test/word_hunt_route_selection_test.dart             test/word_hunt_route_selector_polish_test.dart             test/word_hunt_route_reward_test.dart             test/word_hunt_route_reward_ui_test.dart             test/word_hunt_trilogy_seal_renderer_test.dart             test/word_hunt_trilogy_path_renderer_test.dart             test/word_hunt_trilogy_visual_theme_test.dart             test/word_hunt_trilogy_asset_lock_test.dart             test/word_hunt_kayip_sehir_content_test.dart             test/word_hunt_yeralti_kralligi_content_test.dart             test/word_hunt_gunes_imparatorlugu_content_test.dart             --reporter expanded
+          flutter test test/word_hunt_*.dart --reporter compact
+          git diff --check
+
+      - name: Proof APK'sını üret
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p reports
+          flutter build apk --debug             -t lib/word_hunt/word_hunt_trilogy_visual_proof_main.dart             --dart-define=ADMOB_ENVIRONMENT=test             --dart-define=TRILOGY_PROOF_HEAD=$PROOF_SHA
+          test -s build/app/outputs/flutter-apk/app-debug.apk
+          cp build/app/outputs/flutter-apk/app-debug.apk             reports/TRILOGY_RUNTIME_VISUAL_PROOF.apk
+          git rev-parse HEAD | tee reports/TRILOGY_RUNTIME_VISUAL_PROOF_HEAD_SHA.txt
+          sha256sum reports/TRILOGY_RUNTIME_VISUAL_PROOF.apk             | tee reports/TRILOGY_RUNTIME_VISUAL_PROOF_APK_SHA256.txt
+
+      - name: Contact sheet bağımlılığını hazırla
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY' || python3 -m pip install --user pillow==11.3.0
+          from PIL import Image
+          print(Image.__version__)
+          PY
+
+      - name: Android emulator KVM erişimini hazırla
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -e /dev/kvm
+          sudo chmod 666 /dev/kvm
+          test -r /dev/kvm
+          test -w /dev/kvm
+          ./android/gradlew --stop || true
+
+      - name: Android 16 üzerinde 15 runtime screenshot üret
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 36
+          target: aosp_atd
+          arch: x86_64
+          profile: pixel_2
+          cores: 2
+          ram-size: 2048M
+          heap-size: 512M
+          emulator-boot-timeout: 1200
+          disable-animations: false
+          script: bash tools/run_word_hunt_trilogy_android16_multi_size_proof.sh
+
+      - name: Runtime proof paketini yükle
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: BilgiRotasi-KelimeAvi-Trilogy-Runtime-${{ env.PROOF_SHA }}
+          path: |
+            reports/KAYIP_*.png
+            reports/YERALTI_*.png
+            reports/GUNES_*.png
+            reports/TRILOGY_RUNTIME_CONTACT_SHEET.png
+            reports/TRILOGY_RUNTIME_VISUAL_PROOF_RESULT.txt
+            reports/TRILOGY_RUNTIME_VISUAL_PROOF_RESULT.json
+            reports/TRILOGY_RUNTIME_VISUAL_PROOF_HEAD_SHA.txt
+            reports/TRILOGY_RUNTIME_VISUAL_PROOF_APK_SHA256.txt
+            reports/TRILOGY_RUNTIME_VISUAL_PROOF_INSTALL.txt
+            reports/TRILOGY_RUNTIME_VISUAL_PROOF_LAUNCH.txt
+            reports/TRILOGY_RUNTIME_VISUAL_PROOF_LOGCAT.txt
+            reports/TRILOGY_*_READY_LOGCAT.txt
+            reports/TRILOGY_*_READY_ACTIVITY.txt
+            reports/*_METRICS.txt
+            reports/*_LOGCAT.txt
+            reports/*_ACTIVITY.txt
+          if-no-files-found: warn
+          retention-days: 30

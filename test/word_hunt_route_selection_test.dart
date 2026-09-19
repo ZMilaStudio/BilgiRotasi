@@ -1,6 +1,10 @@
 import 'dart:io';
 
 import 'package:bilgi_rotasi/word_hunt/word_hunt_gokyuzu_content.dart';
+import 'package:bilgi_rotasi/word_hunt/word_hunt_gunes_imparatorlugu_content.dart';
+import 'package:bilgi_rotasi/word_hunt/word_hunt_gunes_imparatorlugu_visual_theme.dart';
+import 'package:bilgi_rotasi/word_hunt/word_hunt_kayip_sehir_content.dart';
+import 'package:bilgi_rotasi/word_hunt/word_hunt_kayip_sehir_visual_theme.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_kristal_content.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_kristal_visual_theme.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_orman2_content.dart';
@@ -11,6 +15,8 @@ import 'package:bilgi_rotasi/word_hunt/word_hunt_route_catalog.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_route_selector.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_route_visual_theme.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_starter_content.dart';
+import 'package:bilgi_rotasi/word_hunt/word_hunt_yeralti_kralligi_content.dart';
+import 'package:bilgi_rotasi/word_hunt/word_hunt_yeralti_kralligi_visual_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -40,13 +46,16 @@ void main() {
   test('production catalog order, ids and ordinal labels stay exact', () {
     final entries = WordHuntRouteCatalog.entries;
 
-    expect(entries, hasLength(5));
+    expect(entries, hasLength(8));
     expect(entries.map((entry) => entry.route.id).toList(), <String>[
       'baslangic-limani',
       'gokyuzu-adalari',
       'orman-yolu',
       'orman-2',
       'kristal-vadisi',
+      'kayip-sehir',
+      'yeralti-kralligi',
+      'gunes-imparatorlugu',
     ]);
     expect(entries.map((entry) => entry.ordinalLabel).toList(), <String>[
       'İlk rota',
@@ -54,9 +63,20 @@ void main() {
       'Üçüncü rota',
       'Dördüncü rota',
       'Beşinci rota',
+      'Altıncı rota',
+      'Yedinci rota',
+      'Sekizinci rota',
     ]);
-    expect(entries[3].route.title, 'Kadim Orman');
-    expect(entries[4].route.title, 'Kristal Vadisi');
+    expect(entries.map((entry) => entry.route.title).toList(), <String>[
+      'Başlangıç Limanı',
+      'Gökyüzü Adaları',
+      'Orman Yolu',
+      'Kadim Orman',
+      'Kristal Vadisi',
+      'Kayıp Şehir',
+      'Yeraltı Krallığı',
+      'Güneş İmparatorluğu',
+    ]);
   });
 
   test('canlı rotaların production presentation türü catalog verisidir', () {
@@ -94,6 +114,28 @@ void main() {
       WordHuntRouteCatalog.kristal.visualTheme,
       same(WordHuntKristalVisualTheme.production),
     );
+    for (final entry in <WordHuntRouteCatalogEntry>[
+      WordHuntRouteCatalog.kayipSehir,
+      WordHuntRouteCatalog.yeraltiKralligi,
+      WordHuntRouteCatalog.gunesImparatorlugu,
+    ]) {
+      expect(
+        entry.presentationKind,
+        WordHuntRoutePresentationKind.themedReusable,
+      );
+    }
+    expect(
+      WordHuntRouteCatalog.kayipSehir.visualTheme,
+      same(WordHuntKayipSehirVisualTheme.production),
+    );
+    expect(
+      WordHuntRouteCatalog.yeraltiKralligi.visualTheme,
+      same(WordHuntYeraltiKralligiVisualTheme.production),
+    );
+    expect(
+      WordHuntRouteCatalog.gunesImparatorlugu.visualTheme,
+      same(WordHuntGunesImparatorluguVisualTheme.production),
+    );
 
     expect(
       WordHuntRouteCatalog.entryForRouteId(
@@ -120,6 +162,24 @@ void main() {
         WordHuntKristalContent.kristalVadisi.id,
       ),
       same(WordHuntRouteCatalog.kristal),
+    );
+    expect(
+      WordHuntRouteCatalog.entryForRouteId(
+        WordHuntKayipSehirContent.kayipSehir.id,
+      ),
+      same(WordHuntRouteCatalog.kayipSehir),
+    );
+    expect(
+      WordHuntRouteCatalog.entryForRouteId(
+        WordHuntYeraltiKralligiContent.yeraltiKralligi.id,
+      ),
+      same(WordHuntRouteCatalog.yeraltiKralligi),
+    );
+    expect(
+      WordHuntRouteCatalog.entryForRouteId(
+        WordHuntGunesImparatorluguContent.gunesImparatorlugu.id,
+      ),
+      same(WordHuntRouteCatalog.gunesImparatorlugu),
     );
   });
 
@@ -171,6 +231,48 @@ void main() {
       WordHuntRouteCatalog.kristal.lockedMessage,
       'Kadim Orman’ı tamamlayarak aç.',
     );
+
+    final kayipRule = WordHuntRouteCatalog.kayipSehir.unlockRule;
+    expect(kayipRule.kind, WordHuntRouteUnlockKind.routeComplete);
+    expect(
+      kayipRule.prerequisiteRoute,
+      same(WordHuntKristalContent.kristalVadisi),
+    );
+    expect(kayipRule.requiredStars, 0);
+    expect(WordHuntKayipSehirContent.kayipSehir.unlockStarsRequired, 0);
+    expect(
+      WordHuntRouteCatalog.kayipSehir.lockedMessage,
+      'Kristal Vadisi’ni tamamlayarak aç.',
+    );
+
+    final yeraltiRule = WordHuntRouteCatalog.yeraltiKralligi.unlockRule;
+    expect(yeraltiRule.kind, WordHuntRouteUnlockKind.routeComplete);
+    expect(
+      yeraltiRule.prerequisiteRoute,
+      same(WordHuntKayipSehirContent.kayipSehir),
+    );
+    expect(yeraltiRule.requiredStars, 0);
+    expect(WordHuntYeraltiKralligiContent.yeraltiKralligi.unlockStarsRequired, 0);
+    expect(
+      WordHuntRouteCatalog.yeraltiKralligi.lockedMessage,
+      'Kayıp Şehir’i tamamlayarak aç.',
+    );
+
+    final gunesRule = WordHuntRouteCatalog.gunesImparatorlugu.unlockRule;
+    expect(gunesRule.kind, WordHuntRouteUnlockKind.routeComplete);
+    expect(
+      gunesRule.prerequisiteRoute,
+      same(WordHuntYeraltiKralligiContent.yeraltiKralligi),
+    );
+    expect(gunesRule.requiredStars, 0);
+    expect(
+      WordHuntGunesImparatorluguContent.gunesImparatorlugu.unlockStarsRequired,
+      0,
+    );
+    expect(
+      WordHuntRouteCatalog.gunesImparatorlugu.lockedMessage,
+      'Yeraltı Krallığı’nı tamamlayarak aç.',
+    );
   });
 
   test('fresh progress yalnız Başlangıç Limanı rotasını açar', () {
@@ -181,6 +283,12 @@ void main() {
     expect(WordHuntRouteCatalog.orman.isUnlocked(progress), isFalse);
     expect(WordHuntRouteCatalog.orman2Pilot.isUnlocked(progress), isFalse);
     expect(WordHuntRouteCatalog.kristal.isUnlocked(progress), isFalse);
+    expect(WordHuntRouteCatalog.kayipSehir.isUnlocked(progress), isFalse);
+    expect(WordHuntRouteCatalog.yeraltiKralligi.isUnlocked(progress), isFalse);
+    expect(
+      WordHuntRouteCatalog.gunesImparatorlugu.isUnlocked(progress),
+      isFalse,
+    );
   });
 
   test('18 Başlangıç yıldızı final olmadan Gökyüzü açmaz', () {
@@ -317,6 +425,89 @@ void main() {
     expect(WordHuntRouteCatalog.kristal.isUnlocked(progress), isTrue);
   });
 
+  test('historical five-route complete user unlocks only Kayıp next', () {
+    final progress = WordHuntProgressSnapshot(
+      bestStarsByLevelId: <String, int>{
+        ...starterCompleteStars(),
+        ...skyCompleteStars(),
+        WordHuntOrmanContent.ormanYolu.levels.last.id: 1,
+        WordHuntOrman2Content.orman2.levels.last.id: 1,
+        WordHuntKristalContent.kristalVadisi.levels.last.id: 1,
+      },
+    );
+
+    expect(WordHuntRouteCatalog.kayipSehir.isUnlocked(progress), isTrue);
+    expect(WordHuntRouteCatalog.yeraltiKralligi.isUnlocked(progress), isFalse);
+    expect(
+      WordHuntRouteCatalog.gunesImparatorlugu.isUnlocked(progress),
+      isFalse,
+    );
+  });
+
+  testWidgets(
+    'historical five-route complete user recommends Kayıp then advances linearly',
+    (tester) async {
+      var progress = WordHuntProgressSnapshot(
+        bestStarsByLevelId: <String, int>{
+          ...starterCompleteStars(),
+          ...skyCompleteStars(),
+          WordHuntOrmanContent.ormanYolu.levels.last.id: 1,
+          WordHuntOrman2Content.orman2.levels.last.id: 1,
+          WordHuntKristalContent.kristalVadisi.levels.last.id: 1,
+        },
+      );
+
+      Future<void> pump() async {
+        await tester.pumpWidget(
+          MaterialApp(
+            home: WordHuntRouteSelector(
+              progress: progress,
+              onRouteTap: (_) {},
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+      }
+
+      await pump();
+      await tester.ensureVisible(
+        find.byKey(const Key('word_hunt_route_card_kayip-sehir')),
+      );
+      expect(find.text('Sıradaki'), findsOneWidget);
+      expect(WordHuntRouteCatalog.kayipSehir.isUnlocked(progress), isTrue);
+      expect(WordHuntRouteCatalog.yeraltiKralligi.isUnlocked(progress), isFalse);
+
+      progress = progress.recordLevelResult(
+        levelId: WordHuntKayipSehirContent.kayipSehir.levels.last.id,
+        stars: 1,
+      );
+      await pump();
+      await tester.ensureVisible(
+        find.byKey(const Key('word_hunt_route_card_yeralti-kralligi')),
+      );
+      expect(find.text('Sıradaki'), findsOneWidget);
+      expect(WordHuntRouteCatalog.yeraltiKralligi.isUnlocked(progress), isTrue);
+      expect(
+        WordHuntRouteCatalog.gunesImparatorlugu.isUnlocked(progress),
+        isFalse,
+      );
+
+      progress = progress.recordLevelResult(
+        levelId: WordHuntYeraltiKralligiContent.yeraltiKralligi.levels.last.id,
+        stars: 1,
+      );
+      await pump();
+      await tester.ensureVisible(
+        find.byKey(const Key('word_hunt_route_card_gunes-imparatorlugu')),
+      );
+      expect(find.text('Sıradaki'), findsOneWidget);
+      expect(
+        WordHuntRouteCatalog.gunesImparatorlugu.isUnlocked(progress),
+        isTrue,
+      );
+    },
+  );
+
   test(
     'legacy Orman progress Gökyüzü incomplete iken prerequisite bypass etmez',
     () {
@@ -452,6 +643,18 @@ void main() {
       find.byKey(const Key('word_hunt_route_card_kristal')),
     );
     expect(find.text('Kadim Orman’ı tamamlayarak aç.'), findsOneWidget);
+    await tester.ensureVisible(
+      find.byKey(const Key('word_hunt_route_card_kayip-sehir')),
+    );
+    expect(find.text('Kristal Vadisi’ni tamamlayarak aç.'), findsOneWidget);
+    await tester.ensureVisible(
+      find.byKey(const Key('word_hunt_route_card_yeralti-kralligi')),
+    );
+    expect(find.text('Kayıp Şehir’i tamamlayarak aç.'), findsOneWidget);
+    await tester.ensureVisible(
+      find.byKey(const Key('word_hunt_route_card_gunes-imparatorlugu')),
+    );
+    expect(find.text('Yeraltı Krallığı’nı tamamlayarak aç.'), findsOneWidget);
 
     final forestCard = find.byKey(const Key('word_hunt_route_card_orman'));
     await tester.ensureVisible(forestCard);
@@ -504,6 +707,8 @@ void main() {
     'kilitli rota mesajı unlock türünü generic olarak desteklemeyi sürdürür',
     () {
       expect(entrySource, contains('String _lockedRouteMessage('));
+      expect(entrySource, contains('final lockedMessage = entry.lockedMessage;'));
+      expect(entrySource, contains('return lockedMessage;'));
       expect(entrySource, contains('case WordHuntRouteUnlockKind.routeStars:'));
       expect(
         entrySource,
@@ -526,6 +731,9 @@ void main() {
       );
       expect(entrySource, isNot(contains("route.id == 'orman-2'")));
       expect(entrySource, isNot(contains("route.id == 'kristal-vadisi'")));
+      expect(entrySource, isNot(contains("route.id == 'kayip-sehir'")));
+      expect(entrySource, isNot(contains("route.id == 'yeralti-kralligi'")));
+      expect(entrySource, isNot(contains("route.id == 'gunes-imparatorlugu'")));
     },
   );
 
@@ -578,6 +786,24 @@ void main() {
         WordHuntKristalContent.kristalVadisi.id,
       )?.presentationKind,
       WordHuntRoutePresentationKind.themedReusable,
+    );
+    expect(
+      WordHuntRouteCatalog.entryForRouteId(
+        WordHuntKayipSehirContent.kayipSehir.id,
+      )?.visualTheme,
+      same(WordHuntKayipSehirVisualTheme.production),
+    );
+    expect(
+      WordHuntRouteCatalog.entryForRouteId(
+        WordHuntYeraltiKralligiContent.yeraltiKralligi.id,
+      )?.visualTheme,
+      same(WordHuntYeraltiKralligiVisualTheme.production),
+    );
+    expect(
+      WordHuntRouteCatalog.entryForRouteId(
+        WordHuntGunesImparatorluguContent.gunesImparatorlugu.id,
+      )?.visualTheme,
+      same(WordHuntGunesImparatorluguVisualTheme.production),
     );
   });
 }

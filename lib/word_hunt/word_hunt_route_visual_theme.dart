@@ -6,11 +6,15 @@ import 'package:flutter/services.dart';
 
 import 'word_hunt_artwork_presentation.dart';
 import 'word_hunt_artwork_route_map_screen.dart';
+import 'word_hunt_edge_ambient.dart';
 import 'word_hunt_models.dart';
+import 'word_hunt_path_renderer.dart';
 import 'word_hunt_orman_clean_environment_assets.dart';
 import 'word_hunt_progress.dart';
 import 'word_hunt_reusable_route_map_screen.dart';
+import 'word_hunt_route_chrome_theme.dart';
 import 'word_hunt_route_map_decoration.dart';
+import 'word_hunt_seal_renderer.dart';
 
 /// Bir Kelime Avı rotasının yalnız görsel skin verisini taşır.
 ///
@@ -39,6 +43,11 @@ class WordHuntRouteVisualTheme {
     this.artworkOverlayMode = WordHuntArtworkOverlayMode.reusable,
     this.referenceCanvasSize,
     this.extendTallAmbientFromArtworkEdges = false,
+    this.sealSpec,
+    this.pathSpec,
+    this.chromeTheme,
+    this.tallAmbientMode = WordHuntTallAmbientMode.legacyMirroredArtwork,
+    this.presentationOrder = WordHuntRoutePresentationOrder.forward,
   }) : assert(decorationOpacity >= 0 && decorationOpacity <= 1),
        assert(backgroundBlurSigma >= 0),
        assert(backgroundScale >= 1),
@@ -68,6 +77,11 @@ class WordHuntRouteVisualTheme {
   final WordHuntArtworkOverlayMode artworkOverlayMode;
   final Size? referenceCanvasSize;
   final bool extendTallAmbientFromArtworkEdges;
+  final WordHuntSealVisualSpec? sealSpec;
+  final WordHuntPathVisualSpec? pathSpec;
+  final WordHuntRouteChromeTheme? chromeTheme;
+  final WordHuntTallAmbientMode tallAmbientMode;
+  final WordHuntRoutePresentationOrder presentationOrder;
 
   bool get hasArtwork =>
       backgroundAsset != null || backgroundBase64AssetParts.isNotEmpty;
@@ -107,6 +121,10 @@ class WordHuntThemedRouteMapScreen extends StatelessWidget {
             overlayMode: visualTheme.artworkOverlayMode,
             progress: progress,
             onLevelTap: onLevelTap,
+            sealSpec: visualTheme.sealSpec,
+            pathSpec: visualTheme.pathSpec,
+            chromeTheme: visualTheme.chromeTheme,
+            presentationOrder: visualTheme.presentationOrder,
           )
         : WordHuntReusableRouteMapScreen(
             route: route,
@@ -122,6 +140,10 @@ class WordHuntThemedRouteMapScreen extends StatelessWidget {
             decorationOpacity: showProceduralDecorations
                 ? visualTheme.decorationOpacity
                 : 0,
+            sealSpec: visualTheme.sealSpec,
+            pathSpec: visualTheme.pathSpec,
+            chromeTheme: visualTheme.chromeTheme,
+            presentationOrder: visualTheme.presentationOrder,
           );
 
     if (!hasArtwork) return map;
