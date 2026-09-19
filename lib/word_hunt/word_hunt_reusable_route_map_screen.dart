@@ -3,14 +3,18 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
 import 'word_hunt_models.dart';
+import 'word_hunt_path_renderer.dart';
 import 'word_hunt_progress.dart';
 import 'word_hunt_route_map_decoration.dart';
+import 'word_hunt_seal_renderer.dart';
 
 /// Kelime Avı'nın bütün 10-bölümlük rotaları için tek geometri sözleşmesi.
 ///
 /// Bu sınıf bilerek rota kimliği, asset yolu veya tema bilgisi içermez. Yeni bir
 /// rota eklemek bu koordinatları değiştirmemeli; rota farkları yalnız tema ve
 /// içerik verisinden gelmelidir.
+enum WordHuntRoutePresentationOrder { forward, reverse }
+
 abstract final class WordHuntRouteMapGeometry {
   static const List<Offset> normalizedStops = <Offset>[
     Offset(0.18, 0.10),
@@ -39,10 +43,17 @@ abstract final class WordHuntRouteMapGeometry {
     (9, 10),
   ];
 
-  static List<Offset> pointsFor(Size size) {
-    return normalizedStops
+  static List<Offset> pointsFor(
+    Size size, {
+    WordHuntRoutePresentationOrder presentationOrder =
+        WordHuntRoutePresentationOrder.forward,
+  }) {
+    final points = normalizedStops
         .map((point) => Offset(point.dx * size.width, point.dy * size.height))
         .toList(growable: false);
+    return presentationOrder == WordHuntRoutePresentationOrder.forward
+        ? points
+        : points.reversed.toList(growable: false);
   }
 }
 
@@ -180,6 +191,9 @@ class WordHuntReusableRouteMapScreen extends StatelessWidget {
     this.decorationPalette,
     this.decorationOpacity = 0.42,
     this.hostedByArtworkChrome = false,
+    this.sealSpec,
+    this.pathSpec,
+    this.presentationOrder = WordHuntRoutePresentationOrder.forward,
   }) : assert(
          (decorationSpec == null) == (decorationPalette == null),
          'Decoration spec ve palette birlikte verilmelidir.',
@@ -193,6 +207,9 @@ class WordHuntReusableRouteMapScreen extends StatelessWidget {
   final WordHuntRouteDecorationPalette? decorationPalette;
   final double decorationOpacity;
   final bool hostedByArtworkChrome;
+  final WordHuntSealVisualSpec? sealSpec;
+  final WordHuntPathVisualSpec? pathSpec;
+  final WordHuntRoutePresentationOrder presentationOrder;
 
   // Hitbox sözleşmesi değişmez. Scenic skin yalnız bu kutunun içindeki görsel
   // medalyonu küçültür; test/tap geometrisi aynı kalır.
@@ -249,7 +266,10 @@ class WordHuntReusableRouteMapScreen extends StatelessWidget {
                 child: LayoutBuilder(
                   builder: (context, constraints) {
                     final size = constraints.biggest;
-                    final points = WordHuntRouteMapGeometry.pointsFor(size);
+                    final points = WordHuntRouteMapGeometry.pointsFor(
+                      size,
+                      presentationOrder: presentationOrder,
+                    );
                     final unlocked = List<bool>.generate(
                       10,
                       (index) => WordHuntRouteProgressEngine.isLevelUnlocked(
@@ -330,11 +350,19 @@ class WordHuntReusableRouteMapScreen extends StatelessWidget {
                               key: const Key('word_hunt_reusable_path_layer'),
                               child: CustomPaint(
                                 key: const Key('word_hunt_reusable_route_path'),
-                                painter: _ReusableRoutePathPainter(
-                                  points: points,
-                                  unlocked: unlocked,
-                                  theme: theme,
-                                ),
+                                painter: pathSpec == null
+                                    ? _ReusableRoutePathPainter(
+                                        points: points,
+                                        unlocked: unlocked,
+                                        theme: theme,
+                                      )
+                                    : WordHuntPathPainter(
+                                        segments: _pathSegments(
+                                          points: points,
+                                          unlocked: unlocked,
+                                        ),
+                                        spec: pathSpec!,
+                                      ),
                               ),
                             ),
                             for (var index = 0; index < 10; index++)
@@ -370,6 +398,21 @@ class WordHuntReusableRouteMapScreen extends StatelessWidget {
     );
   }
 
+  List<WordHuntPathSegment> _pathSegments({
+    required List<Offset> points,
+    required List<bool> unlocked,
+  }) {
+    return WordHuntRouteMapGeometry.connections
+        .map(
+          (connection) => WordHuntPathSegment(
+            start: points[connection.$1 - 1],
+            end: points[connection.$2 - 1],
+            active: unlocked[connection.$2 - 1],
+          ),
+        )
+        .toList(growable: false);
+  }
+
   Widget _positionNode({
     required Offset point,
     required WordHuntLevelDefinition level,
@@ -397,6 +440,7 @@ class WordHuntReusableRouteMapScreen extends StatelessWidget {
         completed: completed,
         current: current,
         theme: theme,
+        sealSpec: sealSpec,
         onTap: unlocked && onLevelTap != null
             ? () => onLevelTap!(level.index)
             : null,
@@ -581,6 +625,7 @@ class _ReusableRouteNode extends StatelessWidget {
     required this.completed,
     required this.current,
     required this.theme,
+    this.sealSpec,
     this.onTap,
   });
 
@@ -589,6 +634,7 @@ class _ReusableRouteNode extends StatelessWidget {
   final bool completed;
   final bool current;
   final WordHuntRouteMapTheme theme;
+  final WordHuntSealVisualSpec? sealSpec;
   final VoidCallback? onTap;
 
   String? get _endpointLabel {
@@ -625,8 +671,14 @@ class _ReusableRouteNode extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            if (scenic) _buildScenicNode() else _buildOrbNode(),
-            if (completed &&
+            if (sealSpec != null)
+              _buildSealNode()
+            else if (scenic)
+              _buildScenicNode()
+            else
+              _buildOrbNode(),
+            if (sealSpec == null &&
+                completed &&
                 theme.nodeVisualStyle !=
                     WordHuntRouteNodeVisualStyle.facetedCrystal) ...<Widget>[
               SizedBox(height: scenic ? 0 : 1),
@@ -684,6 +736,23 @@ class _ReusableRouteNode extends StatelessWidget {
             ],
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildSealNode() {
+    final state = completed
+        ? WordHuntSealNodeState.completed
+        : current || unlocked
+        ? WordHuntSealNodeState.current
+        : WordHuntSealNodeState.locked;
+    return KeyedSubtree(
+      key: Key('word_hunt_reusable_node_${level.index}_$_visualState'),
+      child: WordHuntSealNode(
+        levelIndex: level.index,
+        levelType: level.type,
+        state: state,
+        spec: sealSpec!,
       ),
     );
   }
