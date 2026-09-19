@@ -55,13 +55,16 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          AAB="$(find release-artifact -maxdepth 1 -type f -name '*.aab' -print -quit)"
-          test -n "$AAB"
+          mapfile -t AABS < <(
+            find release-artifact -type f -name '*.aab' -print
+          )
+          test "${#AABS[@]}" -eq 1
+          AAB="${AABS[0]}"
           test -s "$AAB"
           cp "$AAB" "BilgiRotasi-${VERSION_LABEL}-closed-test.aab"
           sha256sum "BilgiRotasi-${VERSION_LABEL}-closed-test.aab" \
             > "BilgiRotasi-${VERSION_LABEL}-closed-test.aab.sha256"
-          rm -f release-artifact/*.aab
+          rm -f "$AAB"
           zip -qr "BilgiRotasi-${VERSION_LABEL}-closed-test-evidence.zip" release-artifact
           test -s "BilgiRotasi-${VERSION_LABEL}-closed-test-evidence.zip"
 
