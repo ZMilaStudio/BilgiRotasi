@@ -34,7 +34,7 @@ enum WordHuntSealFinalGeometry {
   solarThrone,
 }
 
-enum WordHuntSealNodeState { locked, current, completed }
+enum WordHuntSealNodeState { normal, locked, current, completed }
 
 @immutable
 class WordHuntSealVisualSpec {

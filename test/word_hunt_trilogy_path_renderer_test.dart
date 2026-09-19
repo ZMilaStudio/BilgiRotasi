@@ -31,6 +31,14 @@ void main() {
       WordHuntPathVisualSpec.ceremonialAlignment.material,
       WordHuntPathMaterial.ceremonialStoneGold,
     );
+    expect(
+      WordHuntPathVisualSpec.engineeredSegmented.challengeApproachScale,
+      greaterThanOrEqualTo(1),
+    );
+    expect(
+      WordHuntPathVisualSpec.ceremonialAlignment.finalApproachScale,
+      greaterThanOrEqualTo(1),
+    );
 
     final source = File(
       'lib/word_hunt/word_hunt_path_renderer.dart',
@@ -39,6 +47,8 @@ void main() {
     expect(source, isNot(contains('kayip-sehir')));
     expect(source, isNot(contains('yeralti-kralligi')));
     expect(source, isNot(contains('gunes-imparatorlugu')));
+    expect(source, isNot(contains('start + offset, end + offset')));
+    expect(source, isNot(contains('start - offset, end - offset')));
   });
 
   test('canonical topology remains sequential and renderer does not own it', () {
@@ -94,6 +104,7 @@ void main() {
         start: Offset(120, 100),
         end: Offset(220, 180),
         active: false,
+        approach: WordHuntPathApproach.finalNode,
       ),
     ];
 

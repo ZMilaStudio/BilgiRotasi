@@ -123,6 +123,7 @@ class WordHuntThemedRouteMapScreen extends StatelessWidget {
             onLevelTap: onLevelTap,
             sealSpec: visualTheme.sealSpec,
             pathSpec: visualTheme.pathSpec,
+            chromeTheme: visualTheme.chromeTheme,
             presentationOrder: visualTheme.presentationOrder,
           )
         : WordHuntReusableRouteMapScreen(
@@ -141,6 +142,7 @@ class WordHuntThemedRouteMapScreen extends StatelessWidget {
                 : 0,
             sealSpec: visualTheme.sealSpec,
             pathSpec: visualTheme.pathSpec,
+            chromeTheme: visualTheme.chromeTheme,
             presentationOrder: visualTheme.presentationOrder,
           );
 

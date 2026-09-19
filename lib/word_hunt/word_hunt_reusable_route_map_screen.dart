@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'word_hunt_models.dart';
 import 'word_hunt_path_renderer.dart';
 import 'word_hunt_progress.dart';
+import 'word_hunt_route_chrome_theme.dart';
 import 'word_hunt_route_map_decoration.dart';
 import 'word_hunt_seal_renderer.dart';
 
@@ -193,6 +194,7 @@ class WordHuntReusableRouteMapScreen extends StatelessWidget {
     this.hostedByArtworkChrome = false,
     this.sealSpec,
     this.pathSpec,
+    this.chromeTheme,
     this.presentationOrder = WordHuntRoutePresentationOrder.forward,
   }) : assert(
          (decorationSpec == null) == (decorationPalette == null),
@@ -209,6 +211,7 @@ class WordHuntReusableRouteMapScreen extends StatelessWidget {
   final bool hostedByArtworkChrome;
   final WordHuntSealVisualSpec? sealSpec;
   final WordHuntPathVisualSpec? pathSpec;
+  final WordHuntRouteChromeTheme? chromeTheme;
   final WordHuntRoutePresentationOrder presentationOrder;
 
   // Hitbox sözleşmesi değişmez. Scenic skin yalnız bu kutunun içindeki görsel
@@ -252,6 +255,7 @@ class WordHuntReusableRouteMapScreen extends StatelessWidget {
                 stars: stars,
                 maximumStars: route.maximumStars,
                 theme: theme,
+                chromeTheme: chromeTheme,
                 showBackButton: !hostedByArtworkChrome,
               ),
             ),
@@ -404,11 +408,21 @@ class WordHuntReusableRouteMapScreen extends StatelessWidget {
   }) {
     return WordHuntRouteMapGeometry.connections
         .map(
-          (connection) => WordHuntPathSegment(
-            start: points[connection.$1 - 1],
-            end: points[connection.$2 - 1],
-            active: unlocked[connection.$2 - 1],
-          ),
+          (connection) {
+            final destinationType = route.levels[connection.$2 - 1].type;
+            final approach = switch (destinationType) {
+              WordHuntLevelType.challenge => WordHuntPathApproach.challenge,
+              WordHuntLevelType.routeFinal => WordHuntPathApproach.finalNode,
+              WordHuntLevelType.normal ||
+              WordHuntLevelType.bonus => WordHuntPathApproach.normal,
+            };
+            return WordHuntPathSegment(
+              start: points[connection.$1 - 1],
+              end: points[connection.$2 - 1],
+              active: unlocked[connection.$2 - 1],
+              approach: approach,
+            );
+          },
         )
         .toList(growable: false);
   }
@@ -455,6 +469,7 @@ class _ReusableRouteHeader extends StatelessWidget {
     required this.stars,
     required this.maximumStars,
     required this.theme,
+    this.chromeTheme,
     this.showBackButton = true,
   });
 
@@ -462,6 +477,7 @@ class _ReusableRouteHeader extends StatelessWidget {
   final int stars;
   final int maximumStars;
   final WordHuntRouteMapTheme theme;
+  final WordHuntRouteChromeTheme? chromeTheme;
   final bool showBackButton;
 
   @override
@@ -475,15 +491,28 @@ class _ReusableRouteHeader extends StatelessWidget {
       Colors.black.withValues(alpha: scenic ? 0.38 : 0.24),
       theme.nodeColor,
     );
-    final panelTop = scenic
-        ? panelTopOpaque.withValues(alpha: 0.78)
-        : panelTopOpaque;
-    final panelBottom = scenic
-        ? panelBottomOpaque.withValues(alpha: 0.88)
-        : panelBottomOpaque;
-    final edgeColor = scenic
-        ? theme.accentColor.withValues(alpha: 0.38)
-        : theme.accentColor.withValues(alpha: 0.62);
+    final panelTop = chromeTheme == null
+        ? scenic
+              ? panelTopOpaque.withValues(alpha: 0.78)
+              : panelTopOpaque
+        : chromeTheme!.headerTint.withValues(alpha: scenic ? 0.90 : 1);
+    final panelBottom = chromeTheme == null
+        ? scenic
+              ? panelBottomOpaque.withValues(alpha: 0.88)
+              : panelBottomOpaque
+        : chromeTheme!.surfaceTint.withValues(alpha: scenic ? 0.94 : 1);
+    final edgeColor = chromeTheme == null
+        ? scenic
+              ? theme.accentColor.withValues(alpha: 0.38)
+              : theme.accentColor.withValues(alpha: 0.62)
+        : theme.accentColor.withValues(
+            alpha: switch (chromeTheme!.materialFamily) {
+              WordHuntChromeMaterialFamily.legacyGlass => 0.44,
+              WordHuntChromeMaterialFamily.carvedStone => 0.56,
+              WordHuntChromeMaterialFamily.engineeredMetal => 0.64,
+              WordHuntChromeMaterialFamily.ceremonialStone => 0.60,
+            },
+          );
     final shadowColor = theme.nodeShadowColor.withValues(
       alpha: scenic ? 0.38 : 0.54,
     );
@@ -528,6 +557,7 @@ class _ReusableRouteHeader extends StatelessWidget {
         SizedBox(width: scenic ? 6 : 8),
         Expanded(
           child: Container(
+            key: const Key('word_hunt_reusable_route_header_panel'),
             height: scenic ? 48 : 56,
             padding: EdgeInsets.symmetric(horizontal: scenic ? 12 : 14),
             decoration: BoxDecoration(
@@ -743,8 +773,10 @@ class _ReusableRouteNode extends StatelessWidget {
   Widget _buildSealNode() {
     final state = completed
         ? WordHuntSealNodeState.completed
-        : current || unlocked
+        : current
         ? WordHuntSealNodeState.current
+        : unlocked
+        ? WordHuntSealNodeState.normal
         : WordHuntSealNodeState.locked;
     return KeyedSubtree(
       key: Key('word_hunt_reusable_node_${level.index}_$_visualState'),

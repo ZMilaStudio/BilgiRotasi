@@ -9,6 +9,7 @@ import 'word_hunt_models.dart';
 import 'word_hunt_path_renderer.dart';
 import 'word_hunt_progress.dart';
 import 'word_hunt_reusable_route_map_screen.dart';
+import 'word_hunt_route_chrome_theme.dart';
 import 'word_hunt_seal_renderer.dart';
 import 'word_hunt_route_ux_scope.dart';
 
@@ -24,6 +25,7 @@ class WordHuntArtworkRouteMapScreen extends StatelessWidget {
     this.onLevelTap,
     this.sealSpec,
     this.pathSpec,
+    this.chromeTheme,
     this.presentationOrder = WordHuntRoutePresentationOrder.forward,
   });
 
@@ -34,6 +36,7 @@ class WordHuntArtworkRouteMapScreen extends StatelessWidget {
   final ValueChanged<int>? onLevelTap;
   final WordHuntSealVisualSpec? sealSpec;
   final WordHuntPathVisualSpec? pathSpec;
+  final WordHuntRouteChromeTheme? chromeTheme;
   final WordHuntRoutePresentationOrder presentationOrder;
 
   // Orman reference canvas compact ekranlarda birlikte ölçeklendiği için
@@ -53,6 +56,7 @@ class WordHuntArtworkRouteMapScreen extends StatelessWidget {
         hostedByArtworkChrome: true,
         sealSpec: sealSpec,
         pathSpec: pathSpec,
+        chromeTheme: chromeTheme,
         presentationOrder: presentationOrder,
       );
     }

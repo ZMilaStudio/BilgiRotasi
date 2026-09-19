@@ -120,6 +120,7 @@ void main() {
     tester,
   ) async {
     for (final state in <WordHuntSealNodeState>[
+      WordHuntSealNodeState.normal,
       WordHuntSealNodeState.locked,
       WordHuntSealNodeState.current,
     ]) {

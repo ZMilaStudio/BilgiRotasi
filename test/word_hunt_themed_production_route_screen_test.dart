@@ -292,6 +292,23 @@ void main() {
         find.descendant(of: codex, matching: find.byType(Image)),
         findsNothing,
       );
+      final header = tester.widget<Container>(
+        find.byKey(const Key('word_hunt_reusable_route_header_panel')),
+      );
+      final headerDecoration = header.decoration! as BoxDecoration;
+      final headerGradient = headerDecoration.gradient! as LinearGradient;
+      expect(
+        headerGradient.colors.first,
+        WordHuntRouteChromeTheme.iconFoundation.headerTint.withValues(
+          alpha: 0.90,
+        ),
+      );
+      expect(
+        headerGradient.colors.last,
+        WordHuntRouteChromeTheme.iconFoundation.surfaceTint.withValues(
+          alpha: 0.94,
+        ),
+      );
       expect(tester.takeException(), isNull);
     },
   );
