@@ -10,7 +10,12 @@ on:
       - 'tools/run_word_hunt_trilogy_android16_multi_size_proof.sh'
       - '.github/workflows/word-hunt-trilogy-multi-size-proof.yml'
       - 'lib/word_hunt/word_hunt_route_catalog.dart'
+      - 'lib/word_hunt/word_hunt_reusable_route_map_screen.dart'
+      - 'lib/word_hunt/word_hunt_themed_production_route_screen.dart'
+      - 'lib/word_hunt/word_hunt_edge_ambient.dart'
+      - 'lib/word_hunt/word_hunt_seal_renderer.dart'
       - 'lib/word_hunt/word_hunt_*_visual_theme.dart'
+      - 'test/word_hunt_trilogy_runtime_layout_regression_test.dart'
       - 'assets/word_hunt/*_ENV_941x1672.webp'
   workflow_dispatch:
 
