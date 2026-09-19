@@ -736,7 +736,9 @@ class _ReusableRouteNode extends StatelessWidget {
             ],
             if (endpointLabel != null) ...<Widget>[
               SizedBox(
-                height: completed
+                height: sealSpec != null
+                    ? 0
+                    : completed
                     ? 0
                     : scenic
                     ? 2

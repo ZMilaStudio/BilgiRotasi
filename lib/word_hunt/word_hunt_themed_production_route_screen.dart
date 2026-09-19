@@ -46,6 +46,9 @@ class _WordHuntThemedProductionRouteScreenState
     extends State<WordHuntThemedProductionRouteScreen> {
   static const double _ormanAmbientBandThreshold = 12;
   static const double _ormanAmbientFeatherOverlap = 8;
+  static const double _edgeAmbientFeatherOverlap = 48;
+  static const double _compactReferenceScaleThreshold = 0.95;
+  static const double _compactTopControlExtent = 40;
 
   int? _highlightedLevelIndex;
   int _highlightEpoch = 0;
@@ -343,6 +346,8 @@ class _WordHuntThemedProductionRouteScreenState
       return const SizedBox.shrink();
     }
 
+    final featherRatio = (featherExtent / extent).clamp(0.0, 1.0).toDouble();
+
     if (widget.visualTheme.tallAmbientMode ==
         WordHuntTallAmbientMode.edgeDerivedLowFrequency) {
       final asset = widget.visualTheme.backgroundAsset;
@@ -353,10 +358,10 @@ class _WordHuntThemedProductionRouteScreenState
         assetPath: asset,
         edge: isTop ? WordHuntAmbientEdge.top : WordHuntAmbientEdge.bottom,
         fallbackColor: theme.backgroundColor,
+        featherFraction: featherRatio,
       );
     }
 
-    final featherRatio = (featherExtent / extent).clamp(0.0, 1.0).toDouble();
     final stops = isTop
         ? <double>[0, 1 - featherRatio, 1]
         : <double>[0, featherRatio, 1];
@@ -401,6 +406,18 @@ class _WordHuntThemedProductionRouteScreenState
           final top = math.max(0.0, (available.height - fitted.height) / 2);
           final right = math.max(0.0, available.width - left - fitted.width);
           final bottom = math.max(0.0, available.height - top - fitted.height);
+          final referenceScale = fitted.width / referenceCanvasSize.width;
+          final compactTopChrome =
+              referenceScale < _compactReferenceScaleThreshold;
+          final topControlExtent = compactTopChrome
+              ? _compactTopControlExtent
+              : 52.0;
+          final topControlInset = compactTopChrome ? 0.0 : 6.0;
+          final edgeAmbientFeatherOverlap =
+              widget.visualTheme.tallAmbientMode ==
+                  WordHuntTallAmbientMode.edgeDerivedLowFrequency
+              ? _edgeAmbientFeatherOverlap
+              : _ormanAmbientFeatherOverlap;
           final boardMediaQuery = MediaQuery.of(context).copyWith(
             size: referenceCanvasSize,
             padding: EdgeInsets.zero,
@@ -442,11 +459,11 @@ class _WordHuntThemedProductionRouteScreenState
                   left: 0,
                   right: 0,
                   top: 0,
-                  height: top + _ormanAmbientFeatherOverlap,
+                  height: top + edgeAmbientFeatherOverlap,
                   child: _ormanAmbientBand(
                     theme: theme,
-                    extent: top + _ormanAmbientFeatherOverlap,
-                    featherExtent: _ormanAmbientFeatherOverlap,
+                    extent: top + edgeAmbientFeatherOverlap,
+                    featherExtent: edgeAmbientFeatherOverlap,
                     isTop: true,
                   ),
                 ),
@@ -456,36 +473,46 @@ class _WordHuntThemedProductionRouteScreenState
                   left: 0,
                   right: 0,
                   bottom: 0,
-                  height: bottom + _ormanAmbientFeatherOverlap,
+                  height: bottom + edgeAmbientFeatherOverlap,
                   child: _ormanAmbientBand(
                     theme: theme,
-                    extent: bottom + _ormanAmbientFeatherOverlap,
-                    featherExtent: _ormanAmbientFeatherOverlap,
+                    extent: bottom + edgeAmbientFeatherOverlap,
+                    featherExtent: edgeAmbientFeatherOverlap,
                     isTop: false,
                   ),
                 ),
               Positioned(
                 left: left + 8,
-                top: top + 6,
-                child: _artworkControl(
-                  key: const Key('word_hunt_themed_chrome_back'),
-                  slot: _WordHuntChromeSlot.back,
-                  label: 'Geri',
-                  legacyIcon: Icons.arrow_back_rounded,
-                  theme: theme,
-                  onPressed: widget.onBack,
+                top: top + topControlInset,
+                width: topControlExtent,
+                height: topControlExtent,
+                child: FittedBox(
+                  fit: BoxFit.contain,
+                  child: _artworkControl(
+                    key: const Key('word_hunt_themed_chrome_back'),
+                    slot: _WordHuntChromeSlot.back,
+                    label: 'Geri',
+                    legacyIcon: Icons.arrow_back_rounded,
+                    theme: theme,
+                    onPressed: widget.onBack,
+                  ),
                 ),
               ),
               Positioned(
                 right: right + 8,
-                top: top + 6,
-                child: _artworkControl(
-                  key: const Key('word_hunt_themed_chrome_info'),
-                  slot: _WordHuntChromeSlot.info,
-                  label: 'Bilgi',
-                  legacyIcon: Icons.info_outline_rounded,
-                  theme: theme,
-                  onPressed: widget.onInfo,
+                top: top + topControlInset,
+                width: topControlExtent,
+                height: topControlExtent,
+                child: FittedBox(
+                  fit: BoxFit.contain,
+                  child: _artworkControl(
+                    key: const Key('word_hunt_themed_chrome_info'),
+                    slot: _WordHuntChromeSlot.info,
+                    label: 'Bilgi',
+                    legacyIcon: Icons.info_outline_rounded,
+                    theme: theme,
+                    onPressed: widget.onInfo,
+                  ),
                 ),
               ),
               Positioned(

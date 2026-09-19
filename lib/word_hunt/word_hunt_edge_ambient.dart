@@ -23,14 +23,22 @@ class WordHuntEdgeDerivedAmbient extends StatelessWidget {
     required this.fallbackColor,
     this.blurSigma = 28,
     this.sampleScale = 1.32,
+    this.featherFraction = 0.42,
   }) : assert(blurSigma >= 18),
-       assert(sampleScale >= 1);
+       assert(sampleScale >= 1),
+       assert(featherFraction > 0 && featherFraction <= 1);
 
   final String assetPath;
   final WordHuntAmbientEdge edge;
   final Color fallbackColor;
   final double blurSigma;
   final double sampleScale;
+
+  /// Fraction of this ambient band devoted to the transition into artwork.
+  ///
+  /// The parent sizes the band so this feather lives primarily over the
+  /// immutable artwork edge rather than over the flat fallback background.
+  final double featherFraction;
 
   @override
   Widget build(BuildContext context) {
@@ -39,6 +47,9 @@ class WordHuntEdgeDerivedAmbient extends StatelessWidget {
     final maskColors = isTop
         ? const <Color>[Colors.white, Colors.white, Colors.transparent]
         : const <Color>[Colors.transparent, Colors.white, Colors.white];
+    final maskStops = isTop
+        ? <double>[0, 1 - featherFraction, 1]
+        : <double>[0, featherFraction, 1];
 
     return RepaintBoundary(
       key: Key(
@@ -52,7 +63,7 @@ class WordHuntEdgeDerivedAmbient extends StatelessWidget {
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: maskColors,
-          stops: const <double>[0, 0.58, 1],
+          stops: maskStops,
         ).createShader(bounds),
         child: ClipRect(
           child: Stack(
