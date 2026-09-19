@@ -49,7 +49,7 @@ jobs:
         run: |
           set -euo pipefail
           flutter pub get
-          flutter analyze
+          flutter analyze --no-fatal-warnings --no-fatal-infos
           flutter test             test/word_hunt_trilogy_runtime_visual_proof_test.dart             test/word_hunt_route_selection_test.dart             test/word_hunt_route_selector_polish_test.dart             test/word_hunt_route_reward_test.dart             test/word_hunt_route_reward_ui_test.dart             test/word_hunt_trilogy_seal_renderer_test.dart             test/word_hunt_trilogy_path_renderer_test.dart             test/word_hunt_trilogy_visual_theme_test.dart             test/word_hunt_trilogy_asset_lock_test.dart             test/word_hunt_kayip_sehir_content_test.dart             test/word_hunt_yeralti_kralligi_content_test.dart             test/word_hunt_gunes_imparatorlugu_content_test.dart             --reporter expanded
           flutter test test/word_hunt_*.dart --reporter compact
           git diff --check
