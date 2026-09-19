@@ -48,7 +48,8 @@ class _WordHuntThemedProductionRouteScreenState
   static const double _ormanAmbientFeatherOverlap = 8;
   static const double _edgeAmbientFeatherOverlap = 48;
   static const double _compactReferenceScaleThreshold = 0.95;
-  static const double _compactTopControlExtent = 40;
+  static const double _compactTopControlExtent = 48;
+  static const double _compactTopControlVisualExtent = 40;
 
   int? _highlightedLevelIndex;
   int _highlightEpoch = 0;
@@ -191,6 +192,38 @@ class _WordHuntThemedProductionRouteScreenState
           widget.visualTheme.chromeTheme?.materialFamily ??
           WordHuntChromeMaterialFamily.legacyGlass,
       onPressed: onPressed,
+    );
+  }
+
+  Widget _referenceTopArtworkControl({
+    required Key key,
+    required _WordHuntChromeSlot slot,
+    required String label,
+    required IconData legacyIcon,
+    required WordHuntRouteMapTheme theme,
+    required VoidCallback onPressed,
+    required bool compact,
+  }) {
+    final visualExtent = compact ? _compactTopControlVisualExtent : 52.0;
+    return SizedBox.expand(
+      key: key,
+      child: Center(
+        child: SizedBox.square(
+          key: Key('word_hunt_reference_${slot.name}_visual_control'),
+          dimension: visualExtent,
+          child: FittedBox(
+            fit: BoxFit.contain,
+            child: _artworkControl(
+              key: Key('word_hunt_reference_${slot.name}_inner_control'),
+              slot: slot,
+              label: label,
+              legacyIcon: legacyIcon,
+              theme: theme,
+              onPressed: onPressed,
+            ),
+          ),
+        ),
+      ),
     );
   }
 
@@ -486,16 +519,14 @@ class _WordHuntThemedProductionRouteScreenState
                 top: top + topControlInset,
                 width: topControlExtent,
                 height: topControlExtent,
-                child: FittedBox(
-                  fit: BoxFit.contain,
-                  child: _artworkControl(
-                    key: const Key('word_hunt_themed_chrome_back'),
-                    slot: _WordHuntChromeSlot.back,
-                    label: 'Geri',
-                    legacyIcon: Icons.arrow_back_rounded,
-                    theme: theme,
-                    onPressed: widget.onBack,
-                  ),
+                child: _referenceTopArtworkControl(
+                  key: const Key('word_hunt_themed_chrome_back'),
+                  slot: _WordHuntChromeSlot.back,
+                  label: 'Geri',
+                  legacyIcon: Icons.arrow_back_rounded,
+                  theme: theme,
+                  onPressed: widget.onBack,
+                  compact: compactTopChrome,
                 ),
               ),
               Positioned(
@@ -503,16 +534,14 @@ class _WordHuntThemedProductionRouteScreenState
                 top: top + topControlInset,
                 width: topControlExtent,
                 height: topControlExtent,
-                child: FittedBox(
-                  fit: BoxFit.contain,
-                  child: _artworkControl(
-                    key: const Key('word_hunt_themed_chrome_info'),
-                    slot: _WordHuntChromeSlot.info,
-                    label: 'Bilgi',
-                    legacyIcon: Icons.info_outline_rounded,
-                    theme: theme,
-                    onPressed: widget.onInfo,
-                  ),
+                child: _referenceTopArtworkControl(
+                  key: const Key('word_hunt_themed_chrome_info'),
+                  slot: _WordHuntChromeSlot.info,
+                  label: 'Bilgi',
+                  legacyIcon: Icons.info_outline_rounded,
+                  theme: theme,
+                  onPressed: widget.onInfo,
+                  compact: compactTopChrome,
                 ),
               ),
               Positioned(
