@@ -77,7 +77,7 @@ Future<void> main() async {
     );
     FlutterError.presentError(details);
   };
-  PlatformDispatcher.instance.onError = (error, stack) {
+  ui.PlatformDispatcher.instance.onError = (error, stack) {
     debugPrint('[WORD_HUNT_TRILOGY_PROOF_PLATFORM_ERROR] ' + error.toString());
     debugPrintStack(stackTrace: stack);
     return false;
