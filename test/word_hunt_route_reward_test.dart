@@ -1,4 +1,6 @@
 import 'package:bilgi_rotasi/word_hunt/word_hunt_gokyuzu_content.dart';
+import 'package:bilgi_rotasi/word_hunt/word_hunt_gunes_imparatorlugu_content.dart';
+import 'package:bilgi_rotasi/word_hunt/word_hunt_kayip_sehir_content.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_kristal_content.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_orman2_content.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_orman_content.dart';
@@ -6,6 +8,8 @@ import 'package:bilgi_rotasi/word_hunt/word_hunt_progress.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_route_catalog.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_route_rewards.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_starter_content.dart';
+import 'package:bilgi_rotasi/word_hunt/word_hunt_yeralti_kralligi_content.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -14,6 +18,9 @@ void main() {
   final forest = WordHuntOrmanContent.ormanYolu;
   final ancient = WordHuntOrman2Content.orman2;
   final crystal = WordHuntKristalContent.kristalVadisi;
+  final lostCity = WordHuntKayipSehirContent.kayipSehir;
+  final underground = WordHuntYeraltiKralligiContent.yeraltiKralligi;
+  final sun = WordHuntGunesImparatorluguContent.gunesImparatorlugu;
 
   WordHuntProgressSnapshot seventeenStarsWithFinal(List<String> levelIds) {
     return WordHuntProgressSnapshot(
@@ -55,6 +62,9 @@ void main() {
       expect(forest.routeRewardId, 'badge-orman-kasifi');
       expect(ancient.routeRewardId, 'badge-kadim-orman-kasifi');
       expect(crystal.routeRewardId, 'badge-kristal-kasifi');
+      expect(lostCity.routeRewardId, 'badge-kayip-sehir-kasifi');
+      expect(underground.routeRewardId, 'badge-yeralti-kasifi');
+      expect(sun.routeRewardId, 'badge-gunes-kasifi');
 
       final ids = WordHuntRouteCatalog.entries
           .map((entry) => entry.route.routeRewardId)
@@ -83,6 +93,31 @@ void main() {
         WordHuntRouteRewardCatalog.forRoute(crystal)?.displayName,
         'Kristal Kaşifi',
       );
+      expect(
+        WordHuntRouteRewardCatalog.forRoute(lostCity)?.displayName,
+        'Kayıp Şehir Kaşifi',
+      );
+      expect(
+        WordHuntRouteRewardCatalog.forRoute(lostCity)?.icon,
+        Icons.account_balance_rounded,
+      );
+      expect(
+        WordHuntRouteRewardCatalog.forRoute(underground)?.displayName,
+        'Yeraltı Kaşifi',
+      );
+      expect(
+        WordHuntRouteRewardCatalog.forRoute(underground)?.icon,
+        Icons.vpn_key_rounded,
+      );
+      expect(
+        WordHuntRouteRewardCatalog.forRoute(sun)?.displayName,
+        'Güneş Kaşifi',
+      );
+      expect(
+        WordHuntRouteRewardCatalog.forRoute(sun)?.icon,
+        Icons.wb_sunny_rounded,
+      );
+      expect(WordHuntRouteRewardCatalog.rewards, hasLength(8));
 
       for (final entry in WordHuntRouteCatalog.entries) {
         expect(
@@ -180,7 +215,7 @@ void main() {
       },
     );
 
-    test('Kristal final completion grants terminal badge', () {
+    test('Kristal completion grants badge and exposes Kayıp as next route', () {
       final transition = WordHuntRouteRewardEngine.recordLevelResult(
         route: crystal,
         progress: const WordHuntProgressSnapshot(),
@@ -193,7 +228,43 @@ void main() {
         transition.progress.unlockedRouteRewardIds,
         contains('badge-kristal-kasifi'),
       );
-      expect(WordHuntRouteRewardEngine.nextCatalogEntry(crystal), isNull);
+      expect(
+        WordHuntRouteRewardEngine.nextCatalogEntry(crystal)?.route.id,
+        'kayip-sehir',
+      );
+    });
+
+    test('trilogy route completion grants each reward exactly once', () {
+      for (final route in <dynamic>[lostCity, underground, sun]) {
+        final first = WordHuntRouteRewardEngine.recordLevelResult(
+          route: route,
+          progress: const WordHuntProgressSnapshot(),
+          levelId: route.levels.last.id,
+          stars: 1,
+        );
+        expect(first.routeCompletedNow, isTrue, reason: route.id);
+        expect(first.rewardGranted, isTrue, reason: route.id);
+        expect(
+          first.progress.unlockedRouteRewardIds,
+          contains(route.routeRewardId),
+          reason: route.id,
+        );
+
+        final replay = WordHuntRouteRewardEngine.recordLevelResult(
+          route: route,
+          progress: first.progress,
+          levelId: route.levels.last.id,
+          stars: 1,
+        );
+        expect(replay.routeCompletedNow, isFalse, reason: route.id);
+        expect(replay.rewardGranted, isFalse, reason: route.id);
+        expect(
+          replay.progress.unlockedRouteRewardIds
+              .where((id) => id == route.routeRewardId),
+          hasLength(1),
+          reason: route.id,
+        );
+      }
     });
 
     test('Starter final at 17 stars grants no reward', () {
@@ -342,6 +413,30 @@ void main() {
       expect(backfilled.unlockedInfoCardIds, loaded.unlockedInfoCardIds);
     });
 
+    test('historical completed trilogy progress backfills new badges idempotently', () {
+      var loaded = const WordHuntProgressSnapshot();
+      for (final route in <dynamic>[lostCity, underground, sun]) {
+        loaded = loaded.recordLevelResult(
+          levelId: route.levels.last.id,
+          stars: 1,
+        );
+      }
+
+      final backfilled = WordHuntRouteRewardEngine.backfillCompletedRoutes(
+        loaded,
+      );
+      expect(backfilled.unlockedRouteRewardIds, containsAll(<String>[
+        'badge-kayip-sehir-kasifi',
+        'badge-yeralti-kasifi',
+        'badge-gunes-kasifi',
+      ]));
+
+      final second = WordHuntRouteRewardEngine.backfillCompletedRoutes(
+        backfilled,
+      );
+      expect(identical(second, backfilled), isTrue);
+    });
+
     test('all historical completions backfill five normalized badges', () {
       var loaded = const WordHuntProgressSnapshot();
       loaded = completedRouteProgress(
@@ -406,6 +501,18 @@ void main() {
       WordHuntRouteRewardEngine.nextCatalogEntry(ancient)?.route.id,
       'kristal-vadisi',
     );
-    expect(WordHuntRouteRewardEngine.nextCatalogEntry(crystal), isNull);
+    expect(
+      WordHuntRouteRewardEngine.nextCatalogEntry(crystal)?.route.id,
+      'kayip-sehir',
+    );
+    expect(
+      WordHuntRouteRewardEngine.nextCatalogEntry(lostCity)?.route.id,
+      'yeralti-kralligi',
+    );
+    expect(
+      WordHuntRouteRewardEngine.nextCatalogEntry(underground)?.route.id,
+      'gunes-imparatorlugu',
+    );
+    expect(WordHuntRouteRewardEngine.nextCatalogEntry(sun), isNull);
   });
 }
