@@ -343,10 +343,7 @@ void main() {
         WordHuntRouteProgressEngine.isRouteComplete(route, progress),
         isFalse,
       );
-      expect(
-        WordHuntRouteProgressEngine.totalStars(route, progress),
-        0,
-      );
+      expect(WordHuntRouteProgressEngine.totalStars(route, progress), 0);
     });
   });
 
@@ -417,9 +414,10 @@ void main() {
     });
 
     test('navigation handler opens only canonical next level gameplay', () {
-      final source = File(
-        'lib/word_hunt/word_hunt_production_entry_screen.dart',
-      ).readAsStringSync();
+      final source =
+          File(
+            'lib/word_hunt/word_hunt_production_entry_screen.dart',
+          ).readAsStringSync();
       final start = source.indexOf('Future<void> _showParentCompletion');
       final end = source.indexOf(
         'Future<void> _showRouteCompletionCeremony',
@@ -458,15 +456,18 @@ void main() {
       expect(nextRouteBlock, isNot(contains('_openLevel(')));
     });
 
-    test('markLastActiveRoute same route is identity/no redundant write state', () {
-      const progress = WordHuntProgressSnapshot(
-        lastActiveRouteId: 'wave6-v2',
-      );
-      expect(
-        identical(progress.markLastActiveRoute('wave6-v2'), progress),
-        isTrue,
-      );
-    });
+    test(
+      'markLastActiveRoute same route is identity/no redundant write state',
+      () {
+        const progress = WordHuntProgressSnapshot(
+          lastActiveRouteId: 'wave6-v2',
+        );
+        expect(
+          identical(progress.markLastActiveRoute('wave6-v2'), progress),
+          isTrue,
+        );
+      },
+    );
   });
 
   group('Wave 6 active segment and map host', () {
@@ -570,76 +571,79 @@ void main() {
         find.byKey(const Key('word_hunt_reusable_level_11')),
         findsOneWidget,
       );
-      expect(
-        find.byKey(const Key('word_hunt_reusable_level_1')),
-        findsNothing,
-      );
+      expect(find.byKey(const Key('word_hunt_reusable_level_1')), findsNothing);
     });
   });
 
   group('Wave 6 completion summary and result contract', () {
-    test('summary derives stars, bonus max/unknown, reward/profile/terminal', () {
-      final route = _v2Route();
-      final entry = _entry(route);
-      final before = _progressThrough(99);
-      final withKnownBonus = WordHuntProgressSnapshot(
-        bestStarsByLevelId: before.bestStarsByLevelId,
-        bestBonusFoundCountByLevelId: const <String, int>{
-          'wave6-1': 0,
-          'wave6-2': 1,
-        },
-      );
-      final transition = WordHuntRouteRewardEngine.recordLevelResult(
-        route: route,
-        progress: withKnownBonus,
-        levelId: route.levels[99].id,
-        stars: 1,
-      );
-      final destination = WordHuntCompletionCoordinator.resolve(
-        route: route,
-        completedLevelId: route.levels[99].id,
-        beforeProgress: withKnownBonus,
-        afterProgress: transition.progress,
-        transition: transition,
-        catalogEntries: <WordHuntRouteCatalogEntry>[entry],
-      );
-      final summary = destination.summary;
+    test(
+      'summary derives stars, bonus max/unknown, reward/profile/terminal',
+      () {
+        final route = _v2Route();
+        final entry = _entry(route);
+        final before = _progressThrough(99);
+        final withKnownBonus = WordHuntProgressSnapshot(
+          bestStarsByLevelId: before.bestStarsByLevelId,
+          bestBonusFoundCountByLevelId: const <String, int>{
+            'wave6-1': 0,
+            'wave6-2': 1,
+          },
+        );
+        final transition = WordHuntRouteRewardEngine.recordLevelResult(
+          route: route,
+          progress: withKnownBonus,
+          levelId: route.levels[99].id,
+          stars: 1,
+        );
+        final destination = WordHuntCompletionCoordinator.resolve(
+          route: route,
+          completedLevelId: route.levels[99].id,
+          beforeProgress: withKnownBonus,
+          afterProgress: transition.progress,
+          transition: transition,
+          catalogEntries: <WordHuntRouteCatalogEntry>[entry],
+        );
+        final summary = destination.summary;
 
-      expect(summary.totalStars, 100);
-      expect(summary.maximumStars, 300);
-      expect(summary.knownBonusFoundTotal, 1);
-      expect(summary.maximumBonusTotal, 2);
-      expect(summary.hasUnknownBonusHistory, isFalse);
-      expect(summary.rewardGrantedNow, isTrue);
-      expect(summary.reward?.id, 'badge-kelime-yolcusu');
-      expect(summary.presentationProfile.id, entry.presentationProfile.id);
-      expect(summary.terminal, isTrue);
-    });
+        expect(summary.totalStars, 100);
+        expect(summary.maximumStars, 300);
+        expect(summary.knownBonusFoundTotal, 1);
+        expect(summary.maximumBonusTotal, 2);
+        expect(summary.hasUnknownBonusHistory, isFalse);
+        expect(summary.rewardGrantedNow, isTrue);
+        expect(summary.reward?.id, 'badge-kelime-yolcusu');
+        expect(summary.presentationProfile.id, entry.presentationProfile.id);
+        expect(summary.terminal, isTrue);
+      },
+    );
 
-    test('missing bonus key on historical completed bonus level stays unknown', () {
-      final route = _v2Route();
-      final entry = _entry(route);
-      final before = _progressThrough(99);
-      final transition = WordHuntRouteRewardEngine.recordLevelResult(
-        route: route,
-        progress: before,
-        levelId: route.levels[99].id,
-        stars: 1,
-      );
-      final destination = WordHuntCompletionCoordinator.resolve(
-        route: route,
-        completedLevelId: route.levels[99].id,
-        beforeProgress: before,
-        afterProgress: transition.progress,
-        transition: transition,
-        catalogEntries: <WordHuntRouteCatalogEntry>[entry],
-      );
-      expect(destination.summary.hasUnknownBonusHistory, isTrue);
-    });
+    test(
+      'missing bonus key on historical completed bonus level stays unknown',
+      () {
+        final route = _v2Route();
+        final entry = _entry(route);
+        final before = _progressThrough(99);
+        final transition = WordHuntRouteRewardEngine.recordLevelResult(
+          route: route,
+          progress: before,
+          levelId: route.levels[99].id,
+          stars: 1,
+        );
+        final destination = WordHuntCompletionCoordinator.resolve(
+          route: route,
+          completedLevelId: route.levels[99].id,
+          beforeProgress: before,
+          afterProgress: transition.progress,
+          transition: transition,
+          catalogEntries: <WordHuntRouteCatalogEntry>[entry],
+        );
+        expect(destination.summary.hasUnknownBonusHistory, isTrue);
+      },
+    );
 
     test('WordHuntLevelPlayResult remains facts-only', () {
-      final source = File('lib/word_hunt/word_hunt_screens.dart')
-          .readAsStringSync();
+      final source =
+          File('lib/word_hunt/word_hunt_screens.dart').readAsStringSync();
       final start = source.indexOf('class WordHuntLevelPlayResult');
       final end = source.indexOf('class WordHuntLevelProductionScreen', start);
       final contract = source.substring(start, end);
