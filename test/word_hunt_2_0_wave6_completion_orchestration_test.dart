@@ -559,8 +559,6 @@ void main() {
             progress: _progressThrough(10),
             onBack: () {},
             onInfo: () {},
-            onCompass: () {},
-            onBook: () {},
             onLevelTap: (value) => tapped = value,
             segmentIndex: 2,
           ),
