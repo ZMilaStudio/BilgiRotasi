@@ -569,3 +569,119 @@ Wave 4 readiness:
 
 Not: Manifest kendi docs-only closure commit SHA'sını self-reference edemez. Yukarıdaki SHA Wave 3 code/test exact validation HEAD'idir. Bu closure commit'inden sonra oluşan final integration HEAD aynı cumulative validation workflow'unda yeniden doğrulanır ve manager summary'de final exact HEAD olarak raporlanır.
 
+
+
+## 15. WAVE 4 — PRODUCT ENTRY SPLIT + KELİME AVI HOME CLOSURE
+
+Durum: **PASS**
+
+Wave 4 code/test validated implementation HEAD:
+`b93e61d8142b2972c5cc664fb7853002868c3759`
+
+Validation authority:
+- Workflow: `.github/workflows/word-hunt-2-0-wave0-validation.yml`
+- Workflow name: `Kelime Avı 2.0 Cumulative Validation`
+- Run: `#51`
+- Run ID: `35523231159`
+- Exact source HEAD: `b93e61d8142b2972c5cc664fb7853002868c3759`
+- Result: **SUCCESS**
+- Full repository analyzer: **92 issues**, Wave 0 baseline olan 92'den kötüleşme yok
+- Wave 1+2+3+4 targeted analyze: **No issues found**
+- Full Flutter suite: **776 tests passed**
+- Wave 0, Wave 1, Wave 2, Wave 3, Wave 4 ve immutable trilogy gates: **PASS**
+
+Product entry authority:
+- Post-account product boundary `ProductModeEntryScreen` olarak ayrıştırıldı.
+- Visible product branding `Bilgi Rotası & Kelime Avı` olarak owner contract ile hizalandı.
+- Existing binary logo `assets/branding/splash_logo.png` aynen yeniden kullanılır; yeni logo/icon asset üretilmedi.
+- Product chooser iki eşit primary oyun alanı taşır:
+  - `BİLGİ YARIŞMASI`
+  - `KELİME AVI`
+- Guest resolved account session artık `ProductModeEntryScreen` açar.
+- Signed-in kullanıcı mevcut `PlayerUsernameGate` / `PlayerUsernameSetupScreen` sınırından geçmeye devam eder; username hazırsa `ProductModeEntryScreen` açılır.
+- Account undecided welcome ve conflict handling davranışları değiştirilmemiştir.
+- Signed-in Word Hunt owner scope için current Firebase UID aynı graph üzerinden `WordHuntProductionEntryScreen.ownerUid` değerine taşınır; guest ownerUid null kalır.
+
+Bilgi Yarışması graph preservation:
+- `BİLGİ YARIŞMASI` seçimi existing `HomeScreen(questionBank: ...)` açar.
+- Existing `MainNavigationGrid`, Play, Daily, Career, Social, Settings, board gameplay ve saved-game graph yeniden tasarlanmamıştır.
+- PlayCenter içindeki eski nested Kelime Avı card/action kaldırılmıştır.
+- Standart Tahta Oyunu, Serbest Rota, Soru Maratonu, Meydan Okuma, Canlı Düello ve Diğer Oyun Modları korunmuştur.
+
+Word Hunt feature-host authority:
+- `WordHuntProductionEntryScreen` progress persistence'ın tek canonical owner'ı olarak korunur.
+- Existing `SharedPreferencesAsync`, schema-v3 codec/decode, legacy migration, historical reward backfill, migration writeback, save ve gameplay-result persistence kopyalanmamıştır.
+- Catalog UI için explicit ephemeral `WordHuntCatalogSurface.home/routes/route` state kullanılır.
+- Bu surface state persist edilmez.
+- Standard catalog-mode ilk surface artık `WordHuntHomeScreen`'dir.
+- `routeSelectionEnabled == false` QA/direct-route behavior doğrudan route presentation ile uyumlu kalır.
+
+Word Hunt Home authority:
+- `WordHuntHomeScreen` minimum owner-approved sections:
+  - Devam Et
+  - Rotalar
+  - Genel İlerleme
+- `WordHuntHomeProjection` pure/read-only projection authority'sidir.
+- Projection current `WordHuntProgressSnapshot` + route catalog authority'sinden derive edilir; storage mutate etmez.
+- Global totals catalog'dan derive edilir; hardcoded 80 veya 800 kullanılmaz.
+- Route summaries current catalog unlock authority `entry.isUnlocked(progress)` ile aynı semantiği kullanır.
+- `grandfatheredUnlockedRouteIds` Wave 4'te selector/unlock semantics'e bağlanmamıştır.
+
+Continue authority:
+- `lastActiveRouteId` yalnız valid catalog + current unlocked + usable incomplete route olduğunda resume preference olarak kullanılır.
+- Invalid/unusable last-active için fallback:
+  1. en ileri unlocked ve tamamlanmamış route,
+  2. yoksa son unlocked route,
+  3. starter route.
+- Canonical next playable level existing progress engine'den derive edilir.
+- Explicit segments için active segment/local identity existing `WordHuntSegmentProjection` authority'sinden derive edilir.
+- Synthetic 100-level proof:
+  - absolute 11 → segment 2 / local 1
+  - absolute 37 → segment 4 / local 7
+  - absolute 50 → segment 5 / local 10
+  - absolute 91 → segment 10 / local 1
+  - absolute 100 → segment 10 / local 10
+- Continue callback canonical route + absolute level identity taşır; current level/current segment persist edilmez.
+
+Routes authority:
+- Home `Rotalar` action existing `WordHuntRouteSelector` implementation'ını yeniden kullanır.
+- routes → route → routes origin flow korunur.
+- Selector'dan explicit back ile home'a dönülebilir.
+- Locked-route ve current selector unlock semantics değiştirilmemiştir.
+
+General progress / bonus authority:
+- Home projection şunları read-only derive eder:
+  - total completed levels
+  - catalog total levels
+  - total stars
+  - unlocked info-card count
+  - completed route count
+  - known found bonus total
+  - historical bonus unknown flag
+- Missing bonus-map key historical unknown semantics olarak korunur.
+- Explicit bonus count `0` known zero olarak kalır.
+- UI unknown legacy history'yi sahte `0 bonus` precision'ına dönüştürmez; yalnız kayıtlı known bonus toplamını ve unknown-history bilgisini taşır.
+
+Persistence authority:
+- `WordHuntProgressCodec.schemaVersion = 3` aynen korunur.
+- Historical storage prefix `bilgi_rotasi_word_hunt_progress_v1_` aynen korunur.
+- Wave 4 yeni persisted field eklemez.
+- Product mode, Word Hunt catalog surface, current level, current segment, selector position, viewport, continue destination veya home totals persist edilmez.
+
+Scope safety:
+- Main binary logo unchanged.
+- Bilgi Yarışması downstream graph yeniden tasarlanmamıştır.
+- Route-aware gameplay presentation ve Harbor fallback değiştirilmemiştir.
+- Completion navigation/ceremony semantics değiştirilmemiştir.
+- Book/compass kaldırılmamıştır.
+- Production route content, grids, targetWords ve bonusWords değişmemiştir.
+- Route IDs ve existing 80 legacy level ID/index mapping değişmemiştir.
+- Immutable trilogy artwork değiştirilmemiştir.
+- Version, release, tag, artifact veya Play işlemi yapılmamıştır.
+- Production branch write veya PR merge yapılmamıştır.
+
+Wave 5 readiness:
+- Product entry split ve Word Hunt Home/read-only projection foundation sonraki planlanan **WAVE 5 — ROUTE-AWARE GAMEPLAY PRESENTATION** için hazırdır.
+- Wave 5 implementation owner'ın sonraki explicit onayı olmadan başlamaz.
+
+Not: Manifest kendi docs-only closure commit SHA'sını self-reference edemez. Yukarıdaki SHA Wave 4 code/test exact validation HEAD'idir. Bu closure commit'inden sonra oluşan final integration HEAD aynı cumulative validation workflow'unda tekrar doğrulanır ve manager summary'de final exact HEAD olarak raporlanır.
