@@ -167,30 +167,30 @@ class _ProductModeCard extends StatelessWidget {
               border: Border.all(color: const Color(0x55FFFFFF)),
             ),
             child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Icon(icon, color: const Color(0xFFFFE082), size: 46),
-              const SizedBox(height: 14),
-              Text(
-                title,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 19,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: 0.7,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Icon(icon, color: const Color(0xFFFFE082), size: 46),
+                const SizedBox(height: 14),
+                Text(
+                  title,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 19,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 0.7,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 10),
-              Text(
-                description,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  color: Color(0xFFE7E1F0),
-                  height: 1.35,
-                  fontWeight: FontWeight.w600,
+                const SizedBox(height: 10),
+                Text(
+                  description,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    color: Color(0xFFE7E1F0),
+                    height: 1.35,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
-              ),
               ],
             ),
           ),
