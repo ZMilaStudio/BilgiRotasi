@@ -160,7 +160,10 @@ void main() {
       );
       await tester.pump();
 
-      expect(find.byKey(const Key('word_hunt_reusable_level_11')), findsOneWidget);
+      expect(
+        find.byKey(const Key('word_hunt_reusable_level_11')),
+        findsOneWidget,
+      );
       expect(find.byKey(const Key('word_hunt_reusable_level_1')), findsNothing);
 
       await tester.tap(
@@ -174,20 +177,23 @@ void main() {
   });
 
   group('Wave 3 geometry and persistence regression', () {
-    test('canonical geometry remains exactly ten points and nine connections', () {
-      expect(WordHuntRouteMapGeometry.normalizedStops, hasLength(10));
-      expect(WordHuntRouteMapGeometry.connections, <(int, int)>[
-        (1, 2),
-        (2, 3),
-        (3, 4),
-        (4, 5),
-        (5, 6),
-        (6, 7),
-        (7, 8),
-        (8, 9),
-        (9, 10),
-      ]);
-    });
+    test(
+      'canonical geometry remains exactly ten points and nine connections',
+      () {
+        expect(WordHuntRouteMapGeometry.normalizedStops, hasLength(10));
+        expect(WordHuntRouteMapGeometry.connections, <(int, int)>[
+          (1, 2),
+          (2, 3),
+          (3, 4),
+          (4, 5),
+          (5, 6),
+          (6, 7),
+          (7, 8),
+          (8, 9),
+          (9, 10),
+        ]);
+      },
+    );
 
     test('forward and reverse reuse the exact canonical point set', () {
       const size = Size(941, 1672);
@@ -226,11 +232,12 @@ WordHuntRouteDefinition _syntheticRoute() {
       routeId: routeId,
       index: index,
       displayName: 'Synthetic $index',
-      type: index == 100
-          ? WordHuntLevelType.routeFinal
-          : index % 10 == 5
-          ? WordHuntLevelType.challenge
-          : WordHuntLevelType.normal,
+      type:
+          index == 100
+              ? WordHuntLevelType.routeFinal
+              : index % 10 == 5
+              ? WordHuntLevelType.challenge
+              : WordHuntLevelType.normal,
       grid: const <String>['AAA', 'AAA', 'AAA'],
       targetWords: const <String>['AAA'],
       starRules: const WordHuntStarRules(),
