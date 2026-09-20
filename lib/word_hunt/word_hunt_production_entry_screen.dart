@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'word_hunt_deferred_completion_level_screen.dart';
-import 'word_hunt_gokyuzu_gameplay_backgrounds.dart';
+import 'word_hunt_gameplay_presentation.dart';
 import 'word_hunt_gokyuzu_master_art_screen.dart';
 import 'word_hunt_home_projection.dart';
 import 'word_hunt_home_screen.dart';
@@ -17,6 +17,7 @@ import 'word_hunt_route_rewards.dart';
 import 'word_hunt_route_selector.dart';
 import 'word_hunt_route_visual_theme.dart';
 import 'word_hunt_screens.dart';
+import 'word_hunt_segment_projection.dart';
 import 'word_hunt_starter_content.dart';
 import 'word_hunt_themed_production_route_screen.dart';
 
@@ -282,14 +283,21 @@ class _WordHuntProductionEntryScreenState
     Navigator.of(context).maybePop();
   }
 
-  String? _gameplayBackgroundForLevel(int levelIndex) {
-    switch (_activePresentationKind) {
-      case WordHuntRoutePresentationKind.referenceRoute:
-      case WordHuntRoutePresentationKind.themedReusable:
-        return null;
-      case WordHuntRoutePresentationKind.gokyuzuMasterArt:
-        return WordHuntGokyuzuGameplayBackgrounds.forLevel(levelIndex);
-    }
+  WordHuntGameplayPresentation _gameplayPresentationForLevel(
+    int levelIndex,
+  ) {
+    final profile =
+        _activeCatalogEntry?.presentationProfile ??
+        WordHuntRoutePresentationProfiles.starter;
+    final route = _activeRoute;
+    final segmentIndex =
+        route.segments.isEmpty
+            ? null
+            : WordHuntSegmentProjection.forLevel(route, levelIndex).segmentIndex;
+    return profile.gameplayForLevel(
+      levelIndex: levelIndex,
+      segmentIndex: segmentIndex,
+    );
   }
 
   Future<void> _openLevel(int levelIndex) async {
@@ -321,19 +329,19 @@ class _WordHuntProductionEntryScreenState
     final result = await Navigator.of(context).push<WordHuntLevelPlayResult>(
       MaterialPageRoute<WordHuntLevelPlayResult>(
         builder: (_) {
-          final backgroundAsset = _gameplayBackgroundForLevel(level.index);
+          final gameplayPresentation = _gameplayPresentationForLevel(level.index);
           if (deferFinalCompletion) {
             return WordHuntDeferredCompletionLevelScreen(
               level: level,
               infoCards: _activeInfoCards,
-              backgroundAsset: backgroundAsset,
+              presentation: gameplayPresentation,
               routeTitle: route.title,
             );
           }
           return WordHuntLevelProductionScreen(
             level: level,
             infoCards: _activeInfoCards,
-            backgroundAsset: backgroundAsset,
+            presentation: gameplayPresentation,
             routeTitle: route.title,
           );
         },
