@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'word_hunt_models.dart';
 import 'word_hunt_progress.dart';
+import 'word_hunt_route_segment_host.dart';
 
 /// Gökyüzü Adaları için telefon ekranına göre üretilmiş MASTER ART rota ekranı.
 ///
@@ -70,6 +71,7 @@ class WordHuntGokyuzuMasterArtScreen extends StatelessWidget {
     this.onCompass,
     this.onBook,
     this.onLevelTap,
+    this.segmentIndex = 1,
   });
 
   static const String routeId = 'gokyuzu-adalari';
@@ -81,9 +83,15 @@ class WordHuntGokyuzuMasterArtScreen extends StatelessWidget {
   final VoidCallback? onCompass;
   final VoidCallback? onBook;
   final ValueChanged<int>? onLevelTap;
+  final int segmentIndex;
 
   @override
   Widget build(BuildContext context) {
+    final host = WordHuntRouteSegmentHost.forRoute(
+      route: route,
+      progress: progress,
+      segmentIndex: segmentIndex,
+    );
     return Scaffold(
       key: const Key('word_hunt_gokyuzu_master_art_route'),
       backgroundColor: const Color(0xFF072B58),
@@ -124,10 +132,11 @@ class WordHuntGokyuzuMasterArtScreen extends StatelessWidget {
                         _GokyuzuRuntimeOverlay(
                           route: route,
                           progress: progress,
+                          host: host,
                         ),
                         for (
                           var index = 0;
-                          index < route.levels.length &&
+                          index < host.nodes.length &&
                               index <
                                   WordHuntGokyuzuMasterArtLayout
                                       .levelCenters
@@ -144,15 +153,14 @@ class WordHuntGokyuzuMasterArtScreen extends StatelessWidget {
                             diameter:
                                 WordHuntGokyuzuMasterArtLayout
                                     .levelHitboxDiameters[index],
-                            semanticLabel: 'Bölüm ${index + 1}',
+                            semanticLabel:
+                                'Bölüm ${host.nodes[index].absoluteLevelIndex}',
                             onTap:
-                                WordHuntRouteProgressEngine.isLevelUnlocked(
-                                          route,
-                                          progress,
-                                          index + 1,
-                                        ) &&
+                                host.nodes[index].unlocked &&
                                         onLevelTap != null
-                                    ? () => onLevelTap!(index + 1)
+                                    ? () => onLevelTap!(
+                                      host.nodes[index].absoluteLevelIndex,
+                                    )
                                     : null,
                           ),
                         _TransparentHitbox(
@@ -209,10 +217,15 @@ class WordHuntGokyuzuMasterArtScreen extends StatelessWidget {
 }
 
 class _GokyuzuRuntimeOverlay extends StatelessWidget {
-  const _GokyuzuRuntimeOverlay({required this.route, required this.progress});
+  const _GokyuzuRuntimeOverlay({
+    required this.route,
+    required this.progress,
+    required this.host,
+  });
 
   final WordHuntRouteDefinition route;
   final WordHuntProgressSnapshot progress;
+  final WordHuntRouteSegmentHost host;
 
   @override
   Widget build(BuildContext context) {
@@ -235,15 +248,11 @@ class _GokyuzuRuntimeOverlay extends StatelessWidget {
             ),
           for (
             var index = 0;
-            index < route.levels.length &&
+            index < host.nodes.length &&
                 index < WordHuntGokyuzuMasterArtLayout.levelCenters.length;
             index++
           )
-            if (!WordHuntRouteProgressEngine.isLevelUnlocked(
-              route,
-              progress,
-              index + 1,
-            ))
+            if (!host.nodes[index].unlocked)
               _LockBadge(
                 key: Key(
                   'word_hunt_gokyuzu_master_art_level_${index + 1}_locked',
