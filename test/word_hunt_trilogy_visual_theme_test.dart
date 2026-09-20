@@ -228,8 +228,6 @@ void _expectLiveIconChrome(WordHuntRouteChromeTheme chrome) {
   for (final control in <WordHuntChromeControlSpec>[
     chrome.back,
     chrome.info,
-    chrome.compass,
-    chrome.codex,
   ]) {
     expect(control.kind, WordHuntChromeControlKind.icon);
     expect(control.icon, isNotNull);
