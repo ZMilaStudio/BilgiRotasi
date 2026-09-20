@@ -1534,8 +1534,10 @@ class _WordHuntLevelPrototypeScreenState
   }
 }
 
+
 class _HarborCompletionDialog extends StatelessWidget {
   const _HarborCompletionDialog({
+    required this.skin,
     required this.routeTitle,
     required this.stars,
     required this.elapsedSeconds,
@@ -1544,6 +1546,7 @@ class _HarborCompletionDialog extends StatelessWidget {
     required this.onReturn,
   });
 
+  final WordHuntGameplaySkin skin;
   final String routeTitle;
   final int stars;
   final int elapsedSeconds;
@@ -1565,20 +1568,26 @@ class _HarborCompletionDialog extends StatelessWidget {
           key: const Key('word_hunt_production_result_panel'),
           padding: const EdgeInsets.fromLTRB(18, 15, 18, 15),
           decoration: BoxDecoration(
-            gradient: const LinearGradient(
+            gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
-              colors: <Color>[Color(0xFF0B2137), Color(0xFF061525)],
+              colors: <Color>[
+                skin.completionSurfaceTop,
+                skin.completionSurfaceBottom,
+              ],
             ),
             borderRadius: BorderRadius.circular(22),
-            border: Border.all(color: const Color(0xFFD29A43), width: 1.4),
-            boxShadow: const <BoxShadow>[
-              BoxShadow(
+            border: Border.all(color: skin.accentColor, width: 1.4),
+            boxShadow: <BoxShadow>[
+              const BoxShadow(
                 color: Color(0xCC000000),
                 blurRadius: 24,
                 offset: Offset(0, 11),
               ),
-              BoxShadow(color: Color(0x33FFCA62), blurRadius: 14),
+              BoxShadow(
+                color: skin.connectorGlowColor,
+                blurRadius: 14,
+              ),
             ],
           ),
           child: Column(
@@ -1588,27 +1597,30 @@ class _HarborCompletionDialog extends StatelessWidget {
                 width: 46,
                 height: 3,
                 decoration: BoxDecoration(
-                  color: _harborGold,
+                  color: skin.accentColor,
                   borderRadius: BorderRadius.circular(999),
-                  boxShadow: const <BoxShadow>[
-                    BoxShadow(color: Color(0x66FFCA62), blurRadius: 8),
+                  boxShadow: <BoxShadow>[
+                    BoxShadow(
+                      color: skin.connectorGlowColor,
+                      blurRadius: 8,
+                    ),
                   ],
                 ),
               ),
               const SizedBox(height: 10),
-              const Icon(Icons.anchor_rounded, color: _harborGold, size: 28),
+              Icon(skin.completionIcon, color: skin.accentColor, size: 28),
               const SizedBox(height: 6),
-              const Text(
+              Text(
                 'Bölüm Tamamlandı',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  color: _harborCream,
+                  color: skin.primaryTextColor,
                   fontFamily: 'serif',
                   fontSize: 22,
                   height: 1.05,
                   fontWeight: FontWeight.w900,
                   letterSpacing: .2,
-                  shadows: <Shadow>[
+                  shadows: const <Shadow>[
                     Shadow(color: Color(0xE0000000), blurRadius: 7),
                   ],
                 ),
@@ -1616,8 +1628,8 @@ class _HarborCompletionDialog extends StatelessWidget {
               const SizedBox(height: 5),
               Text(
                 routeTitle,
-                style: const TextStyle(
-                  color: Color(0xFFD9A64F),
+                style: TextStyle(
+                  color: skin.accentColor,
                   fontFamily: 'serif',
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
@@ -1637,30 +1649,29 @@ class _HarborCompletionDialog extends StatelessWidget {
                           : Icons.star_outline_rounded,
                       key: Key('word_hunt_production_result_star_${index + 1}'),
                       size: 34,
-                      color:
-                          index < stars
-                              ? const Color(0xFFFFCF5C)
-                              : const Color(0xFF6D6A62),
-                      shadows:
-                          index < stars
-                              ? const <Shadow>[
-                                Shadow(
-                                  color: Color(0x66FFB52A),
-                                  blurRadius: 10,
-                                ),
-                              ]
-                              : const <Shadow>[],
+                      color: index < stars
+                          ? skin.accentColor
+                          : skin.secondaryTextColor.withValues(alpha: .45),
+                      shadows: index < stars
+                          ? <Shadow>[
+                              Shadow(
+                                color: skin.connectorGlowColor,
+                                blurRadius: 10,
+                              ),
+                            ]
+                          : const <Shadow>[],
                     ),
                   ),
                 ),
               ),
               const SizedBox(height: 12),
-              Container(height: 1, color: const Color(0x557C5A2A)),
+              Container(height: 1, color: skin.surfaceBorderColor),
               const SizedBox(height: 10),
               Row(
                 children: <Widget>[
                   Expanded(
                     child: _HarborResultMetric(
+                      skin: skin,
                       icon: Icons.timer_outlined,
                       value: '$elapsedSeconds saniye',
                       valueKey: const Key(
@@ -1672,6 +1683,7 @@ class _HarborCompletionDialog extends StatelessWidget {
                   const SizedBox(width: 6),
                   Expanded(
                     child: _HarborResultMetric(
+                      skin: skin,
                       icon: Icons.close_rounded,
                       value: '$mistakes hata',
                       valueKey: const Key(
@@ -1683,6 +1695,7 @@ class _HarborCompletionDialog extends StatelessWidget {
                   const SizedBox(width: 6),
                   Expanded(
                     child: _HarborResultMetric(
+                      skin: skin,
                       icon: Icons.auto_awesome_rounded,
                       value: '${bonusWords.length}',
                       label: 'Bonus',
@@ -1699,15 +1712,15 @@ class _HarborCompletionDialog extends StatelessWidget {
                     vertical: 7,
                   ),
                   decoration: BoxDecoration(
-                    color: const Color(0x99261307),
+                    color: skin.bonusSurfaceColor,
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: const Color(0xFF8F642A)),
+                    border: Border.all(color: skin.surfaceBorderColor),
                   ),
                   child: Text(
                     '✦ Bonus: ${bonusWords.join(' • ')}',
                     textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      color: Color(0xFFFFD47B),
+                    style: TextStyle(
+                      color: skin.accentColor,
                       fontFamily: 'serif',
                       fontSize: 12,
                       fontWeight: FontWeight.w800,
@@ -1723,9 +1736,9 @@ class _HarborCompletionDialog extends StatelessWidget {
                   key: const Key('word_hunt_production_return_route'),
                   onPressed: onReturn,
                   style: FilledButton.styleFrom(
-                    backgroundColor: const Color(0xFF8A5A16),
-                    foregroundColor: _harborCream,
-                    side: const BorderSide(color: _harborGold, width: 1.2),
+                    backgroundColor: skin.finishButtonColor,
+                    foregroundColor: skin.primaryTextColor,
+                    side: BorderSide(color: skin.accentColor, width: 1.2),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(14),
                     ),
@@ -1747,14 +1760,17 @@ class _HarborCompletionDialog extends StatelessWidget {
   }
 }
 
+
 class _HarborResultMetric extends StatelessWidget {
   const _HarborResultMetric({
+    required this.skin,
     required this.icon,
     required this.value,
     required this.label,
     this.valueKey,
   });
 
+  final WordHuntGameplaySkin skin;
   final IconData icon;
   final String value;
   final String label;
@@ -1765,14 +1781,14 @@ class _HarborResultMetric extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 7),
       decoration: BoxDecoration(
-        color: const Color(0xB3091827),
+        color: skin.surfaceColor,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0x557C5A2A)),
+        border: Border.all(color: skin.surfaceBorderColor),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          Icon(icon, color: const Color(0xFFD9A64F), size: 16),
+          Icon(icon, color: skin.accentColor, size: 16),
           const SizedBox(height: 3),
           Text(
             value,
@@ -1780,8 +1796,8 @@ class _HarborResultMetric extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.center,
-            style: const TextStyle(
-              color: _harborCream,
+            style: TextStyle(
+              color: skin.primaryTextColor,
               fontFamily: 'serif',
               fontSize: 11,
               fontWeight: FontWeight.w900,
@@ -1790,8 +1806,8 @@ class _HarborResultMetric extends StatelessWidget {
           const SizedBox(height: 2),
           Text(
             label,
-            style: const TextStyle(
-              color: Color(0xFF9AA8B8),
+            style: TextStyle(
+              color: skin.secondaryTextColor,
               fontSize: 9,
               fontWeight: FontWeight.w700,
             ),
@@ -1801,7 +1817,6 @@ class _HarborResultMetric extends StatelessWidget {
     );
   }
 }
-
 
 class _HarborGameplayHeader extends StatelessWidget {
   const _HarborGameplayHeader({
