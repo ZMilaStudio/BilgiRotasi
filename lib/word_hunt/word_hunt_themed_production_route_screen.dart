@@ -96,14 +96,15 @@ class _WordHuntThemedProductionRouteScreenState
       duration: const Duration(milliseconds: 650),
       curve: Curves.easeOutCubic,
       child: child,
-      builder: (context, value, animatedChild) => Opacity(
-        opacity: value,
-        child: Transform.scale(
-          scale: 0.992 + (0.008 * value),
-          alignment: Alignment.center,
-          child: animatedChild,
-        ),
-      ),
+      builder:
+          (context, value, animatedChild) => Opacity(
+            opacity: value,
+            child: Transform.scale(
+              scale: 0.992 + (0.008 * value),
+              alignment: Alignment.center,
+              child: animatedChild,
+            ),
+          ),
     );
   }
 
@@ -130,9 +131,7 @@ class _WordHuntThemedProductionRouteScreenState
     );
   }
 
-  WordHuntChromeControlSpec? _controlSpec(
-    _WordHuntChromeSlot slot,
-  ) {
+  WordHuntChromeControlSpec? _controlSpec(_WordHuntChromeSlot slot) {
     final chrome = widget.visualTheme.chromeTheme;
     if (chrome == null) return null;
     return switch (slot) {
@@ -356,9 +355,10 @@ class _WordHuntThemedProductionRouteScreenState
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
-                    colors: isTop
-                        ? <Color>[ambientEdge, ambientMid, ambientClear]
-                        : <Color>[ambientClear, ambientMid, ambientEdge],
+                    colors:
+                        isTop
+                            ? <Color>[ambientEdge, ambientMid, ambientClear]
+                            : <Color>[ambientClear, ambientMid, ambientEdge],
                     stops: const <double>[0, 0.68, 1],
                   ),
                 ),
@@ -397,12 +397,12 @@ class _WordHuntThemedProductionRouteScreenState
       );
     }
 
-    final stops = isTop
-        ? <double>[0, 1 - featherRatio, 1]
-        : <double>[0, featherRatio, 1];
-    final colors = isTop
-        ? const <Color>[Colors.white, Colors.white, Colors.transparent]
-        : const <Color>[Colors.transparent, Colors.white, Colors.white];
+    final stops =
+        isTop ? <double>[0, 1 - featherRatio, 1] : <double>[0, featherRatio, 1];
+    final colors =
+        isTop
+            ? const <Color>[Colors.white, Colors.white, Colors.transparent]
+            : const <Color>[Colors.transparent, Colors.white, Colors.white];
 
     return RepaintBoundary(
       key: Key(
@@ -412,12 +412,13 @@ class _WordHuntThemedProductionRouteScreenState
       ),
       child: ShaderMask(
         blendMode: BlendMode.dstIn,
-        shaderCallback: (bounds) => LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: colors,
-          stops: stops,
-        ).createShader(bounds),
+        shaderCallback:
+            (bounds) => LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: colors,
+              stops: stops,
+            ).createShader(bounds),
         child: _ormanAmbientBackground(theme, isTop: isTop),
       ),
     );
@@ -432,11 +433,12 @@ class _WordHuntThemedProductionRouteScreenState
       child: LayoutBuilder(
         builder: (context, constraints) {
           final available = constraints.biggest;
-          final fitted = applyBoxFit(
-            BoxFit.contain,
-            referenceCanvasSize,
-            available,
-          ).destination;
+          final fitted =
+              applyBoxFit(
+                BoxFit.contain,
+                referenceCanvasSize,
+                available,
+              ).destination;
           final left = math.max(0.0, (available.width - fitted.width) / 2);
           final top = math.max(0.0, (available.height - fitted.height) / 2);
           final right = math.max(0.0, available.width - left - fitted.width);
@@ -444,15 +446,14 @@ class _WordHuntThemedProductionRouteScreenState
           final referenceScale = fitted.width / referenceCanvasSize.width;
           final compactTopChrome =
               referenceScale < _compactReferenceScaleThreshold;
-          final topControlExtent = compactTopChrome
-              ? _compactTopControlExtent
-              : 52.0;
+          final topControlExtent =
+              compactTopChrome ? _compactTopControlExtent : 52.0;
           final topControlInset = compactTopChrome ? 0.0 : 6.0;
           final edgeAmbientFeatherOverlap =
               widget.visualTheme.tallAmbientMode ==
-                  WordHuntTallAmbientMode.edgeDerivedLowFrequency
-              ? _edgeAmbientFeatherOverlap
-              : _ormanAmbientFeatherOverlap;
+                      WordHuntTallAmbientMode.edgeDerivedLowFrequency
+                  ? _edgeAmbientFeatherOverlap
+                  : _ormanAmbientFeatherOverlap;
           final boardMediaQuery = MediaQuery.of(context).copyWith(
             size: referenceCanvasSize,
             padding: EdgeInsets.zero,
@@ -598,9 +599,10 @@ class _WordHuntThemedProductionRouteScreenState
       return Scaffold(
         key: const Key('word_hunt_themed_production_route'),
         backgroundColor: theme.backgroundColor,
-        body: _usesOrmanReferenceCanvas
-            ? _ormanReferenceChrome(theme: theme, map: map)
-            : _fixedArtworkChrome(theme: theme, map: map),
+        body:
+            _usesOrmanReferenceCanvas
+                ? _ormanReferenceChrome(theme: theme, map: map)
+                : _fixedArtworkChrome(theme: theme, map: map),
       );
     }
 
@@ -704,9 +706,8 @@ class _AmbientBase64ArtworkState extends State<_AmbientBase64Artwork> {
           return ColoredBox(color: widget.fallbackColor);
         }
 
-        final alignment = widget.isTop
-            ? Alignment.topCenter
-            : Alignment.bottomCenter;
+        final alignment =
+            widget.isTop ? Alignment.topCenter : Alignment.bottomCenter;
         return Transform(
           alignment: Alignment.center,
           transform: Matrix4.diagonal3Values(1, -1, 1),
@@ -795,8 +796,9 @@ class _ArtworkChromeButton extends StatelessWidget {
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                           colors: <Color>[
-                            (surfaceTint ?? const Color(0xFF1C2E20))
-                                .withValues(alpha: 0.85),
+                            (surfaceTint ?? const Color(0xFF1C2E20)).withValues(
+                              alpha: 0.85,
+                            ),
                             Color.alphaBlend(
                               Colors.black.withValues(alpha: 0.55),
                               surfaceTint ?? const Color(0xFF08120C),
