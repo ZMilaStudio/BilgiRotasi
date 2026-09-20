@@ -185,11 +185,11 @@ void main() {
       );
       expect(
         find.byKey(const Key('word_hunt_themed_chrome_compass')),
-        findsOneWidget,
+        findsNothing,
       );
       expect(
         find.byKey(const Key('word_hunt_themed_chrome_book')),
-        findsOneWidget,
+        findsNothing,
       );
       expect(
         find.byKey(const Key('word_hunt_reusable_node_1_current')),
