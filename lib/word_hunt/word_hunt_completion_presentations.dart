@@ -311,7 +311,6 @@ class WordHuntCompletionPresentation extends StatelessWidget {
   }
 }
 
-
 class _MilestoneInfoRewardSection extends StatelessWidget {
   const _MilestoneInfoRewardSection({
     required this.cards,
