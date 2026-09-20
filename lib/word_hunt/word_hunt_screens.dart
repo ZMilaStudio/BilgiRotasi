@@ -23,11 +23,13 @@ class WordHuntLevelPlayResult {
     required this.levelId,
     required this.stars,
     required this.unlockedInfoCardIds,
+    this.foundBonusCount,
   });
 
   final String levelId;
   final int stars;
   final Set<String> unlockedInfoCardIds;
+  final int? foundBonusCount;
 }
 
 /// Başlangıç Limanı Bölüm 1 için production oynanış ekranı.
@@ -365,6 +367,7 @@ class _WordHuntLevelProductionScreenState
       levelId: widget.level.id,
       stars: score.stars,
       unlockedInfoCardIds: Set<String>.unmodifiable(_unlockedInfoCards),
+      foundBonusCount: _foundBonus.length,
     );
 
     if (!mounted) return;
@@ -1313,6 +1316,7 @@ class _WordHuntLevelPrototypeScreenState
           levelId: widget.level.id,
           stars: score.stars,
           unlockedInfoCardIds: Set<String>.unmodifiable(_unlockedInfoCards),
+          foundBonusCount: _foundBonus.length,
         ),
       );
     }
