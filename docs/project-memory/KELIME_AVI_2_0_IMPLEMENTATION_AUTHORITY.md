@@ -283,3 +283,81 @@ Bu manifestteki production/master/audit SHA'lardan biri future owner kararıyla 
 5. ardından implementation devam eder.
 
 Sessiz SHA drift veya eski docs üzerinden implementation yapılmaz.
+
+## 12. WAVE 1 — DOMAIN FOUNDATION CLOSURE
+
+Durum: **PASS**
+
+Wave 1 validated implementation HEAD:
+`bd71206401d50c2943892441da85c85207334645`
+
+Validation authority:
+- Workflow: `.github/workflows/word-hunt-2-0-wave0-validation.yml`
+- Workflow name: `Kelime Avı 2.0 Cumulative Validation`
+- Run: `#10`
+- Run ID: `35508634764`
+- Exact source HEAD: `bd71206401d50c2943892441da85c85207334645`
+- Result: **SUCCESS**
+- Full repository analyzer: **92 issues**, Wave 0 baseline olan 92'den kötüleşme yok
+- Wave 1 targeted analyze: **No issues found**
+- Full Flutter suite: **726 tests passed**
+
+Domain foundation files:
+- `lib/word_hunt/word_hunt_models.dart`
+- `lib/word_hunt/word_hunt_segment_projection.dart`
+- `test/word_hunt_2_0_wave1_domain_foundation_test.dart`
+
+Chosen level display-name compatibility rule:
+- `WordHuntLevelDefinition.displayName` first-class fakat nullable/additive authority'dir.
+- Legacy level definitions field vermeden geçerli kalır.
+- Deterministic fallback: `displayNameOrFallback` explicit non-empty name varsa onu, yoksa `Bölüm <index>` döndürür.
+- Explicit `displayName` trim sonrası boşsa validator error üretir.
+- Existing 80 production level definition Wave 1'de yeniden yazılmamıştır.
+
+Chosen segment metadata architecture:
+- `WordHuntSegmentDefinition` first-class domain metadata'dır.
+- Stable id, segment index, display name, start absolute level index ve end absolute level index taşır.
+- `WordHuntRouteDefinition.segments` additive/optional'dır.
+- Empty `segments` mevcut 10-level production routes için legacy compatibility authority'sidir.
+- Explicit metadata verilen rota segment validation'a girer.
+- 100-level explicit 2.0 rota için tam 10 segment × 10 level contractı doğrulanır.
+- Segment metadata progression state değildir ve persist edilmez.
+- Permanent architecture runtime-generated anonymous segment metadata'ya dayanmaz.
+
+Chosen projection/milestone authority:
+- `WordHuntSegmentProjection` pure deterministic domain projection'dır.
+- `absoluteLevelIndex`, `segmentIndex`, `localLevelIndex`, segment start/end, segment definition ve level definition çözer.
+- Segment start/end ve segment milestone semantics derived'dır.
+- Explicit 100-level / 10-segment 2.0 route için:
+  - every segment end = segment milestone,
+  - absolute level 50 = major midpoint,
+  - absolute level 100 = true route final.
+- Legacy raw `WordHuntLevelType.routeFinal` tek başına future true-route-final authority değildir.
+- Synthetic 100-level testte L10 raw `routeFinal` olsa bile `isTrueRouteFinal == false`; L100 için true'dur.
+- Mevcut `WordHuntRouteProgressEngine.isRouteComplete` Wave 1'de değiştirilmemiştir.
+
+Persistence:
+- `WordHuntProgressCodec.schemaVersion = 2` korunmuştur.
+- Segment/current-segment/local-index/milestone için yeni persisted field eklenmemiştir.
+- Proposed schema v3 **HALA IMPLEMENT EDİLMEMİŞTİR**.
+
+No-product-behavior-change closure:
+- production routes hâlâ 10 level,
+- route IDs ve legacy level IDs unchanged,
+- grids / targetWords / bonusWords unchanged,
+- duplicate debt baseline unchanged,
+- route map UI unchanged,
+- gameplay UI/behavior unchanged,
+- Harbor fallback unchanged,
+- completion flow unchanged,
+- book/compass unchanged,
+- immutable assets unchanged,
+- release identity unchanged,
+- release/tag/Play Console işlemi yok.
+
+Wave 2 readiness:
+- Domain segment/display-name/projection semantics Wave 2 persistence-v3 tasarımı için hazırdır.
+- Wave 2 implementation **owner'ın sonraki explicit onayı olmadan başlamaz**.
+
+Not: Bu docs-only closure commit'inin SHA'sı commit içeriğine bağlı olduğundan manifest kendi commit SHA'sını kriptografik olarak self-reference edemez. Yukarıdaki SHA Wave 1 code/test validation exact HEAD'idir; docs-only closure sonrası final integration HEAD manager summary'de exact olarak raporlanır ve aynı cumulative CI hattında yeniden doğrulanır.
+
