@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:bilgi_rotasi/main.dart';
+import 'package:bilgi_rotasi/word_hunt/word_hunt_gameplay_presentation.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_home_projection.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_models.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_production_entry_screen.dart';
@@ -465,6 +466,7 @@ WordHuntRouteCatalogEntry _syntheticEntry(WordHuntRouteDefinition route) {
     colors: const <Color>[Color(0xFF123456), Color(0xFF654321)],
     unlockRule: const WordHuntRouteUnlockRule.always(),
     presentationKind: WordHuntRoutePresentationKind.referenceRoute,
+    presentationProfile: WordHuntRoutePresentationProfiles.starter,
   );
 }
 
