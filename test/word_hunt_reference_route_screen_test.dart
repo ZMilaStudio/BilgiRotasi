@@ -224,7 +224,7 @@ void main() {
   });
 
   test(
-    'binding reference locks the measured panel, controls and route curves',
+    'binding reference locks the measured panel and route curves',
     () {
       expect(
         WordHuntReferenceRouteLayout.canonicalSize,
@@ -234,10 +234,6 @@ void main() {
         WordHuntReferenceRouteLayout.topPanel,
         const Rect.fromLTRB(87.48, 134.40, 997.92, 303.36),
       );
-      expect(WordHuntReferenceRouteLayout.bottomControlCenters, const <Offset>[
-        Offset(136.08, 1764.00),
-        Offset(945.00, 1764.00),
-      ]);
       expect(WordHuntReferenceRouteLayout.routeControls, hasLength(9));
       expect(
         WordHuntReferenceRouteLayout.routeControls,
@@ -321,7 +317,7 @@ void main() {
     );
   });
 
-  testWidgets('panel and premium bottom controls use measured centers', (
+  testWidgets('reference layered map keeps top chrome and removes bottom controls', (
     tester,
   ) async {
     await pumpCanonicalReferenceRoute(tester);
@@ -330,41 +326,20 @@ void main() {
       find.byKey(const Key('word_hunt_reference_top_panel')),
     );
     expect(panel, WordHuntReferenceRouteLayout.topPanel);
-
-    final compass = tester.getCenter(
+    expect(find.byKey(const Key('word_hunt_reference_back')), findsOneWidget);
+    expect(find.byKey(const Key('word_hunt_reference_info')), findsOneWidget);
+    expect(
       find.byKey(const Key('word_hunt_reference_compass')),
+      findsNothing,
     );
-    final book = tester.getCenter(
-      find.byKey(const Key('word_hunt_reference_book')),
-    );
-    expect(compass, WordHuntReferenceRouteLayout.bottomControlCenters.first);
-    expect(book, WordHuntReferenceRouteLayout.bottomControlCenters.last);
+    expect(find.byKey(const Key('word_hunt_reference_book')), findsNothing);
     expect(
-      tester.getSize(find.byKey(const Key('word_hunt_reference_compass'))),
-      const Size.square(170),
-    );
-    expect(
-      tester.getSize(find.byKey(const Key('word_hunt_reference_book'))),
-      const Size.square(170),
-    );
-  });
-
-  testWidgets('premium bottom controls use production assets', (tester) async {
-    await pumpCanonicalReferenceRoute(tester);
-
-    final compassImage = tester.widget<Image>(
       find.byKey(const Key('word_hunt_reference_compass_asset')),
+      findsNothing,
     );
     expect(
-      (compassImage.image as AssetImage).assetName,
-      'assets/word_hunt/baslangic_limani/compass_button.webp',
-    );
-    final bookImage = tester.widget<Image>(
       find.byKey(const Key('word_hunt_reference_book_asset')),
-    );
-    expect(
-      (bookImage.image as AssetImage).assetName,
-      'assets/word_hunt/baslangic_limani/book_button.webp',
+      findsNothing,
     );
   });
 
