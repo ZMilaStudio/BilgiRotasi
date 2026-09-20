@@ -342,7 +342,7 @@ abstract final class WordHuntCompletionOrchestrator {
       levelId: levelId,
       stars: stars,
       unlockedInfoCards: canonicalUnlockedInfoCards,
-      foundBonusCount: foundBonusCount;
+      foundBonusCount: foundBonusCount,
     );
 
     onProgressReady(transition.progress);
@@ -355,7 +355,7 @@ abstract final class WordHuntCompletionOrchestrator {
       afterProgress: transition.progress,
       transition: transition,
       milestoneInfoReward: milestoneInfoReward,
-      catalogEntries: catalogEntries;
+      catalogEntries: catalogEntries,
     );
 
     return WordHuntCompletionProcessResult(
