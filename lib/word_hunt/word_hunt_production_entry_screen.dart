@@ -527,6 +527,7 @@ class _WordHuntProductionEntryScreenState
           return WordHuntRouteSelector(
             progress: _progress,
             onRouteTap: _openCatalogRoute,
+            onBack: _showCatalogHome,
           );
         case WordHuntCatalogSurface.route:
           break;
