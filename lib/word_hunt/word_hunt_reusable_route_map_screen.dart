@@ -7,6 +7,7 @@ import 'word_hunt_path_renderer.dart';
 import 'word_hunt_progress.dart';
 import 'word_hunt_route_chrome_theme.dart';
 import 'word_hunt_route_map_decoration.dart';
+import 'word_hunt_route_segment_host.dart';
 import 'word_hunt_seal_renderer.dart';
 
 /// Kelime Avı'nın bütün 10-bölümlük rotaları için tek geometri sözleşmesi.
@@ -196,6 +197,7 @@ class WordHuntReusableRouteMapScreen extends StatelessWidget {
     this.pathSpec,
     this.chromeTheme,
     this.presentationOrder = WordHuntRoutePresentationOrder.forward,
+    this.segmentIndex = 1,
   }) : assert(
          (decorationSpec == null) == (decorationPalette == null),
          'Decoration spec ve palette birlikte verilmelidir.',
@@ -213,6 +215,7 @@ class WordHuntReusableRouteMapScreen extends StatelessWidget {
   final WordHuntPathVisualSpec? pathSpec;
   final WordHuntRouteChromeTheme? chromeTheme;
   final WordHuntRoutePresentationOrder presentationOrder;
+  final int segmentIndex;
 
   // Hitbox sözleşmesi değişmez. Scenic skin yalnız bu kutunun içindeki görsel
   // medalyonu küçültür; test/tap geometrisi aynı kalır.
@@ -222,13 +225,12 @@ class WordHuntReusableRouteMapScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    assert(
-      route.levels.length == 10,
-      'Reusable Kelime Avı rota haritası tam 10 bölüm bekler.',
+    final host = WordHuntRouteSegmentHost.forRoute(
+      route: route,
+      progress: progress,
+      segmentIndex: segmentIndex,
     );
     final stars = WordHuntRouteProgressEngine.totalStars(route, progress);
-    final currentLevelIndex =
-        WordHuntRouteProgressEngine.nextPlayableLevelIndex(route, progress);
     final scenic = theme.artworkMode;
 
     return Scaffold(
@@ -274,15 +276,9 @@ class WordHuntReusableRouteMapScreen extends StatelessWidget {
                       size,
                       presentationOrder: presentationOrder,
                     );
-                    final unlocked = List<bool>.generate(
-                      10,
-                      (index) => WordHuntRouteProgressEngine.isLevelUnlocked(
-                        route,
-                        progress,
-                        index + 1,
-                      ),
-                      growable: false,
-                    );
+                    final unlocked = host.nodes
+                        .map((node) => node.unlocked)
+                        .toList(growable: false);
                     final surfaceRadius = scenic ? 18.0 : 26.0;
 
                     return DecoratedBox(
@@ -372,20 +368,7 @@ class WordHuntReusableRouteMapScreen extends StatelessWidget {
                             for (var index = 0; index < 10; index++)
                               _positionNode(
                                 point: points[index],
-                                level: route.levels[index],
-                                unlocked: unlocked[index],
-                                completed:
-                                    WordHuntRouteProgressEngine.isLevelCompleted(
-                                      route.levels[index],
-                                      progress,
-                                    ),
-                                current:
-                                    unlocked[index] &&
-                                    index + 1 == currentLevelIndex &&
-                                    !WordHuntRouteProgressEngine.isLevelCompleted(
-                                      route.levels[index],
-                                      progress,
-                                    ),
+                                node: host.nodes[index],
                                 mapSize: size,
                               ),
                           ],
@@ -409,13 +392,21 @@ class WordHuntReusableRouteMapScreen extends StatelessWidget {
     return WordHuntRouteMapGeometry.connections
         .map(
           (connection) {
-            final destinationType = route.levels[connection.$2 - 1].type;
-            final approach = switch (destinationType) {
-              WordHuntLevelType.challenge => WordHuntPathApproach.challenge,
-              WordHuntLevelType.routeFinal => WordHuntPathApproach.finalNode,
-              WordHuntLevelType.normal ||
-              WordHuntLevelType.bonus => WordHuntPathApproach.normal,
-            };
+            final destination = WordHuntRouteSegmentHost.forRoute(
+              route: route,
+              progress: progress,
+              segmentIndex: segmentIndex,
+            ).nodes[connection.$2 - 1];
+            final approach = destination.isTrueRouteFinal
+                ? WordHuntPathApproach.finalNode
+                : switch (destination.gameplayType) {
+                    WordHuntLevelType.challenge =>
+                      WordHuntPathApproach.challenge,
+                    WordHuntLevelType.normal ||
+                    WordHuntLevelType.bonus ||
+                    WordHuntLevelType.routeFinal =>
+                      WordHuntPathApproach.normal,
+                  };
             return WordHuntPathSegment(
               start: points[connection.$1 - 1],
               end: points[connection.$2 - 1],
@@ -429,10 +420,7 @@ class WordHuntReusableRouteMapScreen extends StatelessWidget {
 
   Widget _positionNode({
     required Offset point,
-    required WordHuntLevelDefinition level,
-    required bool unlocked,
-    required bool completed,
-    required bool current,
+    required WordHuntRouteMapNodeProjection node,
     required Size mapSize,
   }) {
     final left = (point.dx - _nodeBoxWidth / 2)
@@ -448,15 +436,15 @@ class WordHuntReusableRouteMapScreen extends StatelessWidget {
       width: _nodeBoxWidth,
       height: _nodeBoxHeight,
       child: _ReusableRouteNode(
-        key: Key('word_hunt_reusable_level_${level.index}'),
-        level: level,
-        unlocked: unlocked,
-        completed: completed,
-        current: current,
+        key: Key('word_hunt_reusable_level_${node.absoluteLevelIndex}'),
+        level: node.level,
+        unlocked: node.unlocked,
+        completed: node.completed,
+        current: node.current,
         theme: theme,
         sealSpec: sealSpec,
-        onTap: unlocked && onLevelTap != null
-            ? () => onLevelTap!(level.index)
+        onTap: node.unlocked && onLevelTap != null
+            ? () => onLevelTap!(node.absoluteLevelIndex)
             : null,
       ),
     );
