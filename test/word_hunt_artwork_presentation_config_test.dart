@@ -119,8 +119,6 @@ void main() {
           progress: const WordHuntProgressSnapshot(),
           onBack: () {},
           onInfo: () {},
-          onCompass: () {},
-          onBook: () {},
           onLevelTap: (_) {},
         ),
       ),
