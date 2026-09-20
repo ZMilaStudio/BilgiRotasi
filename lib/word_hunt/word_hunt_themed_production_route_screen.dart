@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:convert';
 import 'dart:math' as math;
 import 'dart:ui' as ui;
@@ -8,11 +7,9 @@ import 'package:flutter/services.dart';
 
 import 'word_hunt_edge_ambient.dart';
 import 'word_hunt_models.dart';
-import 'word_hunt_production_assets.dart';
 import 'word_hunt_progress.dart';
 import 'word_hunt_reusable_route_map_screen.dart';
 import 'word_hunt_route_chrome_theme.dart';
-import 'word_hunt_route_ux_scope.dart';
 import 'word_hunt_route_visual_theme.dart';
 
 class WordHuntThemedProductionRouteScreen extends StatefulWidget {
@@ -23,8 +20,6 @@ class WordHuntThemedProductionRouteScreen extends StatefulWidget {
     required this.progress,
     required this.onBack,
     required this.onInfo,
-    required this.onCompass,
-    required this.onBook,
     required this.onLevelTap,
     this.segmentIndex = 1,
   });
@@ -34,8 +29,6 @@ class WordHuntThemedProductionRouteScreen extends StatefulWidget {
   final WordHuntProgressSnapshot progress;
   final VoidCallback onBack;
   final VoidCallback onInfo;
-  final VoidCallback onCompass;
-  final VoidCallback onBook;
   final ValueChanged<int> onLevelTap;
   final int segmentIndex;
 
@@ -52,42 +45,6 @@ class _WordHuntThemedProductionRouteScreenState
   static const double _compactReferenceScaleThreshold = 0.95;
   static const double _compactTopControlExtent = 48;
   static const double _compactTopControlVisualExtent = 40;
-
-  int? _highlightedLevelIndex;
-  int _highlightEpoch = 0;
-  Timer? _highlightTimer;
-
-  bool get _usesOrmanReferenceCanvas =>
-      widget.visualTheme.referenceCanvasSize != null;
-
-  @override
-  void dispose() {
-    _highlightTimer?.cancel();
-    super.dispose();
-  }
-
-  void _handleCompass() {
-    _highlightTimer?.cancel();
-    if (!WordHuntRouteProgressEngine.isRouteComplete(
-      widget.route,
-      widget.progress,
-    )) {
-      final level = WordHuntRouteProgressEngine.nextPlayableLevelIndex(
-        widget.route,
-        widget.progress,
-      );
-      final epoch = _highlightEpoch + 1;
-      setState(() {
-        _highlightedLevelIndex = level;
-        _highlightEpoch = epoch;
-      });
-      _highlightTimer = Timer(const Duration(milliseconds: 1050), () {
-        if (!mounted || epoch != _highlightEpoch) return;
-        setState(() => _highlightedLevelIndex = null);
-      });
-    }
-    widget.onCompass();
-  }
 
   Widget _withOpeningTransition(Widget child) {
     return TweenAnimationBuilder<double>(
@@ -137,8 +94,6 @@ class _WordHuntThemedProductionRouteScreenState
     return switch (slot) {
       _WordHuntChromeSlot.back => chrome.back,
       _WordHuntChromeSlot.info => chrome.info,
-      _WordHuntChromeSlot.compass => chrome.compass,
-      _WordHuntChromeSlot.codex => chrome.codex,
     };
   }
 
@@ -268,30 +223,6 @@ class _WordHuntThemedProductionRouteScreenState
                     legacyIcon: Icons.info_outline_rounded,
                     theme: theme,
                     onPressed: widget.onInfo,
-                  ),
-                ),
-                Align(
-                  alignment: Alignment.bottomLeft,
-                  child: _artworkControl(
-                    key: const Key('word_hunt_themed_chrome_compass'),
-                    slot: _WordHuntChromeSlot.compass,
-                    label: 'Pusula',
-                    legacyIcon: Icons.explore_outlined,
-                    legacyAssetPath: WordHuntProductionAssets.compassButton,
-                    theme: theme,
-                    onPressed: _handleCompass,
-                  ),
-                ),
-                Align(
-                  alignment: Alignment.bottomRight,
-                  child: _artworkControl(
-                    key: const Key('word_hunt_themed_chrome_book'),
-                    slot: _WordHuntChromeSlot.codex,
-                    label: 'Kitap',
-                    legacyIcon: Icons.menu_book_rounded,
-                    legacyAssetPath: WordHuntProductionAssets.bookButton,
-                    theme: theme,
-                    onPressed: widget.onBook,
                   ),
                 ),
               ],
@@ -547,32 +478,6 @@ class _WordHuntThemedProductionRouteScreenState
                   compact: compactTopChrome,
                 ),
               ),
-              Positioned(
-                left: left + 8,
-                bottom: bottom + 8,
-                child: _artworkControl(
-                  key: const Key('word_hunt_themed_chrome_compass'),
-                  slot: _WordHuntChromeSlot.compass,
-                  label: 'Pusula',
-                  legacyIcon: Icons.explore_outlined,
-                  legacyAssetPath: WordHuntProductionAssets.compassButton,
-                  theme: theme,
-                  onPressed: _handleCompass,
-                ),
-              ),
-              Positioned(
-                right: right + 8,
-                bottom: bottom + 8,
-                child: _artworkControl(
-                  key: const Key('word_hunt_themed_chrome_book'),
-                  slot: _WordHuntChromeSlot.codex,
-                  label: 'Kitap',
-                  legacyIcon: Icons.menu_book_rounded,
-                  legacyAssetPath: WordHuntProductionAssets.bookButton,
-                  theme: theme,
-                  onPressed: widget.onBook,
-                ),
-              ),
             ],
           );
         },
@@ -583,16 +488,12 @@ class _WordHuntThemedProductionRouteScreenState
   @override
   Widget build(BuildContext context) {
     final theme = widget.visualTheme.mapTheme;
-    final map = WordHuntRouteUxScope(
-      highlightedLevelIndex: _highlightedLevelIndex,
-      highlightEpoch: _highlightEpoch,
-      child: WordHuntThemedRouteMapScreen(
+    final map = WordHuntThemedRouteMapScreen(
         route: widget.route,
         visualTheme: widget.visualTheme,
         progress: widget.progress,
         onLevelTap: widget.onLevelTap,
         segmentIndex: widget.segmentIndex,
-      ),
     );
 
     if (widget.visualTheme.hasArtwork) {
@@ -630,20 +531,6 @@ class _WordHuntThemedProductionRouteScreenState
                     tooltip: 'Bilgi',
                     color: theme.textColor,
                     onPressed: widget.onInfo,
-                  ),
-                  _ChromeButton(
-                    key: const Key('word_hunt_themed_chrome_compass'),
-                    icon: Icons.explore_outlined,
-                    tooltip: 'Pusula',
-                    color: theme.accentColor,
-                    onPressed: _handleCompass,
-                  ),
-                  _ChromeButton(
-                    key: const Key('word_hunt_themed_chrome_book'),
-                    icon: Icons.menu_book_rounded,
-                    tooltip: 'Kitap',
-                    color: theme.textColor,
-                    onPressed: widget.onBook,
                   ),
                 ],
               ),
@@ -731,7 +618,7 @@ class _AmbientBase64ArtworkState extends State<_AmbientBase64Artwork> {
   }
 }
 
-enum _WordHuntChromeSlot { back, info, compass, codex }
+enum _WordHuntChromeSlot { back, info }
 
 class _ArtworkChromeButton extends StatelessWidget {
   const _ArtworkChromeButton({
