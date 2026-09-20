@@ -361,3 +361,109 @@ Wave 2 readiness:
 
 Not: Bu docs-only closure commit'inin SHA'sı commit içeriğine bağlı olduğundan manifest kendi commit SHA'sını kriptografik olarak self-reference edemez. Yukarıdaki SHA Wave 1 code/test validation exact HEAD'idir; docs-only closure sonrası final integration HEAD manager summary'de exact olarak raporlanır ve aynı cumulative CI hattında yeniden doğrulanır.
 
+## 13. WAVE 2 — PERSISTENCE V3 + LEGACY ACCESS MIGRATION CLOSURE
+
+Durum: **PASS**
+
+Wave 2 code/test validated implementation HEAD:
+`8b545bdc43138753cc98e71285249687623a433b`
+
+Validation authority:
+- Workflow: `.github/workflows/word-hunt-2-0-wave0-validation.yml`
+- Workflow name: `Kelime Avı 2.0 Cumulative Validation`
+- Run: `#16`
+- Run ID: `35512145973`
+- Exact source HEAD: `8b545bdc43138753cc98e71285249687623a433b`
+- Result: **SUCCESS**
+- Full repository analyzer: **92 issues**, Wave 0 baseline olan 92'den kötüleşme yok
+- Wave 1+2 targeted analyze: **No issues found**
+- Full Flutter suite: **749 tests passed**
+
+Persistence authority:
+- `WordHuntProgressCodec.schemaVersion = 3`
+- Historical storage key prefix **DEĞİŞMEDİ**:
+  `bilgi_rotasi_word_hunt_progress_v1_`
+- Schema 1, schema 2 ve schema 3 decode edilir.
+- Unknown future schema fail-closed / `FormatException` davranışı korunur.
+- `decode()` backward-compatible kalır.
+- `decodeWithMetadata()` source schema version ve migration-writeback gereksinimini taşır.
+
+Schema v3 additive fields:
+- `bestBonusFoundCountByLevelId: Map<String, int>`
+- `grandfatheredUnlockedRouteIds: Set<String>`
+- `lastActiveRouteId: String?`
+
+Persist edilmeyen derived state:
+- current level,
+- current segment,
+- local level index,
+- milestone flags,
+- route totals,
+- next playable state.
+
+Bonus authority:
+- Missing bonus-map key = **historical / unknown**.
+- Explicit key with value `0` = known zero.
+- Unknown legacy values topluca sıfıra çevrilmez.
+- Best bonus count monotonic olarak merge edilir.
+- Production gameplay result `foundBonusCount` fact'ini additive olarak parent'a taşır.
+- Route-aware reward/persistence boundary bonus count'ı level bonusWords upper bound'ına göre doğrular.
+
+Frozen legacy access migration:
+- Migration future `WordHuntRouteProgressEngine.isRouteComplete` semantiğine bağlı değildir.
+- Frozen production order:
+  1. `baslangic-limani`
+  2. `gokyuzu-adalari`
+  3. `orman-yolu`
+  4. `orman-2`
+  5. `kristal-vadisi`
+  6. `kayip-sehir`
+  7. `yeralti-kralligi`
+  8. `gunes-imparatorlugu`
+- Frozen legacy completion:
+  - existing legacy final = route'un mevcut son level'ı,
+  - son level en az 1 yıldızla tamamlanmış,
+  - legacy `unlockStarsRequired` threshold sağlanmış.
+- Historical olarak açılan route'lar `grandfatheredUnlockedRouteIds` içine alınır.
+- Bir downstream route'ta persisted level progress bulunması o route'a kadar access'i monotonik olarak korur.
+- Access entitlement route completion, reward ownership veya star değildir.
+- Word-uniqueness owner kararındaki **NO GRANDFATHER EXCEPTION** ile bu access entitlement kavramı karıştırılmaz.
+
+Last-active authority:
+- `lastActiveRouteId` yalnız minimal resume hint'tir.
+- Production'da yalnız geçerli/unlocked bir level gerçekten açılırken route ID işaretlenir.
+- Route browsing veya locked-card tap bunu değiştirmez.
+- Legacy schema1/2 için fallback, persisted progress bulunan en ileri frozen catalog route'tur.
+- Persisted progress yoksa fallback null'dır.
+- `currentLevelId` persist edilmez.
+
+Migration writeback:
+1. owner scope doğrulanır,
+2. schema1/2/3 codec metadata ile decode edilir,
+3. schema1/2 için frozen legacy access + deterministic last-active migration uygulanır,
+4. mevcut route reward backfill korunur,
+5. migration veya reward-backfill gerekirse aynı historical storage key'e schema3 writeback yapılır,
+6. sonraki schema3 load destructive legacy migration'ı yeniden çalıştırmaz.
+
+Safety/scale:
+- Guest ve `user_<uid>` owner-scope isolation korunur.
+- Corrupt/unsupported payload Kelime Avı UI'sını açılmaz hale getirmez; production load empty snapshot safety fallback'ını korur.
+- Valid schema1/2 fixture'larda stars/cards/rewards data loss yoktur.
+- 8×100 = **800 distinct level ID** synthetic v3 encode/decode roundtrip PASS.
+- Yeni database/storage technology eklenmemiştir.
+
+Current production behavior intentionally unchanged:
+- `WordHuntRouteProgressEngine.isRouteComplete` mevcut 10-level production semantiğinde kaldı.
+- Grandfathered access henüz selector/unlock authority'sine bağlanmadı.
+- Production routes hâlâ 10 level.
+- Content, grids, targetWords, bonusWords ve duplicate debt değişmedi.
+- App entry, Word Hunt Home, map UI, gameplay visuals, Harbor fallback, completion UX, book/compass değişmedi.
+- Immutable artwork ve release identity değişmedi.
+- Version/tag/release/Play işlemi yapılmadı.
+
+Wave 3 readiness:
+- Persistence v3 ve frozen access migration foundation KA-03 renderer decomposition için hazırdır.
+- Wave 3 implementation **owner'ın sonraki explicit onayı olmadan başlamaz**.
+
+Not: Manifest kendi docs-only closure commit SHA'sını self-reference edemez. Yukarıdaki SHA Wave 2 code/test exact validation HEAD'idir. Bu closure commit'inden sonra oluşan final integration HEAD aynı cumulative validation workflow'unda tekrar doğrulanır ve manager summary'de final exact HEAD olarak raporlanır.
+
