@@ -44,6 +44,7 @@ part 'system_health.dart';
 part 'difficulty_balance.dart';
 part 'question_quality.dart';
 part 'main_navigation.dart';
+part 'product_mode_entry.dart';
 part 'game_ui_polish.dart';
 part 'pawn_step_sounds.dart';
 part 'premium_pawn_picker.dart';
@@ -1014,7 +1015,7 @@ class _BilgiRotasiAppState extends State<BilgiRotasiApp> {
         AnalyticsTelemetry.navigatorObserver,
       ],
       debugShowCheckedModeBanner: false,
-      title: 'Bilgi Rotası',
+      title: 'Bilgi Rotası & Kelime Avı',
       theme: ThemeData(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(
