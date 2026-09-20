@@ -467,3 +467,105 @@ Wave 3 readiness:
 
 Not: Manifest kendi docs-only closure commit SHA'sını self-reference edemez. Yukarıdaki SHA Wave 2 code/test exact validation HEAD'idir. Bu closure commit'inden sonra oluşan final integration HEAD aynı cumulative validation workflow'unda tekrar doğrulanır ve manager summary'de final exact HEAD olarak raporlanır.
 
+## 14. WAVE 3 — KA-03 RENDERER DECOMPOSITION + 10-NODE SEGMENT HOST CLOSURE
+
+Durum: **PASS**
+
+Wave 3 code/test validated implementation HEAD:
+`ccf752b29c9abe91d892c092d612bfef69ff2bf3`
+
+Validation authority:
+- Workflow: `.github/workflows/word-hunt-2-0-wave0-validation.yml`
+- Workflow name: `Kelime Avı 2.0 Cumulative Validation`
+- Run: `#31`
+- Run ID: `35515279191`
+- Exact source HEAD: `ccf752b29c9abe91d892c092d612bfef69ff2bf3`
+- Result: **SUCCESS**
+- Full repository analyzer: **92 issues**, Wave 0 baseline olan 92'den kötüleşme yok
+- Wave 1+2+3 targeted analyze: **No issues found**
+- Full Flutter suite: **758 tests passed**
+- Wave 0, Wave 1, Wave 2, immutable trilogy ve Wave 3 renderer gates: **PASS**
+
+Renderer decomposition authority:
+- Canonical route/progress state ile map renderer arasına `WordHuntRouteSegmentHost` sınırı eklendi.
+- Host renderer'a yalnız aktif/seçili segmentin render edilebilir node projection'ını verir.
+- `WordHuntRouteMapNodeProjection` local node identity ile canonical gameplay identity'yi açıkça ayırır:
+  - `localNodeIndex`
+  - `absoluteLevelIndex`
+  - canonical `level` / `levelId`
+  - display-name fallback
+  - gameplay type
+  - unlocked/completed/current state
+  - segment endpoint
+  - major midpoint
+  - true-route-final semantics.
+- Segment selection persistence değildir; runtime/derived projection olarak kalır.
+- Existing Wave 1 `WordHuntSegmentDefinition` ve `WordHuntSegmentProjection` authority'si yeniden kullanılır; paralel segment arithmetic source-of-truth oluşturulmaz.
+
+Geometry authority:
+- Canonical geometry `WordHuntRouteMapGeometry.normalizedStops` içinde exact **10 normalized point** olarak korunur.
+- Connection authority exact **9 sequential connection** olarak korunur: 1→2→…→10.
+- Geometry route'un toplam level sayısını veya future 100-level catalog'u bilmez.
+- 100-point geometry, giant 100-node canvas/path veya 100 hitbox eklenmemiştir.
+- Renderer boundary her segment için exact 10-node projection tüketir.
+
+Legacy Segment 1 equivalence:
+- Current 8 production route hâlâ 10 level'dır.
+- Legacy routes segment metadata taşımadığında host deterministic Segment 1 compatibility projection üretir.
+- Existing route IDs, level IDs/indexes, stars, unlock/completed/current semantics ve canonical tap identity korunur.
+- Legacy local indexes 1..10 ve absolute indexes 1..10 aynı mevcut product davranışını verir.
+- Existing L5/L10 legacy visual semantics korunur; current production L10 route-final presentation değişmez.
+
+Synthetic 100-level proof:
+- Dedicated Wave 3 fixture yalnız test scope'unda 100-level / 10-segment route oluşturur.
+- Segment 1 → absolute 1–10: **PASS**
+- Segment 2 → absolute 11–20: **PASS**
+- Segment 5 → absolute 41–50: **PASS**
+- Segment 10 → absolute 91–100: **PASS**
+- Her segment host exact 10 node verir ve local node indexes exact 1..10'dur.
+- Segment 2 local 1 canonical absolute 11'e resolve edilir.
+- Absolute 20 segment endpoint olabilir fakat true route final değildir.
+- Absolute 50 major midpoint'tir.
+- Absolute 100 true route final'dır.
+- Future segment endpoint semantics raw `WordHuntLevelType.routeFinal` mutation'ına bağlı değildir.
+
+Presentation order / hitbox proof:
+- Forward/reverse `presentationOrder` aynı canonical 10-point set'i yeniden kullanır.
+- Reverse yalnız node→point assignment'ını tersler; canonical level identity değişmez.
+- Reusable, reference, artwork, Gökyüzü master-art ve pixel-proof map boundaries segment host projection'ına bağlanmıştır.
+- Existing deterministic geometry/path/hitbox regressions PASS'tir.
+- Tap callbacks local position yerine canonical absolute level index taşır.
+
+Chrome / product compatibility:
+- Book chrome kaldırılmamıştır.
+- Compass / route shortcut kaldırılmamıştır.
+- Existing callbacks ve current map controls korunmuştur.
+- `WordHuntRouteProgressEngine.isRouteComplete` değiştirilmemiştir.
+- Route unlock rules değiştirilmemiştir.
+- Wave 2 `grandfatheredUnlockedRouteIds` selector/unlock authority'sine Wave 3'te bağlanmamıştır.
+- Renderer yeni persistence mutation üretmez.
+
+Persistence authority:
+- `WordHuntProgressCodec.schemaVersion = 3` aynen korunur.
+- Historical storage prefix `bilgi_rotasi_word_hunt_progress_v1_` aynen korunur.
+- Wave 3 yeni persisted field eklemez.
+- selected/current segment, local node index, absolute current index veya viewport state persist edilmez.
+
+Scope safety:
+- Production content, grids, targetWords ve bonusWords değişmemiştir.
+- Route IDs ve mevcut 80 legacy level ID/index mapping değişmemiştir.
+- Harbor gameplay fallback'a dokunulmamıştır.
+- App entry / Word Hunt Home eklenmemiştir.
+- Completion navigation/ceremony semantics değiştirilmemiştir.
+- Book/compass kaldırılmamıştır.
+- Immutable trilogy artwork değiştirilmemiştir.
+- Version, release, tag, artifact veya Play işlemi yapılmamıştır.
+- Production branch'e write veya PR merge yapılmamıştır.
+- 100-node renderer yapılmamıştır.
+
+Wave 4 readiness:
+- KA-03 renderer decomposition ve 10-node segment-host architecture, sonraki planlanan **WAVE 4 — PRODUCT ENTRY SPLIT + KELİME AVI HOME** için hazırdır.
+- Wave 4 implementation owner'ın sonraki explicit onayı olmadan başlamaz.
+
+Not: Manifest kendi docs-only closure commit SHA'sını self-reference edemez. Yukarıdaki SHA Wave 3 code/test exact validation HEAD'idir. Bu closure commit'inden sonra oluşan final integration HEAD aynı cumulative validation workflow'unda yeniden doğrulanır ve manager summary'de final exact HEAD olarak raporlanır.
+
