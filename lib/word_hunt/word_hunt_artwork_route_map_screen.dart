@@ -12,7 +12,6 @@ import 'word_hunt_reusable_route_map_screen.dart';
 import 'word_hunt_route_chrome_theme.dart';
 import 'word_hunt_route_segment_host.dart';
 import 'word_hunt_seal_renderer.dart';
-import 'word_hunt_route_ux_scope.dart';
 
 /// Raster artwork üstünde ortak 1→10 geometriyi ve gerçek progression hitbox'ını
 /// korur. Embedded dekoratif rota seçildiğinde path tekrar çizilmez.
@@ -71,7 +70,6 @@ class WordHuntArtworkRouteMapScreen extends StatelessWidget {
       segmentIndex: segmentIndex,
     );
     final totalStars = WordHuntRouteProgressEngine.totalStars(route, progress);
-    final ux = WordHuntRouteUxScope.maybeOf(context);
 
     return Scaffold(
       key: const Key('word_hunt_reusable_route_map'),
@@ -121,10 +119,6 @@ class WordHuntArtworkRouteMapScreen extends StatelessWidget {
                           mapSize: size,
                           node: host.nodes[i],
                           stars: progress.starsFor(host.nodes[i].levelId),
-                          highlighted:
-                              ux?.highlightedLevelIndex ==
-                              host.nodes[i].absoluteLevelIndex,
-                          highlightEpoch: ux?.highlightEpoch ?? 0,
                         ),
                     ],
                   );
@@ -142,8 +136,6 @@ class WordHuntArtworkRouteMapScreen extends StatelessWidget {
     required Size mapSize,
     required WordHuntRouteMapNodeProjection node,
     required int stars,
-    required bool highlighted,
-    required int highlightEpoch,
   }) {
     final left =
         (point.dx - _hitW / 2)
@@ -191,8 +183,6 @@ class WordHuntArtworkRouteMapScreen extends StatelessWidget {
                     stars: stars,
                     unlocked: node.unlocked,
                     current: node.current,
-                    highlighted: highlighted,
-                    highlightEpoch: highlightEpoch,
                   ),
                 ),
               ),
@@ -229,16 +219,12 @@ class _ForestStop extends StatelessWidget {
     required this.stars,
     required this.unlocked,
     required this.current,
-    required this.highlighted,
-    required this.highlightEpoch,
   });
 
   final WordHuntLevelDefinition level;
   final int stars;
   final bool unlocked;
   final bool current;
-  final bool highlighted;
-  final int highlightEpoch;
 
   @override
   Widget build(BuildContext context) {
@@ -280,12 +266,6 @@ class _ForestStop extends StatelessWidget {
                     ),
                   ),
                 ),
-              if (highlighted)
-                Positioned.fill(
-                  child: _CompassPulse(
-                    key: ValueKey<String>(
-                      'word_hunt_route_stop_compass_highlight_${level.index}_$highlightEpoch',
-                    ),
                   ),
                 ),
               Opacity(
@@ -361,38 +341,6 @@ class _ForestStop extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-}
-
-class _CompassPulse extends StatelessWidget {
-  const _CompassPulse({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return TweenAnimationBuilder<double>(
-      tween: Tween<double>(begin: 0, end: 1),
-      duration: const Duration(milliseconds: 900),
-      curve: Curves.easeOutCubic,
-      builder: (context, value, child) {
-        return Opacity(
-          opacity: (1 - value).clamp(0, 1),
-          child: Transform.scale(scale: .86 + (.44 * value), child: child),
-        );
-      },
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          border: Border.all(color: const Color(0xFFFFDF77), width: 4),
-          boxShadow: const <BoxShadow>[
-            BoxShadow(
-              color: Color(0xB8FFD35A),
-              blurRadius: 22,
-              spreadRadius: 5,
-            ),
-          ],
-        ),
-      ),
     );
   }
 }
