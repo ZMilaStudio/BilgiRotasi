@@ -47,8 +47,10 @@ class WordHuntCompletionPresentation extends StatelessWidget {
                 summary.maximumBonusTotal.toString();
 
     final viewportHeight = MediaQuery.sizeOf(context).height;
-    final surfaceHeight =
-        (viewportHeight * (_strong ? 0.90 : 0.78)).clamp(360.0, 720.0);
+    final surfaceHeight = (viewportHeight * (_strong ? 0.90 : 0.78)).clamp(
+      360.0,
+      720.0,
+    );
 
     return Dialog(
       key: Key(
@@ -105,125 +107,131 @@ class WordHuntCompletionPresentation extends StatelessWidget {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
-                Icon(
-                  skin.completionIcon,
-                  key: const Key('word_hunt_completion_profile_icon'),
-                  color: skin.accentColor,
-                  size: _strong ? 52 : 34,
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  _title,
-                  key: const Key('word_hunt_completion_title'),
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: skin.primaryTextColor,
-                    fontSize: _strong ? 28 : 23,
-                    fontWeight: FontWeight.w900,
-                    height: 1.08,
-                  ),
-                ),
-                const SizedBox(height: 5),
-                Text(
-                  summary.routeTitle,
-                  key: const Key('word_hunt_completion_route_title'),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: skin.accentColor,
-                    fontSize: _strong ? 17 : 14,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-                if (destination.isMajorMidpoint) ...<Widget>[
-                  const SizedBox(height: 9),
-                  Text(
-                    'Yolun yarısı tamamlandı',
-                    key: const Key('word_hunt_completion_midpoint'),
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: skin.primaryTextColor,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                ],
-                const SizedBox(height: 16),
-                _SummaryMetric(
-                  label: 'Yıldız',
-                  value:
-                      summary.totalStars.toString() +
-                      ' / ' +
-                      summary.maximumStars.toString(),
-                  color: skin.primaryTextColor,
-                  surface: skin.surfaceColor,
-                  border: skin.surfaceBorderColor,
-                ),
-                const SizedBox(height: 8),
-                _SummaryMetric(
-                  key: const Key('word_hunt_completion_bonus_summary'),
-                  label: 'Bonus',
-                  value: bonusText,
-                  color: skin.primaryTextColor,
-                  surface: skin.surfaceColor,
-                  border: skin.surfaceBorderColor,
-                ),
-                if (_strong && reward != null) ...<Widget>[
-                  const SizedBox(height: 12),
-                  Container(
-                    key: const Key('word_hunt_completion_reward'),
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: skin.bonusSurfaceColor,
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: skin.surfaceBorderColor),
-                    ),
-                    child: Column(
-                      children: <Widget>[
-                        Icon(reward.icon, color: skin.accentColor, size: 32),
-                        const SizedBox(height: 5),
-                        Text(
-                          summary.rewardGrantedNow
-                              ? 'Rozet Kazandın'
-                              : 'Rota Rozeti',
-                          style: TextStyle(
-                            color: skin.secondaryTextColor,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w700,
-                          ),
+                      Icon(
+                        skin.completionIcon,
+                        key: const Key('word_hunt_completion_profile_icon'),
+                        color: skin.accentColor,
+                        size: _strong ? 52 : 34,
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        _title,
+                        key: const Key('word_hunt_completion_title'),
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: skin.primaryTextColor,
+                          fontSize: _strong ? 28 : 23,
+                          fontWeight: FontWeight.w900,
+                          height: 1.08,
                         ),
+                      ),
+                      const SizedBox(height: 5),
+                      Text(
+                        summary.routeTitle,
+                        key: const Key('word_hunt_completion_route_title'),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: skin.accentColor,
+                          fontSize: _strong ? 17 : 14,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      if (destination.isMajorMidpoint) ...<Widget>[
+                        const SizedBox(height: 9),
                         Text(
-                          reward.displayName,
+                          'Yolun yarısı tamamlandı',
+                          key: const Key('word_hunt_completion_midpoint'),
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             color: skin.primaryTextColor,
-                            fontSize: 17,
-                            fontWeight: FontWeight.w900,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w800,
                           ),
                         ),
                       ],
-                    ),
-                  ),
-                ],
-                if (_strong) ...<Widget>[
-                  const SizedBox(height: 12),
-                  Text(
-                    nextRoute != null
-                        ? nextRoute.route.title + ' rotası hazır.'
-                        : summary.terminal
-                        ? 'Tüm mevcut rotaları tamamladın.'
-                        : 'Rotaya dönebilirsin.',
-                    key: const Key('word_hunt_completion_next_route_state'),
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: skin.secondaryTextColor,
-                      height: 1.3,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ],
+                      const SizedBox(height: 16),
+                      _SummaryMetric(
+                        label: 'Yıldız',
+                        value:
+                            summary.totalStars.toString() +
+                            ' / ' +
+                            summary.maximumStars.toString(),
+                        color: skin.primaryTextColor,
+                        surface: skin.surfaceColor,
+                        border: skin.surfaceBorderColor,
+                      ),
+                      const SizedBox(height: 8),
+                      _SummaryMetric(
+                        key: const Key('word_hunt_completion_bonus_summary'),
+                        label: 'Bonus',
+                        value: bonusText,
+                        color: skin.primaryTextColor,
+                        surface: skin.surfaceColor,
+                        border: skin.surfaceBorderColor,
+                      ),
+                      if (_strong && reward != null) ...<Widget>[
+                        const SizedBox(height: 12),
+                        Container(
+                          key: const Key('word_hunt_completion_reward'),
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: skin.bonusSurfaceColor,
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(color: skin.surfaceBorderColor),
+                          ),
+                          child: Column(
+                            children: <Widget>[
+                              Icon(
+                                reward.icon,
+                                color: skin.accentColor,
+                                size: 32,
+                              ),
+                              const SizedBox(height: 5),
+                              Text(
+                                summary.rewardGrantedNow
+                                    ? 'Rozet Kazandın'
+                                    : 'Rota Rozeti',
+                                style: TextStyle(
+                                  color: skin.secondaryTextColor,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                              Text(
+                                reward.displayName,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: skin.primaryTextColor,
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.w900,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                      if (_strong) ...<Widget>[
+                        const SizedBox(height: 12),
+                        Text(
+                          nextRoute != null
+                              ? nextRoute.route.title + ' rotası hazır.'
+                              : summary.terminal
+                              ? 'Tüm mevcut rotaları tamamladın.'
+                              : 'Rotaya dönebilirsin.',
+                          key: const Key(
+                            'word_hunt_completion_next_route_state',
+                          ),
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: skin.secondaryTextColor,
+                            height: 1.3,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ],
                     ],
                   ),
                 ),
@@ -236,12 +244,12 @@ class WordHuntCompletionPresentation extends StatelessWidget {
                   key: const Key('word_hunt_completion_primary'),
                   onPressed:
                       () => Navigator.of(context).pop(
-                          destination.kind ==
-                                  WordHuntCompletionDestinationKind
-                                      .terminalRouteComplete
-                              ? WordHuntCompletionUiAction.routes
-                              : WordHuntCompletionUiAction.primary,
-                        ),
+                        destination.kind ==
+                                WordHuntCompletionDestinationKind
+                                    .terminalRouteComplete
+                            ? WordHuntCompletionUiAction.routes
+                            : WordHuntCompletionUiAction.primary,
+                      ),
                   style: FilledButton.styleFrom(
                     backgroundColor: skin.finishButtonColor,
                     foregroundColor: skin.primaryTextColor,
