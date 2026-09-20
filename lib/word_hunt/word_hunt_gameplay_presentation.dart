@@ -1,6 +1,4 @@
 import 'dart:convert';
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -24,11 +22,7 @@ class WordHuntGameplaySceneDefinition {
     this.backgroundColor = const Color(0xFF061425),
     this.overlayColor = Colors.transparent,
     this.vignetteColor = Colors.transparent,
-  }) : assert(
-         (assetPath != null && base64AssetParts.length == 0) ||
-             (assetPath == null && base64AssetParts.length > 0),
-         'Gameplay scene exactly one source authority gerektirir.',
-       );
+  });
 
   final String id;
   final String? assetPath;
@@ -38,6 +32,9 @@ class WordHuntGameplaySceneDefinition {
   final Color backgroundColor;
   final Color overlayColor;
   final Color vignetteColor;
+
+  bool get hasSingleSource =>
+      (assetPath != null) != base64AssetParts.isNotEmpty;
 }
 
 @immutable
@@ -164,6 +161,9 @@ class WordHuntRoutePresentationProfile {
     final scene = sceneCatalog[sceneId];
     if (scene == null) {
       throw StateError('Profile $id scene catalog içinde $sceneId yok.');
+    }
+    if (!scene.hasSingleSource) {
+      throw StateError('Profile $id scene $sceneId tek source taşımıyor.');
     }
     return WordHuntGameplayPresentation(
       profileId: id,
@@ -384,7 +384,7 @@ abstract final class WordHuntRoutePresentationProfiles {
         gridErrorColor: const Color(0xFF8B3140),
         gridTextColor: map.textColor,
         connectorColor: map.pathColor,
-        connectorGlowColor: map.sceneGlowColor.withValues(alpha: 0.70),
+        connectorGlowColor: map.resolvedSceneGlowColor.withValues(alpha: 0.70),
         instructionSurfaceColor: map.surfaceColor.withValues(alpha: 0.90),
         finishButtonColor: map.nodeColor,
         completionSurfaceTop: map.surfaceColor,
