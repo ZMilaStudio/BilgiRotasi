@@ -259,8 +259,8 @@ void main() {
     },
   );
 
-  test('Wave 0 keeps progress codec authority at schema v2', () {
-    expect(WordHuntProgressCodec.schemaVersion, 2);
+  test('Wave 0 storage identity survives owner-approved Wave 2 schema v3', () {
+    expect(WordHuntProgressCodec.schemaVersion, 3);
 
     const snapshot = WordHuntProgressSnapshot(
       bestStarsByLevelId: <String, int>{'baslangic-1': 3, 'gokyuzu-1': 2},
@@ -277,7 +277,7 @@ void main() {
     );
     final payload = jsonDecode(raw) as Map<String, dynamic>;
 
-    expect(payload['schema'], 2);
+    expect(payload['schema'], 3);
     expect(payload['ownerScope'], 'user_wave0');
     expect(payload.keys.toSet(), <String>{
       'schema',
@@ -285,6 +285,9 @@ void main() {
       'bestStarsByLevelId',
       'unlockedInfoCardIds',
       'unlockedRouteRewardIds',
+      'bestBonusFoundCountByLevelId',
+      'grandfatheredUnlockedRouteIds',
+      'lastActiveRouteId',
     });
 
     final restored = WordHuntProgressCodec.decode(
@@ -294,17 +297,26 @@ void main() {
     expect(restored.bestStarsByLevelId, snapshot.bestStarsByLevelId);
     expect(restored.unlockedInfoCardIds, snapshot.unlockedInfoCardIds);
     expect(restored.unlockedRouteRewardIds, snapshot.unlockedRouteRewardIds);
+    expect(restored.bestBonusFoundCountByLevelId, isEmpty);
+    expect(restored.grandfatheredUnlockedRouteIds, isEmpty);
+    expect(restored.lastActiveRouteId, isNull);
 
     expect(
       () => WordHuntProgressCodec.decode(raw, expectedOwnerScope: 'user_other'),
       throwsFormatException,
     );
 
-    expect(WordHuntProgressCodec.scopeForUid(null), 'guest');
-    expect(WordHuntProgressCodec.scopeForUid('  abc  '), 'user_abc');
+    expect(
+      WordHuntProgressCodec.storageKeyForUid(null),
+      'bilgi_rotasi_word_hunt_progress_v1_guest',
+    );
+    expect(
+      WordHuntProgressCodec.storageKeyForUid('abc'),
+      'bilgi_rotasi_word_hunt_progress_v1_user_abc',
+    );
   });
 
-  test('Wave 0 keeps real schema 1 compatibility before v3 migration', () {
+  test('Wave 0 real schema 1 fixture remains readable after v3 migration', () {
     const raw =
         '{"schema":1,"ownerScope":"guest",'
         '"bestStarsByLevelId":{"baslangic-1":3,"baslangic-10":1},'
