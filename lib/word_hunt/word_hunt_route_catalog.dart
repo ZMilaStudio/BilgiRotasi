@@ -221,25 +221,24 @@ abstract final class WordHuntRouteCatalog {
     visualTheme: WordHuntKristalVisualTheme.production,
   );
 
-  static final WordHuntRouteCatalogEntry kayipSehir =
-      WordHuntRouteCatalogEntry(
-        cardKey: 'kayip-sehir',
-        route: WordHuntKayipSehirContent.kayipSehir,
-        infoCards: WordHuntKayipSehirContent.infoCards,
-        ordinalLabel: 'Altıncı rota',
-        icon: Icons.account_balance_rounded,
-        colors: <Color>[
-          WordHuntKayipSehirVisualTheme.production.mapTheme.surfaceColor,
-          WordHuntKayipSehirVisualTheme.production.mapTheme.pathColor,
-        ],
-        unlockRule: const WordHuntRouteUnlockRule.routeComplete(
-          prerequisiteRoute: WordHuntKristalContent.kristalVadisi,
-        ),
-        lockedMessage: 'Kristal Vadisi’ni tamamlayarak aç.',
-        presentationKind: WordHuntRoutePresentationKind.themedReusable,
-        presentationProfile: WordHuntRoutePresentationProfiles.kayipSehir,
-        visualTheme: WordHuntKayipSehirVisualTheme.production,
-      );
+  static final WordHuntRouteCatalogEntry kayipSehir = WordHuntRouteCatalogEntry(
+    cardKey: 'kayip-sehir',
+    route: WordHuntKayipSehirContent.kayipSehir,
+    infoCards: WordHuntKayipSehirContent.infoCards,
+    ordinalLabel: 'Altıncı rota',
+    icon: Icons.account_balance_rounded,
+    colors: <Color>[
+      WordHuntKayipSehirVisualTheme.production.mapTheme.surfaceColor,
+      WordHuntKayipSehirVisualTheme.production.mapTheme.pathColor,
+    ],
+    unlockRule: const WordHuntRouteUnlockRule.routeComplete(
+      prerequisiteRoute: WordHuntKristalContent.kristalVadisi,
+    ),
+    lockedMessage: 'Kristal Vadisi’ni tamamlayarak aç.',
+    presentationKind: WordHuntRoutePresentationKind.themedReusable,
+    presentationProfile: WordHuntRoutePresentationProfiles.kayipSehir,
+    visualTheme: WordHuntKayipSehirVisualTheme.production,
+  );
 
   static final WordHuntRouteCatalogEntry yeraltiKralligi =
       WordHuntRouteCatalogEntry(
@@ -261,25 +260,25 @@ abstract final class WordHuntRouteCatalog {
         visualTheme: WordHuntYeraltiKralligiVisualTheme.production,
       );
 
-  static final WordHuntRouteCatalogEntry gunesImparatorlugu =
-      WordHuntRouteCatalogEntry(
-        cardKey: 'gunes-imparatorlugu',
-        route: WordHuntGunesImparatorluguContent.gunesImparatorlugu,
-        infoCards: WordHuntGunesImparatorluguContent.infoCards,
-        ordinalLabel: 'Sekizinci rota',
-        icon: Icons.wb_sunny_rounded,
-        colors: <Color>[
-          WordHuntGunesImparatorluguVisualTheme.production.mapTheme.surfaceColor,
-          WordHuntGunesImparatorluguVisualTheme.production.mapTheme.pathColor,
-        ],
-        unlockRule: const WordHuntRouteUnlockRule.routeComplete(
-          prerequisiteRoute: WordHuntYeraltiKralligiContent.yeraltiKralligi,
-        ),
-        lockedMessage: 'Yeraltı Krallığı’nı tamamlayarak aç.',
-        presentationKind: WordHuntRoutePresentationKind.themedReusable,
-        presentationProfile: WordHuntRoutePresentationProfiles.gunesImparatorlugu,
-        visualTheme: WordHuntGunesImparatorluguVisualTheme.production,
-      );
+  static final WordHuntRouteCatalogEntry
+  gunesImparatorlugu = WordHuntRouteCatalogEntry(
+    cardKey: 'gunes-imparatorlugu',
+    route: WordHuntGunesImparatorluguContent.gunesImparatorlugu,
+    infoCards: WordHuntGunesImparatorluguContent.infoCards,
+    ordinalLabel: 'Sekizinci rota',
+    icon: Icons.wb_sunny_rounded,
+    colors: <Color>[
+      WordHuntGunesImparatorluguVisualTheme.production.mapTheme.surfaceColor,
+      WordHuntGunesImparatorluguVisualTheme.production.mapTheme.pathColor,
+    ],
+    unlockRule: const WordHuntRouteUnlockRule.routeComplete(
+      prerequisiteRoute: WordHuntYeraltiKralligiContent.yeraltiKralligi,
+    ),
+    lockedMessage: 'Yeraltı Krallığı’nı tamamlayarak aç.',
+    presentationKind: WordHuntRoutePresentationKind.themedReusable,
+    presentationProfile: WordHuntRoutePresentationProfiles.gunesImparatorlugu,
+    visualTheme: WordHuntGunesImparatorluguVisualTheme.production,
+  );
 
   static final List<WordHuntRouteCatalogEntry> entries =
       <WordHuntRouteCatalogEntry>[
