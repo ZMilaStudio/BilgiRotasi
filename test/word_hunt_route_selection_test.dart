@@ -743,7 +743,9 @@ void main() {
       expect(entrySource, contains('WordHuntRouteCatalog.entryForRouteId('));
       expect(entrySource, contains('_activePresentationKind'));
       expect(entrySource, contains('switch (_activePresentationKind)'));
-      expect(entrySource, contains('_gameplayBackgroundForLevel('));
+      expect(entrySource, contains('_gameplayPresentationForLevel('));
+      expect(entrySource, contains('.presentationProfile'));
+      expect(entrySource, contains('.gameplayForLevel('));
       expect(
         entrySource,
         isNot(contains('route.id == WordHuntGokyuzuMasterArtScreen.routeId')),
