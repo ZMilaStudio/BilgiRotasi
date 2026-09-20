@@ -110,45 +110,46 @@ class WordHuntThemedRouteMapScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final hasArtwork = visualTheme.hasArtwork;
-    final effectiveMapTheme = hasArtwork
-        ? _transparentSceneTheme(visualTheme.mapTheme)
-        : visualTheme.mapTheme;
+    final effectiveMapTheme =
+        hasArtwork
+            ? _transparentSceneTheme(visualTheme.mapTheme)
+            : visualTheme.mapTheme;
     final showProceduralDecorations =
         !hasArtwork || visualTheme.overlayDecorationsOnArtwork;
 
-    final Widget map = hasArtwork && !showProceduralDecorations
-        ? WordHuntArtworkRouteMapScreen(
-            route: route,
-            theme: effectiveMapTheme,
-            overlayMode: visualTheme.artworkOverlayMode,
-            progress: progress,
-            onLevelTap: onLevelTap,
-            sealSpec: visualTheme.sealSpec,
-            pathSpec: visualTheme.pathSpec,
-            chromeTheme: visualTheme.chromeTheme,
-            presentationOrder: visualTheme.presentationOrder,
-            segmentIndex: segmentIndex,
-          )
-        : WordHuntReusableRouteMapScreen(
-            route: route,
-            theme: effectiveMapTheme,
-            progress: progress,
-            onLevelTap: onLevelTap,
-            decorationSpec: showProceduralDecorations
-                ? visualTheme.decorationSpec
-                : null,
-            decorationPalette: showProceduralDecorations
-                ? visualTheme.decorationPalette
-                : null,
-            decorationOpacity: showProceduralDecorations
-                ? visualTheme.decorationOpacity
-                : 0,
-            sealSpec: visualTheme.sealSpec,
-            pathSpec: visualTheme.pathSpec,
-            chromeTheme: visualTheme.chromeTheme,
-            presentationOrder: visualTheme.presentationOrder,
-            segmentIndex: segmentIndex,
-          );
+    final Widget map =
+        hasArtwork && !showProceduralDecorations
+            ? WordHuntArtworkRouteMapScreen(
+              route: route,
+              theme: effectiveMapTheme,
+              overlayMode: visualTheme.artworkOverlayMode,
+              progress: progress,
+              onLevelTap: onLevelTap,
+              sealSpec: visualTheme.sealSpec,
+              pathSpec: visualTheme.pathSpec,
+              chromeTheme: visualTheme.chromeTheme,
+              presentationOrder: visualTheme.presentationOrder,
+              segmentIndex: segmentIndex,
+            )
+            : WordHuntReusableRouteMapScreen(
+              route: route,
+              theme: effectiveMapTheme,
+              progress: progress,
+              onLevelTap: onLevelTap,
+              decorationSpec:
+                  showProceduralDecorations ? visualTheme.decorationSpec : null,
+              decorationPalette:
+                  showProceduralDecorations
+                      ? visualTheme.decorationPalette
+                      : null,
+              decorationOpacity:
+                  showProceduralDecorations ? visualTheme.decorationOpacity : 0,
+              sealSpec: visualTheme.sealSpec,
+              pathSpec: visualTheme.pathSpec,
+              chromeTheme: visualTheme.chromeTheme,
+              presentationOrder: visualTheme.presentationOrder,
+              segmentIndex: segmentIndex,
+            );
 
     if (!hasArtwork) return map;
 
