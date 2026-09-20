@@ -156,8 +156,7 @@ class WordHuntGokyuzuMasterArtScreen extends StatelessWidget {
                             semanticLabel:
                                 'Bölüm ${host.nodes[index].absoluteLevelIndex}',
                             onTap:
-                                host.nodes[index].unlocked &&
-                                        onLevelTap != null
+                                host.nodes[index].unlocked && onLevelTap != null
                                     ? () => onLevelTap!(
                                       host.nodes[index].absoluteLevelIndex,
                                     )
