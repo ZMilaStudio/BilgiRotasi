@@ -33,13 +33,10 @@ jobs:
       - name: Bağımlılıkları kur
         run: flutter pub get
 
-      - name: Wave 0 Dart format diagnostic
-        run: |
-          dart format test/word_hunt_2_0_wave0_baseline_test.dart
-          echo '__WAVE0_FORMAT_DIFF_BEGIN__'
-          git diff -- test/word_hunt_2_0_wave0_baseline_test.dart
-          echo '__WAVE0_FORMAT_DIFF_END__'
-          exit 1
+      - name: Wave 0 Dart format gate
+        run: >-
+          dart format --output=none --set-exit-if-changed
+          test/word_hunt_2_0_wave0_baseline_test.dart
 
       - name: Flutter analyze no-pub
         run: flutter analyze --no-pub

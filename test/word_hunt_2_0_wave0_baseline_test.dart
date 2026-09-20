@@ -225,14 +225,17 @@ void main() {
     }
   });
 
-  test('Wave 0 captures exact pre-migration Segment 1 content fingerprints', () {
-    final actual = <String, String>{
-      for (final entry in WordHuntRouteCatalog.entries)
-        entry.route.id: _contentFingerprint(entry.route),
-    };
+  test(
+    'Wave 0 captures exact pre-migration Segment 1 content fingerprints',
+    () {
+      final actual = <String, String>{
+        for (final entry in WordHuntRouteCatalog.entries)
+          entry.route.id: _contentFingerprint(entry.route),
+      };
 
-    expect(actual, expectedContentFingerprints);
-  });
+      expect(actual, expectedContentFingerprints);
+    },
+  );
 
   test(
     'Wave 0 captures approved legacy duplicate debt without claiming strict PASS',
@@ -260,10 +263,7 @@ void main() {
     expect(WordHuntProgressCodec.schemaVersion, 2);
 
     const snapshot = WordHuntProgressSnapshot(
-      bestStarsByLevelId: <String, int>{
-        'baslangic-1': 3,
-        'gokyuzu-1': 2,
-      },
+      bestStarsByLevelId: <String, int>{'baslangic-1': 3, 'gokyuzu-1': 2},
       unlockedInfoCardIds: <String>{'kart-a', 'kart-b'},
       unlockedRouteRewardIds: <String>{
         'badge-kelime-yolcusu',
@@ -279,16 +279,13 @@ void main() {
 
     expect(payload['schema'], 2);
     expect(payload['ownerScope'], 'user_wave0');
-    expect(
-      payload.keys.toSet(),
-      <String>{
-        'schema',
-        'ownerScope',
-        'bestStarsByLevelId',
-        'unlockedInfoCardIds',
-        'unlockedRouteRewardIds',
-      },
-    );
+    expect(payload.keys.toSet(), <String>{
+      'schema',
+      'ownerScope',
+      'bestStarsByLevelId',
+      'unlockedInfoCardIds',
+      'unlockedRouteRewardIds',
+    });
 
     final restored = WordHuntProgressCodec.decode(
       raw,
@@ -296,16 +293,10 @@ void main() {
     );
     expect(restored.bestStarsByLevelId, snapshot.bestStarsByLevelId);
     expect(restored.unlockedInfoCardIds, snapshot.unlockedInfoCardIds);
-    expect(
-      restored.unlockedRouteRewardIds,
-      snapshot.unlockedRouteRewardIds,
-    );
+    expect(restored.unlockedRouteRewardIds, snapshot.unlockedRouteRewardIds);
 
     expect(
-      () => WordHuntProgressCodec.decode(
-        raw,
-        expectedOwnerScope: 'user_other',
-      ),
+      () => WordHuntProgressCodec.decode(raw, expectedOwnerScope: 'user_other'),
       throwsFormatException,
     );
 
