@@ -46,6 +46,9 @@ class _WordHuntThemedProductionRouteScreenState
   static const double _compactTopControlExtent = 48;
   static const double _compactTopControlVisualExtent = 40;
 
+  bool get _usesOrmanReferenceCanvas =>
+      widget.visualTheme.referenceCanvasSize != null;
+
   Widget _withOpeningTransition(Widget child) {
     return TweenAnimationBuilder<double>(
       key: const Key('word_hunt_orman_opening_transition'),
