@@ -215,10 +215,7 @@ void main() {
       expect(destination.routeCompletedNow, isFalse);
       expect(destination.rewardGrantedNow, isFalse);
       expect(destination.nextPlayableSegment, 6);
-      expect(
-        destination.kind,
-        WordHuntCompletionDestinationKind.nextSegment,
-      );
+      expect(destination.kind, WordHuntCompletionDestinationKind.nextSegment);
     });
 
     test('L100 first completion unlocks next route and grants reward once', () {
@@ -250,10 +247,7 @@ void main() {
       expect(destination.isTrueRouteFinal, isTrue);
       expect(destination.routeCompletedNow, isTrue);
       expect(destination.rewardGrantedNow, isTrue);
-      expect(
-        destination.kind,
-        WordHuntCompletionDestinationKind.nextRoute,
-      );
+      expect(destination.kind, WordHuntCompletionDestinationKind.nextRoute);
       expect(destination.nextRoute?.route.id, nextRoute.id);
       expect(nextEntry.isUnlocked(transition.progress), isTrue);
 
@@ -266,8 +260,9 @@ void main() {
       expect(replay.routeCompletedNow, isFalse);
       expect(replay.rewardGranted, isFalse);
       expect(
-        replay.progress.unlockedRouteRewardIds
-            .where((id) => id == route.routeRewardId),
+        replay.progress.unlockedRouteRewardIds.where(
+          (id) => id == route.routeRewardId,
+        ),
         hasLength(1),
       );
     });
@@ -300,30 +295,33 @@ void main() {
   });
 
   group('Wave 6 grandfathered access', () {
-    test('entitlement grants access only, without fake completion/reward/stars', () {
-      final prerequisite = _v2Route();
-      final lockedRoute = _legacyNextRoute();
-      final entry = _entry(
-        lockedRoute,
-        unlockRule: WordHuntRouteUnlockRule.routeComplete(
-          prerequisiteRoute: prerequisite,
-        ),
-      );
-      final progress = WordHuntProgressSnapshot(
-        grandfatheredUnlockedRouteIds: <String>{lockedRoute.id},
-      );
+    test(
+      'entitlement grants access only, without fake completion/reward/stars',
+      () {
+        final prerequisite = _v2Route();
+        final lockedRoute = _legacyNextRoute();
+        final entry = _entry(
+          lockedRoute,
+          unlockRule: WordHuntRouteUnlockRule.routeComplete(
+            prerequisiteRoute: prerequisite,
+          ),
+        );
+        final progress = WordHuntProgressSnapshot(
+          grandfatheredUnlockedRouteIds: <String>{lockedRoute.id},
+        );
 
-      expect(entry.isUnlocked(progress), isTrue);
-      expect(
-        WordHuntRouteProgressEngine.isRouteComplete(prerequisite, progress),
-        isFalse,
-      );
-      expect(progress.unlockedRouteRewardIds, isEmpty);
-      expect(
-        WordHuntRouteProgressEngine.totalStars(prerequisite, progress),
-        0,
-      );
-    });
+        expect(entry.isUnlocked(progress), isTrue);
+        expect(
+          WordHuntRouteProgressEngine.isRouteComplete(prerequisite, progress),
+          isFalse,
+        );
+        expect(progress.unlockedRouteRewardIds, isEmpty);
+        expect(
+          WordHuntRouteProgressEngine.totalStars(prerequisite, progress),
+          0,
+        );
+      },
+    );
 
     test('fresh result never creates new grandfathered entitlement', () {
       final route = _v2Route();
@@ -353,55 +351,59 @@ void main() {
   });
 
   group('Wave 6 save and duplicate-write safety', () {
-    test('destination is unavailable until canonical save future resolves', () async {
-      final route = _v2Route();
-      final entry = _entry(route);
-      final saveGate = Completer<void>();
-      final events = <String>[];
-      var completed = false;
+    test(
+      'destination is unavailable until canonical save future resolves',
+      () async {
+        final route = _v2Route();
+        final entry = _entry(route);
+        final saveGate = Completer<void>();
+        final events = <String>[];
+        var completed = false;
 
-      final future = WordHuntCompletionOrchestrator.process(
-        route: route,
-        beforeProgress: const WordHuntProgressSnapshot(),
-        levelId: route.levels.first.id,
-        stars: 1,
-        unlockedInfoCards: const <String>{},
-        foundBonusCount: null,
-        onProgressReady: (_) => events.add('state'),
-        persistProgress: (_) async {
-          events.add('save-start');
-          await saveGate.future;
-          events.add('save-end');
-        },
-        catalogEntries: <WordHuntRouteCatalogEntry>[entry],
-      ).then((value) {
-        completed = true;
-        events.add('destination');
-        return value;
-      });
+        final future = WordHuntCompletionOrchestrator.process(
+          route: route,
+          beforeProgress: const WordHuntProgressSnapshot(),
+          levelId: route.levels.first.id,
+          stars: 1,
+          unlockedInfoCards: const <String>{},
+          foundBonusCount: null,
+          onProgressReady: (_) => events.add('state'),
+          persistProgress: (_) async {
+            events.add('save-start');
+            await saveGate.future;
+            events.add('save-end');
+          },
+          catalogEntries: <WordHuntRouteCatalogEntry>[entry],
+        ).then((value) {
+          completed = true;
+          events.add('destination');
+          return value;
+        });
 
-      await Future<void>.delayed(Duration.zero);
-      expect(events, <String>['state', 'save-start']);
-      expect(completed, isFalse);
+        await Future<void>.delayed(Duration.zero);
+        expect(events, <String>['state', 'save-start']);
+        expect(completed, isFalse);
 
-      saveGate.complete();
-      final processed = await future;
-      expect(events, <String>[
-        'state',
-        'save-start',
-        'save-end',
-        'destination',
-      ]);
-      expect(
-        processed.destination.kind,
-        WordHuntCompletionDestinationKind.nextLevel,
-      );
-    });
+        saveGate.complete();
+        final processed = await future;
+        expect(events, <String>[
+          'state',
+          'save-start',
+          'save-end',
+          'destination',
+        ]);
+        expect(
+          processed.destination.kind,
+          WordHuntCompletionDestinationKind.nextLevel,
+        );
+      },
+    );
 
     test('CTA handler source has no second record or persistence write', () {
-      final source = File(
-        'lib/word_hunt/word_hunt_production_entry_screen.dart',
-      ).readAsStringSync();
+      final source =
+          File(
+            'lib/word_hunt/word_hunt_production_entry_screen.dart',
+          ).readAsStringSync();
       final start = source.indexOf('Future<void> _showParentCompletion');
       final end = source.indexOf(
         'Future<void> _showRouteCompletionCeremony',
@@ -521,8 +523,14 @@ void main() {
         ),
       );
       await tester.pump();
-      expect(find.byKey(const Key('word_hunt_reference_level_11')), findsOneWidget);
-      expect(find.byKey(const Key('word_hunt_reference_level_1')), findsNothing);
+      expect(
+        find.byKey(const Key('word_hunt_reference_level_11')),
+        findsOneWidget,
+      );
+      expect(
+        find.byKey(const Key('word_hunt_reference_level_1')),
+        findsNothing,
+      );
 
       await tester.pumpWidget(
         MaterialApp(
@@ -653,13 +661,12 @@ void main() {
     });
 
     test('schema/navigation state remains derived and unpersisted', () {
-      final codec = File('lib/word_hunt/word_hunt_progress_codec.dart')
-          .readAsStringSync();
+      final codec =
+          File(
+            'lib/word_hunt/word_hunt_progress_codec.dart',
+          ).readAsStringSync();
       expect(codec, contains('static const int schemaVersion = 3;'));
-      expect(
-        codec,
-        contains("bilgi_rotasi_word_hunt_progress_v1_"),
-      );
+      expect(codec, contains("bilgi_rotasi_word_hunt_progress_v1_"));
       for (final forbidden in <String>[
         "'activeSegment'",
         "'completionDestination'",
@@ -684,9 +691,10 @@ WordHuntRouteDefinition _v2Route() {
       routeId: routeId,
       index: index,
       displayName: 'Wave 6 $index',
-      type: index == 10 || index == 100
-          ? WordHuntLevelType.routeFinal
-          : WordHuntLevelType.normal,
+      type:
+          index == 10 || index == 100
+              ? WordHuntLevelType.routeFinal
+              : WordHuntLevelType.normal,
       grid: const <String>['AAA', 'AAA', 'AAA'],
       targetWords: const <String>['AAA'],
       bonusWords: index <= 2 ? const <String>['A'] : const <String>[],
@@ -729,9 +737,10 @@ WordHuntRouteDefinition _legacyNextRoute() {
         id: 'wave6-next-$index',
         routeId: 'wave6-next',
         index: index,
-        type: index == 10
-            ? WordHuntLevelType.routeFinal
-            : WordHuntLevelType.normal,
+        type:
+            index == 10
+                ? WordHuntLevelType.routeFinal
+                : WordHuntLevelType.normal,
         grid: const <String>['AAA', 'AAA', 'AAA'],
         targetWords: const <String>['AAA'],
         starRules: const WordHuntStarRules(),
