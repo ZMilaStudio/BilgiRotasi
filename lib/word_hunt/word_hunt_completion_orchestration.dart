@@ -142,11 +142,14 @@ abstract final class WordHuntCompletionCoordinator {
     final currentIndex = entries.indexWhere((entry) => entry.route.id == route.id);
     final terminal = currentIndex >= 0 && currentIndex == entries.length - 1;
 
+    final currentEntry =
+        currentIndex >= 0 ? entries[currentIndex] : null;
     final summary = _summary(
       route: route,
       progress: afterProgress,
       rewardGrantedNow: transition.rewardGranted,
       nextUnlockedRoute: nextUnlockedRoute,
+      currentEntry: currentEntry,
       terminal: terminal,
     );
 
@@ -157,6 +160,7 @@ abstract final class WordHuntCompletionCoordinator {
       segmentCompletedNow: segmentCompletedNow,
       isTrueRouteFinal: isTrueRouteFinal,
       afterRouteComplete: transition.afterRouteComplete,
+      routeCompletedNow: transition.routeCompletedNow,
       nextUnlockedRoute: nextUnlockedRoute,
       terminal: terminal,
     );
@@ -185,7 +189,9 @@ abstract final class WordHuntCompletionCoordinator {
     required bool segmentCompletedNow,
     required bool isTrueRouteFinal,
     required bool afterRouteComplete,
+    required bool routeCompletedNow,
     required WordHuntRouteCatalogEntry? nextUnlockedRoute,
+    required WordHuntRouteCatalogEntry? currentEntry,
     required bool terminal,
   }) {
     if (explicitV2 && isTrueRouteFinal && afterRouteComplete) {
@@ -197,7 +203,10 @@ abstract final class WordHuntCompletionCoordinator {
           : WordHuntCompletionDestinationKind.returnToRoute;
     }
 
-    if (!explicitV2 && afterRouteComplete && completedAbsoluteLevel == route.levels.length) {
+    if (!explicitV2 &&
+        afterRouteComplete &&
+        (routeCompletedNow ||
+            completedAbsoluteLevel == route.levels.length)) {
       if (nextUnlockedRoute != null) {
         return WordHuntCompletionDestinationKind.nextRoute;
       }
@@ -235,7 +244,8 @@ abstract final class WordHuntCompletionCoordinator {
       }
     }
 
-    final entry = WordHuntRouteCatalog.entryForRouteId(route.id);
+    final entry =
+        currentEntry ?? WordHuntRouteCatalog.entryForRouteId(route.id);
     return WordHuntRouteCompletionSummary(
       routeId: route.id,
       routeTitle: route.title,
