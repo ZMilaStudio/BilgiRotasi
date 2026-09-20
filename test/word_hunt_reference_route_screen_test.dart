@@ -500,19 +500,18 @@ void main() {
   });
 
   testWidgets(
-    'reference route omits rejected scenic labels and keeps bottom controls',
+    'reference route omits rejected scenic labels and bottom controls',
     (tester) async {
       await pumpReferenceRoute(tester);
 
       expect(find.text('Fener'), findsNothing);
       expect(find.text('Liman'), findsNothing);
       expect(find.text('Hazine'), findsNothing);
-
-      final compass = find.byKey(const Key('word_hunt_reference_compass'));
-      final book = find.byKey(const Key('word_hunt_reference_book'));
-      expect(compass, findsOneWidget);
-      expect(book, findsOneWidget);
-      expect(tester.getCenter(compass).dx, lessThan(tester.getCenter(book).dx));
+      expect(
+        find.byKey(const Key('word_hunt_reference_compass')),
+        findsNothing,
+      );
+      expect(find.byKey(const Key('word_hunt_reference_book')), findsNothing);
     },
   );
 
