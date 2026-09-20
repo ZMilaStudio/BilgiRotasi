@@ -335,6 +335,21 @@ void main() {
       );
       expect(transition.progress.grandfatheredUnlockedRouteIds, isEmpty);
     });
+
+    test('reward ownership alone never implies route completion', () {
+      final route = _v2Route();
+      final progress = WordHuntProgressSnapshot(
+        unlockedRouteRewardIds: <String>{route.routeRewardId},
+      );
+      expect(
+        WordHuntRouteProgressEngine.isRouteComplete(route, progress),
+        isFalse,
+      );
+      expect(
+        WordHuntRouteProgressEngine.totalStars(route, progress),
+        0,
+      );
+    });
   });
 
   group('Wave 6 save and duplicate-write safety', () {
@@ -397,6 +412,48 @@ void main() {
       expect(handler, isNot(contains('recordLevelResult')));
       expect(handler, isNot(contains('_saveProgress(')));
       expect(handler, isNot(contains('grantRouteReward')));
+    });
+
+    test('navigation handler opens only canonical next level gameplay', () {
+      final source = File(
+        'lib/word_hunt/word_hunt_production_entry_screen.dart',
+      ).readAsStringSync();
+      final start = source.indexOf('Future<void> _showParentCompletion');
+      final end = source.indexOf(
+        'Future<void> _showRouteCompletionCeremony',
+        start,
+      );
+      final handler = source.substring(start, end);
+
+      final nextLevelStart = handler.indexOf(
+        'case WordHuntCompletionDestinationKind.nextLevel:',
+      );
+      final nextSegmentStart = handler.indexOf(
+        'case WordHuntCompletionDestinationKind.nextSegment:',
+      );
+      final nextRouteStart = handler.indexOf(
+        'case WordHuntCompletionDestinationKind.nextRoute:',
+      );
+      final returnStart = handler.indexOf(
+        'case WordHuntCompletionDestinationKind.returnToRoute:',
+      );
+
+      final nextLevelBlock = handler.substring(
+        nextLevelStart,
+        nextSegmentStart,
+      );
+      final nextSegmentBlock = handler.substring(
+        nextSegmentStart,
+        nextRouteStart,
+      );
+      final nextRouteBlock = handler.substring(nextRouteStart, returnStart);
+
+      expect(nextLevelBlock, contains('canonicalNextPlayableLevel'));
+      expect(nextLevelBlock, contains('await _openLevel(nextLevel)'));
+      expect(nextSegmentBlock, contains('_activeSegmentIndex'));
+      expect(nextSegmentBlock, isNot(contains('_openLevel(')));
+      expect(nextRouteBlock, contains('_selectedRoute = nextEntry.route'));
+      expect(nextRouteBlock, isNot(contains('_openLevel(')));
     });
 
     test('markLastActiveRoute same route is identity/no redundant write state', () {
