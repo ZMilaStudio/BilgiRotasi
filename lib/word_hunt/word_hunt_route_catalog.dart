@@ -133,7 +133,8 @@ class WordHuntRouteCatalogEntry {
   final WordHuntRouteVisualTheme? visualTheme;
 
   bool isUnlocked(WordHuntProgressSnapshot progress) =>
-      unlockRule.isUnlocked(progress);
+      unlockRule.isUnlocked(progress) ||
+      progress.grandfatheredUnlockedRouteIds.contains(route.id);
 }
 
 /// Kullanıcıya şu anda gerçekten sunulan production Kelime Avı rotaları.
