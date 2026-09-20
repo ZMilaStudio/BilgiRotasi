@@ -26,9 +26,9 @@ class WordHuntRouteSegmentHost {
       if (segmentIndex != 1) {
         throw RangeError.range(segmentIndex, 1, 1, 'segmentIndex');
       }
-      if (route.levels.length != 10) {
+      if (route.levels.isEmpty || route.levels.length > 10) {
         throw StateError(
-          'Legacy Kelime Avı route segment host tam 10 level bekler.',
+          'Legacy Kelime Avı route segment host 1..10 level bekler.',
         );
       }
       final currentAbsoluteIndex =
@@ -37,7 +37,9 @@ class WordHuntRouteSegmentHost {
         route: route,
         segmentIndex: 1,
         isLegacySegmentOne: true,
-        nodes: List<WordHuntRouteMapNodeProjection>.generate(10, (zeroIndex) {
+        nodes: List<WordHuntRouteMapNodeProjection>.generate(
+          route.levels.length,
+          (zeroIndex) {
           final absoluteIndex = zeroIndex + 1;
           final level = route.levels[zeroIndex];
           final completed = WordHuntRouteProgressEngine.isLevelCompleted(
@@ -59,13 +61,15 @@ class WordHuntRouteSegmentHost {
                 unlocked &&
                 !completed &&
                 currentAbsoluteIndex == absoluteIndex,
-            isSegmentEndpoint: absoluteIndex == 10,
+            isSegmentEndpoint: absoluteIndex == route.levels.length,
             isMajorMidpoint: false,
             isTrueRouteFinal:
                 absoluteIndex == route.levels.length &&
                 level.type == WordHuntLevelType.routeFinal,
           );
-        }, growable: false),
+        },
+          growable: false,
+        ),
       );
     }
 
