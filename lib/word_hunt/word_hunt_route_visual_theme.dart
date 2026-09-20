@@ -98,12 +98,14 @@ class WordHuntThemedRouteMapScreen extends StatelessWidget {
     required this.visualTheme,
     this.progress = const WordHuntProgressSnapshot(),
     this.onLevelTap,
+    this.segmentIndex = 1,
   });
 
   final WordHuntRouteDefinition route;
   final WordHuntRouteVisualTheme visualTheme;
   final WordHuntProgressSnapshot progress;
   final ValueChanged<int>? onLevelTap;
+  final int segmentIndex;
 
   @override
   Widget build(BuildContext context) {
@@ -125,6 +127,7 @@ class WordHuntThemedRouteMapScreen extends StatelessWidget {
             pathSpec: visualTheme.pathSpec,
             chromeTheme: visualTheme.chromeTheme,
             presentationOrder: visualTheme.presentationOrder,
+            segmentIndex: segmentIndex,
           )
         : WordHuntReusableRouteMapScreen(
             route: route,
@@ -144,6 +147,7 @@ class WordHuntThemedRouteMapScreen extends StatelessWidget {
             pathSpec: visualTheme.pathSpec,
             chromeTheme: visualTheme.chromeTheme,
             presentationOrder: visualTheme.presentationOrder,
+            segmentIndex: segmentIndex,
           );
 
     if (!hasArtwork) return map;
