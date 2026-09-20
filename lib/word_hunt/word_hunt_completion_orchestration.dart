@@ -93,6 +93,19 @@ class WordHuntCompletionProcessResult {
 }
 
 abstract final class WordHuntCompletionCoordinator {
+  static int activeSegmentForProgress({
+    required WordHuntRouteDefinition route,
+    required WordHuntProgressSnapshot progress,
+  }) {
+    if (route.segments.isEmpty) return 1;
+    final next = WordHuntRouteProgressEngine.nextPlayableLevelIndex(
+      route,
+      progress,
+    );
+    final bounded = next.clamp(1, route.levels.length);
+    return WordHuntSegmentProjection.forLevel(route, bounded).segmentIndex;
+  }
+
   static WordHuntCompletionDestination resolve({
     required WordHuntRouteDefinition route,
     required String completedLevelId,
