@@ -133,12 +133,15 @@ abstract final class WordHuntCompletionCoordinator {
         : null;
     final completedSegment = projection?.segmentIndex ?? 1;
     final localLevel = projection?.localLevelIndex ?? absoluteLevel;
-    final segmentCompletedNow = explicitV2 && (projection?.isSegmentEnd ?? false);
     final isMajorMidpoint = projection?.isMajorMidpoint ?? false;
     final isTrueRouteFinal = projection?.isTrueRouteFinal ?? false;
     final levelCompletedNow =
         !WordHuntRouteProgressEngine.isLevelCompleted(level, beforeProgress) &&
         WordHuntRouteProgressEngine.isLevelCompleted(level, afterProgress);
+    final segmentCompletedNow =
+        explicitV2 &&
+        (projection?.isSegmentEnd ?? false) &&
+        levelCompletedNow;
     final canonicalNextPlayableLevel =
         WordHuntRouteProgressEngine.nextPlayableLevelIndex(route, afterProgress);
     final nextPlayableSegment = _segmentForLevel(
