@@ -203,7 +203,7 @@ abstract final class WordHuntCompletionCoordinator {
       routeCompletedNow: transition.routeCompletedNow,
       rewardGrantedNow: transition.rewardGranted,
       milestoneInfoReward: milestoneInfoReward,
-      summary: summary;
+      summary: summary,
     );
   }
 
