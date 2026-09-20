@@ -53,37 +53,39 @@ void main() {
       expect(presentation.skin.instructionPanelAsset, isNotNull);
     });
 
-    test('Gökyüzü exact L1-L10 scene mapping is profile schedule authority', () {
-      final profile = WordHuntRouteCatalog.gokyuzu.presentationProfile;
-      const expected = <int, String>{
-        1: WordHuntGokyuzuGameplayBackgrounds.bright,
-        2: WordHuntGokyuzuGameplayBackgrounds.bright,
-        3: WordHuntGokyuzuGameplayBackgrounds.bright,
-        4: WordHuntGokyuzuGameplayBackgrounds.bright,
-        5: WordHuntGokyuzuGameplayBackgrounds.storm,
-        6: WordHuntGokyuzuGameplayBackgrounds.airship,
-        7: WordHuntGokyuzuGameplayBackgrounds.moon,
-        8: WordHuntGokyuzuGameplayBackgrounds.storm,
-        9: WordHuntGokyuzuGameplayBackgrounds.moon,
-        10: WordHuntGokyuzuGameplayBackgrounds.bright,
-      };
+    test(
+      'Gökyüzü exact L1-L10 scene mapping is profile schedule authority',
+      () {
+        final profile = WordHuntRouteCatalog.gokyuzu.presentationProfile;
+        const expected = <int, String>{
+          1: WordHuntGokyuzuGameplayBackgrounds.bright,
+          2: WordHuntGokyuzuGameplayBackgrounds.bright,
+          3: WordHuntGokyuzuGameplayBackgrounds.bright,
+          4: WordHuntGokyuzuGameplayBackgrounds.bright,
+          5: WordHuntGokyuzuGameplayBackgrounds.storm,
+          6: WordHuntGokyuzuGameplayBackgrounds.airship,
+          7: WordHuntGokyuzuGameplayBackgrounds.moon,
+          8: WordHuntGokyuzuGameplayBackgrounds.storm,
+          9: WordHuntGokyuzuGameplayBackgrounds.moon,
+          10: WordHuntGokyuzuGameplayBackgrounds.bright,
+        };
 
-      for (final item in expected.entries) {
-        final scene = profile.gameplayForLevel(levelIndex: item.key).scene;
-        expect(scene.assetPath, item.value, reason: 'L${item.key}');
-        expect(
-          scene.assetPath,
-          isNot(WordHuntRoutePresentationProfiles.harborBackground),
-        );
-      }
-    });
+        for (final item in expected.entries) {
+          final scene = profile.gameplayForLevel(levelIndex: item.key).scene;
+          expect(scene.assetPath, item.value, reason: 'L${item.key}');
+          expect(
+            scene.assetPath,
+            isNot(WordHuntRoutePresentationProfiles.harborBackground),
+          );
+        }
+      },
+    );
 
     test('every themed production route resolves outside Harbor fallback', () {
       final themed = WordHuntRouteCatalog.entries.skip(2);
       for (final entry in themed) {
-        final scene = entry.presentationProfile
-            .gameplayForLevel(levelIndex: 1)
-            .scene;
+        final scene =
+            entry.presentationProfile.gameplayForLevel(levelIndex: 1).scene;
         expect(
           scene.assetPath,
           isNot(WordHuntRoutePresentationProfiles.harborBackground),
@@ -128,39 +130,42 @@ void main() {
       }
     });
 
-    test('scene schedule supports future segment mapping without persistence', () {
-      const sceneA = WordHuntGameplaySceneDefinition(
-        id: 'a',
-        assetPath: 'a.webp',
-      );
-      const sceneB = WordHuntGameplaySceneDefinition(
-        id: 'b',
-        assetPath: 'b.webp',
-      );
-      const profile = WordHuntRoutePresentationProfile(
-        id: 'synthetic',
-        mapPresentationId: 'synthetic-map',
-        gameplaySkin: WordHuntRoutePresentationProfiles.harborSkin,
-        sceneCatalog: <String, WordHuntGameplaySceneDefinition>{
-          'a': sceneA,
-          'b': sceneB,
-        },
-        sceneSchedule: WordHuntGameplaySceneSchedule(
-          defaultSceneId: 'a',
-          segmentSceneIds: <int, String>{2: 'b'},
-          levelSceneIds: <int, String>{15: 'a'},
-        ),
-      );
+    test(
+      'scene schedule supports future segment mapping without persistence',
+      () {
+        const sceneA = WordHuntGameplaySceneDefinition(
+          id: 'a',
+          assetPath: 'a.webp',
+        );
+        const sceneB = WordHuntGameplaySceneDefinition(
+          id: 'b',
+          assetPath: 'b.webp',
+        );
+        const profile = WordHuntRoutePresentationProfile(
+          id: 'synthetic',
+          mapPresentationId: 'synthetic-map',
+          gameplaySkin: WordHuntRoutePresentationProfiles.harborSkin,
+          sceneCatalog: <String, WordHuntGameplaySceneDefinition>{
+            'a': sceneA,
+            'b': sceneB,
+          },
+          sceneSchedule: WordHuntGameplaySceneSchedule(
+            defaultSceneId: 'a',
+            segmentSceneIds: <int, String>{2: 'b'},
+            levelSceneIds: <int, String>{15: 'a'},
+          ),
+        );
 
-      expect(
-        profile.gameplayForLevel(levelIndex: 11, segmentIndex: 2).scene.id,
-        'b',
-      );
-      expect(
-        profile.gameplayForLevel(levelIndex: 15, segmentIndex: 2).scene.id,
-        'a',
-      );
-    });
+        expect(
+          profile.gameplayForLevel(levelIndex: 11, segmentIndex: 2).scene.id,
+          'b',
+        );
+        expect(
+          profile.gameplayForLevel(levelIndex: 15, segmentIndex: 2).scene.id,
+          'a',
+        );
+      },
+    );
   });
 
   group('Wave 5 common gameplay engine and contract regression', () {
@@ -182,8 +187,9 @@ void main() {
     ];
 
     test('presentation does not alter path/input resolution', () {
-      final harbor = WordHuntRoutePresentationProfiles.starter
-          .gameplayForLevel(levelIndex: 1);
+      final harbor = WordHuntRoutePresentationProfiles.starter.gameplayForLevel(
+        levelIndex: 1,
+      );
       final forest = WordHuntRoutePresentationProfiles.ormanYolu
           .gameplayForLevel(levelIndex: 1);
       expect(harbor.skin.id, isNot(forest.skin.id));
@@ -222,8 +228,8 @@ void main() {
     });
 
     test('result contract and Wave 6 navigation remain absent', () {
-      final screens = File('lib/word_hunt/word_hunt_screens.dart')
-          .readAsStringSync();
+      final screens =
+          File('lib/word_hunt/word_hunt_screens.dart').readAsStringSync();
       expect(screens, contains('class WordHuntLevelPlayResult'));
       expect(screens, contains('final String levelId;'));
       expect(screens, contains('final int stars;'));
@@ -237,9 +243,10 @@ void main() {
     });
 
     test('deferred final forwards typed presentation unchanged', () {
-      final source = File(
-        'lib/word_hunt/word_hunt_deferred_completion_level_screen.dart',
-      ).readAsStringSync();
+      final source =
+          File(
+            'lib/word_hunt/word_hunt_deferred_completion_level_screen.dart',
+          ).readAsStringSync();
       expect(source, contains('WordHuntGameplayPresentation? presentation'));
       expect(source, contains('presentation: widget.presentation'));
       expect(source, contains('deferCompletionDialog: true'));
@@ -247,28 +254,35 @@ void main() {
   });
 
   group('Wave 5 architecture and persistence safety', () {
-    test('production entry no longer owns route-special gameplay background', () {
-      final source = File(
-        'lib/word_hunt/word_hunt_production_entry_screen.dart',
-      ).readAsStringSync();
-      expect(source, isNot(contains('_gameplayBackgroundForLevel')));
-      expect(source, contains('_gameplayPresentationForLevel'));
-      expect(source, contains('.presentationProfile'));
-      expect(source, contains('.gameplayForLevel('));
-    });
+    test(
+      'production entry no longer owns route-special gameplay background',
+      () {
+        final source =
+            File(
+              'lib/word_hunt/word_hunt_production_entry_screen.dart',
+            ).readAsStringSync();
+        expect(source, isNot(contains('_gameplayBackgroundForLevel')));
+        expect(source, contains('_gameplayPresentationForLevel'));
+        expect(source, contains('.presentationProfile'));
+        expect(source, contains('.gameplayForLevel('));
+      },
+    );
 
-    test('gameplay presentation files contain no route-id/title switch chain', () {
-      for (final path in <String>[
-        'lib/word_hunt/word_hunt_gameplay_presentation.dart',
-        'lib/word_hunt/word_hunt_screens.dart',
-      ]) {
-        final source = File(path).readAsStringSync();
-        expect(source, isNot(contains('switch (route.id')));
-        expect(source, isNot(contains('switch (route.title')));
-        expect(source, isNot(contains("if (route.id ==")));
-        expect(source, isNot(contains('route.title.contains')));
-      }
-    });
+    test(
+      'gameplay presentation files contain no route-id/title switch chain',
+      () {
+        for (final path in <String>[
+          'lib/word_hunt/word_hunt_gameplay_presentation.dart',
+          'lib/word_hunt/word_hunt_screens.dart',
+        ]) {
+          final source = File(path).readAsStringSync();
+          expect(source, isNot(contains('switch (route.id')));
+          expect(source, isNot(contains('switch (route.title')));
+          expect(source, isNot(contains("if (route.id ==")));
+          expect(source, isNot(contains('route.title.contains')));
+        }
+      },
+    );
 
     test('schema v3 and storage prefix remain unchanged', () {
       expect(WordHuntProgressCodec.schemaVersion, 3);
@@ -276,9 +290,10 @@ void main() {
         WordHuntProgressCodec.storageKeyForUid(null),
         'bilgi_rotasi_word_hunt_progress_v1_guest',
       );
-      final source = File(
-        'lib/word_hunt/word_hunt_gameplay_presentation.dart',
-      ).readAsStringSync();
+      final source =
+          File(
+            'lib/word_hunt/word_hunt_gameplay_presentation.dart',
+          ).readAsStringSync();
       expect(source, isNot(contains('SharedPreferences')));
       expect(source, isNot(contains('WordHuntProgressCodec')));
     });
