@@ -4,6 +4,7 @@ import 'word_hunt_master_art_progress_overlay.dart';
 import 'word_hunt_production_assets.dart';
 import 'word_hunt_models.dart';
 import 'word_hunt_progress.dart';
+import 'word_hunt_route_segment_host.dart';
 import 'word_hunt_starter_content.dart';
 
 /// Issue #109 piksel kanıtına ait tek görünür raster kaynak.
@@ -76,6 +77,7 @@ class WordHuntPixelProofScreen extends StatelessWidget {
     this.onLevelTap,
     this.onCompass,
     this.onBook,
+    this.segmentIndex = 1,
   });
 
   final WordHuntRouteDefinition route;
@@ -86,9 +88,15 @@ class WordHuntPixelProofScreen extends StatelessWidget {
   final ValueChanged<int>? onLevelTap;
   final VoidCallback? onCompass;
   final VoidCallback? onBook;
+  final int segmentIndex;
 
   @override
   Widget build(BuildContext context) {
+    final host = WordHuntRouteSegmentHost.forRoute(
+      route: route,
+      progress: progress,
+      segmentIndex: segmentIndex,
+    );
     return Scaffold(
       backgroundColor: Colors.black,
       body: ClipRect(
@@ -116,7 +124,8 @@ class WordHuntPixelProofScreen extends StatelessWidget {
                   if (nodeNineOpenOverride) const _NodeNineOpenOverride(),
                   for (
                     var index = 0;
-                    index < WordHuntPixelProofLayout.levelCenters.length;
+                    index < host.nodes.length &&
+                        index < WordHuntPixelProofLayout.levelCenters.length;
                     index++
                   )
                     _TransparentHitbox(
@@ -125,13 +134,10 @@ class WordHuntPixelProofScreen extends StatelessWidget {
                       diameter:
                           WordHuntPixelProofLayout.levelHitboxDiameters[index],
                       onTap:
-                          WordHuntRouteProgressEngine.isLevelUnlocked(
-                                    route,
-                                    progress,
-                                    index + 1,
-                                  ) &&
-                                  onLevelTap != null
-                              ? () => onLevelTap!(index + 1)
+                          host.nodes[index].unlocked && onLevelTap != null
+                              ? () => onLevelTap!(
+                                host.nodes[index].absoluteLevelIndex,
+                              )
                               : null,
                     ),
                   _TransparentHitbox(
