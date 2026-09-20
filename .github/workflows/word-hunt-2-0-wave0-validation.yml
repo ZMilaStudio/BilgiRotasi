@@ -1,4 +1,4 @@
-name: Kelime Avı 2.0 Wave 0 Validation
+name: Kelime Avı 2.0 Cumulative Validation
 
 on:
   pull_request:
@@ -6,7 +6,10 @@ on:
       - release/final-closed-test-aab-1.68.8
     paths:
       - 'docs/project-memory/KELIME_AVI_2_0_*.md'
+      - 'lib/word_hunt/word_hunt_models.dart'
+      - 'lib/word_hunt/word_hunt_segment_projection.dart'
       - 'test/word_hunt_2_0_wave0_baseline_test.dart'
+      - 'test/word_hunt_2_0_wave1_domain_foundation_test.dart'
       - '.github/workflows/word-hunt-2-0-wave0-validation.yml'
   workflow_dispatch:
 
@@ -14,8 +17,8 @@ permissions:
   contents: read
 
 jobs:
-  wave0:
-    name: Authority and migration baselines
+  foundation:
+    name: Authority and cumulative domain baselines
     runs-on: ubuntu-22.04
     timeout-minutes: 40
 
@@ -33,22 +36,48 @@ jobs:
       - name: Bağımlılıkları kur
         run: flutter pub get
 
-      - name: Wave 0 Dart format gate
+      - name: Wave 0+1 Dart format gate
         run: >-
           dart format --output=none --set-exit-if-changed
+          lib/word_hunt/word_hunt_models.dart
+          lib/word_hunt/word_hunt_segment_projection.dart
           test/word_hunt_2_0_wave0_baseline_test.dart
+          test/word_hunt_2_0_wave1_domain_foundation_test.dart
 
-      - name: Full repository analyze baseline observation
-        continue-on-error: true
-        run: flutter analyze --no-pub
+      - name: Full repository analyze baseline gate
+        shell: bash
+        run: |
+          set -o pipefail
+          set +e
+          flutter analyze --no-pub 2>&1 | tee /tmp/wave-analyze.log
+          status=${PIPESTATUS[0]}
+          set -e
+          if [ "$status" -eq 0 ]; then
+            exit 0
+          fi
+          issues="$(grep -Eo '[0-9]+ issues found' /tmp/wave-analyze.log | tail -1 | awk '{print $1}')"
+          test -n "$issues"
+          echo "Full analyzer issue count: $issues (Wave 0 baseline: 92)"
+          test "$issues" -le 92
 
-      - name: Wave 0 targeted analyze gate
+      - name: Wave 1 targeted analyze gate
         run: >-
           flutter analyze --no-pub
-          test/word_hunt_2_0_wave0_baseline_test.dart
+          lib/word_hunt/word_hunt_models.dart
+          lib/word_hunt/word_hunt_segment_projection.dart
+          test/word_hunt_2_0_wave1_domain_foundation_test.dart
 
       - name: Wave 0 baseline tests
         run: flutter test test/word_hunt_2_0_wave0_baseline_test.dart --reporter expanded
+
+      - name: Wave 1 domain foundation tests
+        run: flutter test test/word_hunt_2_0_wave1_domain_foundation_test.dart --reporter expanded
+
+      - name: Existing model validator regression
+        run: flutter test test/word_hunt_models_test.dart --reporter expanded
+
+      - name: Existing progress semantics regression
+        run: flutter test test/word_hunt_progress_test.dart --reporter expanded
 
       - name: Existing schema v2 regression
         run: flutter test test/word_hunt_progress_codec_v2_test.dart --reporter expanded
