@@ -87,6 +87,7 @@ jobs:
             test/word_hunt_orman_content_test.dart \
             test/word_hunt_scoring_test.dart \
             test/word_hunt_2_0_wave5_gameplay_presentation_test.dart \
+            test/word_hunt_2_0_wave5_gameplay_layout_test.dart \
             test/word_hunt_starter_content_test.dart \
             --reporter expanded
           git diff --check
