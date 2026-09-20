@@ -25,6 +25,9 @@ on:
       - 'lib/product_mode_entry.dart'
       - 'lib/word_hunt/word_hunt_home_projection.dart'
       - 'lib/word_hunt/word_hunt_home_screen.dart'
+      - 'lib/word_hunt/word_hunt_gameplay_presentation.dart'
+      - 'lib/word_hunt/word_hunt_deferred_completion_level_screen.dart'
+      - 'lib/word_hunt/word_hunt_route_catalog.dart'
       - 'lib/word_hunt/word_hunt_route_selector.dart'
       - 'lib/word_hunt/word_hunt_production_entry_screen.dart'
       - 'lib/word_hunt/word_hunt_screens.dart'
@@ -33,6 +36,7 @@ on:
       - 'test/word_hunt_2_0_wave2_persistence_v3_test.dart'
       - 'test/word_hunt_2_0_wave3_renderer_segment_host_test.dart'
       - 'test/word_hunt_2_0_wave4_product_entry_home_test.dart'
+      - 'test/word_hunt_2_0_wave5_gameplay_presentation_test.dart'
       - 'test/word_hunt_menu_entry_test.dart'
       - 'test/home_screen_card_visibility_test.dart'
       - 'test/player_username_test.dart'
@@ -65,7 +69,7 @@ jobs:
       - name: Bağımlılıkları kur
         run: flutter pub get
 
-      - name: Wave 0+1+2+3+4 Dart format gate
+      - name: Wave 0+1+2+3+4+5 Dart format gate
         run: >-
           dart format
           lib/main.dart
@@ -87,6 +91,9 @@ jobs:
           lib/word_hunt/word_hunt_route_rewards.dart
           lib/word_hunt/word_hunt_home_projection.dart
           lib/word_hunt/word_hunt_home_screen.dart
+          lib/word_hunt/word_hunt_gameplay_presentation.dart
+          lib/word_hunt/word_hunt_deferred_completion_level_screen.dart
+          lib/word_hunt/word_hunt_route_catalog.dart
           lib/word_hunt/word_hunt_production_entry_screen.dart
           lib/word_hunt/word_hunt_route_selector.dart
           lib/word_hunt/word_hunt_screens.dart
@@ -95,9 +102,13 @@ jobs:
           test/word_hunt_2_0_wave2_persistence_v3_test.dart
           test/word_hunt_2_0_wave3_renderer_segment_host_test.dart
           test/word_hunt_2_0_wave4_product_entry_home_test.dart
+          test/word_hunt_2_0_wave5_gameplay_presentation_test.dart
           test/word_hunt_menu_entry_test.dart
           test/word_hunt_progress_codec_v2_test.dart;
           git diff --
+          lib/word_hunt/word_hunt_gameplay_presentation.dart
+          lib/word_hunt/word_hunt_deferred_completion_level_screen.dart
+          lib/word_hunt/word_hunt_route_catalog.dart
           lib/main.dart
           lib/account_cloud.dart
           lib/main_navigation.dart
@@ -111,12 +122,19 @@ jobs:
           lib/word_hunt/word_hunt_reference_route_screen.dart
           lib/word_hunt/word_hunt_home_projection.dart
           lib/word_hunt/word_hunt_home_screen.dart
+          lib/word_hunt/word_hunt_gameplay_presentation.dart
+          lib/word_hunt/word_hunt_deferred_completion_level_screen.dart
+          lib/word_hunt/word_hunt_route_catalog.dart
           lib/word_hunt/word_hunt_production_entry_screen.dart
           lib/word_hunt/word_hunt_route_selector.dart
           test/word_hunt_2_0_wave3_renderer_segment_host_test.dart
           test/word_hunt_2_0_wave4_product_entry_home_test.dart
+          test/word_hunt_2_0_wave5_gameplay_presentation_test.dart
           test/word_hunt_menu_entry_test.dart;
           git diff --exit-code --
+          lib/word_hunt/word_hunt_gameplay_presentation.dart
+          lib/word_hunt/word_hunt_deferred_completion_level_screen.dart
+          lib/word_hunt/word_hunt_route_catalog.dart
           lib/main.dart
           lib/account_cloud.dart
           lib/main_navigation.dart
@@ -134,6 +152,7 @@ jobs:
           lib/word_hunt/word_hunt_route_selector.dart
           test/word_hunt_2_0_wave3_renderer_segment_host_test.dart
           test/word_hunt_2_0_wave4_product_entry_home_test.dart
+          test/word_hunt_2_0_wave5_gameplay_presentation_test.dart
           test/word_hunt_menu_entry_test.dart
 
       - name: Full repository analyze baseline gate
@@ -152,7 +171,7 @@ jobs:
           echo "Full analyzer issue count: $issues (Wave 0 baseline: 92)"
           test "$issues" -le 92
 
-      - name: Wave 1+2+3+4 targeted analyze gate
+      - name: Wave 1+2+3+4+5 targeted analyze gate
         run: >-
           flutter analyze --no-pub
           lib/account_cloud.dart
@@ -180,6 +199,7 @@ jobs:
           test/word_hunt_2_0_wave2_persistence_v3_test.dart
           test/word_hunt_2_0_wave3_renderer_segment_host_test.dart
           test/word_hunt_2_0_wave4_product_entry_home_test.dart
+          test/word_hunt_2_0_wave5_gameplay_presentation_test.dart
           test/word_hunt_menu_entry_test.dart
           test/word_hunt_progress_codec_v2_test.dart
 
@@ -197,6 +217,16 @@ jobs:
 
       - name: Wave 4 product-entry and home tests
         run: flutter test test/word_hunt_2_0_wave4_product_entry_home_test.dart --reporter expanded
+
+      - name: Wave 5 route-aware gameplay presentation tests
+        run: flutter test test/word_hunt_2_0_wave5_gameplay_presentation_test.dart --reporter expanded
+
+      - name: Gameplay path and scoring regression
+        run: >-
+          flutter test
+          test/word_hunt_path_test.dart
+          test/word_hunt_scoring_test.dart
+          --reporter expanded
 
       - name: Product entry relocation regression
         run: flutter test test/word_hunt_menu_entry_test.dart --reporter expanded
