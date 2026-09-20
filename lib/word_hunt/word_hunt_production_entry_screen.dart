@@ -9,6 +9,7 @@ import 'word_hunt_gokyuzu_master_art_screen.dart';
 import 'word_hunt_home_projection.dart';
 import 'word_hunt_home_screen.dart';
 import 'word_hunt_models.dart';
+import 'word_hunt_milestone_info_rewards.dart';
 import 'word_hunt_progress.dart';
 import 'word_hunt_progress_codec.dart';
 import 'word_hunt_progress_migration.dart';
@@ -377,12 +378,22 @@ class _WordHuntProductionEntryScreenState
     if (result == null || !mounted) return;
 
     if (!parentOwnsCompletion) {
+      final milestoneInfoReward = WordHuntMilestoneInfoRewardEngine.project(
+        route: route,
+        routeInfoCards: _activeInfoCards,
+        completedLevelId: result.levelId,
+        beforeProgress: beforeProgress,
+        gameplayUnlockedInfoCardIds: result.unlockedInfoCardIds,
+      );
       final transition = WordHuntRouteRewardEngine.recordLevelResult(
         route: route,
         progress: beforeProgress,
         levelId: result.levelId,
         stars: result.stars,
-        unlockedInfoCards: result.unlockedInfoCardIds,
+        unlockedInfoCards: <String>{
+          ...result.unlockedInfoCardIds,
+          ...milestoneInfoReward.newlyGrantedCardIds,
+        },
         foundBonusCount: result.foundBonusCount,
       );
       final next = transition.progress;
@@ -412,6 +423,7 @@ class _WordHuntProductionEntryScreenState
       stars: result.stars,
       unlockedInfoCards: result.unlockedInfoCardIds,
       foundBonusCount: result.foundBonusCount,
+      routeInfoCards: _activeInfoCards,
       onProgressReady: (next) {
         if (!mounted) return;
         setState(() => _progress = next);
@@ -573,8 +585,6 @@ class _WordHuntProductionEntryScreenState
                 _GuideLine('Her bölümden en fazla 3 yıldız kazanılabilir.'),
                 _GuideLine('İlerledikçe yeni duraklar açılır.'),
                 _GuideLine('Taçlı bölüm tema finalidir.'),
-                _GuideLine('Pusula sonraki durağı gösterir.'),
-                _GuideLine('Kitap bölümün konusu hakkında bilgi verir.'),
               ],
             ),
             actions: <Widget>[
@@ -583,56 +593,6 @@ class _WordHuntProductionEntryScreenState
                 child: const Text('Tamam'),
               ),
             ],
-          ),
-    );
-  }
-
-  void _showCompassHint() {
-    final route = _activeRoute;
-    if (!WordHuntRouteProgressEngine.isRouteComplete(route, _progress)) {
-      return;
-    }
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text('${route.title} tamamlandı.')));
-  }
-
-  void _showBook() {
-    final unlocked = _activeInfoCards
-        .where((card) => _progress.unlockedInfoCardIds.contains(card.id))
-        .toList(growable: false);
-
-    if (unlocked.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Henüz bilgi kartı açılmadı.')),
-      );
-      return;
-    }
-
-    showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      builder:
-          (sheetContext) => SafeArea(
-            child: ListView.separated(
-              key: const Key('word_hunt_unlocked_info_cards'),
-              shrinkWrap: true,
-              padding: const EdgeInsets.fromLTRB(18, 18, 18, 28),
-              itemCount: unlocked.length,
-              separatorBuilder: (_, __) => const Divider(height: 24),
-              itemBuilder: (_, index) {
-                final card = unlocked[index];
-                return ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  title: Text(card.title),
-                  subtitle: Text('${card.shortFact}\n${card.category}'),
-                  isThreeLine: true,
-                  leading: CircleAvatar(
-                    child: Text(card.word.characters.first),
-                  ),
-                );
-              },
-            ),
           ),
     );
   }
@@ -676,8 +636,6 @@ class _WordHuntProductionEntryScreenState
           progress: _progress,
           onBack: _leaveRoute,
           onInfo: _showInfo,
-          onCompass: _showCompassHint,
-          onBook: _showBook,
           onLevelTap: _openLevel,
           segmentIndex: _activeSegmentIndex,
         );
@@ -704,8 +662,6 @@ class _WordHuntProductionEntryScreenState
           progress: _progress,
           onBack: _leaveRoute,
           onInfo: _showInfo,
-          onCompass: _showCompassHint,
-          onBook: _showBook,
           onLevelTap: _openLevel,
           segmentIndex: _activeSegmentIndex,
         );
@@ -716,8 +672,6 @@ class _WordHuntProductionEntryScreenState
           progress: _progress,
           onBack: _leaveRoute,
           onInfo: _showInfo,
-          onCompass: _showCompassHint,
-          onBook: _showBook,
           onLevelTap: _openLevel,
           segmentIndex: _activeSegmentIndex,
         );
