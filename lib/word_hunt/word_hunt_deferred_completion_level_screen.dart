@@ -47,15 +47,17 @@ class _WordHuntDeferredCompletionLevelScreenState
   Widget build(BuildContext context) {
     return Navigator(
       key: const Key('word_hunt_deferred_completion_navigator'),
-      onGenerateRoute: (_) => MaterialPageRoute<void>(
-        builder: (_) => _DeferredCompletionShell(
-          level: widget.level,
-          infoCards: widget.infoCards,
-          routeTitle: widget.routeTitle,
-          presentation: widget.presentation,
-          onResult: _forwardResult,
-        ),
-      ),
+      onGenerateRoute:
+          (_) => MaterialPageRoute<void>(
+            builder:
+                (_) => _DeferredCompletionShell(
+                  level: widget.level,
+                  infoCards: widget.infoCards,
+                  routeTitle: widget.routeTitle,
+                  presentation: widget.presentation,
+                  onResult: _forwardResult,
+                ),
+          ),
     );
   }
 }
@@ -94,13 +96,14 @@ class _DeferredCompletionShellState extends State<_DeferredCompletionShell> {
     _launched = true;
     final result = await Navigator.of(context).push<WordHuntLevelPlayResult>(
       MaterialPageRoute<WordHuntLevelPlayResult>(
-        builder: (_) => WordHuntLevelProductionScreen(
-          level: widget.level,
-          infoCards: widget.infoCards,
-          presentation: widget.presentation,
-          routeTitle: widget.routeTitle,
-          deferCompletionDialog: true,
-        ),
+        builder:
+            (_) => WordHuntLevelProductionScreen(
+              level: widget.level,
+              infoCards: widget.infoCards,
+              presentation: widget.presentation,
+              routeTitle: widget.routeTitle,
+              deferCompletionDialog: true,
+            ),
       ),
     );
     if (mounted) widget.onResult(result);
@@ -108,9 +111,6 @@ class _DeferredCompletionShellState extends State<_DeferredCompletionShell> {
 
   @override
   Widget build(BuildContext context) {
-    return const ColoredBox(
-      color: Color(0xFF061425),
-      child: SizedBox.expand(),
-    );
+    return const ColoredBox(color: Color(0xFF061425), child: SizedBox.expand());
   }
 }
