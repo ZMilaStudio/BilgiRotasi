@@ -492,11 +492,11 @@ class _WordHuntThemedProductionRouteScreenState
   Widget build(BuildContext context) {
     final theme = widget.visualTheme.mapTheme;
     final map = WordHuntThemedRouteMapScreen(
-        route: widget.route,
-        visualTheme: widget.visualTheme,
-        progress: widget.progress,
-        onLevelTap: widget.onLevelTap,
-        segmentIndex: widget.segmentIndex,
+      route: widget.route,
+      visualTheme: widget.visualTheme,
+      progress: widget.progress,
+      onLevelTap: widget.onLevelTap,
+      segmentIndex: widget.segmentIndex,
     );
 
     if (widget.visualTheme.hasArtwork) {
