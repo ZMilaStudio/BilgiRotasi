@@ -16,6 +16,20 @@ Tarih: 2026-09-20
 
 Bu doküman ürün kararı üretmez. Owner-approved master contract'a teknik olarak nasıl güvenli geçileceğini tanımlar. Bu aşamada ürün kodu, content, asset, persistence payload'ı, version, tag veya release değiştirilmemiştir.
 
+## Post-audit owner resolution
+
+2026-09-20 owner kararıyla legacy Segment 1 word-uniqueness decision gate kapatıldı:
+
+- grandfather exception **yok**,
+- Başlangıç Limanı / Gökyüzü Adaları / Orman Yolu / Kadim Orman içindeki mevcut rota-içi tekrarlar ilgili content-migration wave'inde düzeltilecek,
+- route ID / level ID / absolute index ve oyuncu progression mapping korunacak,
+- tekrar eden target/bonus kelimeler ve gerekli grid yerleşimleri değiştirilebilecek,
+- 11–100 içerik üretimi düzeltilmiş Segment 1 kelime setini reserved set kabul edecek.
+
+Authority: `docs/project-memory/KELIME_AVI_2_0_MASTER_CONTRACT.md` latest live HEAD.
+
+Bu nedenle aşağıdaki tarihsel audit bölümlerinde görülen `owner decision gate` ifadesi artık açık ürün kararı değildir; yalnız uygulanacak migration işi olarak okunmalıdır.
+
 ---
 
 # 1. EXECUTIVE VERDICT
