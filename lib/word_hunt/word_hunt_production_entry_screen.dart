@@ -4,6 +4,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'word_hunt_deferred_completion_level_screen.dart';
 import 'word_hunt_gokyuzu_gameplay_backgrounds.dart';
 import 'word_hunt_gokyuzu_master_art_screen.dart';
+import 'word_hunt_home_projection.dart';
+import 'word_hunt_home_screen.dart';
 import 'word_hunt_models.dart';
 import 'word_hunt_progress.dart';
 import 'word_hunt_progress_codec.dart';
@@ -34,6 +36,8 @@ import 'word_hunt_themed_production_route_screen.dart';
 /// [routeSelectionEnabled] false verilebilir. Catalog'da bilinen bir rota ise
 /// mevcut production presentation'ı korunur; bilinmeyen QA rotası güvenli legacy
 /// reference renderer'a düşer.
+enum WordHuntCatalogSurface { home, routes, route }
+
 class WordHuntProductionEntryScreen extends StatefulWidget {
   const WordHuntProductionEntryScreen({
     super.key,
@@ -63,6 +67,7 @@ class _WordHuntProductionEntryScreenState
   WordHuntProgressSnapshot _progress = const WordHuntProgressSnapshot();
   WordHuntRouteDefinition? _selectedRoute;
   List<WordHuntInfoCard>? _selectedInfoCards;
+  WordHuntCatalogSurface _catalogSurface = WordHuntCatalogSurface.home;
   bool _loading = true;
 
   bool get _catalogMode =>
@@ -93,6 +98,7 @@ class _WordHuntProductionEntryScreenState
   void initState() {
     super.initState();
     if (!_catalogMode) {
+      _catalogSurface = WordHuntCatalogSurface.route;
       _selectedRoute = widget.route;
       _selectedInfoCards = widget.infoCards;
     }
@@ -199,9 +205,45 @@ class _WordHuntProductionEntryScreenState
     }
 
     setState(() {
+      _catalogSurface = WordHuntCatalogSurface.route;
       _selectedRoute = entry.route;
       _selectedInfoCards = entry.infoCards;
     });
+  }
+
+  void _showCatalogHome() {
+    if (!_catalogMode) return;
+    setState(() {
+      _catalogSurface = WordHuntCatalogSurface.home;
+      _selectedRoute = null;
+      _selectedInfoCards = null;
+    });
+  }
+
+  void _showCatalogRoutes() {
+    if (!_catalogMode) return;
+    setState(() {
+      _catalogSurface = WordHuntCatalogSurface.routes;
+      _selectedRoute = null;
+      _selectedInfoCards = null;
+    });
+  }
+
+  Future<void> _continueFromHome(
+    WordHuntContinueDestination destination,
+  ) async {
+    final entry = WordHuntRouteCatalog.entryForRouteId(destination.route.id);
+    if (entry == null || !entry.isUnlocked(_progress)) {
+      _showCatalogRoutes();
+      return;
+    }
+
+    setState(() {
+      _catalogSurface = WordHuntCatalogSurface.route;
+      _selectedRoute = entry.route;
+      _selectedInfoCards = entry.infoCards;
+    });
+    await _openLevel(destination.absoluteLevelIndex);
   }
 
   String _lockedRouteMessage(WordHuntRouteCatalogEntry entry) {
@@ -231,6 +273,7 @@ class _WordHuntProductionEntryScreenState
   void _leaveRoute() {
     if (_catalogMode) {
       setState(() {
+        _catalogSurface = WordHuntCatalogSurface.routes;
         _selectedRoute = null;
         _selectedInfoCards = null;
       });
@@ -359,6 +402,7 @@ class _WordHuntProductionEntryScreenState
     if (action == WordHuntRouteCompletionAction.showRouteSelector &&
         _catalogMode) {
       setState(() {
+        _catalogSurface = WordHuntCatalogSurface.routes;
         _selectedRoute = null;
         _selectedInfoCards = null;
       });
@@ -470,11 +514,23 @@ class _WordHuntProductionEntryScreenState
       );
     }
 
-    if (_catalogMode && _selectedRoute == null) {
-      return WordHuntRouteSelector(
-        progress: _progress,
-        onRouteTap: _openCatalogRoute,
-      );
+    if (_catalogMode) {
+      switch (_catalogSurface) {
+        case WordHuntCatalogSurface.home:
+          final projection = WordHuntHomeProjection.fromProgress(_progress);
+          return WordHuntHomeScreen(
+            projection: projection,
+            onContinue: _continueFromHome,
+            onRoutes: _showCatalogRoutes,
+          );
+        case WordHuntCatalogSurface.routes:
+          return WordHuntRouteSelector(
+            progress: _progress,
+            onRouteTap: _openCatalogRoute,
+          );
+        case WordHuntCatalogSurface.route:
+          break;
+      }
     }
 
     final route = _activeRoute;
