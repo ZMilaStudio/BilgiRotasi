@@ -457,6 +457,7 @@ void main() {
         MaterialApp(
           home: WordHuntReferenceRouteScreen(
             route: route,
+            progress: _progressThrough(10),
             segmentIndex: 2,
             onLevelTap: (value) => tapped = value,
           ),
@@ -470,6 +471,7 @@ void main() {
         MaterialApp(
           home: WordHuntGokyuzuMasterArtScreen(
             route: route,
+            progress: _progressThrough(10),
             segmentIndex: 2,
             onLevelTap: (value) => tapped = value,
           ),
@@ -488,7 +490,7 @@ void main() {
           home: WordHuntThemedProductionRouteScreen(
             route: route,
             visualTheme: WordHuntRouteVisualThemes.ormanYolu,
-            progress: const WordHuntProgressSnapshot(),
+            progress: _progressThrough(10),
             onBack: () {},
             onInfo: () {},
             onCompass: () {},
