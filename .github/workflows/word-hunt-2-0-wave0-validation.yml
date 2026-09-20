@@ -45,6 +45,7 @@ on:
       - 'test/word_hunt_2_0_wave5_gameplay_layout_test.dart'
       - 'test/word_hunt_2_0_wave6_completion_orchestration_test.dart'
       - 'test/word_hunt_2_0_wave6_completion_layout_test.dart'
+      - 'test/word_hunt_deferred_completion_level_screen_test.dart'
       - 'test/word_hunt_menu_entry_test.dart'
       - 'test/home_screen_card_visibility_test.dart'
       - 'test/player_username_test.dart'
@@ -227,6 +228,9 @@ jobs:
 
       - name: Wave 6 completion presentation layout tests
         run: flutter test test/word_hunt_2_0_wave6_completion_layout_test.dart --reporter expanded
+
+      - name: Deferred completion wrapper regression
+        run: flutter test test/word_hunt_deferred_completion_level_screen_test.dart --reporter expanded
 
       - name: Gameplay path and scoring regression
         run: >-
