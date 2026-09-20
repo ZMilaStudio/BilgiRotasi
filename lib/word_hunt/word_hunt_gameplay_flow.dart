@@ -28,8 +28,6 @@ class WordHuntGameplayFlow extends StatefulWidget {
     this.onProgressChanged,
     this.onBack,
     this.onInfo,
-    this.onCompass,
-    this.onBook,
   });
 
   final WordHuntRouteDefinition route;
@@ -39,8 +37,6 @@ class WordHuntGameplayFlow extends StatefulWidget {
   final ValueChanged<WordHuntProgressSnapshot>? onProgressChanged;
   final VoidCallback? onBack;
   final VoidCallback? onInfo;
-  final VoidCallback? onCompass;
-  final VoidCallback? onBook;
 
   @override
   State<WordHuntGameplayFlow> createState() => _WordHuntGameplayFlowState();
@@ -103,8 +99,6 @@ class _WordHuntGameplayFlowState extends State<WordHuntGameplayFlow> {
         progress: _progress,
         onBack: widget.onBack,
         onInfo: widget.onInfo,
-        onCompass: widget.onCompass,
-        onBook: widget.onBook,
         onLevelTap: _openLevel,
       ),
     );
