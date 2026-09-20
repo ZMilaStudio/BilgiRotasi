@@ -10,6 +10,7 @@ import 'word_hunt_path_renderer.dart';
 import 'word_hunt_progress.dart';
 import 'word_hunt_reusable_route_map_screen.dart';
 import 'word_hunt_route_chrome_theme.dart';
+import 'word_hunt_route_segment_host.dart';
 import 'word_hunt_seal_renderer.dart';
 import 'word_hunt_route_ux_scope.dart';
 
@@ -27,6 +28,7 @@ class WordHuntArtworkRouteMapScreen extends StatelessWidget {
     this.pathSpec,
     this.chromeTheme,
     this.presentationOrder = WordHuntRoutePresentationOrder.forward,
+    this.segmentIndex = 1,
   });
 
   final WordHuntRouteDefinition route;
@@ -38,6 +40,7 @@ class WordHuntArtworkRouteMapScreen extends StatelessWidget {
   final WordHuntPathVisualSpec? pathSpec;
   final WordHuntRouteChromeTheme? chromeTheme;
   final WordHuntRoutePresentationOrder presentationOrder;
+  final int segmentIndex;
 
   // Orman reference canvas compact ekranlarda birlikte ölçeklendiği için
   // görünmeyen hitbox biraz daha geniş tutulur. Görsel node offsetleri aşağıda
@@ -58,14 +61,16 @@ class WordHuntArtworkRouteMapScreen extends StatelessWidget {
         pathSpec: pathSpec,
         chromeTheme: chromeTheme,
         presentationOrder: presentationOrder,
+        segmentIndex: segmentIndex,
       );
     }
 
-    final totalStars = WordHuntRouteProgressEngine.totalStars(route, progress);
-    final current = WordHuntRouteProgressEngine.nextPlayableLevelIndex(
-      route,
-      progress,
+    final host = WordHuntRouteSegmentHost.forRoute(
+      route: route,
+      progress: progress,
+      segmentIndex: segmentIndex,
     );
+    final totalStars = WordHuntRouteProgressEngine.totalStars(route, progress);
     final ux = WordHuntRouteUxScope.maybeOf(context);
 
     return Scaffold(
@@ -114,20 +119,11 @@ class WordHuntArtworkRouteMapScreen extends StatelessWidget {
                         _node(
                           point: points[i],
                           mapSize: size,
-                          level: route.levels[i],
-                          stars: progress.starsFor(route.levels[i].id),
-                          unlocked: WordHuntRouteProgressEngine.isLevelUnlocked(
-                            route,
-                            progress,
-                            i + 1,
-                          ),
-                          completed:
-                              WordHuntRouteProgressEngine.isLevelCompleted(
-                                route.levels[i],
-                                progress,
-                              ),
-                          current: current == i + 1,
-                          highlighted: ux?.highlightedLevelIndex == i + 1,
+                          node: host.nodes[i],
+                          stars: progress.starsFor(host.nodes[i].levelId),
+                          highlighted:
+                              ux?.highlightedLevelIndex ==
+                              host.nodes[i].absoluteLevelIndex,
                           highlightEpoch: ux?.highlightEpoch ?? 0,
                         ),
                     ],
@@ -144,11 +140,8 @@ class WordHuntArtworkRouteMapScreen extends StatelessWidget {
   Widget _node({
     required Offset point,
     required Size mapSize,
-    required WordHuntLevelDefinition level,
+    required WordHuntRouteMapNodeProjection node,
     required int stars,
-    required bool unlocked,
-    required bool completed,
-    required bool current,
     required bool highlighted,
     required int highlightEpoch,
   }) {
@@ -158,14 +151,15 @@ class WordHuntArtworkRouteMapScreen extends StatelessWidget {
     final top = (point.dy - _hitH / 2)
         .clamp(0.0, math.max(0.0, mapSize.height - _hitH))
         .toDouble();
-    final state = completed
+    final state = node.completed
         ? 'completed'
-        : current && unlocked
+        : node.current && node.unlocked
         ? 'current'
-        : unlocked
+        : node.unlocked
         ? 'open'
         : 'locked';
-    final isFinal = level.type == WordHuntLevelType.routeFinal;
+    final level = node.level;
+    final isFinal = node.isTrueRouteFinal;
 
     return Positioned(
       left: left,
@@ -173,9 +167,10 @@ class WordHuntArtworkRouteMapScreen extends StatelessWidget {
       width: _hitW,
       height: _hitH,
       child: Semantics(
-        button: unlocked,
-        enabled: unlocked,
-        label: 'Bölüm ${level.index}${unlocked ? ', açık' : ', kilitli'}',
+        button: node.unlocked,
+        enabled: node.unlocked,
+        label:
+            'Bölüm ${node.absoluteLevelIndex}${node.unlocked ? ', açık' : ', kilitli'}',
         child: Stack(
           clipBehavior: Clip.none,
           children: <Widget>[
@@ -191,8 +186,8 @@ class WordHuntArtworkRouteMapScreen extends StatelessWidget {
                   child: _ForestStop(
                     level: level,
                     stars: stars,
-                    unlocked: unlocked,
-                    current: current && unlocked && !completed,
+                    unlocked: node.unlocked,
+                    current: node.current,
                     highlighted: highlighted,
                     highlightEpoch: highlightEpoch,
                   ),
@@ -205,13 +200,17 @@ class WordHuntArtworkRouteMapScreen extends StatelessWidget {
               const SizedBox.shrink(key: Key('word_hunt_route_stop_plaque_10')),
             Positioned.fill(
               child: GestureDetector(
-                key: Key('word_hunt_reusable_level_${level.index}'),
+                key: Key(
+                  'word_hunt_reusable_level_${node.absoluteLevelIndex}',
+                ),
                 behavior: HitTestBehavior.opaque,
-                onTap: unlocked && onLevelTap != null
-                    ? () => onLevelTap!(level.index)
+                onTap: node.unlocked && onLevelTap != null
+                    ? () => onLevelTap!(node.absoluteLevelIndex)
                     : null,
                 child: SizedBox.expand(
-                  key: Key('word_hunt_reusable_node_${level.index}_$state'),
+                  key: Key(
+                    'word_hunt_reusable_node_${node.absoluteLevelIndex}_$state',
+                  ),
                 ),
               ),
             ),
