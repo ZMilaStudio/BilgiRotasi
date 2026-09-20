@@ -32,9 +32,7 @@ void main() {
           MaterialApp(
             home: Scaffold(
               body: Center(
-                child: WordHuntCompletionPresentation(
-                  destination: destination,
-                ),
+                child: WordHuntCompletionPresentation(destination: destination),
               ),
             ),
           ),
@@ -46,10 +44,10 @@ void main() {
           isNull,
           reason: destination.completedAbsoluteLevel.toString(),
         );
-        final key = destination.routeCompletedNow ||
-                destination.isTrueRouteFinal
-            ? const Key('word_hunt_route_completion_surface')
-            : const Key('word_hunt_level_completion_surface');
+        final key =
+            destination.routeCompletedNow || destination.isTrueRouteFinal
+                ? const Key('word_hunt_route_completion_surface')
+                : const Key('word_hunt_level_completion_surface');
         _expectInsideViewport(tester, key, viewport);
         _expectInsideViewport(
           tester,
@@ -159,8 +157,7 @@ WordHuntRouteDefinition _route() {
   const routeId = 'wave6-layout';
   return WordHuntRouteDefinition(
     id: routeId,
-    title:
-        'Wave 6 Çok Uzun Rota Başlığı Taşma Yapmamalı ve Okunabilir Kalmalı',
+    title: 'Wave 6 Çok Uzun Rota Başlığı Taşma Yapmamalı ve Okunabilir Kalmalı',
     theme: 'wave6-layout',
     unlockStarsRequired: 250,
     routeRewardId: 'badge-kelime-yolcusu',
@@ -170,9 +167,10 @@ WordHuntRouteDefinition _route() {
         id: 'wave6-layout-$index',
         routeId: routeId,
         index: index,
-        type: index == 10 || index == 100
-            ? WordHuntLevelType.routeFinal
-            : WordHuntLevelType.normal,
+        type:
+            index == 10 || index == 100
+                ? WordHuntLevelType.routeFinal
+                : WordHuntLevelType.normal,
         grid: const <String>['AAA', 'AAA', 'AAA'],
         targetWords: const <String>['AAA'],
         bonusWords: index <= 2 ? const <String>['A'] : const <String>[],
@@ -216,11 +214,7 @@ WordHuntProgressSnapshot _progressThrough(int absoluteLevel) {
   );
 }
 
-void _expectInsideViewport(
-  WidgetTester tester,
-  Key key,
-  Size viewport,
-) {
+void _expectInsideViewport(WidgetTester tester, Key key, Size viewport) {
   final finder = find.byKey(key);
   expect(finder, findsOneWidget);
   final rect = tester.getRect(finder);
