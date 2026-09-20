@@ -283,9 +283,7 @@ class _WordHuntProductionEntryScreenState
     Navigator.of(context).maybePop();
   }
 
-  WordHuntGameplayPresentation _gameplayPresentationForLevel(
-    int levelIndex,
-  ) {
+  WordHuntGameplayPresentation _gameplayPresentationForLevel(int levelIndex) {
     final profile =
         _activeCatalogEntry?.presentationProfile ??
         WordHuntRoutePresentationProfiles.starter;
@@ -293,7 +291,10 @@ class _WordHuntProductionEntryScreenState
     final segmentIndex =
         route.segments.isEmpty
             ? null
-            : WordHuntSegmentProjection.forLevel(route, levelIndex).segmentIndex;
+            : WordHuntSegmentProjection.forLevel(
+              route,
+              levelIndex,
+            ).segmentIndex;
     return profile.gameplayForLevel(
       levelIndex: levelIndex,
       segmentIndex: segmentIndex,
@@ -329,7 +330,9 @@ class _WordHuntProductionEntryScreenState
     final result = await Navigator.of(context).push<WordHuntLevelPlayResult>(
       MaterialPageRoute<WordHuntLevelPlayResult>(
         builder: (_) {
-          final gameplayPresentation = _gameplayPresentationForLevel(level.index);
+          final gameplayPresentation = _gameplayPresentationForLevel(
+            level.index,
+          );
           if (deferFinalCompletion) {
             return WordHuntDeferredCompletionLevelScreen(
               level: level,
