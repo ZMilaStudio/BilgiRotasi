@@ -1,4 +1,5 @@
 import 'word_hunt_models.dart';
+import 'word_hunt_segment_projection.dart';
 
 class WordHuntProgressSnapshot {
   const WordHuntProgressSnapshot({
@@ -164,6 +165,11 @@ class WordHuntRouteProgressEngine {
   ) {
     if (route.levels.isEmpty) {
       return false;
+    }
+
+    if (WordHuntSegmentProjection.isExplicitV2Route(route)) {
+      final trueFinalLevel = route.levels[99];
+      return isLevelCompleted(trueFinalLevel, progress);
     }
 
     final finalLevel = route.levels.last;
