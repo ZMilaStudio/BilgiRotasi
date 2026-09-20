@@ -145,19 +145,22 @@ class WordHuntArtworkRouteMapScreen extends StatelessWidget {
     required bool highlighted,
     required int highlightEpoch,
   }) {
-    final left = (point.dx - _hitW / 2)
-        .clamp(0.0, math.max(0.0, mapSize.width - _hitW))
-        .toDouble();
-    final top = (point.dy - _hitH / 2)
-        .clamp(0.0, math.max(0.0, mapSize.height - _hitH))
-        .toDouble();
-    final state = node.completed
-        ? 'completed'
-        : node.current && node.unlocked
-        ? 'current'
-        : node.unlocked
-        ? 'open'
-        : 'locked';
+    final left =
+        (point.dx - _hitW / 2)
+            .clamp(0.0, math.max(0.0, mapSize.width - _hitW))
+            .toDouble();
+    final top =
+        (point.dy - _hitH / 2)
+            .clamp(0.0, math.max(0.0, mapSize.height - _hitH))
+            .toDouble();
+    final state =
+        node.completed
+            ? 'completed'
+            : node.current && node.unlocked
+            ? 'current'
+            : node.unlocked
+            ? 'open'
+            : 'locked';
     final level = node.level;
     final isFinal = node.isTrueRouteFinal;
 
@@ -200,13 +203,12 @@ class WordHuntArtworkRouteMapScreen extends StatelessWidget {
               const SizedBox.shrink(key: Key('word_hunt_route_stop_plaque_10')),
             Positioned.fill(
               child: GestureDetector(
-                key: Key(
-                  'word_hunt_reusable_level_${node.absoluteLevelIndex}',
-                ),
+                key: Key('word_hunt_reusable_level_${node.absoluteLevelIndex}'),
                 behavior: HitTestBehavior.opaque,
-                onTap: node.unlocked && onLevelTap != null
-                    ? () => onLevelTap!(node.absoluteLevelIndex)
-                    : null,
+                onTap:
+                    node.unlocked && onLevelTap != null
+                        ? () => onLevelTap!(node.absoluteLevelIndex)
+                        : null,
                 child: SizedBox.expand(
                   key: Key(
                     'word_hunt_reusable_node_${node.absoluteLevelIndex}_$state',
@@ -241,16 +243,18 @@ class _ForestStop extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isFinal = level.type == WordHuntLevelType.routeFinal;
-    final asset = isFinal
-        ? 'assets/word_hunt/orman_node_final.b64'
-        : unlocked
-        ? 'assets/word_hunt/orman_node_open.b64'
-        : 'assets/word_hunt/orman_node_locked.b64';
-    final size = isFinal
-        ? 112.0
-        : unlocked
-        ? 84.0
-        : 88.0;
+    final asset =
+        isFinal
+            ? 'assets/word_hunt/orman_node_final.b64'
+            : unlocked
+            ? 'assets/word_hunt/orman_node_open.b64'
+            : 'assets/word_hunt/orman_node_locked.b64';
+    final size =
+        isFinal
+            ? 112.0
+            : unlocked
+            ? 84.0
+            : 88.0;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -411,11 +415,12 @@ class _Stars extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: List<Widget>.generate(3, (i) {
           final filled = i < stars;
-          final color = muted
-              ? const Color(0xFFA7ADA6)
-              : filled
-              ? const Color(0xFFFFC928)
-              : const Color(0xFF9DA39C);
+          final color =
+              muted
+                  ? const Color(0xFFA7ADA6)
+                  : filled
+                  ? const Color(0xFFFFC928)
+                  : const Color(0xFF9DA39C);
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 1),
             child: Stack(
@@ -430,11 +435,12 @@ class _Stars extends StatelessWidget {
                   Icons.star_rounded,
                   size: size,
                   color: color,
-                  shadows: filled
-                      ? const <Shadow>[
-                          Shadow(color: Color(0xCCF58D00), blurRadius: 5),
-                        ]
-                      : null,
+                  shadows:
+                      filled
+                          ? const <Shadow>[
+                            Shadow(color: Color(0xCCF58D00), blurRadius: 5),
+                          ]
+                          : null,
                 ),
               ],
             ),
@@ -593,13 +599,15 @@ class _Base64ImageState extends State<_Base64Image> {
   @override
   Widget build(BuildContext context) => FutureBuilder<Uint8List>(
     future: bytes,
-    builder: (context, snapshot) => snapshot.data == null
-        ? const SizedBox.expand()
-        : Image.memory(
-            snapshot.data!,
-            fit: BoxFit.contain,
-            filterQuality: FilterQuality.high,
-            gaplessPlayback: true,
-          ),
+    builder:
+        (context, snapshot) =>
+            snapshot.data == null
+                ? const SizedBox.expand()
+                : Image.memory(
+                  snapshot.data!,
+                  fit: BoxFit.contain,
+                  filterQuality: FilterQuality.high,
+                  gaplessPlayback: true,
+                ),
   );
 }
