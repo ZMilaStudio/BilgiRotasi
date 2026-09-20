@@ -217,8 +217,6 @@ Future<void> _pumpRoute(
         progress: progress,
         onBack: () {},
         onInfo: () {},
-        onCompass: () {},
-        onBook: () {},
         onLevelTap: (_) {},
       ),
     ),
