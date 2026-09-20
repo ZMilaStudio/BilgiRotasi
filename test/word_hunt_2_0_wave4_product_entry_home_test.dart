@@ -114,6 +114,26 @@ void main() {
       expect(find.byType(HomeScreen), findsOneWidget);
       expect(find.byType(MainNavigationGrid), findsOneWidget);
     });
+
+    testWidgets('Kelime Avı opens feature host on WordHuntHomeScreen', (
+      tester,
+    ) async {
+      SharedPreferences.setMockInitialValues(<String, Object>{});
+      await tester.pumpWidget(
+        MaterialApp(
+          home: ProductModeEntryScreen(
+            questionBank: _emptyQuestionBank(),
+            ownerUid: 'wave4-user',
+          ),
+        ),
+      );
+
+      await tester.tap(find.byKey(const Key('product_mode_kelime_avi')));
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key('word_hunt_home_screen')), findsOneWidget);
+      expect(find.byKey(const Key('word_hunt_route_selector')), findsNothing);
+    });
   });
 
   group('Wave 4 Word Hunt home projection', () {
@@ -189,6 +209,20 @@ void main() {
         expect(entry, isNotNull);
         expect(summary.unlocked, entry!.isUnlocked(progress));
       }
+    });
+
+    test('all complete falls back to the last unlocked catalog route', () {
+      final progress = _completedProductionRoutes(
+        WordHuntRouteCatalog.entries.length,
+      );
+      final projection = WordHuntHomeProjection.fromProgress(progress);
+      final lastRoute = WordHuntRouteCatalog.entries.last.route;
+
+      expect(projection.continueDestination.route.id, lastRoute.id);
+      expect(
+        projection.continueDestination.absoluteLevelIndex,
+        lastRoute.levels.length,
+      );
     });
 
     test(
