@@ -7,6 +7,8 @@ on:
     paths:
       - 'docs/project-memory/KELIME_AVI_2_0_*.md'
       - 'lib/word_hunt/word_hunt_models.dart'
+      - 'lib/word_hunt/word_hunt_milestone_info_rewards.dart'
+      - 'lib/word_hunt/word_hunt_route_chrome_theme.dart'
       - 'lib/word_hunt/word_hunt_segment_projection.dart'
       - 'lib/word_hunt/word_hunt_route_segment_host.dart'
       - 'lib/word_hunt/word_hunt_reusable_route_map_screen.dart'
@@ -45,6 +47,12 @@ on:
       - 'test/word_hunt_2_0_wave5_gameplay_layout_test.dart'
       - 'test/word_hunt_2_0_wave6_completion_orchestration_test.dart'
       - 'test/word_hunt_2_0_wave6_completion_layout_test.dart'
+      - 'test/word_hunt_2_0_wave7_chrome_info_reward_test.dart'
+      - 'test/word_hunt_pixel_proof_screen_test.dart'
+      - 'test/word_hunt_gokyuzu_master_art_screen_test.dart'
+      - 'test/word_hunt_reference_route_screen_test.dart'
+      - 'test/word_hunt_themed_production_route_screen_test.dart'
+      - 'test/word_hunt_book_regression_test.dart'
       - 'test/word_hunt_deferred_completion_level_screen_test.dart'
       - 'test/word_hunt_menu_entry_test.dart'
       - 'test/home_screen_card_visibility_test.dart'
@@ -78,7 +86,7 @@ jobs:
       - name: Bağımlılıkları kur
         run: flutter pub get
 
-      - name: Wave 0+1+2+3+4+5+6 Dart format gate
+      - name: Wave 0+1+2+3+4+5+6+7 Dart format gate
         run: >-
           dart format
           lib/main.dart
@@ -87,6 +95,8 @@ jobs:
           lib/player_username.dart
           lib/product_mode_entry.dart
           lib/word_hunt/word_hunt_models.dart
+          lib/word_hunt/word_hunt_milestone_info_rewards.dart
+          lib/word_hunt/word_hunt_route_chrome_theme.dart
           lib/word_hunt/word_hunt_segment_projection.dart
           lib/word_hunt/word_hunt_route_segment_host.dart
           lib/word_hunt/word_hunt_reusable_route_map_screen.dart
@@ -120,6 +130,12 @@ jobs:
           test/word_hunt_2_0_wave5_gameplay_layout_test.dart
           test/word_hunt_2_0_wave6_completion_orchestration_test.dart
           test/word_hunt_2_0_wave6_completion_layout_test.dart
+          test/word_hunt_2_0_wave7_chrome_info_reward_test.dart
+          test/word_hunt_pixel_proof_screen_test.dart
+          test/word_hunt_gokyuzu_master_art_screen_test.dart
+          test/word_hunt_reference_route_screen_test.dart
+          test/word_hunt_themed_production_route_screen_test.dart
+          test/word_hunt_book_regression_test.dart
           test/word_hunt_menu_entry_test.dart
           test/word_hunt_progress_codec_v2_test.dart;
           git diff --
@@ -159,7 +175,7 @@ jobs:
           echo "Full analyzer issue count: $issues (Wave 0 baseline: 92)"
           test "$issues" -le 92
 
-      - name: Wave 1+2+3+4+5+6 targeted analyze gate
+      - name: Wave 1+2+3+4+5+6+7 targeted analyze gate
         run: >-
           flutter analyze --no-pub
           lib/account_cloud.dart
@@ -167,6 +183,8 @@ jobs:
           lib/player_username.dart
           lib/product_mode_entry.dart
           lib/word_hunt/word_hunt_models.dart
+          lib/word_hunt/word_hunt_milestone_info_rewards.dart
+          lib/word_hunt/word_hunt_route_chrome_theme.dart
           lib/word_hunt/word_hunt_segment_projection.dart
           lib/word_hunt/word_hunt_route_segment_host.dart
           lib/word_hunt/word_hunt_reusable_route_map_screen.dart
@@ -199,6 +217,12 @@ jobs:
           test/word_hunt_2_0_wave5_gameplay_layout_test.dart
           test/word_hunt_2_0_wave6_completion_orchestration_test.dart
           test/word_hunt_2_0_wave6_completion_layout_test.dart
+          test/word_hunt_2_0_wave7_chrome_info_reward_test.dart
+          test/word_hunt_pixel_proof_screen_test.dart
+          test/word_hunt_gokyuzu_master_art_screen_test.dart
+          test/word_hunt_reference_route_screen_test.dart
+          test/word_hunt_themed_production_route_screen_test.dart
+          test/word_hunt_book_regression_test.dart
           test/word_hunt_menu_entry_test.dart
           test/word_hunt_progress_codec_v2_test.dart
 
@@ -228,6 +252,9 @@ jobs:
 
       - name: Wave 6 completion presentation layout tests
         run: flutter test test/word_hunt_2_0_wave6_completion_layout_test.dart --reporter expanded
+
+      - name: Wave 7 chrome and milestone info reward tests
+        run: flutter test test/word_hunt_2_0_wave7_chrome_info_reward_test.dart --reporter expanded
 
       - name: Deferred completion wrapper regression
         run: flutter test test/word_hunt_deferred_completion_level_screen_test.dart --reporter expanded
@@ -260,7 +287,7 @@ jobs:
       - name: Existing path presentation-order regression
         run: flutter test test/word_hunt_trilogy_path_renderer_test.dart --reporter expanded
 
-      - name: Existing book chrome regression
+      - name: Existing info-card ownership regression
         run: flutter test test/word_hunt_book_regression_test.dart --reporter expanded
 
       - name: Existing model validator regression
