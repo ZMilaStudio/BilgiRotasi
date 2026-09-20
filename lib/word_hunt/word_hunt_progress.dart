@@ -40,9 +40,7 @@ class WordHuntProgressSnapshot {
     final current = starsFor(levelId);
     final nextBest = safeStars > current ? safeStars : current;
 
-    final nextBonusCounts = <String, int>{
-      ...bestBonusFoundCountByLevelId,
-    };
+    final nextBonusCounts = <String, int>{...bestBonusFoundCountByLevelId};
     if (foundBonusCount != null) {
       final currentBonus = bestBonusFoundCountByLevelId[levelId];
       if (currentBonus == null || foundBonusCount > currentBonus) {
@@ -76,10 +74,7 @@ class WordHuntProgressSnapshot {
     return WordHuntProgressSnapshot(
       bestStarsByLevelId: bestStarsByLevelId,
       unlockedInfoCardIds: unlockedInfoCardIds,
-      unlockedRouteRewardIds: <String>{
-        ...unlockedRouteRewardIds,
-        normalized,
-      },
+      unlockedRouteRewardIds: <String>{...unlockedRouteRewardIds, normalized},
       bestBonusFoundCountByLevelId: bestBonusFoundCountByLevelId,
       grandfatheredUnlockedRouteIds: grandfatheredUnlockedRouteIds,
       lastActiveRouteId: lastActiveRouteId,

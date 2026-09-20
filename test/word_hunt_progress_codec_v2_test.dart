@@ -7,10 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   test('schema 3 encode preserves historical schema2 fields', () {
     const snapshot = WordHuntProgressSnapshot(
-      bestStarsByLevelId: <String, int>{
-        'baslangic-2': 3,
-        'baslangic-1': 2,
-      },
+      bestStarsByLevelId: <String, int>{'baslangic-2': 3, 'baslangic-1': 2},
       unlockedInfoCardIds: <String>{'kart-z', 'kart-a'},
       unlockedRouteRewardIds: <String>{
         'badge-gokyuzu-kasifi',
@@ -28,10 +25,7 @@ void main() {
     );
     expect(restored.bestStarsByLevelId, snapshot.bestStarsByLevelId);
     expect(restored.unlockedInfoCardIds, snapshot.unlockedInfoCardIds);
-    expect(
-      restored.unlockedRouteRewardIds,
-      snapshot.unlockedRouteRewardIds,
-    );
+    expect(restored.unlockedRouteRewardIds, snapshot.unlockedRouteRewardIds);
     expect(restored.bestBonusFoundCountByLevelId, isEmpty);
     expect(restored.grandfatheredUnlockedRouteIds, isEmpty);
     expect(restored.lastActiveRouteId, isNull);
@@ -79,10 +73,9 @@ void main() {
     expect(decoded.requiresMigrationWriteback, isTrue);
     expect(decoded.snapshot.starsFor('baslangic-1'), 3);
     expect(decoded.snapshot.unlockedInfoCardIds, <String>{'kart-a'});
-    expect(
-      decoded.snapshot.unlockedRouteRewardIds,
-      <String>{'badge-kelime-yolcusu'},
-    );
+    expect(decoded.snapshot.unlockedRouteRewardIds, <String>{
+      'badge-kelime-yolcusu',
+    });
     expect(decoded.snapshot.bestBonusFoundCountByLevelId, isEmpty);
   });
 

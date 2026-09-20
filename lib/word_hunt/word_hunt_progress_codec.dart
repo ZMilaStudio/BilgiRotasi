@@ -39,8 +39,9 @@ class WordHuntProgressCodec {
       throw const FormatException('ownerScope boş olamaz');
     }
 
-    final sortedStars = snapshot.bestStarsByLevelId.entries.toList()
-      ..sort((a, b) => a.key.compareTo(b.key));
+    final sortedStars =
+        snapshot.bestStarsByLevelId.entries.toList()
+          ..sort((a, b) => a.key.compareTo(b.key));
     for (final entry in sortedStars) {
       if (entry.key.trim().isEmpty || entry.value < 0 || entry.value > 3) {
         throw FormatException('yıldız değeri geçersiz: ${entry.key}');
@@ -178,9 +179,7 @@ class WordHuntProgressCodec {
     if (schema >= 3) {
       final bonusRaw = payload['bestBonusFoundCountByLevelId'];
       if (bonusRaw is! Map) {
-        throw const FormatException(
-          'bestBonusFoundCountByLevelId geçersiz',
-        );
+        throw const FormatException('bestBonusFoundCountByLevelId geçersiz');
       }
       for (final entry in bonusRaw.entries) {
         final levelId = entry.key;
@@ -196,9 +195,7 @@ class WordHuntProgressCodec {
 
       final routesRaw = payload['grandfatheredUnlockedRouteIds'];
       if (routesRaw is! List) {
-        throw const FormatException(
-          'grandfatheredUnlockedRouteIds geçersiz',
-        );
+        throw const FormatException('grandfatheredUnlockedRouteIds geçersiz');
       }
       grandfatheredRoutes.addAll(
         _decodeIdSet(routesRaw, 'legacy rota erişim kimliği'),
@@ -218,7 +215,9 @@ class WordHuntProgressCodec {
         bestStarsByLevelId: Map<String, int>.unmodifiable(stars),
         unlockedInfoCardIds: Set<String>.unmodifiable(cards),
         unlockedRouteRewardIds: Set<String>.unmodifiable(rewards),
-        bestBonusFoundCountByLevelId: Map<String, int>.unmodifiable(bonusCounts),
+        bestBonusFoundCountByLevelId: Map<String, int>.unmodifiable(
+          bonusCounts,
+        ),
         grandfatheredUnlockedRouteIds: Set<String>.unmodifiable(
           grandfatheredRoutes,
         ),

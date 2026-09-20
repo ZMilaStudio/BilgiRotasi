@@ -78,10 +78,7 @@ void main() {
       expect(decoded.requiresMigrationWriteback, isTrue);
       expect(migrated.bestStarsByLevelId, <String, int>{'baslangic-1': 3});
       expect(migrated.unlockedInfoCardIds, <String>{'kart-a'});
-      expect(
-        migrated.unlockedRouteRewardIds,
-        <String>{'badge-kelime-yolcusu'},
-      );
+      expect(migrated.unlockedRouteRewardIds, <String>{'badge-kelime-yolcusu'});
       expect(migrated.bestBonusFoundCountByLevelId, isEmpty);
     });
 
@@ -90,10 +87,7 @@ void main() {
         bestStarsByLevelId: <String, int>{'level-b': 1, 'level-a': 3},
         unlockedInfoCardIds: <String>{'card-b', 'card-a'},
         unlockedRouteRewardIds: <String>{'reward-b', 'reward-a'},
-        bestBonusFoundCountByLevelId: <String, int>{
-          'level-a': 0,
-          'level-b': 2,
-        },
+        bestBonusFoundCountByLevelId: <String, int>{'level-a': 0, 'level-b': 2},
         grandfatheredUnlockedRouteIds: <String>{'route-b', 'route-a'},
         lastActiveRouteId: 'route-b',
       );
@@ -110,7 +104,10 @@ void main() {
       expect(decoded.sourceSchemaVersion, 3);
       expect(decoded.requiresMigrationWriteback, isFalse);
       expect(decoded.snapshot.bestStarsByLevelId, snapshot.bestStarsByLevelId);
-      expect(decoded.snapshot.unlockedInfoCardIds, snapshot.unlockedInfoCardIds);
+      expect(
+        decoded.snapshot.unlockedInfoCardIds,
+        snapshot.unlockedInfoCardIds,
+      );
       expect(
         decoded.snapshot.unlockedRouteRewardIds,
         snapshot.unlockedRouteRewardIds,
@@ -139,10 +136,7 @@ void main() {
       );
 
       expect(
-        () => WordHuntProgressCodec.decode(
-          raw,
-          expectedOwnerScope: 'user_B',
-        ),
+        () => WordHuntProgressCodec.decode(raw, expectedOwnerScope: 'user_B'),
         throwsFormatException,
       );
       expect(
@@ -174,10 +168,7 @@ void main() {
           '"grandfatheredUnlockedRouteIds":[],"lastActiveRouteId":null}';
 
       expect(
-        () => WordHuntProgressCodec.decode(
-          future,
-          expectedOwnerScope: 'guest',
-        ),
+        () => WordHuntProgressCodec.decode(future, expectedOwnerScope: 'guest'),
         throwsFormatException,
       );
       expect(
@@ -216,10 +207,7 @@ void main() {
 
       expect(knownZero.bestBonusFoundCountFor('level-1'), 0);
 
-      final raw = WordHuntProgressCodec.encode(
-        knownZero,
-        ownerScope: 'guest',
-      );
+      final raw = WordHuntProgressCodec.encode(knownZero, ownerScope: 'guest');
       final restored = WordHuntProgressCodec.decode(
         raw,
         expectedOwnerScope: 'guest',
@@ -305,10 +293,9 @@ void main() {
         ),
       );
 
-      expect(
-        migrated.grandfatheredUnlockedRouteIds,
-        <String>{'baslangic-limani'},
-      );
+      expect(migrated.grandfatheredUnlockedRouteIds, <String>{
+        'baslangic-limani',
+      });
       expect(migrated.lastActiveRouteId, isNull);
     });
 
@@ -399,25 +386,27 @@ void main() {
       );
     });
 
-    test('reward ownership stays separate from completion and access truth', () {
-      final sky = WordHuntLegacyProgressMigration.frozenLegacyRoutes[1];
-      const legacy = WordHuntProgressSnapshot(
-        unlockedRouteRewardIds: <String>{'badge-gokyuzu-kasifi'},
-      );
+    test(
+      'reward ownership stays separate from completion and access truth',
+      () {
+        final sky = WordHuntLegacyProgressMigration.frozenLegacyRoutes[1];
+        const legacy = WordHuntProgressSnapshot(
+          unlockedRouteRewardIds: <String>{'badge-gokyuzu-kasifi'},
+        );
 
-      expect(
-        WordHuntRouteProgressEngine.isRouteComplete(sky, legacy),
-        isFalse,
-      );
-      expect(
-        WordHuntLegacyProgressMigration.deriveLegacyAccessEntitlements(legacy),
-        <String>{'baslangic-limani'},
-      );
-      expect(
-        legacy.unlockedRouteRewardIds,
-        contains('badge-gokyuzu-kasifi'),
-      );
-    });
+        expect(
+          WordHuntRouteProgressEngine.isRouteComplete(sky, legacy),
+          isFalse,
+        );
+        expect(
+          WordHuntLegacyProgressMigration.deriveLegacyAccessEntitlements(
+            legacy,
+          ),
+          <String>{'baslangic-limani'},
+        );
+        expect(legacy.unlockedRouteRewardIds, contains('badge-gokyuzu-kasifi'));
+      },
+    );
 
     test('last-active fallback uses furthest route with actual progress', () {
       final orman = WordHuntLegacyProgressMigration.frozenLegacyRoutes[2];
@@ -478,8 +467,14 @@ void main() {
       expect(active.bestStarsByLevelId['level-1'], 2);
       expect(active.bestBonusFoundCountByLevelId['level-1'], 2);
       expect(active.bestBonusFoundCountByLevelId['level-2'], 0);
-      expect(active.unlockedInfoCardIds, containsAll(<String>['card-1', 'card-2']));
-      expect(active.unlockedRouteRewardIds, containsAll(<String>['reward-1', 'reward-2']));
+      expect(
+        active.unlockedInfoCardIds,
+        containsAll(<String>['card-1', 'card-2']),
+      );
+      expect(
+        active.unlockedRouteRewardIds,
+        containsAll(<String>['reward-1', 'reward-2']),
+      );
       expect(
         active.grandfatheredUnlockedRouteIds,
         containsAll(<String>['route-1', 'route-2']),
@@ -529,10 +524,7 @@ void main() {
         snapshot.bestBonusFoundCountByLevelId,
       );
       expect(restored.unlockedInfoCardIds, snapshot.unlockedInfoCardIds);
-      expect(
-        restored.unlockedRouteRewardIds,
-        snapshot.unlockedRouteRewardIds,
-      );
+      expect(restored.unlockedRouteRewardIds, snapshot.unlockedRouteRewardIds);
       expect(
         restored.grandfatheredUnlockedRouteIds,
         snapshot.grandfatheredUnlockedRouteIds,
@@ -543,7 +535,5 @@ void main() {
 }
 
 Map<String, int> _completedStars(dynamic route) {
-  return <String, int>{
-    for (final level in route.levels) level.id as String: 3,
-  };
+  return <String, int>{for (final level in route.levels) level.id as String: 3};
 }

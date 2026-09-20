@@ -114,7 +114,9 @@ abstract final class WordHuntRouteRewardEngine {
           'negatif olamaz',
         );
       }
-      final levelIndex = route.levels.indexWhere((level) => level.id == levelId);
+      final levelIndex = route.levels.indexWhere(
+        (level) => level.id == levelId,
+      );
       if (levelIndex < 0) {
         throw ArgumentError.value(levelId, 'levelId', 'rotada bulunamadı');
       }

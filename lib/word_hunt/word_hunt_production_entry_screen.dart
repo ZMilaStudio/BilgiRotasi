@@ -336,8 +336,8 @@ class _WordHuntProductionEntryScreenState
     final nextCandidate = WordHuntRouteRewardEngine.nextCatalogEntry(route);
     final nextEntry =
         nextCandidate != null && nextCandidate.isUnlocked(progress)
-        ? nextCandidate
-        : null;
+            ? nextCandidate
+            : null;
     final routeColors =
         catalogEntry?.colors ??
         const <Color>[Color(0xFF17324B), Color(0xFF081623)];
@@ -345,13 +345,14 @@ class _WordHuntProductionEntryScreenState
     final action = await showDialog<WordHuntRouteCompletionAction>(
       context: context,
       barrierDismissible: false,
-      builder: (_) => WordHuntRouteCompletionDialog(
-        route: route,
-        reward: reward,
-        totalStars: WordHuntRouteProgressEngine.totalStars(route, progress),
-        routeColors: routeColors,
-        nextRouteTitle: nextEntry?.route.title,
-      ),
+      builder:
+          (_) => WordHuntRouteCompletionDialog(
+            route: route,
+            reward: reward,
+            totalStars: WordHuntRouteProgressEngine.totalStars(route, progress),
+            routeColors: routeColors,
+            nextRouteTitle: nextEntry?.route.title,
+          ),
     );
 
     if (!mounted) return;
@@ -372,38 +373,40 @@ class _WordHuntProductionEntryScreenState
     await showDialog<void>(
       context: context,
       barrierDismissible: false,
-      builder: (_) => WordHuntFinalIncompleteDialog(
-        route: route,
-        totalStars: WordHuntRouteProgressEngine.totalStars(route, progress),
-      ),
+      builder:
+          (_) => WordHuntFinalIncompleteDialog(
+            route: route,
+            totalStars: WordHuntRouteProgressEngine.totalStars(route, progress),
+          ),
     );
   }
 
   void _showInfo() {
     showDialog<void>(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        key: const Key('word_hunt_route_help_dialog'),
-        title: const Text('Harita Rehberi'),
-        content: const Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            _GuideLine('Bölümleri sırayla tamamla.'),
-            _GuideLine('Her bölümden en fazla 3 yıldız kazanılabilir.'),
-            _GuideLine('İlerledikçe yeni duraklar açılır.'),
-            _GuideLine('Taçlı bölüm tema finalidir.'),
-            _GuideLine('Pusula sonraki durağı gösterir.'),
-            _GuideLine('Kitap bölümün konusu hakkında bilgi verir.'),
-          ],
-        ),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(),
-            child: const Text('Tamam'),
+      builder:
+          (dialogContext) => AlertDialog(
+            key: const Key('word_hunt_route_help_dialog'),
+            title: const Text('Harita Rehberi'),
+            content: const Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                _GuideLine('Bölümleri sırayla tamamla.'),
+                _GuideLine('Her bölümden en fazla 3 yıldız kazanılabilir.'),
+                _GuideLine('İlerledikçe yeni duraklar açılır.'),
+                _GuideLine('Taçlı bölüm tema finalidir.'),
+                _GuideLine('Pusula sonraki durağı gösterir.'),
+                _GuideLine('Kitap bölümün konusu hakkında bilgi verir.'),
+              ],
+            ),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.of(dialogContext).pop(),
+                child: const Text('Tamam'),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 
@@ -432,25 +435,28 @@ class _WordHuntProductionEntryScreenState
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
-      builder: (sheetContext) => SafeArea(
-        child: ListView.separated(
-          key: const Key('word_hunt_unlocked_info_cards'),
-          shrinkWrap: true,
-          padding: const EdgeInsets.fromLTRB(18, 18, 18, 28),
-          itemCount: unlocked.length,
-          separatorBuilder: (_, __) => const Divider(height: 24),
-          itemBuilder: (_, index) {
-            final card = unlocked[index];
-            return ListTile(
-              contentPadding: EdgeInsets.zero,
-              title: Text(card.title),
-              subtitle: Text('${card.shortFact}\n${card.category}'),
-              isThreeLine: true,
-              leading: CircleAvatar(child: Text(card.word.characters.first)),
-            );
-          },
-        ),
-      ),
+      builder:
+          (sheetContext) => SafeArea(
+            child: ListView.separated(
+              key: const Key('word_hunt_unlocked_info_cards'),
+              shrinkWrap: true,
+              padding: const EdgeInsets.fromLTRB(18, 18, 18, 28),
+              itemCount: unlocked.length,
+              separatorBuilder: (_, __) => const Divider(height: 24),
+              itemBuilder: (_, index) {
+                final card = unlocked[index];
+                return ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: Text(card.title),
+                  subtitle: Text('${card.shortFact}\n${card.category}'),
+                  isThreeLine: true,
+                  leading: CircleAvatar(
+                    child: Text(card.word.characters.first),
+                  ),
+                );
+              },
+            ),
+          ),
     );
   }
 
