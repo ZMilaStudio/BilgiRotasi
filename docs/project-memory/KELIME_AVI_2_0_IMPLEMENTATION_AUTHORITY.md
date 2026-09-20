@@ -685,3 +685,109 @@ Wave 5 readiness:
 - Wave 5 implementation owner'ın sonraki explicit onayı olmadan başlamaz.
 
 Not: Manifest kendi docs-only closure commit SHA'sını self-reference edemez. Yukarıdaki SHA Wave 4 code/test exact validation HEAD'idir. Bu closure commit'inden sonra oluşan final integration HEAD aynı cumulative validation workflow'unda tekrar doğrulanır ve manager summary'de final exact HEAD olarak raporlanır.
+
+## 16. WAVE 5 — ROUTE-AWARE GAMEPLAY PRESENTATION CLOSURE
+
+Durum: **PASS**
+
+Wave 5 code/test validated implementation HEAD:
+`3446451b70b4d12cfe5a9a729dfce497998421f8`
+
+Regression-fix authority:
+- Starting Wave 5 regression HEAD: `b3e060b9ee433c6bc2f1f4b3a06d9d6329e74739`.
+- Cumulative run `#82` / run ID `35528763374` bu HEAD'de yalnız stale gameplay regression nedeniyle FAILURE oldu.
+- Failing contract `test/word_hunt_level_production_test.dart` içindeki eski Harbor-specific key `word_hunt_production_harbor_background` beklentisiydi.
+- Fix yalnız bu test contract'ını canonical route-aware presentation boundary'ye hizaladı.
+- Canonical generic background key `word_hunt_production_gameplay_background` korunur.
+- Test `WordHuntGameplaySceneBackground.scene.assetPath == WordHuntRoutePresentationProfiles.harborBackground` ile direct/legacy compatibility scene'in Harbor asset kullandığını doğrular.
+- Test Scaffold background color üzerinden `WordHuntRoutePresentationProfiles.harborSkin.scaffoldColor` parity'sini doğrular.
+- Existing 8x8 grid, `0/5`, text, bonus icon, instruction plate, grid layout ve no-exception assertions korunmuştur.
+- Product code sırf stale finder key'ini yaşatmak için değiştirilmemiştir.
+
+Cumulative validation authority:
+- Workflow: `.github/workflows/word-hunt-2-0-wave0-validation.yml`
+- Workflow name: `Kelime Avı 2.0 Cumulative Validation`
+- Run: `#83`
+- Run ID: `35530676780`
+- Exact source HEAD: `3446451b70b4d12cfe5a9a729dfce497998421f8`
+- Result: **SUCCESS**
+- Full repository analyzer: **92 issues**, Wave 0 baseline olan 92'den kötüleşme yok.
+- Wave 1+2+3+4+5 targeted analyze: **No issues found**.
+- Full Flutter suite: **791 tests passed**.
+- Wave 0, Wave 1, Wave 2, Wave 3, Wave 4 ve Wave 5 dedicated gates: **PASS**.
+- Existing route selection regression: **PASS**.
+- Existing production flow regression: **PASS**.
+- Existing gameplay regression: **PASS**.
+- Gameplay path/scoring regression: **PASS**.
+- Immutable trilogy asset lock: **PASS**.
+
+Typed presentation authority:
+- `WordHuntRoutePresentationProfile` route-level presentation authority'sidir.
+- `WordHuntGameplaySkin` gameplay chrome/token authority'sidir.
+- `WordHuntGameplaySceneDefinition` + `WordHuntGameplaySceneSchedule` scene catalog/schedule authority'sidir.
+- Sekiz production route explicit presentation profile taşır.
+- Başlangıç Limanı explicit Harbor profile kullanır; Harbor artık generic null-fallback behavior değildir.
+- Gökyüzü Adaları locked L1–L10 schedule aynen korunur:
+  - L1–L4 bright
+  - L5 storm
+  - L6 airship
+  - L7 moon
+  - L8 storm
+  - L9 moon
+  - L10 bright
+- Orman Yolu, Kadim Orman, Kristal Vadisi, Kayıp Şehir, Yeraltı Krallığı ve Güneş İmparatorluğu route-aware non-Harbor gameplay presentation resolve eder.
+- Production gameplay background, header, metric surfaces, target/bonus plates, grid states, found/error states, connector, instruction plate, finish CTA ve normal completion panel profile/skin authority'sinden beslenir.
+- Gameplay presentation boundary route-id/title renderer switch chain kullanmaz.
+- Common gameplay/path/input/scoring engine değiştirilmemiştir.
+- Normal completion flow semantics değiştirilmemiştir.
+- Deferred completion wrapper typed presentation'ı forward eder; deferred completion semantics değiştirilmemiştir.
+- Wave 6 navigation/result contract eklenmemiştir.
+
+Persistence / scope authority:
+- `WordHuntProgressCodec.schemaVersion = 3` aynen korunur.
+- Historical storage prefix değiştirilmemiştir.
+- Wave 5 yeni persisted field veya progression authority eklemez.
+- Route unlock, route reward, completion navigation, book/compass, production content, grids, targetWords, bonusWords ve existing IDs değiştirilmemiştir.
+- Immutable Kayıp Şehir / Yeraltı Krallığı / Güneş İmparatorluğu artwork byte'ları değiştirilmemiştir.
+- Version, release, tag, Play Console veya production branch işlemi yapılmamıştır.
+
+Android 16 visual-proof authority:
+- Workflow: `.github/workflows/word-hunt-visual-proof.yml`
+- Workflow name: `Kelime Avı Android 16 görsel kanıtı`
+- Run: `#563`
+- Run ID: `35530676778`
+- Exact implementation HEAD: `3446451b70b4d12cfe5a9a729dfce497998421f8`
+- Result: **SUCCESS**
+- Proof APK SHA256: `13ca9669b4c8218d8273c1f686730722e67275d0de75ff343525e083074b22ea`.
+- Artifact: `BilgiRotasi-KelimeAvi-Wave5-Gameplay-Android16-3446451b70b4d12cfe5a9a729dfce497998421f8`
+- Artifact ID: `10611401147`
+- Screenshot gate: **24/24 PASS**.
+- Coverage: 8 production routes × 3 viewport classes.
+- Standard viewport: `1080x1920` — 8 routes.
+- Compact viewport: `720x1280` — 8 routes.
+- Tall viewport: `720x1600` — 8 routes.
+- Covered routes:
+  - Başlangıç Limanı
+  - Gökyüzü Adaları
+  - Orman Yolu
+  - Kadim Orman (`orman-2`)
+  - Kristal Vadisi
+  - Kayıp Şehir
+  - Yeraltı Krallığı
+  - Güneş İmparatorluğu
+- Visual proof metadata gate required exactly 24 `WAVE5_*.png` files and `RESULT=PASS`; run satisfied both.
+- Android emulator proof completed on first attempt; infrastructure retry was not required.
+
+Cross-workflow regression closure:
+- `Kelime Avı üçleme Android 16 runtime görsel kanıtı` run `#71` / ID `35528763453` failed on starting HEAD only because of the same stale `word_hunt_production_harbor_background` assertion.
+- Replacement run `#72` / ID `35530676801` at exact implementation HEAD `3446451b...`: **SUCCESS**; Android 16 runtime proof produced its required 15 screenshots.
+- `AdMob PR doğrulaması` run `#939` / ID `35528763416` likewise failed in `Analiz ve tüm testler` on the same stale gameplay key assertion; no independent Wave 5 product bug was established.
+- Replacement run `#940` / ID `35530676808` at exact implementation HEAD `3446451b...`: **SUCCESS**, including analyze/all-tests and Android 16 cold-start gate.
+
+Wave 6 boundary:
+- Wave 5 closes only route-aware gameplay presentation.
+- Completion navigation, true L100 transition, `Sonraki Bölüm`, `Sonraki Bölge`, `Sonraki Rotaya Geç`, route reward/unlock changes and other Wave 6 semantics are not implemented here.
+- Next planned wave is **WAVE 6 — COMPLETION NAVIGATION + TRUE-FINAL ORCHESTRATION** and requires a separate explicit owner instruction.
+
+Not: Bu manifest kendi docs-only closure commit SHA'sını self-reference edemez. Yukarıdaki `3446451b...` SHA Wave 5 code/test + Android visual-proof exact implementation authority'sidir. Bu closure commit'inden sonra oluşan final integration HEAD cumulative validation workflow'unda yeniden doğrulanır; visual proof docs-only commit ile yeniden tetiklenmezse visual authority code/test validated implementation HEAD olarak kalır.
+
