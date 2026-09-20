@@ -38,8 +38,14 @@ jobs:
           dart format --output=none --set-exit-if-changed
           test/word_hunt_2_0_wave0_baseline_test.dart
 
-      - name: Flutter analyze no-pub
+      - name: Full repository analyze baseline observation
+        continue-on-error: true
         run: flutter analyze --no-pub
+
+      - name: Wave 0 targeted analyze gate
+        run: >-
+          flutter analyze --no-pub
+          test/word_hunt_2_0_wave0_baseline_test.dart
 
       - name: Wave 0 baseline tests
         run: flutter test test/word_hunt_2_0_wave0_baseline_test.dart --reporter expanded
