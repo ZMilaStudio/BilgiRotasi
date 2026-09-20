@@ -13,10 +13,12 @@ class WordHuntRouteSelector extends StatelessWidget {
     super.key,
     required this.progress,
     required this.onRouteTap,
+    this.onBack,
   });
 
   final WordHuntProgressSnapshot progress;
   final ValueChanged<WordHuntRouteCatalogEntry> onRouteTap;
+  final VoidCallback? onBack;
 
   @override
   Widget build(BuildContext context) {
@@ -37,6 +39,14 @@ class WordHuntRouteSelector extends StatelessWidget {
         backgroundColor: const Color(0xFF071426),
         foregroundColor: Colors.white,
         elevation: 0,
+        leading:
+            onBack == null
+                ? null
+                : IconButton(
+                  key: const Key('word_hunt_route_selector_back'),
+                  onPressed: onBack,
+                  icon: const Icon(Icons.arrow_back_rounded),
+                ),
         title: const Text(
           'Kelime Avı',
           style: TextStyle(fontWeight: FontWeight.w900),
