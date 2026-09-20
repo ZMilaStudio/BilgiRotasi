@@ -16,7 +16,7 @@ void main() {
     });
   }
 
-  testWidgets('phone MASTER ART, banner reserve and controls render', (
+  testWidgets('phone MASTER ART keeps top controls and removes bottom hitboxes', (
     tester,
   ) async {
     await usePhoneViewport(tester);
@@ -57,11 +57,11 @@ void main() {
     );
     expect(
       find.byKey(const Key('word_hunt_gokyuzu_master_art_compass')),
-      findsOneWidget,
+      findsNothing,
     );
     expect(
       find.byKey(const Key('word_hunt_gokyuzu_master_art_book')),
-      findsOneWidget,
+      findsNothing,
     );
     expect(
       find.byKey(const Key('word_hunt_gokyuzu_master_art_back')),
