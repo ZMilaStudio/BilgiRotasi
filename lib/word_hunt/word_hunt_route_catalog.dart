@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'word_hunt_gameplay_presentation.dart';
 import 'word_hunt_gokyuzu_content.dart';
 import 'word_hunt_gunes_imparatorlugu_content.dart';
 import 'word_hunt_gunes_imparatorlugu_visual_theme.dart';
@@ -104,6 +105,7 @@ class WordHuntRouteCatalogEntry {
     required this.colors,
     required this.unlockRule,
     required this.presentationKind,
+    required this.presentationProfile,
     this.lockedMessage,
     this.visualTheme,
   }) : assert(
@@ -120,6 +122,7 @@ class WordHuntRouteCatalogEntry {
   final List<Color> colors;
   final WordHuntRouteUnlockRule unlockRule;
   final WordHuntRoutePresentationKind presentationKind;
+  final WordHuntRoutePresentationProfile presentationProfile;
 
   /// Kilitli selector kartında gösterilecek ürün metni. Null olduğunda selector
   /// unlock rule'dan mevcut generic açıklamayı üretir.
@@ -144,6 +147,7 @@ abstract final class WordHuntRouteCatalog {
     colors: <Color>[Color(0xFF0E7490), Color(0xFF1E3A8A)],
     unlockRule: WordHuntRouteUnlockRule.always(),
     presentationKind: WordHuntRoutePresentationKind.referenceRoute,
+    presentationProfile: WordHuntRoutePresentationProfiles.starter,
   );
 
   static const WordHuntRouteCatalogEntry gokyuzu = WordHuntRouteCatalogEntry(
@@ -158,6 +162,7 @@ abstract final class WordHuntRouteCatalog {
     ),
     lockedMessage: 'Başlangıç Limanı’nı tamamla ve en az 18 yıldız kazan.',
     presentationKind: WordHuntRoutePresentationKind.gokyuzuMasterArt,
+    presentationProfile: WordHuntRoutePresentationProfiles.gokyuzu,
   );
 
   /// Orman Yolu yalnız Gökyüzü Adaları route-complete olduğunda açılır.
@@ -174,6 +179,7 @@ abstract final class WordHuntRouteCatalog {
     ),
     lockedMessage: 'Gökyüzü Adaları’nı tamamla ve en az 18 yıldız kazan.',
     presentationKind: WordHuntRoutePresentationKind.themedReusable,
+    presentationProfile: WordHuntRoutePresentationProfiles.ormanYolu,
     visualTheme: WordHuntRouteVisualThemes.ormanYolu,
   );
 
@@ -193,6 +199,7 @@ abstract final class WordHuntRouteCatalog {
         ),
         lockedMessage: 'Orman Yolu’nu tamamlayarak aç.',
         presentationKind: WordHuntRoutePresentationKind.themedReusable,
+        presentationProfile: WordHuntRoutePresentationProfiles.orman2,
         visualTheme: WordHuntOrman2VisualTheme.production,
       );
 
@@ -210,6 +217,7 @@ abstract final class WordHuntRouteCatalog {
     ),
     lockedMessage: 'Kadim Orman’ı tamamlayarak aç.',
     presentationKind: WordHuntRoutePresentationKind.themedReusable,
+    presentationProfile: WordHuntRoutePresentationProfiles.kristal,
     visualTheme: WordHuntKristalVisualTheme.production,
   );
 
@@ -229,6 +237,7 @@ abstract final class WordHuntRouteCatalog {
         ),
         lockedMessage: 'Kristal Vadisi’ni tamamlayarak aç.',
         presentationKind: WordHuntRoutePresentationKind.themedReusable,
+        presentationProfile: WordHuntRoutePresentationProfiles.kayipSehir,
         visualTheme: WordHuntKayipSehirVisualTheme.production,
       );
 
@@ -248,6 +257,7 @@ abstract final class WordHuntRouteCatalog {
         ),
         lockedMessage: 'Kayıp Şehir’i tamamlayarak aç.',
         presentationKind: WordHuntRoutePresentationKind.themedReusable,
+        presentationProfile: WordHuntRoutePresentationProfiles.yeraltiKralligi,
         visualTheme: WordHuntYeraltiKralligiVisualTheme.production,
       );
 
@@ -267,6 +277,7 @@ abstract final class WordHuntRouteCatalog {
         ),
         lockedMessage: 'Yeraltı Krallığı’nı tamamlayarak aç.',
         presentationKind: WordHuntRoutePresentationKind.themedReusable,
+        presentationProfile: WordHuntRoutePresentationProfiles.gunesImparatorlugu,
         visualTheme: WordHuntGunesImparatorluguVisualTheme.production,
       );
 
