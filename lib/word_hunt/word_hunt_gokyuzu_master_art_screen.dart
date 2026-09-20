@@ -47,10 +47,6 @@ abstract final class WordHuntGokyuzuMasterArtLayout {
     146,
   ];
 
-  static const Offset compassCenter = Offset(96, 1485);
-  static const Offset bookCenter = Offset(837, 1486);
-  static const double bottomControlHitboxDiameter = 145;
-
   // Telefon MASTER ART'ında geri/bilgi sanatı bake edilmedi. Bunlar yalnız
   // gerekli navigation kontrolü olarak minimum görünür Flutter overlay'idir.
   static const Offset backCenter = Offset(58, 101);
@@ -68,8 +64,6 @@ class WordHuntGokyuzuMasterArtScreen extends StatelessWidget {
     this.progress = const WordHuntProgressSnapshot(),
     this.onBack,
     this.onInfo,
-    this.onCompass,
-    this.onBook,
     this.onLevelTap,
     this.segmentIndex = 1,
   });
@@ -80,8 +74,6 @@ class WordHuntGokyuzuMasterArtScreen extends StatelessWidget {
   final WordHuntProgressSnapshot progress;
   final VoidCallback? onBack;
   final VoidCallback? onInfo;
-  final VoidCallback? onCompass;
-  final VoidCallback? onBook;
   final ValueChanged<int>? onLevelTap;
   final int segmentIndex;
 
@@ -162,26 +154,6 @@ class WordHuntGokyuzuMasterArtScreen extends StatelessWidget {
                                     )
                                     : null,
                           ),
-                        _TransparentHitbox(
-                          key: const Key(
-                            'word_hunt_gokyuzu_master_art_compass',
-                          ),
-                          center: WordHuntGokyuzuMasterArtLayout.compassCenter,
-                          diameter:
-                              WordHuntGokyuzuMasterArtLayout
-                                  .bottomControlHitboxDiameter,
-                          semanticLabel: 'Pusula',
-                          onTap: onCompass,
-                        ),
-                        _TransparentHitbox(
-                          key: const Key('word_hunt_gokyuzu_master_art_book'),
-                          center: WordHuntGokyuzuMasterArtLayout.bookCenter,
-                          diameter:
-                              WordHuntGokyuzuMasterArtLayout
-                                  .bottomControlHitboxDiameter,
-                          semanticLabel: 'Bilgi Kitabı',
-                          onTap: onBook,
-                        ),
                         _VisibleTopControl(
                           key: const Key('word_hunt_gokyuzu_master_art_back'),
                           center: WordHuntGokyuzuMasterArtLayout.backCenter,
