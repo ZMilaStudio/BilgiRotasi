@@ -44,6 +44,7 @@ class WordHuntLevelDefinition {
     required this.grid,
     required this.targetWords,
     required this.starRules,
+    this.displayName,
     this.bonusWords = const <String>[],
     this.infoCardIds = const <String>[],
     this.timeLimitSeconds,
@@ -57,12 +58,39 @@ class WordHuntLevelDefinition {
   final List<String> targetWords;
   final List<String> bonusWords;
   final WordHuntStarRules starRules;
+  final String? displayName;
   final List<String> infoCardIds;
   final int? timeLimitSeconds;
 
   int get rowCount => grid.length;
 
   int get columnCount => grid.isEmpty ? 0 : grid.first.runes.length;
+
+  String get displayNameOrFallback {
+    final explicitName = displayName?.trim();
+    if (explicitName == null || explicitName.isEmpty) {
+      return 'Bölüm $index';
+    }
+    return explicitName;
+  }
+}
+
+class WordHuntSegmentDefinition {
+  const WordHuntSegmentDefinition({
+    required this.id,
+    required this.index,
+    required this.displayName,
+    required this.startLevelIndex,
+    required this.endLevelIndex,
+  });
+
+  final String id;
+  final int index;
+  final String displayName;
+  final int startLevelIndex;
+  final int endLevelIndex;
+
+  int get levelCount => endLevelIndex - startLevelIndex + 1;
 }
 
 class WordHuntRouteDefinition {
@@ -73,6 +101,7 @@ class WordHuntRouteDefinition {
     required this.unlockStarsRequired,
     required this.levels,
     required this.routeRewardId,
+    this.segments = const <WordHuntSegmentDefinition>[],
   });
 
   final String id;
@@ -81,6 +110,7 @@ class WordHuntRouteDefinition {
   final int unlockStarsRequired;
   final List<WordHuntLevelDefinition> levels;
   final String routeRewardId;
+  final List<WordHuntSegmentDefinition> segments;
 
   int get maximumStars => levels.length * 3;
 }
@@ -99,6 +129,9 @@ class WordHuntDefinitionValidator {
     }
     if (level.index < 1) {
       errors.add('level.index 1 veya daha büyük olmalı');
+    }
+    if (level.displayName != null && level.displayName!.trim().isEmpty) {
+      errors.add('level.displayName trim sonrası boş olamaz');
     }
     if (level.grid.isEmpty) {
       errors.add('grid boş olamaz');
@@ -229,6 +262,91 @@ class WordHuntDefinitionValidator {
       errors.add('rotanın son bölümü rota finali olmalı');
     }
 
+    _validateSegments(route, errors);
+
     return errors;
+  }
+
+  static void _validateSegments(
+    WordHuntRouteDefinition route,
+    List<String> errors,
+  ) {
+    if (route.segments.isEmpty) {
+      return;
+    }
+
+    final segmentIds = <String>{};
+    final segmentIndexes = <int>{};
+    var expectedStart = 1;
+
+    for (var offset = 0; offset < route.segments.length; offset++) {
+      final segment = route.segments[offset];
+      final label =
+          segment.id.trim().isEmpty ? '#${offset + 1}' : segment.id;
+
+      if (segment.id.trim().isEmpty) {
+        errors.add('segment.id boş olamaz');
+      } else if (!segmentIds.add(segment.id)) {
+        errors.add('segment.id tekrar ediyor: ${segment.id}');
+      }
+
+      if (segment.displayName.trim().isEmpty) {
+        errors.add('$label: segment.displayName boş olamaz');
+      }
+
+      if (!segmentIndexes.add(segment.index)) {
+        errors.add('segment.index tekrar ediyor: ${segment.index}');
+      }
+      if (segment.index != offset + 1) {
+        errors.add('$label: segment.index 1..N sıralı olmalı');
+      }
+
+      if (segment.startLevelIndex < 1 || segment.endLevelIndex < 1) {
+        errors.add('$label: segment aralığı 1 veya daha büyük olmalı');
+      }
+      if (segment.startLevelIndex > segment.endLevelIndex) {
+        errors.add('$label: segment başlangıcı bitişten büyük olamaz');
+      }
+      if (segment.endLevelIndex > route.levels.length) {
+        errors.add('$label: segment rota bölüm sınırını aşamaz');
+      }
+
+      if (segment.startLevelIndex != expectedStart) {
+        if (segment.startLevelIndex < expectedStart) {
+          errors.add('$label: segment aralıkları çakışamaz');
+        } else {
+          errors.add('$label: segment aralıklarında boşluk olamaz');
+        }
+      }
+
+      expectedStart = segment.endLevelIndex + 1;
+    }
+
+    if (expectedStart != route.levels.length + 1) {
+      errors.add('segment aralıkları tüm rota bölümlerini kapsamalı');
+    }
+
+    if (route.levels.length == 100) {
+      if (route.segments.length != 10) {
+        errors.add('100 bölümlük 2.0 rota tam olarak 10 segment içermeli');
+      }
+
+      for (var offset = 0; offset < route.segments.length; offset++) {
+        final segment = route.segments[offset];
+        final expectedIndex = offset + 1;
+        final expectedSegmentStart = offset * 10 + 1;
+        final expectedSegmentEnd = expectedSegmentStart + 9;
+
+        if (segment.index != expectedIndex ||
+            segment.startLevelIndex != expectedSegmentStart ||
+            segment.endLevelIndex != expectedSegmentEnd ||
+            segment.levelCount != 10) {
+          errors.add(
+            '${segment.id}: 100 bölümlük 2.0 rotada segment '
+            '$expectedIndex aralığı $expectedSegmentStart-$expectedSegmentEnd olmalı',
+          );
+        }
+      }
+    }
   }
 }
