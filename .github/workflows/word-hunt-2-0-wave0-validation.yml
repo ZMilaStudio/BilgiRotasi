@@ -26,6 +26,7 @@ on:
       - 'lib/word_hunt/word_hunt_home_projection.dart'
       - 'lib/word_hunt/word_hunt_home_screen.dart'
       - 'lib/word_hunt/word_hunt_gameplay_presentation.dart'
+      - 'lib/word_hunt/word_hunt_gameplay_visual_proof_main.dart'
       - 'lib/word_hunt/word_hunt_deferred_completion_level_screen.dart'
       - 'lib/word_hunt/word_hunt_route_catalog.dart'
       - 'lib/word_hunt/word_hunt_route_selector.dart'
@@ -92,6 +93,7 @@ jobs:
           lib/word_hunt/word_hunt_home_projection.dart
           lib/word_hunt/word_hunt_home_screen.dart
           lib/word_hunt/word_hunt_gameplay_presentation.dart
+          lib/word_hunt/word_hunt_gameplay_visual_proof_main.dart
           lib/word_hunt/word_hunt_deferred_completion_level_screen.dart
           lib/word_hunt/word_hunt_route_catalog.dart
           lib/word_hunt/word_hunt_production_entry_screen.dart
@@ -107,6 +109,7 @@ jobs:
           test/word_hunt_progress_codec_v2_test.dart;
           git diff --
           lib/word_hunt/word_hunt_gameplay_presentation.dart
+          lib/word_hunt/word_hunt_gameplay_visual_proof_main.dart
           lib/word_hunt/word_hunt_deferred_completion_level_screen.dart
           lib/word_hunt/word_hunt_route_catalog.dart
           lib/main.dart
@@ -123,6 +126,7 @@ jobs:
           lib/word_hunt/word_hunt_home_projection.dart
           lib/word_hunt/word_hunt_home_screen.dart
           lib/word_hunt/word_hunt_gameplay_presentation.dart
+          lib/word_hunt/word_hunt_gameplay_visual_proof_main.dart
           lib/word_hunt/word_hunt_deferred_completion_level_screen.dart
           lib/word_hunt/word_hunt_route_catalog.dart
           lib/word_hunt/word_hunt_production_entry_screen.dart
@@ -133,6 +137,7 @@ jobs:
           test/word_hunt_menu_entry_test.dart;
           git diff --exit-code --
           lib/word_hunt/word_hunt_gameplay_presentation.dart
+          lib/word_hunt/word_hunt_gameplay_visual_proof_main.dart
           lib/word_hunt/word_hunt_deferred_completion_level_screen.dart
           lib/word_hunt/word_hunt_route_catalog.dart
           lib/main.dart
