@@ -603,6 +603,7 @@ void main() {
       expect(summary.maximumBonusTotal, 2);
       expect(summary.hasUnknownBonusHistory, isFalse);
       expect(summary.rewardGrantedNow, isTrue);
+      expect(summary.reward?.id, 'badge-kelime-yolcusu');
       expect(summary.presentationProfile.id, entry.presentationProfile.id);
       expect(summary.terminal, isTrue);
     });
@@ -710,7 +711,7 @@ WordHuntRouteDefinition _v2Route() {
     theme: 'wave6',
     unlockStarsRequired: 250,
     levels: levels,
-    routeRewardId: 'wave6-reward',
+    routeRewardId: 'badge-kelime-yolcusu',
     segments: segments,
   );
 }
