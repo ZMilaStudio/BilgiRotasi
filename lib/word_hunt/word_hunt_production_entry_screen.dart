@@ -7,6 +7,7 @@ import 'word_hunt_gokyuzu_master_art_screen.dart';
 import 'word_hunt_models.dart';
 import 'word_hunt_progress.dart';
 import 'word_hunt_progress_codec.dart';
+import 'word_hunt_progress_migration.dart';
 import 'word_hunt_reference_route_screen.dart';
 import 'word_hunt_route_catalog.dart';
 import 'word_hunt_route_completion_dialogs.dart';
@@ -100,16 +101,18 @@ class _WordHuntProductionEntryScreenState
 
   Future<void> _loadProgress() async {
     var loaded = const WordHuntProgressSnapshot();
-    var shouldPersistBackfill = false;
+    var shouldPersistProgress = false;
     var shouldRevealHistoricalKristal = false;
     try {
       final raw = await _preferences.getString(_storageKey);
       final hadPersistedProgress = raw != null && raw.trim().isNotEmpty;
       if (hadPersistedProgress) {
-        loaded = WordHuntProgressCodec.decode(
+        final decoded = WordHuntProgressCodec.decodeWithMetadata(
           raw,
           expectedOwnerScope: _ownerScope,
         );
+        loaded = WordHuntLegacyProgressMigration.migrate(decoded);
+        shouldPersistProgress = decoded.requiresMigrationWriteback;
       }
 
       if (_catalogMode && hadPersistedProgress) {
@@ -125,16 +128,18 @@ class _WordHuntProductionEntryScreenState
           await _preferences.setBool(_kristalRevealSeenKey, true);
         }
       }
+
       final backfilled = WordHuntRouteRewardEngine.backfillCompletedRoutes(
         loaded,
       );
-      shouldPersistBackfill = !identical(backfilled, loaded);
+      shouldPersistProgress =
+          shouldPersistProgress || !identical(backfilled, loaded);
       loaded = backfilled;
     } catch (_) {
       // Bozuk veya desteklenmeyen yerel veri / storage katmanı Kelime Avı'nın
       // açılmasını engellemez; varsayılan boş progression ile devam edilir.
       loaded = const WordHuntProgressSnapshot();
-      shouldPersistBackfill = false;
+      shouldPersistProgress = false;
       shouldRevealHistoricalKristal = false;
     }
 
@@ -143,7 +148,7 @@ class _WordHuntProductionEntryScreenState
       _progress = loaded;
       _loading = false;
     });
-    if (shouldPersistBackfill) {
+    if (shouldPersistProgress) {
       await _saveProgress(loaded);
     }
     if (shouldRevealHistoricalKristal && mounted) {
@@ -254,7 +259,15 @@ class _WordHuntProductionEntryScreenState
       return;
     }
 
-    final beforeProgress = _progress;
+    var beforeProgress = _progress;
+    final progressWithLastActive = beforeProgress.markLastActiveRoute(route.id);
+    if (!identical(progressWithLastActive, beforeProgress)) {
+      beforeProgress = progressWithLastActive;
+      setState(() => _progress = progressWithLastActive);
+      await _saveProgress(progressWithLastActive);
+      if (!mounted) return;
+    }
+
     final beforeRouteComplete = WordHuntRouteProgressEngine.isRouteComplete(
       route,
       beforeProgress,
@@ -292,6 +305,7 @@ class _WordHuntProductionEntryScreenState
       levelId: result.levelId,
       stars: result.stars,
       unlockedInfoCards: result.unlockedInfoCardIds,
+      foundBonusCount: result.foundBonusCount,
     );
     final next = transition.progress;
     setState(() => _progress = next);
