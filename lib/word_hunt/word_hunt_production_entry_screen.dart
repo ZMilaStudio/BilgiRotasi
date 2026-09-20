@@ -102,13 +102,10 @@ class _WordHuntProductionEntryScreenState
     WordHuntRouteDefinition route,
     WordHuntProgressSnapshot progress,
   ) {
-    if (route.segments.isEmpty) return 1;
-    final next = WordHuntRouteProgressEngine.nextPlayableLevelIndex(
-      route,
-      progress,
+    return WordHuntCompletionCoordinator.activeSegmentForProgress(
+      route: route,
+      progress: progress,
     );
-    final bounded = next.clamp(1, route.levels.length);
-    return WordHuntSegmentProjection.forLevel(route, bounded).segmentIndex;
   }
 
   @override
