@@ -354,7 +354,7 @@ void main() {
       expect(playCenter, contains('Serbest Rota'));
       expect(playCenter, contains('Soru Maratonu'));
       expect(playCenter, contains('Meydan Okuma'));
-      expect(playCenter, contains('Canlı Düello'));
+      expect(playCenter, contains('PlayCenterEntryCatalog.liveDuelTitle'));
       expect(playCenter, contains('Diğer Oyun Modları'));
     });
   });
