@@ -2,18 +2,10 @@ import 'package:flutter/material.dart';
 
 import 'word_hunt_completion_orchestration.dart';
 
-enum WordHuntCompletionUiAction {
-  primary,
-  returnToRoute,
-  routes,
-  home,
-}
+enum WordHuntCompletionUiAction { primary, returnToRoute, routes, home }
 
 class WordHuntCompletionPresentation extends StatelessWidget {
-  const WordHuntCompletionPresentation({
-    super.key,
-    required this.destination,
-  });
+  const WordHuntCompletionPresentation({super.key, required this.destination});
 
   final WordHuntCompletionDestination destination;
 
@@ -42,16 +34,17 @@ class WordHuntCompletionPresentation extends StatelessWidget {
     final skin = summary.presentationProfile.gameplaySkin;
     final reward = summary.reward;
     final nextRoute = summary.nextUnlockedRoute;
-    final bonusText = summary.hasUnknownBonusHistory
-        ? 'Kaydedilen bonus: ' +
-            summary.knownBonusFoundTotal.toString() +
-            ' / ' +
-            summary.maximumBonusTotal.toString() +
-            ' • Eski bölümlerde bilinmeyen kayıt var'
-        : 'Bonus: ' +
-            summary.knownBonusFoundTotal.toString() +
-            ' / ' +
-            summary.maximumBonusTotal.toString();
+    final bonusText =
+        summary.hasUnknownBonusHistory
+            ? 'Kaydedilen bonus: ' +
+                summary.knownBonusFoundTotal.toString() +
+                ' / ' +
+                summary.maximumBonusTotal.toString() +
+                ' • Eski bölümlerde bilinmeyen kayıt var'
+            : 'Bonus: ' +
+                summary.knownBonusFoundTotal.toString() +
+                ' / ' +
+                summary.maximumBonusTotal.toString();
 
     return Dialog(
       key: Key(
@@ -151,7 +144,8 @@ class WordHuntCompletionPresentation extends StatelessWidget {
                 const SizedBox(height: 16),
                 _SummaryMetric(
                   label: 'Yıldız',
-                  value: summary.totalStars.toString() +
+                  value:
+                      summary.totalStars.toString() +
                       ' / ' +
                       summary.maximumStars.toString(),
                   color: skin.primaryTextColor,
@@ -211,8 +205,8 @@ class WordHuntCompletionPresentation extends StatelessWidget {
                     nextRoute != null
                         ? nextRoute.route.title + ' rotası hazır.'
                         : summary.terminal
-                            ? 'Tüm mevcut rotaları tamamladın.'
-                            : 'Rotaya dönebilirsin.',
+                        ? 'Tüm mevcut rotaları tamamladın.'
+                        : 'Rotaya dönebilirsin.',
                     key: const Key('word_hunt_completion_next_route_state'),
                     textAlign: TextAlign.center,
                     style: TextStyle(
@@ -228,13 +222,14 @@ class WordHuntCompletionPresentation extends StatelessWidget {
                   height: 46,
                   child: FilledButton(
                     key: const Key('word_hunt_completion_primary'),
-                    onPressed: () => Navigator.of(context).pop(
-                      destination.kind ==
-                              WordHuntCompletionDestinationKind
-                                  .terminalRouteComplete
-                          ? WordHuntCompletionUiAction.routes
-                          : WordHuntCompletionUiAction.primary,
-                    ),
+                    onPressed:
+                        () => Navigator.of(context).pop(
+                          destination.kind ==
+                                  WordHuntCompletionDestinationKind
+                                      .terminalRouteComplete
+                              ? WordHuntCompletionUiAction.routes
+                              : WordHuntCompletionUiAction.primary,
+                        ),
                     style: FilledButton.styleFrom(
                       backgroundColor: skin.finishButtonColor,
                       foregroundColor: skin.primaryTextColor,
@@ -248,9 +243,10 @@ class WordHuntCompletionPresentation extends StatelessWidget {
                   width: double.infinity,
                   child: TextButton(
                     key: const Key('word_hunt_completion_return_route'),
-                    onPressed: () => Navigator.of(context).pop(
-                      WordHuntCompletionUiAction.returnToRoute,
-                    ),
+                    onPressed:
+                        () => Navigator.of(
+                          context,
+                        ).pop(WordHuntCompletionUiAction.returnToRoute),
                     style: TextButton.styleFrom(
                       foregroundColor: skin.primaryTextColor,
                     ),
@@ -263,9 +259,10 @@ class WordHuntCompletionPresentation extends StatelessWidget {
                     width: double.infinity,
                     child: TextButton(
                       key: const Key('word_hunt_completion_home'),
-                      onPressed: () => Navigator.of(context).pop(
-                        WordHuntCompletionUiAction.home,
-                      ),
+                      onPressed:
+                          () => Navigator.of(
+                            context,
+                          ).pop(WordHuntCompletionUiAction.home),
                       style: TextButton.styleFrom(
                         foregroundColor: skin.secondaryTextColor,
                       ),
@@ -323,10 +320,7 @@ class _SummaryMetric extends StatelessWidget {
             child: Text(
               value,
               textAlign: TextAlign.right,
-              style: TextStyle(
-                color: color,
-                fontWeight: FontWeight.w900,
-              ),
+              style: TextStyle(color: color, fontWeight: FontWeight.w900),
             ),
           ),
         ],
