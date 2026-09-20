@@ -157,15 +157,16 @@ class _ProductModeCard extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(24),
-        child: Ink(
+        child: ConstrainedBox(
           constraints: const BoxConstraints(minHeight: 188),
-          padding: const EdgeInsets.all(22),
-          decoration: BoxDecoration(
-            color: const Color(0x18FFFFFF),
-            borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: const Color(0x55FFFFFF)),
-          ),
-          child: Column(
+          child: Ink(
+            padding: const EdgeInsets.all(22),
+            decoration: BoxDecoration(
+              color: const Color(0x18FFFFFF),
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(color: const Color(0x55FFFFFF)),
+            ),
+            child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Icon(icon, color: const Color(0xFFFFE082), size: 46),
@@ -190,7 +191,8 @@ class _ProductModeCard extends StatelessWidget {
                   fontWeight: FontWeight.w600,
                 ),
               ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
