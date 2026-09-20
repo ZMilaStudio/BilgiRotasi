@@ -226,8 +226,6 @@ class _ProofScenarioScreen extends StatelessWidget {
         progress: progress,
         onBack: () => Navigator.of(context).maybePop(),
         onInfo: _noop,
-        onCompass: _noop,
-        onBook: _noop,
         onLevelTap: _noopLevel,
       ),
     );
