@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import 'word_hunt_gameplay_presentation.dart';
 import 'word_hunt_models.dart';
 import 'word_hunt_screens.dart';
 
@@ -17,13 +18,13 @@ class WordHuntDeferredCompletionLevelScreen extends StatefulWidget {
     required this.level,
     required this.infoCards,
     required this.routeTitle,
-    this.backgroundAsset,
+    this.presentation,
   });
 
   final WordHuntLevelDefinition level;
   final List<WordHuntInfoCard> infoCards;
   final String routeTitle;
-  final String? backgroundAsset;
+  final WordHuntGameplayPresentation? presentation;
 
   @override
   State<WordHuntDeferredCompletionLevelScreen> createState() =>
@@ -51,7 +52,7 @@ class _WordHuntDeferredCompletionLevelScreenState
           level: widget.level,
           infoCards: widget.infoCards,
           routeTitle: widget.routeTitle,
-          backgroundAsset: widget.backgroundAsset,
+          presentation: widget.presentation,
           onResult: _forwardResult,
         ),
       ),
@@ -64,14 +65,14 @@ class _DeferredCompletionShell extends StatefulWidget {
     required this.level,
     required this.infoCards,
     required this.routeTitle,
-    required this.backgroundAsset,
+    required this.presentation,
     required this.onResult,
   });
 
   final WordHuntLevelDefinition level;
   final List<WordHuntInfoCard> infoCards;
   final String routeTitle;
-  final String? backgroundAsset;
+  final WordHuntGameplayPresentation? presentation;
   final ValueChanged<WordHuntLevelPlayResult?> onResult;
 
   @override
@@ -96,7 +97,7 @@ class _DeferredCompletionShellState extends State<_DeferredCompletionShell> {
         builder: (_) => WordHuntLevelProductionScreen(
           level: widget.level,
           infoCards: widget.infoCards,
-          backgroundAsset: widget.backgroundAsset,
+          presentation: widget.presentation,
           routeTitle: widget.routeTitle,
           deferCompletionDialog: true,
         ),
