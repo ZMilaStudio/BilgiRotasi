@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-
 enum WordHuntChromeControlKind { icon, asset }
 
 enum WordHuntChromeMaterialFamily {
