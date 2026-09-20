@@ -11,9 +11,6 @@ import 'word_hunt_progress.dart';
 import 'word_hunt_scoring.dart';
 import 'word_hunt_starter_content.dart';
 
-const _harborNavy = Color(0xFF061425);
-const _harborGold = Color(0xFFFFCA62);
-const _harborCream = Color(0xFFFFF1D0);
 const _harborGridSpacing = 1.5;
 const _harborCellVisualScale = 1.12;
 const _harborInstructionDefault =
