@@ -128,9 +128,10 @@ abstract final class WordHuntCompletionCoordinator {
     final absoluteLevel = completedIndex + 1;
     final level = route.levels[completedIndex];
     final explicitV2 = WordHuntSegmentProjection.isExplicitV2Route(route);
-    final projection = explicitV2
-        ? WordHuntSegmentProjection.forLevel(route, absoluteLevel)
-        : null;
+    final projection =
+        explicitV2
+            ? WordHuntSegmentProjection.forLevel(route, absoluteLevel)
+            : null;
     final completedSegment = projection?.segmentIndex ?? 1;
     final localLevel = projection?.localLevelIndex ?? absoluteLevel;
     final isMajorMidpoint = projection?.isMajorMidpoint ?? false;
@@ -143,7 +144,10 @@ abstract final class WordHuntCompletionCoordinator {
         (projection?.isSegmentEnd ?? false) &&
         levelCompletedNow;
     final canonicalNextPlayableLevel =
-        WordHuntRouteProgressEngine.nextPlayableLevelIndex(route, afterProgress);
+        WordHuntRouteProgressEngine.nextPlayableLevelIndex(
+          route,
+          afterProgress,
+        );
     final nextPlayableSegment = _segmentForLevel(
       route,
       canonicalNextPlayableLevel,
@@ -155,11 +159,12 @@ abstract final class WordHuntCompletionCoordinator {
         nextCandidate != null && nextCandidate.isUnlocked(afterProgress)
             ? nextCandidate
             : null;
-    final currentIndex = entries.indexWhere((entry) => entry.route.id == route.id);
+    final currentIndex = entries.indexWhere(
+      (entry) => entry.route.id == route.id,
+    );
     final terminal = currentIndex >= 0 && currentIndex == entries.length - 1;
 
-    final currentEntry =
-        currentIndex >= 0 ? entries[currentIndex] : null;
+    final currentEntry = currentIndex >= 0 ? entries[currentIndex] : null;
     final summary = _summary(
       route: route,
       progress: afterProgress,
@@ -220,8 +225,7 @@ abstract final class WordHuntCompletionCoordinator {
 
     if (!explicitV2 &&
         afterRouteComplete &&
-        (routeCompletedNow ||
-            completedAbsoluteLevel == route.levels.length)) {
+        (routeCompletedNow || completedAbsoluteLevel == route.levels.length)) {
       if (nextUnlockedRoute != null) {
         return WordHuntCompletionDestinationKind.nextRoute;
       }
@@ -274,7 +278,8 @@ abstract final class WordHuntCompletionCoordinator {
       rewardGrantedNow: rewardGrantedNow,
       nextUnlockedRoute: nextUnlockedRoute,
       presentationProfile:
-          entry?.presentationProfile ?? WordHuntRoutePresentationProfiles.starter,
+          entry?.presentationProfile ??
+          WordHuntRoutePresentationProfiles.starter,
       terminal: terminal,
     );
   }
@@ -308,7 +313,7 @@ abstract final class WordHuntCompletionOrchestrator {
     required int? foundBonusCount,
     required void Function(WordHuntProgressSnapshot progress) onProgressReady,
     required Future<void> Function(WordHuntProgressSnapshot progress)
-        persistProgress,
+    persistProgress,
     List<WordHuntRouteCatalogEntry>? catalogEntries,
   }) async {
     final transition = WordHuntRouteRewardEngine.recordLevelResult(
