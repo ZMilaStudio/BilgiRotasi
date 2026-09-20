@@ -13,6 +13,7 @@ on:
       - 'lib/word_hunt/word_hunt_artwork_route_map_screen.dart'
       - 'lib/word_hunt/word_hunt_gokyuzu_master_art_screen.dart'
       - 'lib/word_hunt/word_hunt_pixel_proof_screen.dart'
+      - 'lib/word_hunt/word_hunt_reference_route_screen.dart'
       - 'lib/word_hunt/word_hunt_progress.dart'
       - 'lib/word_hunt/word_hunt_progress_codec.dart'
       - 'lib/word_hunt/word_hunt_progress_migration.dart'
@@ -62,6 +63,7 @@ jobs:
           lib/word_hunt/word_hunt_artwork_route_map_screen.dart
           lib/word_hunt/word_hunt_gokyuzu_master_art_screen.dart
           lib/word_hunt/word_hunt_pixel_proof_screen.dart
+          lib/word_hunt/word_hunt_reference_route_screen.dart
           lib/word_hunt/word_hunt_progress.dart
           lib/word_hunt/word_hunt_progress_codec.dart
           lib/word_hunt/word_hunt_progress_migration.dart
@@ -100,6 +102,7 @@ jobs:
           lib/word_hunt/word_hunt_artwork_route_map_screen.dart
           lib/word_hunt/word_hunt_gokyuzu_master_art_screen.dart
           lib/word_hunt/word_hunt_pixel_proof_screen.dart
+          lib/word_hunt/word_hunt_reference_route_screen.dart
           lib/word_hunt/word_hunt_progress.dart
           lib/word_hunt/word_hunt_progress_codec.dart
           lib/word_hunt/word_hunt_progress_migration.dart
@@ -125,6 +128,9 @@ jobs:
 
       - name: Existing reusable map geometry regression
         run: flutter test test/word_hunt_reusable_route_map_screen_test.dart --reporter expanded
+
+      - name: Existing reference map regression
+        run: flutter test test/word_hunt_reference_route_screen_test.dart --reporter expanded
 
       - name: Existing route stop hitbox regression
         run: flutter test test/word_hunt_route_stop_test.dart --reporter expanded
