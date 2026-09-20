@@ -55,8 +55,6 @@ void main() {
           progress: const WordHuntProgressSnapshot(),
           onBack: () {},
           onInfo: () {},
-          onCompass: () {},
-          onBook: () {},
           onLevelTap: (level) => tappedLevel = level,
         ),
       ),
@@ -108,8 +106,6 @@ void main() {
           progress: progressThroughNine,
           onBack: () {},
           onInfo: () {},
-          onCompass: () {},
-          onBook: () {},
           onLevelTap: (_) {},
         ),
       ),
@@ -123,7 +119,7 @@ void main() {
     );
   });
 
-  testWidgets('production themed chrome forwards controls and compass pulses next node', (
+  testWidgets('production themed chrome keeps back/info and removes bottom controls', (
     tester,
   ) async {
     tester.view.physicalSize = const Size(390, 844);
@@ -135,8 +131,6 @@ void main() {
 
     var backCount = 0;
     var infoCount = 0;
-    var compassCount = 0;
-    var bookCount = 0;
     var tappedLevel = 0;
 
     await tester.pumpWidget(
@@ -147,8 +141,6 @@ void main() {
           progress: progressThroughSeven,
           onBack: () => backCount++,
           onInfo: () => infoCount++,
-          onCompass: () => compassCount++,
-          onBook: () => bookCount++,
           onLevelTap: (level) => tappedLevel = level,
         ),
       ),
@@ -156,52 +148,24 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(
-      find.byKey(const Key('word_hunt_themed_production_route')),
-      findsOneWidget,
+      find.byKey(const Key('word_hunt_themed_chrome_compass')),
+      findsNothing,
     );
-    expect(
-      find.byKey(const Key('word_hunt_reusable_route_map')),
-      findsOneWidget,
-    );
-
+    expect(find.byKey(const Key('word_hunt_themed_chrome_book')), findsNothing);
     await tester.tap(find.byKey(const Key('word_hunt_themed_chrome_back')));
     await tester.tap(find.byKey(const Key('word_hunt_themed_chrome_info')));
-    await tester.tap(find.byKey(const Key('word_hunt_themed_chrome_compass')));
-    await tester.tap(find.byKey(const Key('word_hunt_themed_chrome_book')));
-    await tester.pump(const Duration(milliseconds: 80));
+    await tester.pump();
 
     expect(backCount, 1);
     expect(infoCount, 1);
-    expect(compassCount, 1);
-    expect(bookCount, 1);
     expect(
-      find.byKey(
-        const ValueKey<String>('word_hunt_route_stop_compass_highlight_8_1'),
-      ),
-      findsOneWidget,
-      reason: 'Pusula yalnız sıradaki oynanabilir Bölüm 8’i vurgulamalı.',
-    );
-
-    await tester.pump(const Duration(milliseconds: 1100));
-    expect(
-      find.byKey(
-        const ValueKey<String>('word_hunt_route_stop_compass_highlight_8_1'),
-      ),
+      find.byKey(const ValueKey<String>('word_hunt_route_stop_compass_highlight_8_1')),
       findsNothing,
-      reason: 'Pusula vurgusu kısa süreli olmalı.',
     );
 
     await tester.tap(find.byKey(const Key('word_hunt_reusable_level_8')));
     await tester.pump();
     expect(tappedLevel, 8);
-
-    tappedLevel = 0;
-    await tester.tap(
-      find.byKey(const Key('word_hunt_reusable_level_9')),
-      warnIfMissed: false,
-    );
-    await tester.pump();
-    expect(tappedLevel, 0);
     expect(tester.takeException(), isNull);
   });
 
@@ -249,8 +213,6 @@ void main() {
             progress: progressThroughSeven,
             onBack: () {},
             onInfo: () {},
-            onCompass: () {},
-            onBook: () {},
             onLevelTap: (_) {},
           ),
         ),
@@ -266,31 +228,21 @@ void main() {
         findsOneWidget,
       );
 
-      final compass = find.byKey(
-        const Key('word_hunt_themed_chrome_compass'),
-      );
-      final codex = find.byKey(const Key('word_hunt_themed_chrome_book'));
       expect(
-        find.descendant(
-          of: compass,
-          matching: find.byIcon(Icons.explore_rounded),
-        ),
-        findsOneWidget,
-      );
-      expect(
-        find.descendant(
-          of: codex,
-          matching: find.byIcon(Icons.menu_book_rounded),
-        ),
-        findsOneWidget,
-      );
-      expect(
-        find.descendant(of: compass, matching: find.byType(Image)),
+        find.byKey(const Key('word_hunt_themed_chrome_compass')),
         findsNothing,
       );
       expect(
-        find.descendant(of: codex, matching: find.byType(Image)),
+        find.byKey(const Key('word_hunt_themed_chrome_book')),
         findsNothing,
+      );
+      expect(
+        find.byKey(const Key('word_hunt_themed_chrome_back')),
+        findsOneWidget,
+      );
+      expect(
+        find.byKey(const Key('word_hunt_themed_chrome_info')),
+        findsOneWidget,
       );
       final header = tester.widget<Container>(
         find.byKey(const Key('word_hunt_reusable_route_header_panel')),
@@ -313,7 +265,7 @@ void main() {
     },
   );
 
-  testWidgets('existing route keeps legacy Harbor asset controls by default', (
+  testWidgets('existing route keeps top chrome without legacy bottom controls', (
     tester,
   ) async {
     tester.view.physicalSize = const Size(390, 844);
@@ -331,8 +283,6 @@ void main() {
           progress: progressThroughSeven,
           onBack: () {},
           onInfo: () {},
-          onCompass: () {},
-          onBook: () {},
           onLevelTap: (_) {},
         ),
       ),
@@ -340,23 +290,16 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(
-      find.descendant(
-        of: find.byKey(const Key('word_hunt_themed_chrome_compass')),
-        matching: find.byType(Image),
-      ),
-      findsOneWidget,
+      find.byKey(const Key('word_hunt_themed_chrome_compass')),
+      findsNothing,
     );
-    expect(
-      find.descendant(
-        of: find.byKey(const Key('word_hunt_themed_chrome_book')),
-        matching: find.byType(Image),
-      ),
-      findsOneWidget,
-    );
+    expect(find.byKey(const Key('word_hunt_themed_chrome_book')), findsNothing);
+    expect(find.byKey(const Key('word_hunt_themed_chrome_back')), findsOneWidget);
+    expect(find.byKey(const Key('word_hunt_themed_chrome_info')), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('production themed chrome stays overflow-free and controls do not overlap final', (
+  testWidgets('production themed chrome stays overflow-free without bottom controls', (
     tester,
   ) async {
     tester.view.physicalSize = const Size(320, 640);
@@ -374,8 +317,6 @@ void main() {
           progress: progressThroughSeven,
           onBack: () {},
           onInfo: () {},
-          onCompass: () {},
-          onBook: () {},
           onLevelTap: (_) {},
         ),
       ),
@@ -389,19 +330,16 @@ void main() {
     );
     expect(
       find.byKey(const Key('word_hunt_themed_chrome_book')),
-      findsOneWidget,
+      findsNothing,
     );
 
     final finalRect = tester.getRect(
       find.byKey(const Key('word_hunt_reusable_level_10')),
     );
-    final compassRect = tester.getRect(
+    expect(finalRect.size.isEmpty, isFalse);
+    expect(
       find.byKey(const Key('word_hunt_themed_chrome_compass')),
+      findsNothing,
     );
-    final bookRect = tester.getRect(
-      find.byKey(const Key('word_hunt_themed_chrome_book')),
-    );
-    expect(finalRect.overlaps(compassRect), isFalse);
-    expect(finalRect.overlaps(bookRect), isFalse);
   });
 }
