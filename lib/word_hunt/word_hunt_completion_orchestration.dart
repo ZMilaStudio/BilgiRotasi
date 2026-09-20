@@ -204,7 +204,6 @@ abstract final class WordHuntCompletionCoordinator {
     required bool afterRouteComplete,
     required bool routeCompletedNow,
     required WordHuntRouteCatalogEntry? nextUnlockedRoute,
-    required WordHuntRouteCatalogEntry? currentEntry,
     required bool terminal,
   }) {
     if (explicitV2 && isTrueRouteFinal && afterRouteComplete) {
@@ -240,6 +239,7 @@ abstract final class WordHuntCompletionCoordinator {
     required WordHuntProgressSnapshot progress,
     required bool rewardGrantedNow,
     required WordHuntRouteCatalogEntry? nextUnlockedRoute,
+    required WordHuntRouteCatalogEntry? currentEntry,
     required bool terminal,
   }) {
     var knownBonusFoundTotal = 0;
