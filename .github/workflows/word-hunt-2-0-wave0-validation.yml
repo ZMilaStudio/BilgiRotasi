@@ -38,6 +38,7 @@ on:
       - 'test/word_hunt_2_0_wave3_renderer_segment_host_test.dart'
       - 'test/word_hunt_2_0_wave4_product_entry_home_test.dart'
       - 'test/word_hunt_2_0_wave5_gameplay_presentation_test.dart'
+      - 'test/word_hunt_2_0_wave5_gameplay_layout_test.dart'
       - 'test/word_hunt_menu_entry_test.dart'
       - 'test/home_screen_card_visibility_test.dart'
       - 'test/player_username_test.dart'
@@ -105,6 +106,7 @@ jobs:
           test/word_hunt_2_0_wave3_renderer_segment_host_test.dart
           test/word_hunt_2_0_wave4_product_entry_home_test.dart
           test/word_hunt_2_0_wave5_gameplay_presentation_test.dart
+          test/word_hunt_2_0_wave5_gameplay_layout_test.dart
           test/word_hunt_menu_entry_test.dart
           test/word_hunt_progress_codec_v2_test.dart;
           git diff --
@@ -131,6 +133,7 @@ jobs:
           test/word_hunt_2_0_wave3_renderer_segment_host_test.dart
           test/word_hunt_2_0_wave4_product_entry_home_test.dart
           test/word_hunt_2_0_wave5_gameplay_presentation_test.dart
+          test/word_hunt_2_0_wave5_gameplay_layout_test.dart
           test/word_hunt_menu_entry_test.dart;
           git diff --exit-code --
           lib/main.dart
@@ -156,6 +159,7 @@ jobs:
           test/word_hunt_2_0_wave3_renderer_segment_host_test.dart
           test/word_hunt_2_0_wave4_product_entry_home_test.dart
           test/word_hunt_2_0_wave5_gameplay_presentation_test.dart
+          test/word_hunt_2_0_wave5_gameplay_layout_test.dart
           test/word_hunt_menu_entry_test.dart
 
       - name: Full repository analyze baseline gate
@@ -207,6 +211,7 @@ jobs:
           test/word_hunt_2_0_wave3_renderer_segment_host_test.dart
           test/word_hunt_2_0_wave4_product_entry_home_test.dart
           test/word_hunt_2_0_wave5_gameplay_presentation_test.dart
+          test/word_hunt_2_0_wave5_gameplay_layout_test.dart
           test/word_hunt_menu_entry_test.dart
           test/word_hunt_progress_codec_v2_test.dart
 
@@ -227,6 +232,9 @@ jobs:
 
       - name: Wave 5 route-aware gameplay presentation tests
         run: flutter test test/word_hunt_2_0_wave5_gameplay_presentation_test.dart --reporter expanded
+
+      - name: Wave 5 multi-size gameplay layout tests
+        run: flutter test test/word_hunt_2_0_wave5_gameplay_layout_test.dart --reporter expanded
 
       - name: Gameplay path and scoring regression
         run: >-
