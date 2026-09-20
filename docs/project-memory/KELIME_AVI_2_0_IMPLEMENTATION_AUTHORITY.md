@@ -989,3 +989,175 @@ Next boundary:
 
 Not: Bu manifest kendi docs-only closure commit SHA'sını self-reference edemez. Yukarıdaki `14f42cee...` SHA Wave 6 code/test exact validation authority'sidir. Bu closure commit'inden sonra oluşan final integration HEAD aynı cumulative validation workflow'unda yeniden doğrulanır.
 
+
+
+## 18. WAVE 7 — BOOK/COMPASS REMOVAL + MILESTONE INFO REWARDS CLOSURE
+
+Durum: **PASS**
+
+Wave 7 code/test + Android runtime validated implementation HEAD:
+`ce18dfa128fe8bc0fbbe3f634dee68480ec2ab31`
+
+Cumulative validation authority:
+- Workflow: `.github/workflows/word-hunt-2-0-wave0-validation.yml`
+- Workflow name: `Kelime Avı 2.0 Cumulative Validation`
+- Run: `#126`
+- Run ID: `35542990845`
+- Exact implementation HEAD: `ce18dfa128fe8bc0fbbe3f634dee68480ec2ab31`
+- Result: **SUCCESS**
+- Dart format gate: **PASS**
+- Full repository analyzer: **92 issues**, Wave 0 baseline olan 92'den kötüleşme yok.
+- Wave 1+2+3+4+5+6+7 targeted analyze: **47 items / No issues found**.
+- Wave 0, Wave 1, Wave 2, Wave 3, Wave 4, Wave 5, Wave 6 ve Wave 7 dedicated gates: **PASS**.
+- Deferred completion wrapper regression: **PASS**.
+- Gameplay path/scoring regression: **PASS**.
+- Product-entry / account / Bilgi Yarışması navigation regressions: **PASS**.
+- Reusable map geometry / reference map / route-stop hitbox / path presentation-order regressions: **PASS**.
+- Info-card ownership / model validator / progress / codec / legacy codec regressions: **PASS**.
+- Route reward / route selection / production flow / gameplay regressions: **PASS**.
+- Immutable trilogy asset lock: **PASS**.
+- Full Flutter suite: **824 tests passed**.
+- Diff whitespace gate: **PASS**.
+
+Route-catalog cross-gate:
+- Workflow name: `Kelime Avı route catalog kapısı`
+- Run: `#222`
+- Run ID: `35542990862`
+- Exact implementation HEAD: `ce18dfa128fe8bc0fbbe3f634dee68480ec2ab31`
+- Result: **SUCCESS**
+- Word Hunt analyze: **No issues found**.
+- Route-catalog suite: **27 tests passed**.
+
+Book / compass runtime-removal authority:
+- `WordHuntReferenceRouteScreen` alt pusula ve kitap Flutter control'lerini, callback'lerini ve alt-control layout authority'sini artık taşımaz.
+- `WordHuntPixelProofScreen` raster üstündeki transparent pusula/kitap hitbox'larını kaldırır; top back/info callback'leri korunur.
+- `WordHuntGokyuzuMasterArtScreen` transparent pusula/kitap hitbox'larını kaldırır; top back/info visible controls korunur.
+- `WordHuntThemedProductionRouteScreen` artwork, ambient-artwork ve generic chrome yollarında alt pusula/kitap controls'ünü kaldırır.
+- Themed boundary'de `onCompass`, `onBook`, `_handleCompass` ve ilgili bottom-control plumbing kalmaz.
+- `WordHuntArtworkRouteMapScreen` içindeki compass pulse/highlight authority'si kaldırılmıştır; canonical next-playable progression engine değiştirilmemiştir.
+- `WordHuntRouteChromeTheme` artık yalnız `back` + `info` control token'larını taşır; `compass` / `codex` token'ları yoktur.
+- `WordHuntProductionEntryScreen` artık book/compass callback dependency'si, `_showBook` veya `_showCompassHint` taşımaz.
+- Production map-source safety gate, production map boundaries'de `onCompass` / `onBook` plumbing bulunmadığını doğrular.
+- Existing pusula/kitap binary asset dosyaları archaeology/scope gereği silinmemiştir; Wave 7 runtime authority'si bu asset'leri control olarak kullanmaz.
+- Pixel-proof ve Gökyüzü master-art yollarında alt ikonların eski master raster içine bake edilmiş görüntüsü varsa raster byte'ı değiştirilmediği için görsel kalabilir; ancak Flutter hitbox/callback/control authority'si kaldırılmıştır. Wave 7 master artwork repaint değildir.
+
+Milestone info reward projection authority:
+- Yeni saf authority: `WordHuntMilestoneInfoRewardEngine`.
+- Projection kalıcı state yazmaz; candidate/new/already-owned/resolved card facts üretir.
+- Legacy 10-level route için yalnız absolute L10 milestone reward boundary'sidir.
+- Explicit V2 route için canonical segment milestone boundary'leri L10/L20/.../L100'dür.
+- Candidate card seti yalnız tamamlanan segmentin mevcut level `infoCardIds` metadata'sından türetilir.
+- Yeni kart kimliği uydurulmaz; route content metadata authority'si kullanılır.
+- Ownership baseline:
+  - `beforeProgress.unlockedInfoCardIds`
+  - artı aynı gameplay sonucunda word-trigger ile açılmış `gameplayUnlockedInfoCardIds`
+  birleşimidir.
+- Already-owned candidate kartlar yeniden grant/presentation üretmez.
+- `newlyGrantedCardIds` yalnız mevcut ownership delta'sıdır.
+- Missing card metadata candidate ID'yi persistence fact olarak engellemez; presentation yalnız resolve edilen `WordHuntInfoCard` metadata'sını gösterir.
+- Replay idempotenttir: daha önce kazanılmış milestone kartları tekrar presentation üretmez.
+
+Word-trigger compatibility:
+- Existing gameplay `_unlockInfoCardFor(...)` mekanizması korunur.
+- `WordHuntLevelPlayResult.unlockedInfoCardIds` facts-only contract'ı korunur.
+- Milestone sistemi word-trigger sisteminin yerine geçmez; additive authority olarak çalışır.
+- Gameplay'de daha önce açılan kart milestone delta hesabında already-owned kabul edilir.
+
+Canonical grant / persistence authority:
+- Parent completion flow önce milestone projection'ı derive eder.
+- Gameplay unlocked card IDs + milestone newly-granted IDs tek canonical set olarak `WordHuntRouteRewardEngine.recordLevelResult(...)` çağrısına verilir.
+- Updated progress state tek canonical transition içinde oluşur.
+- `WordHuntCompletionOrchestrator.process(...)` bir `onProgressReady` ve bir canonical `persistProgress` uygular.
+- Milestone kartı için ikinci ayrı save yapılmaz.
+- Navigation CTA ikinci progression/card save üretmez.
+- Schema veya storage migration eklenmemiştir.
+
+Completion presentation authority:
+- Milestone reward, mevcut Wave 6 completion surface'inin içine additive bölüm olarak yerleşir.
+- Yeni kart sayısı 1 ise başlık `Yeni Bilgi Kartı`; birden fazlaysa `Bilgi Kartları Açıldı`.
+- Yalnız `newlyGrantedCards` gösterilir.
+- Her kart existing title + shortFact + category metadata'sını kullanır.
+- Already-owned-only milestone'da reward section gösterilmez.
+- Compact `360×640` ve tall `412×915` proof; one/multiple/none/L50/L100 reward states: **PASS**.
+- L50 major midpoint semantics korunur; milestone bilgi kartı grant edebilir ama route reward grant etmez.
+- L100 true-final semantics korunur; milestone bilgi kartı ile route reward/badge ayrı authority'ler olarak aynı completion destination'da birlikte bulunabilir.
+
+Persistence / compatibility authority:
+- `WordHuntProgressCodec.schemaVersion = 3` aynen korunur.
+- Storage prefix `bilgi_rotasi_word_hunt_progress_v1_` aynen korunur.
+- Card ownership mevcut `unlockedInfoCardIds` alanında tutulur.
+- Wave 7 için yeni persisted milestone/card/UI field eklenmemiştir.
+- Historical card IDs roundtrip korunur.
+- Existing 8 production route × 10 level = **80 legacy level ID** aynen korunur.
+- Production level/content 11–100'e genişletilmemiştir.
+- Existing grids, targetWords, bonusWords, route IDs ve content değiştirilmemiştir.
+- Common gameplay/input/path/target/bonus/timer/mistake/scoring engine değiştirilmemiştir.
+
+Android/runtime proof authority:
+- `Kelime Avı Android 16 görsel kanıtı`
+  - Run: `#606`
+  - Run ID: `35542990833`
+  - Exact HEAD: `ce18dfa128fe8bc0fbbe3f634dee68480ec2ab31`
+  - Result: **SUCCESS**
+  - Focused Word Hunt suite: **194 tests passed**
+  - Android visual proof first attempt: **SUCCESS**
+  - Reusable-map proof APK SHA256: `776cb40d41c96c87ada5063e19d8b73d9bd878f21df2688e66d2fc4985ce158b`
+  - Pixel/master-art proof APK SHA256: `82532c8c18660fb2063bf922779c400cf46665938ae0787371660f66bfad122d`
+  - Wave 5 gameplay proof APK SHA256: `808b64e4ab88b3e3991654dce3a4a46cc094913043d30f82b85818a76ad229a4`
+  - Reusable Android artifact: `BilgiRotasi-KelimeAvi-ReusableMap-Android16-ce18dfa128fe8bc0fbbe3f634dee68480ec2ab31` / ID `10615403981`
+  - Pixel-proof artifact: `BilgiRotasi-KelimeAvi-PixelProof-ce18dfa128fe8bc0fbbe3f634dee68480ec2ab31` / ID `10615468737`
+  - Gameplay artifact: `BilgiRotasi-KelimeAvi-Wave5-Gameplay-Android16-ce18dfa128fe8bc0fbbe3f634dee68480ec2ab31` / ID `10615384058`
+- `Kelime Avı üçleme Android 16 runtime görsel kanıtı`
+  - Run: `#115`
+  - Run ID: `35542990869`
+  - Exact HEAD: `ce18dfa128fe8bc0fbbe3f634dee68480ec2ab31`
+  - Result: **SUCCESS**
+  - Proof APK SHA256: `3938e0133883d5f05567eee4fdafe90e28dca54628aa3a40c29ded9aaec52646`
+  - Artifact: `BilgiRotasi-KelimeAvi-Trilogy-Runtime-ce18dfa128fe8bc0fbbe3f634dee68480ec2ab31` / ID `10615795336`
+  - Existing workflow contractındaki 15 Android 16 runtime screenshot paketi başarıyla üretildi/yüklendi.
+- `Orman Yolu Android çoklu ekran kanıtı`
+  - Run: `#182`
+  - Run ID: `35542990900`
+  - Exact HEAD: `ce18dfa128fe8bc0fbbe3f634dee68480ec2ab31`
+  - Result: **SUCCESS**
+  - Orman APK SHA256: `75fdb71687d3d2ce8596aa1cda1bb1ac009e66b035ce6c3da90d9eb1bf692d01`
+  - Orman proof: standard `1080×1920`, compact `720×1280`, tall `1080×2400` — **PASS**
+  - Orman artifact: `BilgiRotasi-KelimeAvi-Orman-MultiSize-ce18dfa128fe8bc0fbbe3f634dee68480ec2ab31` / ID `10615313948`
+  - Kadim Orman APK SHA256: `c276a05c0a5a828459075bd14ec5b02c1f64e3e47d3ae4518c1cbea5941ad7b8`
+  - Kadim Orman proof: standard `1080×1920`, compact `720×1280`, tall `1080×2400` — **PASS**
+  - Kadim Orman artifact: `BilgiRotasi-KelimeAvi-Orman2-MultiSize-ce18dfa128fe8bc0fbbe3f634dee68480ec2ab31` / ID `10615513329`
+- `AdMob PR doğrulaması`
+  - Run: `#983`
+  - Run ID: `35542990882`
+  - Exact HEAD: `ce18dfa128fe8bc0fbbe3f634dee68480ec2ab31`
+  - Result: **SUCCESS**
+  - Analyze + full test gate: **PASS**
+  - Android 16 cold-start first attempt: **SUCCESS**
+  - Required `APK_INSTALL / APP_LAUNCH / APP_PID / APP_ACTIVITY / APP_LOGCAT / APP_GATE`: **PASS**
+  - Artifact: `BilgiRotasi-AdMob-1.68.21-111-kanitlari` / ID `10615770580`
+
+Immutable / release safety:
+- Kayıp Şehir / Yeraltı Krallığı / Güneş İmparatorluğu immutable artwork lock: **PASS**.
+- Production/master artwork binary byte'ları Wave 7 için değiştirilmemiştir.
+- Version değiştirilmemiştir.
+- Release/tag/signed production artifact/Play Console işlemi yapılmamıştır.
+- Production branch'e write yapılmamıştır.
+- PR #213 merge edilmemiştir; Draft/Open kalır.
+
+Previous-wave authority:
+- Wave 0: **PASS**
+- Wave 1: **PASS**
+- Wave 2: **PASS**
+- Wave 3: **PASS**
+- Wave 4: **PASS**
+- Wave 5: **PASS**
+- Wave 6: **PASS**
+- Wave 7: **PASS**
+
+Next boundary:
+- Architecture migration audit'e göre sıradaki planlı aşama **WAVE 8 — EXISTING 10-LEVEL → SEGMENT 1 MIGRATION**.
+- Wave 8 existing absolute 1–10 identity/progress preservation, levelNames wiring ve strict uniqueness debt reporting boundary'sidir.
+- Wave 8 yüksek migration risklidir ve ayrı explicit owner instruction olmadan başlatılmaz.
+- Wave 7 closure Wave 8 content migration'ını, strict uniqueness rewrite'ını veya 11–100 content üretimini başlatmaz.
+
+Not: Bu manifest kendi docs-only closure commit SHA'sını self-reference edemez. Yukarıdaki `ce18dfa1...` SHA Wave 7 code/test + Android runtime exact implementation authority'sidir. Bu closure commit'inden sonra oluşan final integration HEAD cumulative validation workflow'unda yeniden doğrulanır; Android visual/runtime proof docs-only commit ile yeniden tetiklenmezse visual authority code/test validated implementation HEAD olarak `ce18dfa1...` kalır.
