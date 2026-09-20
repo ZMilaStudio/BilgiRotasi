@@ -8,6 +8,11 @@ on:
       - 'docs/project-memory/KELIME_AVI_2_0_*.md'
       - 'lib/word_hunt/word_hunt_models.dart'
       - 'lib/word_hunt/word_hunt_segment_projection.dart'
+      - 'lib/word_hunt/word_hunt_route_segment_host.dart'
+      - 'lib/word_hunt/word_hunt_reusable_route_map_screen.dart'
+      - 'lib/word_hunt/word_hunt_artwork_route_map_screen.dart'
+      - 'lib/word_hunt/word_hunt_gokyuzu_master_art_screen.dart'
+      - 'lib/word_hunt/word_hunt_pixel_proof_screen.dart'
       - 'lib/word_hunt/word_hunt_progress.dart'
       - 'lib/word_hunt/word_hunt_progress_codec.dart'
       - 'lib/word_hunt/word_hunt_progress_migration.dart'
@@ -17,6 +22,7 @@ on:
       - 'test/word_hunt_2_0_wave0_baseline_test.dart'
       - 'test/word_hunt_2_0_wave1_domain_foundation_test.dart'
       - 'test/word_hunt_2_0_wave2_persistence_v3_test.dart'
+      - 'test/word_hunt_2_0_wave3_renderer_segment_host_test.dart'
       - 'test/word_hunt_progress_codec_test.dart'
       - 'test/word_hunt_progress_codec_v2_test.dart'
       - 'test/word_hunt_route_reward_test.dart'
@@ -46,11 +52,16 @@ jobs:
       - name: Bağımlılıkları kur
         run: flutter pub get
 
-      - name: Wave 0+1+2 Dart format gate
+      - name: Wave 0+1+2+3 Dart format gate
         run: >-
           dart format --output=none --set-exit-if-changed
           lib/word_hunt/word_hunt_models.dart
           lib/word_hunt/word_hunt_segment_projection.dart
+          lib/word_hunt/word_hunt_route_segment_host.dart
+          lib/word_hunt/word_hunt_reusable_route_map_screen.dart
+          lib/word_hunt/word_hunt_artwork_route_map_screen.dart
+          lib/word_hunt/word_hunt_gokyuzu_master_art_screen.dart
+          lib/word_hunt/word_hunt_pixel_proof_screen.dart
           lib/word_hunt/word_hunt_progress.dart
           lib/word_hunt/word_hunt_progress_codec.dart
           lib/word_hunt/word_hunt_progress_migration.dart
@@ -60,6 +71,7 @@ jobs:
           test/word_hunt_2_0_wave0_baseline_test.dart
           test/word_hunt_2_0_wave1_domain_foundation_test.dart
           test/word_hunt_2_0_wave2_persistence_v3_test.dart
+          test/word_hunt_2_0_wave3_renderer_segment_host_test.dart
           test/word_hunt_progress_codec_v2_test.dart
 
       - name: Full repository analyze baseline gate
@@ -78,11 +90,16 @@ jobs:
           echo "Full analyzer issue count: $issues (Wave 0 baseline: 92)"
           test "$issues" -le 92
 
-      - name: Wave 1+2 targeted analyze gate
+      - name: Wave 1+2+3 targeted analyze gate
         run: >-
           flutter analyze --no-pub
           lib/word_hunt/word_hunt_models.dart
           lib/word_hunt/word_hunt_segment_projection.dart
+          lib/word_hunt/word_hunt_route_segment_host.dart
+          lib/word_hunt/word_hunt_reusable_route_map_screen.dart
+          lib/word_hunt/word_hunt_artwork_route_map_screen.dart
+          lib/word_hunt/word_hunt_gokyuzu_master_art_screen.dart
+          lib/word_hunt/word_hunt_pixel_proof_screen.dart
           lib/word_hunt/word_hunt_progress.dart
           lib/word_hunt/word_hunt_progress_codec.dart
           lib/word_hunt/word_hunt_progress_migration.dart
@@ -91,6 +108,7 @@ jobs:
           lib/word_hunt/word_hunt_screens.dart
           test/word_hunt_2_0_wave1_domain_foundation_test.dart
           test/word_hunt_2_0_wave2_persistence_v3_test.dart
+          test/word_hunt_2_0_wave3_renderer_segment_host_test.dart
           test/word_hunt_progress_codec_v2_test.dart
 
       - name: Wave 0 baseline tests
@@ -101,6 +119,21 @@ jobs:
 
       - name: Wave 2 persistence v3 tests
         run: flutter test test/word_hunt_2_0_wave2_persistence_v3_test.dart --reporter expanded
+
+      - name: Wave 3 renderer segment-host tests
+        run: flutter test test/word_hunt_2_0_wave3_renderer_segment_host_test.dart --reporter expanded
+
+      - name: Existing reusable map geometry regression
+        run: flutter test test/word_hunt_reusable_route_map_screen_test.dart --reporter expanded
+
+      - name: Existing route stop hitbox regression
+        run: flutter test test/word_hunt_route_stop_test.dart --reporter expanded
+
+      - name: Existing path presentation-order regression
+        run: flutter test test/word_hunt_trilogy_path_renderer_test.dart --reporter expanded
+
+      - name: Existing book chrome regression
+        run: flutter test test/word_hunt_book_regression_test.dart --reporter expanded
 
       - name: Existing model validator regression
         run: flutter test test/word_hunt_models_test.dart --reporter expanded
