@@ -344,9 +344,12 @@ class _WordHuntProductionEntryScreenState
     );
     final level = route.levels[levelIndex - 1];
     final parentOwnsCompletion = _catalogMode;
+    final explicitV2 = WordHuntSegmentProjection.isExplicitV2Route(route);
     final deferCompletion =
         parentOwnsCompletion ||
-        (level.type == WordHuntLevelType.routeFinal && !beforeRouteComplete);
+        (!explicitV2 &&
+            level.type == WordHuntLevelType.routeFinal &&
+            !beforeRouteComplete);
     final result = await Navigator.of(context).push<WordHuntLevelPlayResult>(
       MaterialPageRoute<WordHuntLevelPlayResult>(
         builder: (_) {
@@ -393,7 +396,8 @@ class _WordHuntProductionEntryScreenState
         return;
       }
 
-      if (level.type == WordHuntLevelType.routeFinal &&
+      if (!explicitV2 &&
+          level.type == WordHuntLevelType.routeFinal &&
           !beforeRouteComplete &&
           !transition.afterRouteComplete) {
         await _showFinalIncomplete(route, next);
