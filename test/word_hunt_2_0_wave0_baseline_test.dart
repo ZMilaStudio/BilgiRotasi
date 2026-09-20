@@ -127,14 +127,14 @@ void main() {
   };
 
   const expectedContentFingerprints = <String, String>{
-    'baslangic-limani': '5a8fd73562b75c7a',
-    'gokyuzu-adalari': '483920a777d337cf',
-    'orman-yolu': '6b927e5e703fb5e9',
-    'orman-2': '208f642c3cd763fd',
-    'kristal-vadisi': '260fe08fc4c1a28e',
-    'kayip-sehir': '10c0b45212c98e84',
-    'yeralti-kralligi': 'f3a240424e29fa76',
-    'gunes-imparatorlugu': '19186324117b6a80',
+    'baslangic-limani': '31f8e6fa',
+    'gokyuzu-adalari': '0466644f',
+    'orman-yolu': 'c297be09',
+    'orman-2': 'de83535d',
+    'kristal-vadisi': 'fcd1e9ce',
+    'kayip-sehir': '5c9041c4',
+    'yeralti-kralligi': '71d752f6',
+    'gunes-imparatorlugu': '0a6c7f40',
   };
 
   const expectedDuplicateDebt = <String, List<String>>{
@@ -333,7 +333,7 @@ String _contentFingerprint(WordHuntRouteDefinition route) {
       ..add('B:${level.bonusWords.join("|")}');
   }
 
-  return _fnv1a64Hex(lines.join('\n'));
+  return _fnv1a32Hex(lines.join('\n'));
 }
 
 List<String> _duplicateDebt(WordHuntRouteDefinition route) {
@@ -365,16 +365,16 @@ List<String> _duplicateDebt(WordHuntRouteDefinition route) {
   return debt;
 }
 
-String _fnv1a64Hex(String value) {
-  const offsetBasis = 0xcbf29ce484222325;
-  const prime = 0x100000001b3;
-  const mask64 = 0xffffffffffffffff;
+String _fnv1a32Hex(String value) {
+  const offsetBasis = 0x811c9dc5;
+  const prime = 0x01000193;
+  const mask32 = 0xffffffff;
 
   var hash = offsetBasis;
   for (final byte in utf8.encode(value)) {
     hash ^= byte;
-    hash = (hash * prime) & mask64;
+    hash = (hash * prime) & mask32;
   }
 
-  return hash.toUnsigned(64).toRadixString(16).padLeft(16, '0');
+  return hash.toRadixString(16).padLeft(8, '0');
 }
