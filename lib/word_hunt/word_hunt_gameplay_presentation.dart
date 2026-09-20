@@ -289,17 +289,16 @@ abstract final class WordHuntRoutePresentationProfiles {
         ),
       );
 
-  static final WordHuntRoutePresentationProfile ormanYolu =
-      _fromVisualTheme(
-        profileId: 'orman-yolu-forest',
-        theme: WordHuntRouteVisualThemes.ormanYolu,
-        scene: const WordHuntGameplaySceneDefinition(
-          id: 'forest',
-          base64AssetParts: wordHuntOrmanCleanEnvironmentAssetParts,
-          backgroundColor: Color(0xFF07150D),
-        ),
-        completionIcon: Icons.park_rounded,
-      );
+  static final WordHuntRoutePresentationProfile ormanYolu = _fromVisualTheme(
+    profileId: 'orman-yolu-forest',
+    theme: WordHuntRouteVisualThemes.ormanYolu,
+    scene: const WordHuntGameplaySceneDefinition(
+      id: 'forest',
+      base64AssetParts: wordHuntOrmanCleanEnvironmentAssetParts,
+      backgroundColor: Color(0xFF07150D),
+    ),
+    completionIcon: Icons.park_rounded,
+  );
 
   static final WordHuntRoutePresentationProfile orman2 = _fromVisualTheme(
     profileId: 'orman-2-ancient-forest',
@@ -323,17 +322,16 @@ abstract final class WordHuntRoutePresentationProfiles {
     completionIcon: Icons.diamond_rounded,
   );
 
-  static final WordHuntRoutePresentationProfile kayipSehir =
-      _fromVisualTheme(
-        profileId: 'kayip-sehir-archaeological',
-        theme: WordHuntKayipSehirVisualTheme.production,
-        scene: const WordHuntGameplaySceneDefinition(
-          id: 'lost-city',
-          assetPath: WordHuntKayipSehirVisualTheme.assetPath,
-          backgroundColor: Color(0xFF46362B),
-        ),
-        completionIcon: Icons.account_balance_rounded,
-      );
+  static final WordHuntRoutePresentationProfile kayipSehir = _fromVisualTheme(
+    profileId: 'kayip-sehir-archaeological',
+    theme: WordHuntKayipSehirVisualTheme.production,
+    scene: const WordHuntGameplaySceneDefinition(
+      id: 'lost-city',
+      assetPath: WordHuntKayipSehirVisualTheme.assetPath,
+      backgroundColor: Color(0xFF46362B),
+    ),
+    completionIcon: Icons.account_balance_rounded,
+  );
 
   static final WordHuntRoutePresentationProfile yeraltiKralligi =
       _fromVisualTheme(
@@ -400,10 +398,7 @@ abstract final class WordHuntRoutePresentationProfiles {
 }
 
 class WordHuntGameplaySceneBackground extends StatefulWidget {
-  const WordHuntGameplaySceneBackground({
-    super.key,
-    required this.scene,
-  });
+  const WordHuntGameplaySceneBackground({super.key, required this.scene});
 
   final WordHuntGameplaySceneDefinition scene;
 
@@ -485,10 +480,7 @@ class _WordHuntGameplaySceneBackgroundState
               decoration: BoxDecoration(
                 gradient: RadialGradient(
                   radius: 0.95,
-                  colors: <Color>[
-                    Colors.transparent,
-                    scene.vignetteColor,
-                  ],
+                  colors: <Color>[Colors.transparent, scene.vignetteColor],
                 ),
               ),
             ),
