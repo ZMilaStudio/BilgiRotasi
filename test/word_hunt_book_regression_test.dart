@@ -55,16 +55,18 @@ void main() {
     };
 
     expect(
-      starterIds,
-      isSubsetOf(
-        WordHuntStarterContent.infoCards.map((card) => card.id).toSet(),
-      ),
+      WordHuntStarterContent.infoCards
+          .map((card) => card.id)
+          .toSet()
+          .containsAll(starterIds),
+      isTrue,
     );
     expect(
-      skyIds,
-      isSubsetOf(
-        WordHuntGokyuzuContent.infoCards.map((card) => card.id).toSet(),
-      ),
+      WordHuntGokyuzuContent.infoCards
+          .map((card) => card.id)
+          .toSet()
+          .containsAll(skyIds),
+      isTrue,
     );
   });
 
