@@ -108,15 +108,17 @@ jobs:
           test/word_hunt_menu_entry_test.dart
           test/word_hunt_progress_codec_v2_test.dart;
           git diff --
-          lib/word_hunt/word_hunt_gameplay_presentation.dart
-          lib/word_hunt/word_hunt_gameplay_visual_proof_main.dart
-          lib/word_hunt/word_hunt_deferred_completion_level_screen.dart
-          lib/word_hunt/word_hunt_route_catalog.dart
           lib/main.dart
           lib/account_cloud.dart
           lib/main_navigation.dart
           lib/player_username.dart
           lib/product_mode_entry.dart
+          lib/word_hunt/word_hunt_gameplay_presentation.dart
+          lib/word_hunt/word_hunt_gameplay_visual_proof_main.dart
+          lib/word_hunt/word_hunt_deferred_completion_level_screen.dart
+          lib/word_hunt/word_hunt_route_catalog.dart
+          lib/word_hunt/word_hunt_production_entry_screen.dart
+          lib/word_hunt/word_hunt_screens.dart
           lib/word_hunt/word_hunt_route_segment_host.dart
           lib/word_hunt/word_hunt_reusable_route_map_screen.dart
           lib/word_hunt/word_hunt_artwork_route_map_screen.dart
@@ -125,26 +127,23 @@ jobs:
           lib/word_hunt/word_hunt_reference_route_screen.dart
           lib/word_hunt/word_hunt_home_projection.dart
           lib/word_hunt/word_hunt_home_screen.dart
-          lib/word_hunt/word_hunt_gameplay_presentation.dart
-          lib/word_hunt/word_hunt_gameplay_visual_proof_main.dart
-          lib/word_hunt/word_hunt_deferred_completion_level_screen.dart
-          lib/word_hunt/word_hunt_route_catalog.dart
-          lib/word_hunt/word_hunt_production_entry_screen.dart
           lib/word_hunt/word_hunt_route_selector.dart
           test/word_hunt_2_0_wave3_renderer_segment_host_test.dart
           test/word_hunt_2_0_wave4_product_entry_home_test.dart
           test/word_hunt_2_0_wave5_gameplay_presentation_test.dart
           test/word_hunt_menu_entry_test.dart;
           git diff --exit-code --
-          lib/word_hunt/word_hunt_gameplay_presentation.dart
-          lib/word_hunt/word_hunt_gameplay_visual_proof_main.dart
-          lib/word_hunt/word_hunt_deferred_completion_level_screen.dart
-          lib/word_hunt/word_hunt_route_catalog.dart
           lib/main.dart
           lib/account_cloud.dart
           lib/main_navigation.dart
           lib/player_username.dart
           lib/product_mode_entry.dart
+          lib/word_hunt/word_hunt_gameplay_presentation.dart
+          lib/word_hunt/word_hunt_gameplay_visual_proof_main.dart
+          lib/word_hunt/word_hunt_deferred_completion_level_screen.dart
+          lib/word_hunt/word_hunt_route_catalog.dart
+          lib/word_hunt/word_hunt_production_entry_screen.dart
+          lib/word_hunt/word_hunt_screens.dart
           lib/word_hunt/word_hunt_route_segment_host.dart
           lib/word_hunt/word_hunt_reusable_route_map_screen.dart
           lib/word_hunt/word_hunt_artwork_route_map_screen.dart
@@ -153,7 +152,6 @@ jobs:
           lib/word_hunt/word_hunt_reference_route_screen.dart
           lib/word_hunt/word_hunt_home_projection.dart
           lib/word_hunt/word_hunt_home_screen.dart
-          lib/word_hunt/word_hunt_production_entry_screen.dart
           lib/word_hunt/word_hunt_route_selector.dart
           test/word_hunt_2_0_wave3_renderer_segment_host_test.dart
           test/word_hunt_2_0_wave4_product_entry_home_test.dart
@@ -197,6 +195,10 @@ jobs:
           lib/word_hunt/word_hunt_route_rewards.dart
           lib/word_hunt/word_hunt_home_projection.dart
           lib/word_hunt/word_hunt_home_screen.dart
+          lib/word_hunt/word_hunt_gameplay_presentation.dart
+          lib/word_hunt/word_hunt_gameplay_visual_proof_main.dart
+          lib/word_hunt/word_hunt_deferred_completion_level_screen.dart
+          lib/word_hunt/word_hunt_route_catalog.dart
           lib/word_hunt/word_hunt_production_entry_screen.dart
           lib/word_hunt/word_hunt_route_selector.dart
           lib/word_hunt/word_hunt_screens.dart
