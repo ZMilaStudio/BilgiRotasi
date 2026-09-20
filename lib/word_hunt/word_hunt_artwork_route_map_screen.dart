@@ -266,8 +266,6 @@ class _ForestStop extends StatelessWidget {
                     ),
                   ),
                 ),
-                  ),
-                ),
               Opacity(
                 opacity: isFinal && !unlocked ? .72 : 1,
                 child: _Base64Image(
