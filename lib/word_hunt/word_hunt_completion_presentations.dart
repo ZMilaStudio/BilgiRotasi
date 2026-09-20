@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'word_hunt_completion_orchestration.dart';
+import 'word_hunt_models.dart';
 
 enum WordHuntCompletionUiAction { primary, returnToRoute, routes, home }
 
@@ -33,6 +34,7 @@ class WordHuntCompletionPresentation extends StatelessWidget {
     final summary = destination.summary;
     final skin = summary.presentationProfile.gameplaySkin;
     final reward = summary.reward;
+    final infoReward = destination.milestoneInfoReward;
     final nextRoute = summary.nextUnlockedRoute;
     final bonusText =
         summary.hasUnknownBonusHistory
@@ -171,6 +173,17 @@ class WordHuntCompletionPresentation extends StatelessWidget {
                         surface: skin.surfaceColor,
                         border: skin.surfaceBorderColor,
                       ),
+                      if (infoReward.shouldPresent) ...<Widget>[
+                        const SizedBox(height: 12),
+                        _MilestoneInfoRewardSection(
+                          cards: infoReward.newlyGrantedCards,
+                          accent: skin.accentColor,
+                          primaryText: skin.primaryTextColor,
+                          secondaryText: skin.secondaryTextColor,
+                          surface: skin.bonusSurfaceColor,
+                          border: skin.surfaceBorderColor,
+                        ),
+                      ],
                       if (_strong && reward != null) ...<Widget>[
                         const SizedBox(height: 12),
                         Container(
@@ -293,6 +306,84 @@ class WordHuntCompletionPresentation extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+
+class _MilestoneInfoRewardSection extends StatelessWidget {
+  const _MilestoneInfoRewardSection({
+    required this.cards,
+    required this.accent,
+    required this.primaryText,
+    required this.secondaryText,
+    required this.surface,
+    required this.border,
+  });
+
+  final List<WordHuntInfoCard> cards;
+  final Color accent;
+  final Color primaryText;
+  final Color secondaryText;
+  final Color surface;
+  final Color border;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      key: const Key('word_hunt_completion_info_reward'),
+      width: double.infinity,
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: border),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text(
+            cards.length == 1 ? 'Yeni Bilgi Kartı' : 'Bilgi Kartları Açıldı',
+            key: const Key('word_hunt_completion_info_reward_title'),
+            style: TextStyle(
+              color: accent,
+              fontSize: 14,
+              fontWeight: FontWeight.w900,
+            ),
+          ),
+          const SizedBox(height: 8),
+          for (var index = 0; index < cards.length; index++) ...<Widget>[
+            if (index > 0) Divider(height: 18, color: border),
+            Text(
+              cards[index].title,
+              key: Key('word_hunt_completion_info_card_${cards[index].id}'),
+              style: TextStyle(
+                color: primaryText,
+                fontSize: 15,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+            const SizedBox(height: 3),
+            Text(
+              cards[index].shortFact,
+              style: TextStyle(
+                color: primaryText,
+                fontSize: 12.5,
+                height: 1.28,
+              ),
+            ),
+            const SizedBox(height: 3),
+            Text(
+              cards[index].category,
+              style: TextStyle(
+                color: secondaryText,
+                fontSize: 11.5,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ],
+        ],
       ),
     );
   }
