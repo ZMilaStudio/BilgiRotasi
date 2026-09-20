@@ -7,6 +7,7 @@ import 'word_hunt_pixel_proof_screen.dart';
 import 'word_hunt_progress.dart';
 import 'word_hunt_production_assets.dart';
 import 'word_hunt_route_stop.dart';
+import 'word_hunt_route_segment_host.dart';
 import 'word_hunt_starter_content.dart';
 
 /// Kullanıcının onayladığı Başlangıç Limanı referansının kod tarafındaki
@@ -146,6 +147,7 @@ class WordHuntReferenceRouteScreen extends StatelessWidget {
     this.onCompass,
     this.onBook,
     this.onLevelTap,
+    this.segmentIndex = 1,
   });
 
   final WordHuntRouteDefinition route;
@@ -156,12 +158,18 @@ class WordHuntReferenceRouteScreen extends StatelessWidget {
   final VoidCallback? onCompass;
   final VoidCallback? onBook;
   final ValueChanged<int>? onLevelTap;
+  final int segmentIndex;
 
   static const WordHuntRouteStopMetrics _metrics =
       WordHuntRouteStopMetrics.referenceBaseline;
 
   @override
   Widget build(BuildContext context) {
+    final host = WordHuntRouteSegmentHost.forRoute(
+      route: route,
+      progress: progress,
+      segmentIndex: segmentIndex,
+    );
     if (route.id == WordHuntStarterContent.baslangicLimani.id &&
         sceneAssetPath == null) {
       final nodeNineOpen = WordHuntRouteProgressEngine.isLevelUnlocked(
@@ -179,11 +187,14 @@ class WordHuntReferenceRouteScreen extends StatelessWidget {
         onCompass: onCompass,
         onBook: onBook,
         onLevelTap: onLevelTap,
+        segmentIndex: segmentIndex,
       );
     }
 
     final totalStars = WordHuntRouteProgressEngine.totalStars(route, progress);
-    final lastUnlocked = _lastUnlockedIndex();
+    final lastUnlocked = host.nodes
+        .where((node) => node.unlocked)
+        .fold<int>(0, (last, node) => node.localNodeIndex);
 
     return Scaffold(
       backgroundColor: const Color(0xFF020611),
@@ -198,11 +209,11 @@ class WordHuntReferenceRouteScreen extends StatelessWidget {
           );
           const routeSize = WordHuntReferenceRouteLayout.canonicalSize;
           final points = WordHuntReferenceRouteLayout.stops
-              .take(route.levels.length)
+              .take(host.nodes.length)
               .toList(growable: false);
-          final levelTypes = route.levels
+          final levelTypes = host.nodes
               .take(points.length)
-              .map((level) => level.type)
+              .map((node) => node.gameplayType)
               .toList(growable: false);
 
           return ClipRect(
@@ -257,16 +268,10 @@ class WordHuntReferenceRouteScreen extends StatelessWidget {
                                 )
                                   _positionStop(
                                     point: points[index],
-                                    level: route.levels[index],
+                                    node: host.nodes[index],
                                     stars: progress.starsFor(
-                                      route.levels[index].id,
+                                      host.nodes[index].levelId,
                                     ),
-                                    unlocked:
-                                        WordHuntRouteProgressEngine.isLevelUnlocked(
-                                          route,
-                                          progress,
-                                          index + 1,
-                                        ),
                                     routeSize: routeSize,
                                   ),
                               ],
@@ -312,23 +317,13 @@ class WordHuntReferenceRouteScreen extends StatelessWidget {
     );
   }
 
-  int _lastUnlockedIndex() {
-    var last = 0;
-    for (var index = 1; index <= route.levels.length; index++) {
-      if (WordHuntRouteProgressEngine.isLevelUnlocked(route, progress, index)) {
-        last = index;
-      }
-    }
-    return last;
-  }
-
   Widget _positionStop({
     required Offset point,
-    required WordHuntLevelDefinition level,
+    required WordHuntRouteMapNodeProjection node,
     required int stars,
-    required bool unlocked,
     required Size routeSize,
   }) {
+    final level = node.level;
     final special = level.type != WordHuntLevelType.normal;
     final width = _metrics.containerWidthFor(level.type);
     final height = _metrics.containerHeightFor(level.type);
@@ -355,13 +350,13 @@ class WordHuntReferenceRouteScreen extends StatelessWidget {
         child: WordHuntRouteStop(
           level: level,
           stars: stars,
-          unlocked: unlocked,
+          unlocked: node.unlocked,
           theme: WordHuntRouteStopTheme.harbor,
           metrics: _metrics,
           labelOnLeft: false,
           onTap:
-              unlocked && onLevelTap != null
-                  ? () => onLevelTap!(level.index)
+              node.unlocked && onLevelTap != null
+                  ? () => onLevelTap!(node.absoluteLevelIndex)
                   : null,
         ),
       ),
