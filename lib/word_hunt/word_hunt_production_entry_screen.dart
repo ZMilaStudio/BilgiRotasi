@@ -649,8 +649,6 @@ class _WordHuntProductionEntryScreenState
             progress: _progress,
             onBack: _leaveRoute,
             onInfo: _showInfo,
-            onCompass: _showCompassHint,
-            onBook: _showBook,
             onLevelTap: _openLevel,
             segmentIndex: _activeSegmentIndex,
           );
