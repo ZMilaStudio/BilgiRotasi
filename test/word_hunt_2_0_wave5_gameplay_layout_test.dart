@@ -7,10 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  const viewports = <Size>[
-    Size(360, 640),
-    Size(412, 915),
-  ];
+  const viewports = <Size>[Size(360, 640), Size(412, 915)];
 
   testWidgets('all production gameplay profiles fit compact and tall phones', (
     tester,
@@ -49,12 +46,7 @@ void main() {
           const Key('word_hunt_production_grid'),
           const Key('word_hunt_production_instruction_plate'),
         ]) {
-          _expectInsideViewport(
-            tester,
-            key,
-            viewport,
-            reason: entry.route.id,
-          );
+          _expectInsideViewport(tester, key, viewport, reason: entry.route.id);
         }
       }
     }
@@ -116,11 +108,7 @@ void main() {
           findsOneWidget,
           reason: entry.route.id,
         );
-        expect(
-          find.text('Rotaya Dön'),
-          findsOneWidget,
-          reason: entry.route.id,
-        );
+        expect(find.text('Rotaya Dön'), findsOneWidget, reason: entry.route.id);
         expect(
           tester.takeException(),
           isNull,
