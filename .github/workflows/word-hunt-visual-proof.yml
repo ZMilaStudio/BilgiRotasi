@@ -13,6 +13,7 @@ on:
       - 'assets/word_hunt/**'
       - 'tools/compare_kelime_avi_master_art.dart'
       - 'tools/run_word_hunt_android16_visual_proof.sh'
+      - 'tools/run_word_hunt_wave5_gameplay_visual_proof.sh'
       - 'pubspec.yaml'
       - '.github/workflows/word-hunt-visual-proof.yml'
   workflow_dispatch:
@@ -85,6 +86,7 @@ jobs:
             test/word_hunt_themed_production_route_screen_test.dart \
             test/word_hunt_orman_content_test.dart \
             test/word_hunt_scoring_test.dart \
+            test/word_hunt_2_0_wave5_gameplay_presentation_test.dart \
             test/word_hunt_starter_content_test.dart \
             --reporter expanded
           git diff --check
@@ -161,6 +163,21 @@ jobs:
           echo "SOURCE_EQUALS_PACKAGED=YES count=2" \
             | tee reports/WORD_HUNT_VISUAL_PROOF_ASSET_COMPARE.txt
 
+      - name: Wave 5 route-aware gameplay proof APK'sını üret
+        shell: bash
+        run: |
+          set -euo pipefail
+          flutter build apk --debug \
+            -t lib/word_hunt/word_hunt_gameplay_visual_proof_main.dart \
+            --dart-define=ADMOB_ENVIRONMENT=test
+          test -s build/app/outputs/flutter-apk/app-debug.apk
+          cp build/app/outputs/flutter-apk/app-debug.apk \
+            reports/WORD_HUNT_WAVE5_GAMEPLAY_PROOF.apk
+          sha256sum reports/WORD_HUNT_WAVE5_GAMEPLAY_PROOF.apk \
+            | tee reports/WORD_HUNT_WAVE5_GAMEPLAY_APK_SHA256.txt
+          git rev-parse HEAD \
+            | tee reports/WORD_HUNT_WAVE5_GAMEPLAY_HEAD_SHA.txt
+
       - name: Android emulator KVM erişimini hazırla
         shell: bash
         run: |
@@ -185,7 +202,9 @@ jobs:
           heap-size: 512M
           emulator-boot-timeout: 1200
           disable-animations: false
-          script: bash tools/run_word_hunt_android16_visual_proof.sh
+          script: |
+            bash tools/run_word_hunt_android16_visual_proof.sh
+            bash tools/run_word_hunt_wave5_gameplay_visual_proof.sh
 
       - name: İlk Android 16 görsel kanıt denemesini sınıflandır
         id: android16_visual_retry
@@ -203,7 +222,8 @@ jobs:
           app_failure_pattern='FATAL EXCEPTION|ANR in com\.leventua\.bilgirotasi|am_crash.*com\.leventua\.bilgirotasi|am_proc_died.*com\.leventua\.bilgirotasi|Process com\.leventua\.bilgirotasi .*has died|Cmdline: com\.leventua\.bilgirotasi'
           if grep -Eqi "$app_failure_pattern" \
               reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_LOGCAT.txt \
-              reports/WORD_HUNT_VISUAL_PROOF_LOGCAT.txt 2>/dev/null; then
+              reports/WORD_HUNT_VISUAL_PROOF_LOGCAT.txt \
+              reports/WORD_HUNT_WAVE5_GAMEPLAY_ANDROID16_LOGCAT.txt 2>/dev/null; then
             echo 'Android visual proof detected an application crash/ANR/process death; infrastructure retry is forbidden.' >&2
             exit 1
           fi
@@ -236,7 +256,9 @@ jobs:
           heap-size: 512M
           emulator-boot-timeout: 1200
           disable-animations: false
-          script: bash tools/run_word_hunt_android16_visual_proof.sh
+          script: |
+            bash tools/run_word_hunt_android16_visual_proof.sh
+            bash tools/run_word_hunt_wave5_gameplay_visual_proof.sh
 
       - name: Android 16 görsel kanıt kapısını sonuçlandır
         if: always()
@@ -261,6 +283,12 @@ jobs:
           test -s reports/WORD_HUNT_VISUAL_PROOF_ACTIVITY.txt
           test -s reports/WORD_HUNT_VISUAL_PROOF_LOGCAT.txt
           test -s reports/WORD_HUNT_VISUAL_PROOF_PIXEL_CHECK.txt
+          test -s reports/WORD_HUNT_WAVE5_GAMEPLAY_VISUAL_PROOF.txt
+          test -s reports/WORD_HUNT_WAVE5_GAMEPLAY_ANDROID16_LOGCAT.txt
+          test -s reports/WORD_HUNT_WAVE5_GAMEPLAY_HEAD_SHA.txt
+          test -s reports/WORD_HUNT_WAVE5_GAMEPLAY_APK_SHA256.txt
+          test "$(find reports/wave5-gameplay -type f -name 'WAVE5_*.png' | wc -l)" -eq 24
+          grep -Fq 'RESULT=PASS' reports/WORD_HUNT_WAVE5_GAMEPLAY_VISUAL_PROOF.txt
           grep -Fq '[WORD_HUNT_REUSABLE_MAP_PROOF_ARTWORK_READY]' \
             reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_RUNTIME.txt
           grep -Fq '[WORD_HUNT_REUSABLE_MAP_PROOF_FRAME_READY]' \
@@ -288,6 +316,22 @@ jobs:
             reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_APK_SHA256.txt
             reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_PIXEL_CHECK.txt
             reports/word-hunt-android16-attempt-1/**
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Wave 5 gameplay Android kanıtlarını yükle
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: BilgiRotasi-KelimeAvi-Wave5-Gameplay-Android16-${{ env.PROOF_SHA }}
+          path: |
+            reports/WORD_HUNT_WAVE5_GAMEPLAY_VISUAL_PROOF.txt
+            reports/WORD_HUNT_WAVE5_GAMEPLAY_ANDROID16_LOGCAT.txt
+            reports/WORD_HUNT_WAVE5_GAMEPLAY_LAUNCH.txt
+            reports/WORD_HUNT_WAVE5_GAMEPLAY_INSTALL.txt
+            reports/WORD_HUNT_WAVE5_GAMEPLAY_HEAD_SHA.txt
+            reports/WORD_HUNT_WAVE5_GAMEPLAY_APK_SHA256.txt
+            reports/wave5-gameplay/**
           if-no-files-found: error
           retention-days: 30
 
