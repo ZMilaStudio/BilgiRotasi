@@ -46,6 +46,10 @@ class WordHuntCompletionPresentation extends StatelessWidget {
                 ' / ' +
                 summary.maximumBonusTotal.toString();
 
+    final viewportHeight = MediaQuery.sizeOf(context).height;
+    final surfaceHeight =
+        (viewportHeight * (_strong ? 0.90 : 0.78)).clamp(360.0, 720.0);
+
     return Dialog(
       key: Key(
         _strong
@@ -61,6 +65,7 @@ class WordHuntCompletionPresentation extends StatelessWidget {
           maxHeight: MediaQuery.sizeOf(context).height * 0.92,
         ),
         child: Container(
+          height: surfaceHeight,
           padding: EdgeInsets.fromLTRB(
             _strong ? 24 : 20,
             _strong ? 26 : 20,
@@ -93,10 +98,13 @@ class WordHuntCompletionPresentation extends StatelessWidget {
               ),
             ],
           ),
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
+          child: Column(
+            children: <Widget>[
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
                 Icon(
                   skin.completionIcon,
                   key: const Key('word_hunt_completion_profile_icon'),
@@ -216,62 +224,65 @@ class WordHuntCompletionPresentation extends StatelessWidget {
                     ),
                   ),
                 ],
-                const SizedBox(height: 18),
-                SizedBox(
-                  width: double.infinity,
-                  height: 46,
-                  child: FilledButton(
-                    key: const Key('word_hunt_completion_primary'),
-                    onPressed:
-                        () => Navigator.of(context).pop(
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              SizedBox(
+                width: double.infinity,
+                height: 46,
+                child: FilledButton(
+                  key: const Key('word_hunt_completion_primary'),
+                  onPressed:
+                      () => Navigator.of(context).pop(
                           destination.kind ==
                                   WordHuntCompletionDestinationKind
                                       .terminalRouteComplete
                               ? WordHuntCompletionUiAction.routes
                               : WordHuntCompletionUiAction.primary,
                         ),
-                    style: FilledButton.styleFrom(
-                      backgroundColor: skin.finishButtonColor,
-                      foregroundColor: skin.primaryTextColor,
-                      side: BorderSide(color: skin.accentColor),
-                    ),
-                    child: Text(_primaryLabel),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: skin.finishButtonColor,
+                    foregroundColor: skin.primaryTextColor,
+                    side: BorderSide(color: skin.accentColor),
                   ),
+                  child: Text(_primaryLabel),
                 ),
-                const SizedBox(height: 7),
+              ),
+              const SizedBox(height: 7),
+              SizedBox(
+                width: double.infinity,
+                child: TextButton(
+                  key: const Key('word_hunt_completion_return_route'),
+                  onPressed:
+                      () => Navigator.of(
+                        context,
+                      ).pop(WordHuntCompletionUiAction.returnToRoute),
+                  style: TextButton.styleFrom(
+                    foregroundColor: skin.primaryTextColor,
+                  ),
+                  child: const Text('Haritaya Dön'),
+                ),
+              ),
+              if (summary.terminal) ...<Widget>[
+                const SizedBox(height: 2),
                 SizedBox(
                   width: double.infinity,
                   child: TextButton(
-                    key: const Key('word_hunt_completion_return_route'),
+                    key: const Key('word_hunt_completion_home'),
                     onPressed:
                         () => Navigator.of(
                           context,
-                        ).pop(WordHuntCompletionUiAction.returnToRoute),
+                        ).pop(WordHuntCompletionUiAction.home),
                     style: TextButton.styleFrom(
-                      foregroundColor: skin.primaryTextColor,
+                      foregroundColor: skin.secondaryTextColor,
                     ),
-                    child: const Text('Haritaya Dön'),
+                    child: const Text('Kelime Avı Ana Sayfa'),
                   ),
                 ),
-                if (summary.terminal) ...<Widget>[
-                  const SizedBox(height: 2),
-                  SizedBox(
-                    width: double.infinity,
-                    child: TextButton(
-                      key: const Key('word_hunt_completion_home'),
-                      onPressed:
-                          () => Navigator.of(
-                            context,
-                          ).pop(WordHuntCompletionUiAction.home),
-                      style: TextButton.styleFrom(
-                        foregroundColor: skin.secondaryTextColor,
-                      ),
-                      child: const Text('Kelime Avı Ana Sayfa'),
-                    ),
-                  ),
-                ],
               ],
-            ),
+            ],
           ),
         ),
       ),
