@@ -265,7 +265,6 @@ class WordHuntReferenceRouteScreen extends StatelessWidget {
                               ],
                             ),
                           ),
-                            ),
                         ],
                       ),
                     ),
