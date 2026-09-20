@@ -478,9 +478,7 @@ class _WordHuntLevelProductionScreenState
           children: [
             KeyedSubtree(
               key: const Key('word_hunt_production_gameplay_background'),
-              child: WordHuntGameplaySceneBackground(
-                scene: presentation.scene,
-              ),
+              child: WordHuntGameplaySceneBackground(scene: presentation.scene),
             ),
             SafeArea(
               child: LayoutBuilder(
@@ -1531,7 +1529,6 @@ class _WordHuntLevelPrototypeScreenState
   }
 }
 
-
 class _HarborCompletionDialog extends StatelessWidget {
   const _HarborCompletionDialog({
     required this.skin,
@@ -1581,10 +1578,7 @@ class _HarborCompletionDialog extends StatelessWidget {
                 blurRadius: 24,
                 offset: Offset(0, 11),
               ),
-              BoxShadow(
-                color: skin.connectorGlowColor,
-                blurRadius: 14,
-              ),
+              BoxShadow(color: skin.connectorGlowColor, blurRadius: 14),
             ],
           ),
           child: Column(
@@ -1597,10 +1591,7 @@ class _HarborCompletionDialog extends StatelessWidget {
                   color: skin.accentColor,
                   borderRadius: BorderRadius.circular(999),
                   boxShadow: <BoxShadow>[
-                    BoxShadow(
-                      color: skin.connectorGlowColor,
-                      blurRadius: 8,
-                    ),
+                    BoxShadow(color: skin.connectorGlowColor, blurRadius: 8),
                   ],
                 ),
               ),
@@ -1646,17 +1637,19 @@ class _HarborCompletionDialog extends StatelessWidget {
                           : Icons.star_outline_rounded,
                       key: Key('word_hunt_production_result_star_${index + 1}'),
                       size: 34,
-                      color: index < stars
-                          ? skin.accentColor
-                          : skin.secondaryTextColor.withValues(alpha: .45),
-                      shadows: index < stars
-                          ? <Shadow>[
-                              Shadow(
-                                color: skin.connectorGlowColor,
-                                blurRadius: 10,
-                              ),
-                            ]
-                          : const <Shadow>[],
+                      color:
+                          index < stars
+                              ? skin.accentColor
+                              : skin.secondaryTextColor.withValues(alpha: .45),
+                      shadows:
+                          index < stars
+                              ? <Shadow>[
+                                Shadow(
+                                  color: skin.connectorGlowColor,
+                                  blurRadius: 10,
+                                ),
+                              ]
+                              : const <Shadow>[],
                     ),
                   ),
                 ),
@@ -1757,7 +1750,6 @@ class _HarborCompletionDialog extends StatelessWidget {
   }
 }
 
-
 class _HarborResultMetric extends StatelessWidget {
   const _HarborResultMetric({
     required this.skin,
@@ -1843,15 +1835,16 @@ class _HarborGameplayHeader extends StatelessWidget {
               padding: EdgeInsets.zero,
               foregroundColor: skin.primaryTextColor,
             ),
-            icon: backAsset == null
-                ? const Icon(Icons.arrow_back_rounded)
-                : Image.asset(
-                    backAsset,
-                    width: 34,
-                    height: 34,
-                    fit: BoxFit.contain,
-                    filterQuality: FilterQuality.high,
-                  ),
+            icon:
+                backAsset == null
+                    ? const Icon(Icons.arrow_back_rounded)
+                    : Image.asset(
+                      backAsset,
+                      width: 34,
+                      height: 34,
+                      fit: BoxFit.contain,
+                      filterQuality: FilterQuality.high,
+                    ),
           ),
           const SizedBox(width: 9),
           Expanded(
@@ -1899,7 +1892,6 @@ class _HarborGameplayHeader extends StatelessWidget {
   }
 }
 
-
 class _HarborMetricPlate extends StatelessWidget {
   const _HarborMetricPlate({
     super.key,
@@ -1923,17 +1915,19 @@ class _HarborMetricPlate extends StatelessWidget {
       height: 45,
       decoration: BoxDecoration(
         color: panelAsset == null ? skin.surfaceColor : null,
-        image: panelAsset == null
-            ? null
-            : DecorationImage(
-                image: AssetImage(panelAsset),
-                fit: BoxFit.fill,
-                filterQuality: FilterQuality.high,
-              ),
+        image:
+            panelAsset == null
+                ? null
+                : DecorationImage(
+                  image: AssetImage(panelAsset),
+                  fit: BoxFit.fill,
+                  filterQuality: FilterQuality.high,
+                ),
         borderRadius: BorderRadius.circular(12),
-        border: panelAsset == null
-            ? Border.all(color: skin.surfaceBorderColor)
-            : null,
+        border:
+            panelAsset == null
+                ? Border.all(color: skin.surfaceBorderColor)
+                : null,
       ),
       padding: const EdgeInsets.symmetric(horizontal: 10),
       child: Row(
@@ -1973,7 +1967,6 @@ class _HarborMetricPlate extends StatelessWidget {
   }
 }
 
-
 class _HarborWordPlate extends StatelessWidget {
   const _HarborWordPlate({
     required this.skin,
@@ -1996,23 +1989,30 @@ class _HarborWordPlate extends StatelessWidget {
       constraints: const BoxConstraints(minHeight: 34),
       padding: EdgeInsets.fromLTRB(bonus && asset != null ? 30 : 12, 6, 12, 6),
       decoration: BoxDecoration(
-        color: asset == null ? (found ? skin.foundSurfaceColor : surface) : null,
-        image: asset == null
-            ? null
-            : DecorationImage(
-                image: AssetImage(asset),
-                fit: BoxFit.fill,
-                filterQuality: FilterQuality.high,
-                colorFilter: found
-                    ? ColorFilter.mode(skin.foundSurfaceColor, BlendMode.color)
-                    : null,
-              ),
+        color:
+            asset == null ? (found ? skin.foundSurfaceColor : surface) : null,
+        image:
+            asset == null
+                ? null
+                : DecorationImage(
+                  image: AssetImage(asset),
+                  fit: BoxFit.fill,
+                  filterQuality: FilterQuality.high,
+                  colorFilter:
+                      found
+                          ? ColorFilter.mode(
+                            skin.foundSurfaceColor,
+                            BlendMode.color,
+                          )
+                          : null,
+                ),
         borderRadius: BorderRadius.circular(16),
-        border: asset == null
-            ? Border.all(
-                color: found ? skin.accentColor : skin.surfaceBorderColor,
-              )
-            : null,
+        border:
+            asset == null
+                ? Border.all(
+                  color: found ? skin.accentColor : skin.surfaceBorderColor,
+                )
+                : null,
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -2022,13 +2022,14 @@ class _HarborWordPlate extends StatelessWidget {
               key: Key('word_hunt_production_bonus_icon_$word'),
               width: asset == null ? 12 : 0,
               height: asset == null ? 12 : 0,
-              child: asset == null
-                  ? Icon(
-                      Icons.auto_awesome_rounded,
-                      size: 12,
-                      color: skin.accentColor,
-                    )
-                  : null,
+              child:
+                  asset == null
+                      ? Icon(
+                        Icons.auto_awesome_rounded,
+                        size: 12,
+                        color: skin.accentColor,
+                      )
+                      : null,
             ),
           if (bonus && asset == null) const SizedBox(width: 4),
           Text(
@@ -2050,7 +2051,6 @@ class _HarborWordPlate extends StatelessWidget {
     );
   }
 }
-
 
 class _HarborFoundPathConnectorPainter extends CustomPainter {
   const _HarborFoundPathConnectorPainter({
@@ -2076,16 +2076,18 @@ class _HarborFoundPathConnectorPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     if (paths.isEmpty) return;
-    final glowPaint = Paint()
-      ..color = skin.connectorGlowColor
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = math.max(10, cellExtent * .70)
-      ..strokeCap = StrokeCap.butt;
-    final bridgePaint = Paint()
-      ..color = skin.connectorColor
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = math.max(8, cellExtent * .58)
-      ..strokeCap = StrokeCap.butt;
+    final glowPaint =
+        Paint()
+          ..color = skin.connectorGlowColor
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = math.max(10, cellExtent * .70)
+          ..strokeCap = StrokeCap.butt;
+    final bridgePaint =
+        Paint()
+          ..color = skin.connectorColor
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = math.max(8, cellExtent * .58)
+          ..strokeCap = StrokeCap.butt;
 
     for (final path in paths) {
       if (path.length < 2) continue;
@@ -2120,7 +2122,6 @@ class _HarborFoundPathConnectorPainter extends CustomPainter {
   }
 }
 
-
 class _HarborGridCell extends StatelessWidget {
   const _HarborGridCell({
     super.key,
@@ -2147,32 +2148,35 @@ class _HarborGridCell extends StatelessWidget {
   Widget build(BuildContext context) {
     final active = selected || found;
     final asset = active ? skin.gridSelectedAsset : skin.gridIdleAsset;
-    final fill = error
-        ? skin.gridErrorColor
-        : found
+    final fill =
+        error
+            ? skin.gridErrorColor
+            : found
             ? skin.gridFoundColor
             : selected
-                ? skin.gridSelectedColor
-                : skin.gridIdleColor;
+            ? skin.gridSelectedColor
+            : skin.gridIdleColor;
 
     return DecoratedBox(
       decoration: BoxDecoration(
         color: asset == null ? fill : null,
         borderRadius: BorderRadius.circular(math.max(6, extent * .14)),
-        border: asset == null
-            ? Border.all(
-                color: active ? skin.accentColor : skin.surfaceBorderColor,
-              )
-            : null,
-        boxShadow: active
-            ? <BoxShadow>[
-                BoxShadow(
-                  color: skin.connectorGlowColor,
-                  blurRadius: 3,
-                  spreadRadius: .2,
-                ),
-              ]
-            : const <BoxShadow>[],
+        border:
+            asset == null
+                ? Border.all(
+                  color: active ? skin.accentColor : skin.surfaceBorderColor,
+                )
+                : null,
+        boxShadow:
+            active
+                ? <BoxShadow>[
+                  BoxShadow(
+                    color: skin.connectorGlowColor,
+                    blurRadius: 3,
+                    spreadRadius: .2,
+                  ),
+                ]
+                : const <BoxShadow>[],
       ),
       child: Stack(
         fit: StackFit.expand,
@@ -2224,12 +2228,8 @@ class _HarborGridCell extends StatelessWidget {
   }
 }
 
-
 class _HarborInstructionPlate extends StatelessWidget {
-  const _HarborInstructionPlate({
-    required this.skin,
-    required this.status,
-  });
+  const _HarborInstructionPlate({required this.skin, required this.status});
 
   final WordHuntGameplaySkin skin;
   final String status;
@@ -2242,17 +2242,17 @@ class _HarborInstructionPlate extends StatelessWidget {
       height: 50,
       decoration: BoxDecoration(
         color: asset == null ? skin.instructionSurfaceColor : null,
-        image: asset == null
-            ? null
-            : DecorationImage(
-                image: AssetImage(asset),
-                fit: BoxFit.fill,
-                filterQuality: FilterQuality.high,
-              ),
+        image:
+            asset == null
+                ? null
+                : DecorationImage(
+                  image: AssetImage(asset),
+                  fit: BoxFit.fill,
+                  filterQuality: FilterQuality.high,
+                ),
         borderRadius: BorderRadius.circular(14),
-        border: asset == null
-            ? Border.all(color: skin.surfaceBorderColor)
-            : null,
+        border:
+            asset == null ? Border.all(color: skin.surfaceBorderColor) : null,
       ),
       padding: EdgeInsets.symmetric(
         horizontal: asset == null ? 14 : 48,
