@@ -376,5 +376,5 @@ String _fnv1a64Hex(String value) {
     hash = (hash * prime) & mask64;
   }
 
-  return hash.toRadixString(16).padLeft(16, '0');
+  return hash.toUnsigned(64).toRadixString(16).padLeft(16, '0');
 }
