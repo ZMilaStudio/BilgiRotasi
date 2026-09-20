@@ -49,9 +49,6 @@ abstract final class WordHuntPixelProofLayout {
     104,
   ];
 
-  static const Offset compassCenter = Offset(90.72, 1176);
-  static const Offset bookCenter = Offset(630, 1176);
-  static const double controlHitboxDiameter = 120;
   static const Offset backCenter = Offset(60, 50);
   static const Offset infoCenter = Offset(660, 50);
   static const double topControlHitboxDiameter = 72;
@@ -75,8 +72,6 @@ class WordHuntPixelProofScreen extends StatelessWidget {
     this.onBack,
     this.onInfo,
     this.onLevelTap,
-    this.onCompass,
-    this.onBook,
     this.segmentIndex = 1,
   });
 
@@ -86,8 +81,6 @@ class WordHuntPixelProofScreen extends StatelessWidget {
   final VoidCallback? onBack;
   final VoidCallback? onInfo;
   final ValueChanged<int>? onLevelTap;
-  final VoidCallback? onCompass;
-  final VoidCallback? onBook;
   final int segmentIndex;
 
   @override
@@ -140,18 +133,6 @@ class WordHuntPixelProofScreen extends StatelessWidget {
                               )
                               : null,
                     ),
-                  _TransparentHitbox(
-                    key: const Key('word_hunt_pixel_proof_compass'),
-                    center: WordHuntPixelProofLayout.compassCenter,
-                    diameter: WordHuntPixelProofLayout.controlHitboxDiameter,
-                    onTap: onCompass,
-                  ),
-                  _TransparentHitbox(
-                    key: const Key('word_hunt_pixel_proof_book'),
-                    center: WordHuntPixelProofLayout.bookCenter,
-                    diameter: WordHuntPixelProofLayout.controlHitboxDiameter,
-                    onTap: onBook,
-                  ),
                   _TransparentHitbox(
                     key: const Key('word_hunt_pixel_proof_back'),
                     center: WordHuntPixelProofLayout.backCenter,
