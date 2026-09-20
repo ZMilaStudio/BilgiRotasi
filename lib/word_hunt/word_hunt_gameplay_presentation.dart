@@ -90,6 +90,7 @@ class WordHuntGameplaySkin {
     this.bonusPlateAsset,
     this.gridIdleAsset,
     this.gridSelectedAsset,
+    this.instructionPanelAsset,
   });
 
   final String id;
@@ -120,6 +121,7 @@ class WordHuntGameplaySkin {
   final String? bonusPlateAsset;
   final String? gridIdleAsset;
   final String? gridSelectedAsset;
+  final String? instructionPanelAsset;
 }
 
 @immutable
@@ -205,9 +207,11 @@ abstract final class WordHuntRoutePresentationProfiles {
         'assets/word_hunt/v5_reference_assets/word_plaque_empty.png',
     bonusPlateAsset:
         'assets/word_hunt/v5_reference_assets/bonus_plaque_empty.png',
-    gridIdleAsset: 'assets/word_hunt/v5_reference_assets/grid_cell_idle.png',
+    gridIdleAsset: 'assets/word_hunt/v5_reference_assets/cell_idle.png',
     gridSelectedAsset:
-        'assets/word_hunt/v5_reference_assets/grid_cell_selected.png',
+        'assets/word_hunt/v5_reference_assets/cell_selected_found.png',
+    instructionPanelAsset:
+        'assets/word_hunt/v5_reference_assets/instruction_panel_empty.png',
   );
 
   static final WordHuntRoutePresentationProfile starter =
