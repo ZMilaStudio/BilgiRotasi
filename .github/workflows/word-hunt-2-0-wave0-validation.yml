@@ -46,21 +46,31 @@ jobs:
       - name: Bağımlılıkları kur
         run: flutter pub get
 
-      - name: Wave 0+1+2 Dart format gate
-        run: >-
-          dart format --output=none --set-exit-if-changed
-          lib/word_hunt/word_hunt_models.dart
-          lib/word_hunt/word_hunt_segment_projection.dart
-          lib/word_hunt/word_hunt_progress.dart
-          lib/word_hunt/word_hunt_progress_codec.dart
-          lib/word_hunt/word_hunt_progress_migration.dart
-          lib/word_hunt/word_hunt_route_rewards.dart
-          lib/word_hunt/word_hunt_production_entry_screen.dart
-          lib/word_hunt/word_hunt_screens.dart
-          test/word_hunt_2_0_wave0_baseline_test.dart
-          test/word_hunt_2_0_wave1_domain_foundation_test.dart
-          test/word_hunt_2_0_wave2_persistence_v3_test.dart
-          test/word_hunt_progress_codec_v2_test.dart
+      - name: Wave 2 Dart format diagnostic
+        run: |
+          dart format \
+            lib/word_hunt/word_hunt_models.dart \
+            lib/word_hunt/word_hunt_segment_projection.dart \
+            lib/word_hunt/word_hunt_progress.dart \
+            lib/word_hunt/word_hunt_progress_codec.dart \
+            lib/word_hunt/word_hunt_progress_migration.dart \
+            lib/word_hunt/word_hunt_route_rewards.dart \
+            lib/word_hunt/word_hunt_production_entry_screen.dart \
+            lib/word_hunt/word_hunt_screens.dart \
+            test/word_hunt_2_0_wave0_baseline_test.dart \
+            test/word_hunt_2_0_wave1_domain_foundation_test.dart \
+            test/word_hunt_2_0_wave2_persistence_v3_test.dart \
+            test/word_hunt_progress_codec_v2_test.dart
+          echo '__WAVE2_FORMAT_DIFF_BEGIN__'
+          git diff -- \
+            lib/word_hunt/word_hunt_progress.dart \
+            lib/word_hunt/word_hunt_progress_codec.dart \
+            lib/word_hunt/word_hunt_route_rewards.dart \
+            lib/word_hunt/word_hunt_production_entry_screen.dart \
+            test/word_hunt_2_0_wave2_persistence_v3_test.dart \
+            test/word_hunt_progress_codec_v2_test.dart
+          echo '__WAVE2_FORMAT_DIFF_END__'
+          exit 1
 
       - name: Full repository analyze baseline gate
         shell: bash
