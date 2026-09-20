@@ -791,3 +791,201 @@ Wave 6 boundary:
 
 Not: Bu manifest kendi docs-only closure commit SHA'sını self-reference edemez. Yukarıdaki `3446451b...` SHA Wave 5 code/test + Android visual-proof exact implementation authority'sidir. Bu closure commit'inden sonra oluşan final integration HEAD cumulative validation workflow'unda yeniden doğrulanır; visual proof docs-only commit ile yeniden tetiklenmezse visual authority code/test validated implementation HEAD olarak kalır.
 
+## 17. WAVE 6 — COMPLETION NAVIGATION + TRUE-FINAL ORCHESTRATION CLOSURE
+
+Durum: **PASS**
+
+Wave 6 code/test validated implementation HEAD:
+`14f42cee279b9a5cd625c2bd4b2f00162dc95cf4`
+
+Cumulative validation authority:
+- Workflow: `.github/workflows/word-hunt-2-0-wave0-validation.yml`
+- Workflow name: `Kelime Avı 2.0 Cumulative Validation`
+- Run: `#115`
+- Run ID: `35537258057`
+- Exact implementation HEAD: `14f42cee279b9a5cd625c2bd4b2f00162dc95cf4`
+- Result: **SUCCESS**
+- Dart format gate: **PASS**
+- Full repository analyzer: **92 issues**, Wave 0 baseline olan 92'den kötüleşme yok.
+- Wave 1+2+3+4+5+6 targeted analyze: **39 items / No issues found**.
+- Wave 0, Wave 1, Wave 2, Wave 3, Wave 4, Wave 5 ve Wave 6 dedicated gates: **PASS**.
+- Deferred completion wrapper regression: **PASS**.
+- Gameplay path/scoring regression: **PASS**.
+- Account/navigation regressions: **PASS**.
+- Map geometry / reference / hitbox / presentation-order regressions: **PASS**.
+- Existing book chrome regression: **PASS**.
+- Existing progress / codec / route-reward / route-selection / production-flow / gameplay regressions: **PASS**.
+- Immutable trilogy asset lock: **PASS**.
+- Full Flutter suite: **816 tests passed**.
+- Diff whitespace gate: **PASS**.
+
+Completion coordinator authority:
+- Pure/testable `WordHuntCompletionCoordinator` completion destination projection authority'sidir.
+- `WordHuntCompletionDestinationKind` canonical destination seti:
+  - `nextLevel`
+  - `nextSegment`
+  - `nextRoute`
+  - `returnToRoute`
+  - `terminalRouteComplete`
+- Projection completed absolute level, completed segment, local level, first-completion facts, segment transition, midpoint, true route-final, canonical next playable level/segment, route-complete transition, reward transition ve read-only summary taşır.
+- Navigation logic gameplay result contract'ına eklenmemiştir.
+- `WordHuntLevelPlayResult` facts-only olarak kalır:
+  - `levelId`
+  - `stars`
+  - `unlockedInfoCardIds`
+  - `foundBonusCount`
+- Result contract'a next level/segment/route/navigation/routeComplete alanı eklenmemiştir.
+
+Save-before-navigation authority:
+- Standard catalog production flow parent-owned completion authority kullanır.
+- Gameplay yalnız result fact döndürür.
+- Parent canonical `WordHuntRouteRewardEngine.recordLevelResult()` transition'ını tek kez uygular.
+- Updated progress state'e alınır.
+- Canonical persistence SAVE future tamamlanmadan completion destination kullanıma açılmaz.
+- Destination projection ve completion presentation save tamamlandıktan sonra oluşur.
+- CTA handlers ikinci `recordLevelResult` veya ikinci `_saveProgress` çağrısı yapmaz.
+- Navigation action aynı gameplay result'ını yeniden persist etmez.
+- Same-route `markLastActiveRoute` identity olarak kalır ve redundant state write üretmez.
+
+Legacy 10-level compatibility:
+- Current production catalog 10-level route definitions değiştirilmemiştir.
+- `segments.isEmpty` legacy route'larda existing route-complete semantics korunur.
+- Legacy final completion halen final level completion + existing star threshold authority'sini kullanır.
+- Current L10 completion/downstream route unlock davranışı korunur.
+- Existing legacy final-incomplete compatibility korunur.
+- Legacy route active segment projection yalnız Segment 1'dir.
+- Wave 6 current production route'ları bir anda L100 bekler hale getirmemiştir.
+
+Explicit V2 true-final authority:
+- `WordHuntSegmentProjection.isExplicitV2Route(route)` canonical explicit-v2 discriminator olarak kullanılır.
+- Explicit 100-level / 10×10 route için `WordHuntRouteProgressEngine.isRouteComplete()` yalnız absolute L100 completed olduğunda true döner.
+- Legacy star wall explicit V2 true-final completion'ı yeniden kilitlemez.
+- Synthetic proof:
+  - L10 complete → route complete **FALSE**
+  - L20 complete → route complete **FALSE**
+  - L50 complete → route complete **FALSE**
+  - L90 complete → route complete **FALSE**
+  - L100 complete → route complete **TRUE**
+- Raw L10 `WordHuntLevelType.routeFinal` explicit V2 true-final positional authority'yi override etmez.
+- `nextPlayableLevelIndex` flat sequential canonical progression authority olarak korunur.
+
+Completion navigation authority:
+- Normal non-segment-end completion → `nextLevel`.
+- Primary CTA: `Sonraki Bölüm`.
+- Canonical destination blind `completedIndex + 1` kullanmaz; post-save `nextPlayableLevelIndex` authority'sini kullanır.
+- Replay edilmiş eski level, progress daha ilerideyse canonical next playable'a gider.
+- Segment endpoint L10/L20/.../L90 → `nextSegment`.
+- Primary CTA: `Sonraki Bölge`.
+- Segment CTA gameplay'i otomatik başlatmaz; bir sonraki segment MAP'ini açar.
+- L10 → Segment 2 / absolute 11–20.
+- L20 → Segment 3.
+- L50 → Segment 6.
+- L90 → Segment 10 / absolute 91–100.
+- Secondary `Haritaya Dön` current route map'e döner.
+- True-final L100 sonrası eligible next route varsa `nextRoute`.
+- Primary CTA: `Sonraki Rotaya Geç`.
+- Next-route action next route MAP'ini açar; Level 1 gameplay'i otomatik başlatmaz.
+- Son catalog route fake next route üretmez; `terminalRouteComplete` destination kullanır ve mevcut Rotalar / Kelime Avı Ana Sayfa graph'ına güvenli dönüş sağlar.
+
+Active segment / renderer authority:
+- Active segment UI state ephemeral olarak tutulur; persist edilmez.
+- Legacy route → Segment 1.
+- Explicit V2 route → current canonical next playable projection'ın segmenti.
+- Synthetic next playable 37 → active Segment 4.
+- Wave 3 segment host arbitrary valid segment index render etmeye devam eder.
+- Segment 2 host yalnız absolute 11–20.
+- Segment 5 host yalnız absolute 41–50.
+- Segment 10 host yalnız absolute 91–100.
+- Reference, Gökyüzü master-art ve themed production boundaries segmentIndex taşır.
+- Themed route boundary segmentIndex'i artwork/reusable underlying renderer'a forward eder.
+- 100-node renderer oluşturulmamıştır.
+
+L50 midpoint:
+- Absolute L50:
+  - segment endpoint = true
+  - major midpoint = true
+  - true route final = false
+  - route complete = false
+  - reward grant = false
+  - destination = next Segment 6 map
+- Completion presentation midpoint identity'sini gösterir.
+
+L100 / reward authority:
+- L100 first completion canonical route-complete false→true transition oluşturur.
+- Route reward tek authority `WordHuntRouteRewardEngine` üzerinden grant edilir.
+- Reward first completion'da bir kez grant edilir.
+- Replay L100 duplicate reward grant üretmez.
+- Replay routeCompletedNow transition'ını tekrar üretmez.
+- CTA veya navigation ikinci progression write üretmez.
+- Historical reward backfill behavior korunur.
+
+Grandfathered access authority:
+- `WordHuntRouteCatalogEntry.isUnlocked(progress)` artık:
+  - normal current unlock rule
+  - VEYA `grandfatheredUnlockedRouteIds.contains(route.id)`
+  koşuluyla access sağlar.
+- Grandfathered entitlement yalnız historical access authority'sidir.
+- Grandfathered access route complete sayılmaz.
+- Reward ownership/grant anlamına gelmez.
+- Star veya milestone completion üretmez.
+- Fresh progression Wave 6 sırasında yeni grandfathered entitlement yazmaz.
+- Existing normal unlock rules çalışmaya devam eder.
+
+Route completion summary authority:
+- Pure/read-only `WordHuntRouteCompletionSummary` derive edilir.
+- Summary:
+  - route identity/title
+  - total stars
+  - maximum stars
+  - known bonus found total
+  - maximum bonus total
+  - historical unknown bonus flag
+  - route reward/badge
+  - rewardGrantedNow
+  - next unlocked route
+  - Wave 5 route presentation profile
+  - terminal state
+  taşır.
+- Summary progress mutate etmez.
+- Maximum bonus route content'ten derive edilir.
+- Missing bonus-count key on historical completed bonus level unknown olarak korunur; fake zero üretilmez.
+
+Completion presentation authority:
+- Normal completion route-aware `Bölüm Tamamlandı` surface kullanır.
+- Segment endpoint route-aware `Bölge Tamamlandı` surface kullanır.
+- L50 midpoint identity gösterir.
+- True route-final strong `Rota Tamamlandı` surface kullanır.
+- Strong surface stars, bonus state, reward/badge ve next-route state gösterir.
+- Wave 5 `WordHuntRoutePresentationProfile` / gameplay skin authority'sini reuse eder.
+- Route-id/title visual switch chain eklenmemiştir.
+- Compact `360×640` ve tall `412×915` widget proof PASS.
+- Completion summary content scrollable; primary/secondary navigation CTA footer'ı compact viewportta sabit ve görünür kalır.
+- Long route title ve historical bonus unknown presentation regressionları PASS.
+
+Persistence / scope authority:
+- `WordHuntProgressCodec.schemaVersion = 3` aynen korunur.
+- Storage prefix `bilgi_rotasi_word_hunt_progress_v1_` aynen korunur.
+- Active segment, completion destination, next level, next route, completion UI state, milestone flag veya completion summary persist edilmez.
+- Common gameplay/input/path/target/bonus/timer/mistake/scoring engine değiştirilmemiştir.
+- Production content 11–100'e genişletilmemiştir.
+- Existing 80 legacy level ID/index mapping değişmemiştir.
+- Production grids, targetWords, bonusWords, route IDs ve content değiştirilmemiştir.
+- Book/compass kaldırılmamıştır; milestone info reward Wave 7'ye bırakılmıştır.
+- Immutable Kayıp Şehir / Yeraltı Krallığı / Güneş İmparatorluğu artwork byte'ları değiştirilmemiştir.
+- Version, release, tag, signed artifact, Play Console, production branch veya PR merge işlemi yapılmamıştır.
+
+Previous-wave authority:
+- Wave 0: **PASS**
+- Wave 1: **PASS**
+- Wave 2: **PASS**
+- Wave 3: **PASS**
+- Wave 4: **PASS**
+- Wave 5: **PASS**
+- Wave 6: **PASS**
+
+Next boundary:
+- Next planned wave is **WAVE 7 — BOOK/COMPASS REMOVAL + MILESTONE INFO REWARDS**.
+- Wave 7 owner'ın sonraki explicit talimatı olmadan başlamaz.
+
+Not: Bu manifest kendi docs-only closure commit SHA'sını self-reference edemez. Yukarıdaki `14f42cee...` SHA Wave 6 code/test exact validation authority'sidir. Bu closure commit'inden sonra oluşan final integration HEAD aynı cumulative validation workflow'unda yeniden doğrulanır.
+
