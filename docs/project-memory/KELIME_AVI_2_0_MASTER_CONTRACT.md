@@ -542,4 +542,49 @@ Kafadan toplu rewrite yapılmaz.
 
 ---
 
+## 24. LEGACY SEGMENT 1 WORD-UNIQUENESS OWNER RESOLUTION
+
+Architecture audit, mevcut ilk 10 bölümlerde kaynak dataset seviyesinde gerçek rota-içi tekrarlar tespit etti:
+
+- Başlangıç Limanı
+- Gökyüzü Adaları
+- Orman Yolu
+- Kadim Orman
+
+Owner'ın daha önce kilitlediği 2.0 kuralı şudur:
+
+**Aynı rota içinde bir kelime yalnız bir kez kullanılabilir.**
+
+Bu kural mevcut Segment 1 içeriği için de geçerlidir.
+
+### Owner kararı
+
+**Grandfather exception YOK.**
+
+Legacy Segment 1 içindeki rota-içi tekrarlar, ilgili content-migration wave'inde düzeltilmelidir.
+
+Korunacak authority:
+- route ID'leri
+- mevcut level ID'leri 1–10
+- absolute level index'leri 1–10
+- oyuncu progression eşlemesi
+
+Değiştirilebilecek content:
+- tekrara sebep olan target/bonus kelimeler
+- bu kelimeleri taşıyan grid hücreleri / grid yerleşimleri
+- gerekli validation fixtures
+
+Amaç:
+- Segment 1 progress'ini kaybetmeden,
+- her rotayı kendi içinde strict word-unique hale getirmek.
+
+11–100 üretimi:
+- düzeltilmiş Segment 1 kelime setini reserved set kabul edecek,
+- route içindeki hiçbir kelimeyi yeniden kullanmayacak.
+
+Bu owner kararı, architecture audit'teki legacy uniqueness decision gate'ini ürün kararı seviyesinde kapatır.
+Implementasyon content-migration wave'inde yapılacaktır.
+
+---
+
 Bu dosya owner açıkça değiştirmedikçe yukarıdaki kararların authority kaydıdır.
