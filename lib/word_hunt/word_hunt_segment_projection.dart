@@ -27,11 +27,9 @@ class WordHuntSegmentProjection {
 
   bool get isSegmentMilestone => isSegmentEnd;
 
-  bool get isMajorMidpoint =>
-      _explicitV2Route && absoluteLevelIndex == 50;
+  bool get isMajorMidpoint => _explicitV2Route && absoluteLevelIndex == 50;
 
-  bool get isTrueRouteFinal =>
-      _explicitV2Route && absoluteLevelIndex == 100;
+  bool get isTrueRouteFinal => _explicitV2Route && absoluteLevelIndex == 100;
 
   static WordHuntSegmentProjection forLevel(
     WordHuntRouteDefinition route,

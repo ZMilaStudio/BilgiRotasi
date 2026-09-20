@@ -1,9 +1,4 @@
-enum WordHuntLevelType {
-  normal,
-  challenge,
-  bonus,
-  routeFinal,
-}
+enum WordHuntLevelType { normal, challenge, bonus, routeFinal }
 
 class WordHuntInfoCard {
   const WordHuntInfoCard({
@@ -253,9 +248,7 @@ class WordHuntDefinitionValidator {
       if (!levelIds.add(level.id)) {
         errors.add('bölüm kimliği tekrar ediyor: ${level.id}');
       }
-      errors.addAll(
-        validateLevel(level).map((error) => '${level.id}: $error'),
-      );
+      errors.addAll(validateLevel(level).map((error) => '${level.id}: $error'));
     }
 
     if (route.levels.last.type != WordHuntLevelType.routeFinal) {
@@ -281,8 +274,7 @@ class WordHuntDefinitionValidator {
 
     for (var offset = 0; offset < route.segments.length; offset++) {
       final segment = route.segments[offset];
-      final label =
-          segment.id.trim().isEmpty ? '#${offset + 1}' : segment.id;
+      final label = segment.id.trim().isEmpty ? '#${offset + 1}' : segment.id;
 
       if (segment.id.trim().isEmpty) {
         errors.add('segment.id boş olamaz');

@@ -32,14 +32,17 @@ void main() {
       expect(WordHuntDefinitionValidator.validateLevel(level), isEmpty);
     });
 
-    test('explicit blank displayName is rejected without breaking fallback', () {
-      final level = _level(index: 7, displayName: '   ');
-      expect(level.displayNameOrFallback, 'Bölüm 7');
-      expect(
-        WordHuntDefinitionValidator.validateLevel(level),
-        contains('level.displayName trim sonrası boş olamaz'),
-      );
-    });
+    test(
+      'explicit blank displayName is rejected without breaking fallback',
+      () {
+        final level = _level(index: 7, displayName: '   ');
+        expect(level.displayNameOrFallback, 'Bölüm 7');
+        expect(
+          WordHuntDefinitionValidator.validateLevel(level),
+          contains('level.displayName trim sonrası boş olamaz'),
+        );
+      },
+    );
   });
 
   group('Wave 1 explicit 2.0 segment foundation', () {
@@ -315,9 +318,7 @@ List<WordHuntSegmentDefinition> _segments() {
   }, growable: false);
 }
 
-WordHuntRouteDefinition _v2Route({
-  List<WordHuntSegmentDefinition>? segments,
-}) {
+WordHuntRouteDefinition _v2Route({List<WordHuntSegmentDefinition>? segments}) {
   final levels = List<WordHuntLevelDefinition>.generate(100, (offset) {
     final index = offset + 1;
     return _level(
@@ -329,11 +330,8 @@ WordHuntRouteDefinition _v2Route({
               ? WordHuntLevelType.challenge
               : WordHuntLevelType.normal,
       targetWords:
-          index == 50
-              ? const <String>['ABC', 'DEF']
-              : const <String>['ABC'],
-      bonusWords:
-          index == 20 ? const <String>['GHI'] : const <String>[],
+          index == 50 ? const <String>['ABC', 'DEF'] : const <String>['ABC'],
+      bonusWords: index == 20 ? const <String>['GHI'] : const <String>[],
     );
   }, growable: false);
 
