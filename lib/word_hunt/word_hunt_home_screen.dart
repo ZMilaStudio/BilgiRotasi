@@ -204,10 +204,7 @@ class _HomeActionCard extends StatelessWidget {
                   ],
                 ),
               ),
-              const Icon(
-                Icons.chevron_right_rounded,
-                color: Color(0xFFFFD978),
-              ),
+              const Icon(Icons.chevron_right_rounded, color: Color(0xFFFFD978)),
             ],
           ),
         ),
