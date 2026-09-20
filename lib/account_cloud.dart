@@ -1433,10 +1433,11 @@ class AccountGate extends StatelessWidget {
           return PlayerUsernameGate(
             key: ValueKey<String>('username:${session.sessionKey}'),
             questionBank: questionBank,
+            ownerUid: session.user?.uid,
           );
         }
 
-        return HomeScreen(
+        return ProductModeEntryScreen(
           key: ValueKey<String>(session.sessionKey),
           questionBank: questionBank,
         );
