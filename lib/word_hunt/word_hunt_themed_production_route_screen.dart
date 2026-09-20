@@ -26,6 +26,7 @@ class WordHuntThemedProductionRouteScreen extends StatefulWidget {
     required this.onCompass,
     required this.onBook,
     required this.onLevelTap,
+    this.segmentIndex = 1,
   });
 
   final WordHuntRouteDefinition route;
@@ -36,6 +37,7 @@ class WordHuntThemedProductionRouteScreen extends StatefulWidget {
   final VoidCallback onCompass;
   final VoidCallback onBook;
   final ValueChanged<int> onLevelTap;
+  final int segmentIndex;
 
   @override
   State<WordHuntThemedProductionRouteScreen> createState() =>
@@ -588,6 +590,7 @@ class _WordHuntThemedProductionRouteScreenState
         visualTheme: widget.visualTheme,
         progress: widget.progress,
         onLevelTap: widget.onLevelTap,
+        segmentIndex: widget.segmentIndex,
       ),
     );
 
