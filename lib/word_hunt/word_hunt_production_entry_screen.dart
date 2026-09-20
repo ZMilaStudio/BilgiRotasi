@@ -444,9 +444,7 @@ class _WordHuntProductionEntryScreenState
     final action = await showDialog<WordHuntCompletionUiAction>(
       context: context,
       barrierDismissible: false,
-      builder: (_) => WordHuntCompletionPresentation(
-        destination: destination,
-      ),
+      builder: (_) => WordHuntCompletionPresentation(destination: destination),
     );
     if (!mounted || action == null) return;
 
