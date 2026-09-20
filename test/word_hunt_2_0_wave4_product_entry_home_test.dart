@@ -25,9 +25,7 @@ void main() {
       );
 
       await tester.pumpWidget(
-        MaterialApp(
-          home: AccountGate(questionBank: _emptyQuestionBank()),
-        ),
+        MaterialApp(home: AccountGate(questionBank: _emptyQuestionBank())),
       );
 
       expect(find.byType(AccountWelcomeScreen), findsOneWidget);
@@ -45,9 +43,7 @@ void main() {
       );
 
       await tester.pumpWidget(
-        MaterialApp(
-          home: AccountGate(questionBank: _emptyQuestionBank()),
-        ),
+        MaterialApp(home: AccountGate(questionBank: _emptyQuestionBank())),
       );
 
       expect(find.byType(ProductModeEntryScreen), findsOneWidget);
@@ -79,7 +75,10 @@ void main() {
         ),
       );
 
-      expect(find.byKey(const Key('product_mode_entry_screen')), findsOneWidget);
+      expect(
+        find.byKey(const Key('product_mode_entry_screen')),
+        findsOneWidget,
+      );
       expect(find.byKey(const Key('product_mode_main_logo')), findsOneWidget);
       expect(find.text('Bilgi Rotası & Kelime Avı'), findsOneWidget);
       expect(
@@ -128,7 +127,10 @@ void main() {
       expect(destination.absoluteLevelIndex, 1);
       expect(destination.localLevelIndex, 1);
       expect(destination.activeSegmentIndex, 1);
-      expect(destination.levelId, WordHuntRouteCatalog.starter.route.levels[0].id);
+      expect(
+        destination.levelId,
+        WordHuntRouteCatalog.starter.route.levels[0].id,
+      );
       expect(projection.totalCompletedLevels, 0);
       expect(projection.totalStars, 0);
       expect(projection.completedRouteCount, 0);
@@ -156,20 +158,23 @@ void main() {
       expect(projection.continueDestination.absoluteLevelIndex, 1);
     });
 
-    test('invalid lastActive falls back to furthest unlocked incomplete route', () {
-      final progress = _completedProductionRoutes(
-        2,
-        lastActiveRouteId: 'missing-route',
-      );
+    test(
+      'invalid lastActive falls back to furthest unlocked incomplete route',
+      () {
+        final progress = _completedProductionRoutes(
+          2,
+          lastActiveRouteId: 'missing-route',
+        );
 
-      final projection = WordHuntHomeProjection.fromProgress(progress);
+        final projection = WordHuntHomeProjection.fromProgress(progress);
 
-      expect(
-        projection.continueDestination.route.id,
-        WordHuntRouteCatalog.orman.route.id,
-      );
-      expect(projection.continueDestination.absoluteLevelIndex, 1);
-    });
+        expect(
+          projection.continueDestination.route.id,
+          WordHuntRouteCatalog.orman.route.id,
+        );
+        expect(projection.continueDestination.absoluteLevelIndex, 1);
+      },
+    );
 
     test('no lastActive uses current catalog unlock semantics', () {
       final progress = _completedProductionRoutes(1);
@@ -186,91 +191,105 @@ void main() {
       }
     });
 
-    test('future 100-level continue resolves canonical segment/local identity', () {
-      final route = _syntheticRoute();
-      final entry = _syntheticEntry(route);
+    test(
+      'future 100-level continue resolves canonical segment/local identity',
+      () {
+        final route = _syntheticRoute();
+        final entry = _syntheticEntry(route);
 
-      for (final expected in <(int, int, int)>[
-        (11, 2, 1),
-        (37, 4, 7),
-        (50, 5, 10),
-        (91, 10, 1),
-        (100, 10, 10),
-      ]) {
-        final progress = _syntheticProgressThrough(
-          expected.$1 - 1,
-          routeId: route.id,
+        for (final expected in <(int, int, int)>[
+          (11, 2, 1),
+          (37, 4, 7),
+          (50, 5, 10),
+          (91, 10, 1),
+          (100, 10, 10),
+        ]) {
+          final progress = _syntheticProgressThrough(
+            expected.$1 - 1,
+            routeId: route.id,
+          );
+          final projection = WordHuntHomeProjection.fromProgress(
+            progress,
+            catalogEntries: <WordHuntRouteCatalogEntry>[entry],
+          );
+          final destination = projection.continueDestination;
+
+          expect(destination.absoluteLevelIndex, expected.$1);
+          expect(destination.activeSegmentIndex, expected.$2);
+          expect(destination.localLevelIndex, expected.$3);
+          expect(destination.levelId, 'wave4-' + expected.$1.toString());
+        }
+      },
+    );
+
+    test(
+      'global totals come from catalog and bonus unknown stays explicit',
+      () {
+        final starter = WordHuntRouteCatalog.starter.route;
+        final progress = WordHuntProgressSnapshot(
+          bestStarsByLevelId: <String, int>{
+            starter.levels[0].id: 2,
+            starter.levels[1].id: 1,
+            starter.levels[2].id: 1,
+          },
+          bestBonusFoundCountByLevelId: <String, int>{
+            starter.levels[0].id: 0,
+            starter.levels[1].id: 2,
+          },
+          unlockedInfoCardIds: const <String>{'card-a'},
         );
-        final projection = WordHuntHomeProjection.fromProgress(
+        final before = WordHuntProgressCodec.encode(
           progress,
-          catalogEntries: <WordHuntRouteCatalogEntry>[entry],
-        );
-        final destination = projection.continueDestination;
-
-        expect(destination.absoluteLevelIndex, expected.$1);
-        expect(destination.activeSegmentIndex, expected.$2);
-        expect(destination.localLevelIndex, expected.$3);
-        expect(destination.levelId, 'wave4-' + expected.$1.toString());
-      }
-    });
-
-    test('global totals come from catalog and bonus unknown stays explicit', () {
-      final starter = WordHuntRouteCatalog.starter.route;
-      final progress = WordHuntProgressSnapshot(
-        bestStarsByLevelId: <String, int>{
-          starter.levels[0].id: 2,
-          starter.levels[1].id: 1,
-          starter.levels[2].id: 1,
-        },
-        bestBonusFoundCountByLevelId: <String, int>{
-          starter.levels[0].id: 0,
-          starter.levels[1].id: 2,
-        },
-        unlockedInfoCardIds: const <String>{'card-a'},
-      );
-      final before = WordHuntProgressCodec.encode(
-        progress,
-        ownerScope: 'guest',
-      );
-
-      final projection = WordHuntHomeProjection.fromProgress(progress);
-      final after = WordHuntProgressCodec.encode(progress, ownerScope: 'guest');
-
-      expect(projection.totalCompletedLevels, 3);
-      expect(projection.totalStars, 4);
-      expect(projection.unlockedInfoCardCount, 1);
-      expect(projection.knownBonusFoundTotal, 2);
-      expect(projection.hasUnknownBonusHistory, isTrue);
-      expect(before, after);
-    });
-
-    test('schema remains v3 with no persisted product/home navigation state', () {
-      expect(WordHuntProgressCodec.schemaVersion, 3);
-      expect(
-        WordHuntProgressCodec.storageKeyForUid(null),
-        'bilgi_rotasi_word_hunt_progress_v1_guest',
-      );
-
-      final payload = jsonDecode(
-        WordHuntProgressCodec.encode(
-          const WordHuntProgressSnapshot(),
           ownerScope: 'guest',
-        ),
-      ) as Map<String, dynamic>;
+        );
 
-      for (final forbidden in <String>[
-        'selectedProductMode',
-        'selectedWordHuntSurface',
-        'currentLevelId',
-        'currentSegment',
-        'routeSelectorPosition',
-        'mapViewport',
-        'continueDestination',
-        'generalProgressTotals',
-      ]) {
-        expect(payload.containsKey(forbidden), isFalse, reason: forbidden);
-      }
-    });
+        final projection = WordHuntHomeProjection.fromProgress(progress);
+        final after = WordHuntProgressCodec.encode(
+          progress,
+          ownerScope: 'guest',
+        );
+
+        expect(projection.totalCompletedLevels, 3);
+        expect(projection.totalStars, 4);
+        expect(projection.unlockedInfoCardCount, 1);
+        expect(projection.knownBonusFoundTotal, 2);
+        expect(projection.hasUnknownBonusHistory, isTrue);
+        expect(before, after);
+      },
+    );
+
+    test(
+      'schema remains v3 with no persisted product/home navigation state',
+      () {
+        expect(WordHuntProgressCodec.schemaVersion, 3);
+        expect(
+          WordHuntProgressCodec.storageKeyForUid(null),
+          'bilgi_rotasi_word_hunt_progress_v1_guest',
+        );
+
+        final payload =
+            jsonDecode(
+                  WordHuntProgressCodec.encode(
+                    const WordHuntProgressSnapshot(),
+                    ownerScope: 'guest',
+                  ),
+                )
+                as Map<String, dynamic>;
+
+        for (final forbidden in <String>[
+          'selectedProductMode',
+          'selectedWordHuntSurface',
+          'currentLevelId',
+          'currentSegment',
+          'routeSelectorPosition',
+          'mapViewport',
+          'continueDestination',
+          'generalProgressTotals',
+        ]) {
+          expect(payload.containsKey(forbidden), isFalse, reason: forbidden);
+        }
+      },
+    );
   });
 
   group('Wave 4 Word Hunt host and routes', () {
@@ -288,7 +307,9 @@ void main() {
       expect(find.text('GENEL İLERLEME'), findsOneWidget);
     });
 
-    testWidgets('Rotalar reuses selector and back returns home', (tester) async {
+    testWidgets('Rotalar reuses selector and back returns home', (
+      tester,
+    ) async {
       SharedPreferences.setMockInitialValues(<String, Object>{});
       await tester.pumpWidget(
         const MaterialApp(home: WordHuntProductionEntryScreen()),
@@ -368,9 +389,10 @@ WordHuntRouteDefinition _syntheticRoute() {
       routeId: routeId,
       index: index,
       displayName: 'Wave 4 $index',
-      type: index == 100
-          ? WordHuntLevelType.routeFinal
-          : WordHuntLevelType.normal,
+      type:
+          index == 100
+              ? WordHuntLevelType.routeFinal
+              : WordHuntLevelType.normal,
       grid: const <String>['AAA', 'AAA', 'AAA'],
       targetWords: const <String>['AAA'],
       starRules: const WordHuntStarRules(),
@@ -418,8 +440,7 @@ WordHuntProgressSnapshot _syntheticProgressThrough(
 }) {
   return WordHuntProgressSnapshot(
     bestStarsByLevelId: <String, int>{
-      for (var index = 1; index <= completedLevels; index++)
-        'wave4-$index': 1,
+      for (var index = 1; index <= completedLevels; index++) 'wave4-$index': 1,
     },
     lastActiveRouteId: routeId,
   );
