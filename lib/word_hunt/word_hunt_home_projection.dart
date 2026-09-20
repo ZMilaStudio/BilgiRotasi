@@ -122,9 +122,8 @@ class WordHuntHomeProjection {
         route,
         progress,
       );
-      final activeSegment = route.levels.isEmpty
-          ? 1
-          : _segmentLocation(route, nextIndex).$1;
+      final activeSegment =
+          route.levels.isEmpty ? 1 : _segmentLocation(route, nextIndex).$1;
       var routeCompletedLevels = 0;
       var routeStars = 0;
 
@@ -205,10 +204,7 @@ class WordHuntHomeProjection {
 
     for (final entry in entries.reversed) {
       if (entry.isUnlocked(progress) &&
-          !WordHuntRouteProgressEngine.isRouteComplete(
-            entry.route,
-            progress,
-          )) {
+          !WordHuntRouteProgressEngine.isRouteComplete(entry.route, progress)) {
         return entry;
       }
     }
