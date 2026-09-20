@@ -40,34 +40,34 @@ class WordHuntRouteSegmentHost {
         nodes: List<WordHuntRouteMapNodeProjection>.generate(
           route.levels.length,
           (zeroIndex) {
-          final absoluteIndex = zeroIndex + 1;
-          final level = route.levels[zeroIndex];
-          final completed = WordHuntRouteProgressEngine.isLevelCompleted(
-            level,
-            progress,
-          );
-          final unlocked = WordHuntRouteProgressEngine.isLevelUnlocked(
-            route,
-            progress,
-            absoluteIndex,
-          );
-          return WordHuntRouteMapNodeProjection(
-            localNodeIndex: absoluteIndex,
-            absoluteLevelIndex: absoluteIndex,
-            level: level,
-            unlocked: unlocked,
-            completed: completed,
-            current:
-                unlocked &&
-                !completed &&
-                currentAbsoluteIndex == absoluteIndex,
-            isSegmentEndpoint: absoluteIndex == route.levels.length,
-            isMajorMidpoint: false,
-            isTrueRouteFinal:
-                absoluteIndex == route.levels.length &&
-                level.type == WordHuntLevelType.routeFinal,
-          );
-        },
+            final absoluteIndex = zeroIndex + 1;
+            final level = route.levels[zeroIndex];
+            final completed = WordHuntRouteProgressEngine.isLevelCompleted(
+              level,
+              progress,
+            );
+            final unlocked = WordHuntRouteProgressEngine.isLevelUnlocked(
+              route,
+              progress,
+              absoluteIndex,
+            );
+            return WordHuntRouteMapNodeProjection(
+              localNodeIndex: absoluteIndex,
+              absoluteLevelIndex: absoluteIndex,
+              level: level,
+              unlocked: unlocked,
+              completed: completed,
+              current:
+                  unlocked &&
+                  !completed &&
+                  currentAbsoluteIndex == absoluteIndex,
+              isSegmentEndpoint: absoluteIndex == route.levels.length,
+              isMajorMidpoint: false,
+              isTrueRouteFinal:
+                  absoluteIndex == route.levels.length &&
+                  level.type == WordHuntLevelType.routeFinal,
+            );
+          },
           growable: false,
         ),
       );
