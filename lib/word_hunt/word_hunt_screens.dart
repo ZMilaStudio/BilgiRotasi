@@ -3,6 +3,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
+import 'word_hunt_gameplay_presentation.dart';
 import 'word_hunt_input.dart';
 import 'word_hunt_models.dart';
 import 'word_hunt_path.dart';
@@ -43,6 +44,7 @@ class WordHuntLevelProductionScreen extends StatefulWidget {
     required this.level,
     required this.infoCards,
     this.backgroundAsset,
+    this.presentation,
     this.routeTitle = 'Başlangıç Limanı',
     this.deferCompletionDialog = false,
     this.now,
@@ -51,6 +53,7 @@ class WordHuntLevelProductionScreen extends StatefulWidget {
   final WordHuntLevelDefinition level;
   final List<WordHuntInfoCard> infoCards;
   final String? backgroundAsset;
+  final WordHuntGameplayPresentation? presentation;
   final String routeTitle;
   final bool deferCompletionDialog;
   final DateTime Function()? now;
@@ -101,6 +104,22 @@ class _WordHuntLevelProductionScreenState
       _completionElapsedSeconds ?? _elapsedSeconds;
 
   int get _scoredMistakes => _completionMistakes ?? _mistakes;
+
+  WordHuntGameplayPresentation get _effectivePresentation {
+    final configured = widget.presentation;
+    if (configured != null) return configured;
+    return WordHuntGameplayPresentation(
+      profileId: 'legacy-harbor-compatibility',
+      scene: WordHuntGameplaySceneDefinition(
+        id: 'legacy-harbor-scene',
+        assetPath:
+            widget.backgroundAsset ??
+            WordHuntRoutePresentationProfiles.harborBackground,
+        alignment: Alignment.topCenter,
+      ),
+      skin: WordHuntRoutePresentationProfiles.harborSkin,
+    );
+  }
 
   String get _displayedInstructionStatus {
     final status = _status;
@@ -382,6 +401,7 @@ class _WordHuntLevelProductionScreenState
       barrierColor: const Color(0xD9000812),
       builder:
           (dialogContext) => _HarborCompletionDialog(
+            skin: _effectivePresentation.skin,
             routeTitle: widget.routeTitle,
             stars: score.stars,
             elapsedSeconds: elapsed,
@@ -446,6 +466,8 @@ class _WordHuntLevelProductionScreenState
 
   @override
   Widget build(BuildContext context) {
+    final presentation = _effectivePresentation;
+    final skin = presentation.skin;
     return PopScope<Object?>(
       canPop: _allowPop,
       onPopInvokedWithResult: (didPop, result) {
@@ -453,16 +475,15 @@ class _WordHuntLevelProductionScreenState
       },
       child: Scaffold(
         key: const Key('word_hunt_production_screen'),
-        backgroundColor: _harborNavy,
+        backgroundColor: skin.scaffoldColor,
         body: Stack(
           fit: StackFit.expand,
           children: [
-            Image.asset(
-              widget.backgroundAsset ??
-                  'assets/word_hunt/v5_reference_assets/harbor_background_1080x1920.png',
-              key: const Key('word_hunt_production_harbor_background'),
-              fit: BoxFit.cover,
-              alignment: Alignment.topCenter,
+            KeyedSubtree(
+              key: const Key('word_hunt_production_gameplay_background'),
+              child: WordHuntGameplaySceneBackground(
+                scene: presentation.scene,
+              ),
             ),
             SafeArea(
               child: LayoutBuilder(
@@ -473,7 +494,8 @@ class _WordHuntLevelProductionScreenState
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         _HarborGameplayHeader(
-                          levelIndex: widget.level.index,
+                          skin: skin,
+                          levelTitle: widget.level.displayNameOrFallback,
                           routeTitle: widget.routeTitle,
                           onBack: _requestExit,
                         ),
@@ -482,8 +504,12 @@ class _WordHuntLevelProductionScreenState
                           children: [
                             Expanded(
                               child: _HarborMetricPlate(
+                                skin: skin,
+                                icon: Icons.search_rounded,
                                 iconAsset:
-                                    'assets/word_hunt/v5_reference_assets/icon_search.png',
+                                    skin.metricPanelAsset == null
+                                        ? null
+                                        : 'assets/word_hunt/v5_reference_assets/icon_search.png',
                                 label:
                                     '${_foundTargets.length}/${widget.level.targetWords.length}',
                                 key: const Key('word_hunt_production_progress'),
@@ -492,8 +518,12 @@ class _WordHuntLevelProductionScreenState
                             const SizedBox(width: 6),
                             Expanded(
                               child: _HarborMetricPlate(
+                                skin: skin,
+                                icon: Icons.close_rounded,
                                 iconAsset:
-                                    'assets/word_hunt/v5_reference_assets/icon_mistake.png',
+                                    skin.metricPanelAsset == null
+                                        ? null
+                                        : 'assets/word_hunt/v5_reference_assets/icon_mistake.png',
                                 label: '$_scoredMistakes hata',
                                 key: const Key('word_hunt_production_mistakes'),
                               ),
@@ -501,8 +531,12 @@ class _WordHuntLevelProductionScreenState
                             const SizedBox(width: 6),
                             Expanded(
                               child: _HarborMetricPlate(
+                                skin: skin,
+                                icon: Icons.timer_outlined,
                                 iconAsset:
-                                    'assets/word_hunt/v5_reference_assets/icon_timer.png',
+                                    skin.metricPanelAsset == null
+                                        ? null
+                                        : 'assets/word_hunt/v5_reference_assets/icon_timer.png',
                                 label: '${_displayedElapsedSeconds}s',
                                 textKey: const Key(
                                   'word_hunt_production_elapsed_text',
@@ -531,6 +565,7 @@ class _WordHuntLevelProductionScreenState
                                       'word_hunt_production_target_${word}_${_foundTargets.contains(word) ? 'found' : 'pending'}',
                                     ),
                                     child: _HarborWordPlate(
+                                      skin: skin,
                                       word: word,
                                       found: _foundTargets.contains(word),
                                     ),
@@ -553,6 +588,7 @@ class _WordHuntLevelProductionScreenState
                                         'word_hunt_production_bonus_${word}_${_foundBonus.contains(word) ? 'found' : 'pending'}',
                                       ),
                                       child: _HarborWordPlate(
+                                        skin: skin,
                                         word: word,
                                         found: _foundBonus.contains(word),
                                         bonus: true,
@@ -610,6 +646,7 @@ class _WordHuntLevelProductionScreenState
                                             ),
                                             painter:
                                                 _HarborFoundPathConnectorPainter(
+                                                  skin: skin,
                                                   paths: _foundPaths.values
                                                       .map(
                                                         (path) => List<
@@ -655,6 +692,7 @@ class _WordHuntLevelProductionScreenState
                                                 .runes
                                                 .elementAt(column);
                                             return _HarborGridCell(
+                                              skin: skin,
                                               key: Key(
                                                 'word_hunt_production_cell_${row}_$column',
                                               ),
@@ -680,6 +718,7 @@ class _WordHuntLevelProductionScreenState
                         ),
                         const SizedBox(height: 7),
                         _HarborInstructionPlate(
+                          skin: skin,
                           status: _displayedInstructionStatus,
                         ),
                         if (_allTargetsFound) ...[
@@ -691,9 +730,9 @@ class _WordHuntLevelProductionScreenState
                                     ? null
                                     : _finishLevel,
                             style: FilledButton.styleFrom(
-                              backgroundColor: const Color(0xFF8A5A16),
-                              foregroundColor: _harborCream,
-                              side: const BorderSide(color: _harborGold),
+                              backgroundColor: skin.finishButtonColor,
+                              foregroundColor: skin.primaryTextColor,
+                              side: BorderSide(color: skin.accentColor),
                               textStyle: const TextStyle(
                                 fontFamily: 'serif',
                                 fontWeight: FontWeight.w800,
