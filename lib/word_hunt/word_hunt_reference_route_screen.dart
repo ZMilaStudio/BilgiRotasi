@@ -265,14 +265,6 @@ class WordHuntReferenceRouteScreen extends StatelessWidget {
                               ],
                             ),
                           ),
-                                assetPath:
-                                    index == 0
-                                        ? WordHuntProductionAssets.compassButton
-                                        : WordHuntProductionAssets.bookButton,
-                                semanticLabel:
-                                    index == 0 ? 'Pusula' : 'Bilgi Kitabı',
-                                onTap: index == 0 ? onCompass : onBook,
-                              ),
                             ),
                         ],
                       ),
