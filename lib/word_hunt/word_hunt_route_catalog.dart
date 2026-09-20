@@ -138,7 +138,7 @@ class WordHuntRouteCatalogEntry {
 
 /// Kullanıcıya şu anda gerçekten sunulan production Kelime Avı rotaları.
 abstract final class WordHuntRouteCatalog {
-  static const WordHuntRouteCatalogEntry starter = WordHuntRouteCatalogEntry(
+  static final WordHuntRouteCatalogEntry starter = WordHuntRouteCatalogEntry(
     cardKey: 'starter',
     route: WordHuntStarterContent.baslangicLimani,
     infoCards: WordHuntStarterContent.infoCards,
@@ -150,7 +150,7 @@ abstract final class WordHuntRouteCatalog {
     presentationProfile: WordHuntRoutePresentationProfiles.starter,
   );
 
-  static const WordHuntRouteCatalogEntry gokyuzu = WordHuntRouteCatalogEntry(
+  static final WordHuntRouteCatalogEntry gokyuzu = WordHuntRouteCatalogEntry(
     cardKey: 'gokyuzu',
     route: WordHuntGokyuzuContent.gokyuzuAdalari,
     infoCards: WordHuntGokyuzuContent.infoCards,
@@ -167,7 +167,7 @@ abstract final class WordHuntRouteCatalog {
 
   /// Orman Yolu yalnız Gökyüzü Adaları route-complete olduğunda açılır.
   /// Gökyüzü'nün kendi completion contract'ı final + en az 18 yıldızdır.
-  static const WordHuntRouteCatalogEntry orman = WordHuntRouteCatalogEntry(
+  static final WordHuntRouteCatalogEntry orman = WordHuntRouteCatalogEntry(
     cardKey: 'orman',
     route: WordHuntOrmanContent.ormanYolu,
     infoCards: WordHuntOrmanContent.infoCards,
