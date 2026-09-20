@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 
 import 'word_hunt_gameplay_presentation.dart';
+import 'word_hunt_milestone_info_rewards.dart';
 import 'word_hunt_models.dart';
 import 'word_hunt_progress.dart';
 import 'word_hunt_route_catalog.dart';
@@ -61,6 +62,7 @@ class WordHuntCompletionDestination {
     required this.nextPlayableSegment,
     required this.routeCompletedNow,
     required this.rewardGrantedNow,
+    required this.milestoneInfoReward,
     required this.summary,
   });
 
@@ -76,6 +78,7 @@ class WordHuntCompletionDestination {
   final int nextPlayableSegment;
   final bool routeCompletedNow;
   final bool rewardGrantedNow;
+  final WordHuntMilestoneInfoRewardProjection milestoneInfoReward;
   final WordHuntRouteCompletionSummary summary;
 
   WordHuntRouteCatalogEntry? get nextRoute => summary.nextUnlockedRoute;
@@ -112,6 +115,8 @@ abstract final class WordHuntCompletionCoordinator {
     required WordHuntProgressSnapshot beforeProgress,
     required WordHuntProgressSnapshot afterProgress,
     required WordHuntRouteRewardTransition transition,
+    WordHuntMilestoneInfoRewardProjection milestoneInfoReward =
+        const WordHuntMilestoneInfoRewardProjection.none(),
     List<WordHuntRouteCatalogEntry>? catalogEntries,
   }) {
     final completedIndex = route.levels.indexWhere(
@@ -197,7 +202,8 @@ abstract final class WordHuntCompletionCoordinator {
       nextPlayableSegment: nextPlayableSegment,
       routeCompletedNow: transition.routeCompletedNow,
       rewardGrantedNow: transition.rewardGranted,
-      summary: summary,
+      milestoneInfoReward: milestoneInfoReward,
+      summary: summary;
     );
   }
 
@@ -309,18 +315,34 @@ abstract final class WordHuntCompletionOrchestrator {
     required int stars,
     required Iterable<String> unlockedInfoCards,
     required int? foundBonusCount,
+    List<WordHuntInfoCard>? routeInfoCards,
     required void Function(WordHuntProgressSnapshot progress) onProgressReady,
     required Future<void> Function(WordHuntProgressSnapshot progress)
     persistProgress,
     List<WordHuntRouteCatalogEntry>? catalogEntries,
   }) async {
+    final milestoneInfoReward = WordHuntMilestoneInfoRewardEngine.project(
+      route: route,
+      routeInfoCards:
+          routeInfoCards ??
+          WordHuntRouteCatalog.entryForRouteId(route.id)?.infoCards ??
+          const <WordHuntInfoCard>[],
+      completedLevelId: levelId,
+      beforeProgress: beforeProgress,
+      gameplayUnlockedInfoCardIds: unlockedInfoCards,
+    );
+    final canonicalUnlockedInfoCards = <String>{
+      ...unlockedInfoCards,
+      ...milestoneInfoReward.newlyGrantedCardIds,
+    };
+
     final transition = WordHuntRouteRewardEngine.recordLevelResult(
       route: route,
       progress: beforeProgress,
       levelId: levelId,
       stars: stars,
-      unlockedInfoCards: unlockedInfoCards,
-      foundBonusCount: foundBonusCount,
+      unlockedInfoCards: canonicalUnlockedInfoCards,
+      foundBonusCount: foundBonusCount;
     );
 
     onProgressReady(transition.progress);
@@ -332,7 +354,8 @@ abstract final class WordHuntCompletionOrchestrator {
       beforeProgress: beforeProgress,
       afterProgress: transition.progress,
       transition: transition,
-      catalogEntries: catalogEntries,
+      milestoneInfoReward: milestoneInfoReward,
+      catalogEntries: catalogEntries;
     );
 
     return WordHuntCompletionProcessResult(
