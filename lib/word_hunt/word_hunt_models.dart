@@ -268,7 +268,7 @@ class WordHuntDefinitionValidator {
 
     if (route.segments.isEmpty) {
       if (route.levels.last.type != WordHuntLevelType.routeFinal) {
-        errors.add('legacy rotanın son bölümü rota finali olmalı');
+        errors.add('rotanın son bölümü rota finali olmalı');
       }
     } else {
       final completeV2 =
