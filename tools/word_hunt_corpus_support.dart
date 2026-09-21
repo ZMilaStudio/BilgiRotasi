@@ -19,7 +19,8 @@ String normalizeCorpusWord(String value) {
       .toUpperCase();
 }
 
-String _sha256Text(String value) => sha256.convert(utf8.encode(value)).toString();
+String _sha256Text(String value) =>
+    sha256.convert(utf8.encode(value)).toString();
 
 Object? _canonicalize(Object? value) {
   if (value is Map) {

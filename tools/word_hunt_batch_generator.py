@@ -930,6 +930,25 @@ def _duplicate_message(
     )
 
 
+def _origin_index_for_diagnostic(origin: dict[str, Any]) -> int:
+    index_keys = [
+        key
+        for key in ("localIndex", "index")
+        if key in origin
+    ]
+    if len(index_keys) != 1:
+        raise FactoryError(
+            "word origin tam bir index contract taşımalı: "
+            "production=localIndex legacy=index"
+        )
+    key = index_keys[0]
+    return _require_int(
+        origin[key],
+        f"wordOrigin.{key}",
+        minimum=1,
+    )
+
+
 def enforce_route_uniqueness(
     route_id: str,
     levels: Sequence[dict[str, Any]],
@@ -946,7 +965,7 @@ def enforce_route_uniqueness(
         seen[word] = {
             "source": source_name,
             "levelId": origin["levelId"],
-            "index": origin["index"],
+            "index": _origin_index_for_diagnostic(origin),
             "role": origin["role"],
         }
 
