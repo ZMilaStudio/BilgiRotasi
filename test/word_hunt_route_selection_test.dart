@@ -319,7 +319,7 @@ void main() {
     expect(WordHuntRouteCatalog.gokyuzu.isUnlocked(progress), isFalse);
   });
 
-  test('Başlangıç final + en az 18 yıldız Gökyüzü açar', () {
+  test('Başlangıç L20 + en az 18 yıldız Gökyüzü açmaz', () {
     final progress = WordHuntProgressSnapshot(
       bestStarsByLevelId: starterCompleteStars(),
     );
@@ -329,9 +329,9 @@ void main() {
         WordHuntStarterContent.baslangicLimani,
         progress,
       ),
-      isTrue,
+      isFalse,
     );
-    expect(WordHuntRouteCatalog.gokyuzu.isUnlocked(progress), isTrue);
+    expect(WordHuntRouteCatalog.gokyuzu.isUnlocked(progress), isFalse);
   });
 
   test(
@@ -344,6 +344,9 @@ void main() {
             6,
           ))
             level.id: 3,
+        },
+        grandfatheredUnlockedRouteIds: <String>{
+          WordHuntGokyuzuContent.gokyuzuAdalari.id,
         },
       );
 
@@ -445,7 +448,7 @@ void main() {
   });
 
   testWidgets(
-    'historical five-route complete user recommends Kayıp then advances linearly',
+    'historical five-route complete user keeps Kayıp access then advances linearly',
     (tester) async {
       var progress = WordHuntProgressSnapshot(
         bestStarsByLevelId: <String, int>{
@@ -473,7 +476,6 @@ void main() {
       await tester.ensureVisible(
         find.byKey(const Key('word_hunt_route_card_kayip-sehir')),
       );
-      expect(find.text('Sıradaki'), findsOneWidget);
       expect(WordHuntRouteCatalog.kayipSehir.isUnlocked(progress), isTrue);
       expect(WordHuntRouteCatalog.yeraltiKralligi.isUnlocked(progress), isFalse);
 
@@ -485,7 +487,6 @@ void main() {
       await tester.ensureVisible(
         find.byKey(const Key('word_hunt_route_card_yeralti-kralligi')),
       );
-      expect(find.text('Sıradaki'), findsOneWidget);
       expect(WordHuntRouteCatalog.yeraltiKralligi.isUnlocked(progress), isTrue);
       expect(
         WordHuntRouteCatalog.gunesImparatorlugu.isUnlocked(progress),
@@ -500,7 +501,6 @@ void main() {
       await tester.ensureVisible(
         find.byKey(const Key('word_hunt_route_card_gunes-imparatorlugu')),
       );
-      expect(find.text('Sıradaki'), findsOneWidget);
       expect(
         WordHuntRouteCatalog.gunesImparatorlugu.isUnlocked(progress),
         isTrue,
@@ -517,6 +517,9 @@ void main() {
           ...starterCompleteStars(),
           forest.levels[0].id: 3,
           forest.levels[4].id: 2,
+        },
+        grandfatheredUnlockedRouteIds: <String>{
+          WordHuntGokyuzuContent.gokyuzuAdalari.id,
         },
       );
 
@@ -571,10 +574,10 @@ void main() {
     );
     expect(skyRule.isUnlocked(finalWithoutThreshold), isFalse);
 
-    final finalWithThreshold = WordHuntProgressSnapshot(
+    final stagedFrontierWithThreshold = WordHuntProgressSnapshot(
       bestStarsByLevelId: starterCompleteStars(),
     );
-    expect(skyRule.isUnlocked(finalWithThreshold), isTrue);
+    expect(skyRule.isUnlocked(stagedFrontierWithThreshold), isFalse);
 
     final forestFinal = WordHuntOrmanContent.ormanYolu.levels.last;
     final zeroThresholdFinal = WordHuntProgressSnapshot(
