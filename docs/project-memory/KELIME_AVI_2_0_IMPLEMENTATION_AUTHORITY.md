@@ -1585,3 +1585,94 @@ Final closure rule:
 - This Wave 9 authority section intentionally does not self-reference the docs-only closure commit SHA.
 - After the docs-only closure commit, the new final integration HEAD must pass `Kelime Avı 2.0 Cumulative Validation` again before manager-level Wave 9 closure is declared.
 
+---
+
+## WAVE 10A — BAŞLANGIÇ LİMANI L11–20 CLOSURE
+
+Durum: **IMPLEMENTATION + VALIDATION COMPLETE**
+
+Implementation green HEAD:
+`f6e8464540faeb78e3ff3306b0970335ecc4873a`
+
+Integration authority:
+- Branch: `feat/kelime-avi-2-0-integration`
+- PR #213: **OPEN / DRAFT / UNMERGED**
+- Base: `release/final-closed-test-aab-1.68.8`
+- Wave 10B bu closure'ın parçası değildir.
+
+### Final Wave10A production state
+
+Başlangıç Limanı:
+- available production levels: **20**
+- planned route levels: **100**
+- Segment 1: local **L1–10**
+- Segment 2: local **L11–20**
+- L10: Segment 1 endpoint
+- L20: Segment 2 endpoint / current content frontier
+- L20 **TRUE ROUTE FINAL DEĞİLDİR**
+- L20 route reward üretmez
+- L20 fake route completion üretmez
+- L20 Gökyüzü Adaları'na false unlock üretmez
+- L20 nonexistent L21 navigation üretmez
+
+Diğer yedi production route Wave10A kapsamında mevcut **10 available level** yapısını korur.
+
+### Numbering / progression authority
+
+Internal progression identity route-local **1–100** kalır.
+
+Player-facing global numbering yalnız derived display projection'dır:
+- Başlangıç Limanı: 1–100
+- Gökyüzü Adaları: 101–200
+- Orman Yolu: 201–300
+- Kadim Orman: 301–400
+- Kristal Vadisi: 401–500
+- Kayıp Şehir: 501–600
+- Yeraltı Krallığı: 601–700
+- Güneş İmparatorluğu: 701–800
+
+Persistence, progression, segment, milestone ve route-final semantics local index authority kullanır. Global display number persist edilmez.
+
+### Persistence / historical-player safety
+
+- `WordHuntProgressCodec.schemaVersion = 3`
+- Storage prefix unchanged: `bilgi_rotasi_word_hunt_progress_v1_`
+- Old v3 progress korunur.
+- Historical Segment1 access/reward semantics, live staged Başlangıç route'una bağlanmadan frozen legacy **L1–10** authority üzerinden korunur.
+- Grandfathered access entitlement current staged route completion anlamına gelmez.
+- Current L11–20 content historical L1–10 completion authority'sine sızmaz.
+
+### Content integration authority
+
+- Başlangıç L11–20 production content entegre edildi.
+- Segment1 L1–10 content identity korunur.
+- Wave 8 Başlangıç Segment1 fingerprint authority `39462daa` olarak korunur.
+- Wave 9 Segment1 source lock Segment1-only kalır.
+- Locked Wave10A Segment2 evidence repo içinde `tools/word_hunt_wave10a_baslangic_segment2.lock.json` ile korunur.
+- No L21+ content, no other-route L11+, no new artwork, no KA-04 scoring.
+
+### Exact implementation validation evidence
+
+Exact implementation SHA:
+`f6e8464540faeb78e3ff3306b0970335ecc4873a`
+
+- Cumulative Validation #168 — Run ID `35646621194` — **SUCCESS**
+- Content Factory #43 — Run ID `35646621195` — **SUCCESS**
+- Route Catalog #264 — Run ID `35646621246` — **SUCCESS**
+- Android Visual #648 — Run ID `35646621185` — **SUCCESS**
+- Trilogy Runtime #157 — Run ID `35646621192` — **SUCCESS**
+- Orman Content #54 — Run ID `35646621186` — **SUCCESS**
+- Orman/Kadim #224 — Run ID `35646621268` — **SUCCESS**
+- AdMob #1025 — Run ID `35646621209` — **SUCCESS**
+
+Bu sekiz workflow exact aynı implementation SHA üzerinde SUCCESS'tir ve Wave10A implementation-green authority'yi oluşturur.
+
+### Closure boundary
+
+Wave10A implementation ve implementation-head validation tamamlanmıştır.
+Bu section'ın bulunduğu docs-only closure commit'i implementation green HEAD'i değiştirmez; yalnız proje hafızasını ilerletir.
+Repo standardı gereği docs-only final HEAD üzerinde final validation yeniden tetiklenirse sonuç ayrı exact-head evidence olarak kaydedilir.
+
+Wave10B **BAŞLATILMAMIŞTIR**.
+Başlangıç L21+ veya başka rota L11+ ancak ayrı manager checkpoint + explicit owner authority ile başlayabilir.
+

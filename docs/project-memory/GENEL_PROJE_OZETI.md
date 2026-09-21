@@ -1,18 +1,71 @@
 # Bilgi Rotası — Genel Proje Özeti
 
-**Son güncelleme:** 17 Eylül 2026 — Kristal Vadisi production kapanışı + Kayıp Şehir Evreni owner ürün kararı
+**Son güncelleme:** 21 Eylül 2026 — Kelime Avı 2.0 Wave10A Başlangıç Limanı L11–20 implementation + validation closure
 
 ## YENİ SOHBETTE ÖNCE BUNLARI OKU
 
 1. `docs/project-memory/GENEL_PROJE_OZETI.md`
-2. `docs/project-memory/SOHBET_DEVIR_2026-09-17_KRISTAL_VADISI_KAPANIS.md`
-3. `docs/project-memory/SOHBET_DEVIR_2026-09-17_ROUTE_SELECTOR_GUIDED_POLISH_KAPANIS.md`
-4. `docs/project-memory/SOHBET_DEVIR_2026-09-17_ROUTE_REWARD_FINAL_CEREMONY_KAPANIS.md`
-5. `KELIME_AVI_REUSABLE_HARITA_KARARI.md`
+2. `docs/project-memory/SOHBET_DEVIR_2026-09-21_WAVE10A_KAPANIS.md`
+3. `docs/project-memory/KELIME_AVI_2_0_IMPLEMENTATION_AUTHORITY.md`
+4. `docs/project-memory/KELIME_AVI_2_0_WAVE10_CONTENT_INTEGRATION_CONTRACT.md`
+5. `docs/project-memory/KARARLAR.md`
+6. Gerektiğinde önceki route/artwork kapanış notları
 
 Çelişki halinde öncelik: **canlı GitHub > son kapanış/devir notu > diğer project-memory / karar docs > eski sohbetler**.
 
-> Yeni sohbette exact target HEAD canlı GitHub'dan yeniden doğrulanır. Bu docs kapanış commit'i PR #210 squash merge SHA'sından sonra target HEAD'i ayrıca ilerletir.
+> Yeni sohbette exact integration/release HEAD canlı GitHub'dan yeniden doğrulanır. Docs memory hiçbir zaman canlı GitHub authority'nin yerine geçmez.
+
+---
+
+## 21 EYLÜL 2026 — KELİME AVI 2.0 WAVE10A CURRENT INTEGRATION AUTHORITY
+
+Wave10A **IMPLEMENTATION + VALIDATION COMPLETE** durumundadır.
+
+Implementation green HEAD:
+`f6e8464540faeb78e3ff3306b0970335ecc4873a`
+
+Integration branch:
+`feat/kelime-avi-2-0-integration`
+
+PR #213:
+**OPEN / DRAFT / UNMERGED**
+
+Base:
+`release/final-closed-test-aab-1.68.8`
+
+Bu kayıt integration branch authority'sidir; PR #213 henüz production/release branch'e merge edilmemiştir.
+
+Başlangıç Limanı current Wave10A state:
+- 20 available / 100 planned
+- Segment1 L1–10
+- Segment2 L11–20
+- L10 Segment1 endpoint
+- L20 current content frontier
+- L20 true route final değil
+- L20 route reward / fake completion / false next-route unlock / L21 navigation üretmez
+
+Diğer yedi route Wave10A kapsamında 10 available level olarak kalır.
+
+Internal progression local 1–100 authority kullanır. Global display projection:
+1–100 / 101–200 / 201–300 / 301–400 / 401–500 / 501–600 / 601–700 / 701–800.
+
+Persistence:
+- schema v3
+- prefix `bilgi_rotasi_word_hunt_progress_v1_`
+- old v3 progress preserved
+- historical Başlangıç Segment1/access/reward evaluation frozen legacy L1–10 authority üzerinden korunur
+
+Exact implementation validation:
+- Cumulative Validation #168 — Run ID `35646621194` — **SUCCESS**
+- Content Factory #43 — Run ID `35646621195` — **SUCCESS**
+- Route Catalog #264 — Run ID `35646621246` — **SUCCESS**
+- Android Visual #648 — Run ID `35646621185` — **SUCCESS**
+- Trilogy Runtime #157 — Run ID `35646621192` — **SUCCESS**
+- Orman Content #54 — Run ID `35646621186` — **SUCCESS**
+- Orman/Kadim #224 — Run ID `35646621268` — **SUCCESS**
+- AdMob #1025 — Run ID `35646621209` — **SUCCESS**
+
+**Şimdiki durma noktası:** Wave10A docs-only closure checkpoint + final docs-head validation. Wave10B ayrıca manager checkpoint'idir; bu kayıtla başlamaz.
 
 ---
 

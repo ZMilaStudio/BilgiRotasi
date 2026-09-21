@@ -123,3 +123,52 @@ The compiler does not invent vocabulary. Production grids must not be hand-autho
 - Global display numbers are never persisted.
 - KA-04 scoring is out of scope.
 - Play release remains blocked while staged content is partial.
+
+## Wave 10A closure authority
+
+Status: **IMPLEMENTATION + VALIDATION COMPLETE**
+
+Implementation green HEAD:
+`f6e8464540faeb78e3ff3306b0970335ecc4873a`
+
+Final staged state:
+- Başlangıç Limanı: 20 available / 100 planned
+- Segment1: L1–10
+- Segment2: L11–20
+- L10: Segment1 endpoint
+- L20: Segment2 endpoint / current content frontier
+- L20 true route final değildir
+- L20 route reward / fake completion / false Gökyüzü unlock / nonexistent L21 navigation üretmez
+- other seven routes: 10 available levels unchanged
+
+Numbering:
+- progression identity stays local 1–100
+- global 1–800 numbering is display projection only
+- global display number is never persisted
+
+Persistence:
+- schema v3 unchanged
+- storage prefix `bilgi_rotasi_word_hunt_progress_v1_` unchanged
+- old v3 progress preserved
+- historical Segment1/access/reward semantics use frozen legacy L1–10 authority
+
+Content:
+- locked Başlangıç L11–20 batch is integrated
+- Segment1 L1–10 remains the locked historical/content baseline
+- no L21+
+- no other-route L11+
+- no artwork change
+
+Implementation validation evidence:
+- Cumulative Validation #168 — Run ID `35646621194` — **SUCCESS**
+- Content Factory #43 — Run ID `35646621195` — **SUCCESS**
+- Route Catalog #264 — Run ID `35646621246` — **SUCCESS**
+- Android Visual #648 — Run ID `35646621185` — **SUCCESS**
+- Trilogy Runtime #157 — Run ID `35646621192` — **SUCCESS**
+- Orman Content #54 — Run ID `35646621186` — **SUCCESS**
+- Orman/Kadim #224 — Run ID `35646621268` — **SUCCESS**
+- AdMob #1025 — Run ID `35646621209` — **SUCCESS**
+
+PR #213 remains **Open / Draft / Unmerged**.
+Wave10B is a separate manager checkpoint and is not started by this closure.
+

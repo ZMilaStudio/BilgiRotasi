@@ -1,6 +1,51 @@
 # Bilgi Rotası - Güncel Proje Durumu
 
-> 26 Ağustos 2026 aktif kesimidir. PR #147 merge öncesi ayrıntılı durum dosyasının değişmemiş kopyası `docs/project-memory/archive/BILGI_ROTASI_DURUM_PRE_PR147_MERGE_20260825.md` altında korunur. Teknik gerçek her zaman canlı GitHub ve ilgili canlı servislerdir.
+> Teknik gerçek her zaman canlı GitHub ve ilgili canlı servislerdir. Aşağıdaki 21 Eylül 2026 Wave10A kaydı bu dosyadaki daha eski Kelime Avı 10-level-only varsayımlarını integration branch bağlamında supersede eder.
+
+## 21 Eylül 2026 — Kelime Avı 2.0 Wave10A closure state
+
+- Integration branch: `feat/kelime-avi-2-0-integration`
+- PR #213: **OPEN / DRAFT / UNMERGED**
+- Implementation green HEAD: `f6e8464540faeb78e3ff3306b0970335ecc4873a`
+- Base: `release/final-closed-test-aab-1.68.8`
+- Status: **WAVE10A IMPLEMENTATION + VALIDATION COMPLETE**
+
+Başlangıç Limanı:
+- available = 20
+- planned = 100
+- Segment1 = L1–10
+- Segment2 = L11–20
+- L10 = Segment1 endpoint
+- L20 = Segment2 endpoint / current content frontier
+- L20 true route final değildir
+- L20 route reward / fake completion / false Gökyüzü unlock / L21 navigation üretmez
+
+Progression:
+- internal local 1–100
+- global 1–800 numbering display-only
+- persistence/progression/segment/milestone/route-final local index authority
+
+Persistence:
+- schema v3
+- prefix `bilgi_rotasi_word_hunt_progress_v1_`
+- old v3 progress protected
+- historical Segment1/access/reward semantics frozen legacy L1–10 authority üzerinden korunur
+
+Validation-green exact implementation evidence:
+- Cumulative Validation #168 — Run ID `35646621194` — **SUCCESS**
+- Content Factory #43 — Run ID `35646621195` — **SUCCESS**
+- Route Catalog #264 — Run ID `35646621246` — **SUCCESS**
+- Android Visual #648 — Run ID `35646621185` — **SUCCESS**
+- Trilogy Runtime #157 — Run ID `35646621192` — **SUCCESS**
+- Orman Content #54 — Run ID `35646621186` — **SUCCESS**
+- Orman/Kadim #224 — Run ID `35646621268` — **SUCCESS**
+- AdMob #1025 — Run ID `35646621209` — **SUCCESS**
+
+No Wave10B / L21+ / other-route L11+ / artwork / release / merge action bu closure kapsamına dahil değildir.
+
+---
+
+> Aşağıdaki eski kayıtlar tarihsel bağlam olarak korunur.
 
 ## 31 Ağustos 2026 — V5 exact-reference asset entegrasyonu + GÖRSEL KABUL GERİ ÇEKİLDİ / RUNTIME FAIL
 

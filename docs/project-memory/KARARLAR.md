@@ -238,3 +238,35 @@ Bu bölüm, 31 Ağustos kayıtlarındaki `ERROR_STATE_VISUAL = DOĞRULANACAK` du
 - Artwork kadrajı yalnız tema verisiyle ölçek/hizalama alabilir; canonical 10-node geometri ve 86×82 hitbox değişmez.
 - Canlı path/node/kilit/yıldız/progression katmanı artwork üzerinde runtime state olarak kalır.
 - Orman Yolu Android görsel proof'u artık `WordHuntRouteVisualThemes.ormanYolu` production skin verisini render eder; `forest-proof` production kabul kaynağı değildir.
+
+---
+
+## 17. 21 Eylül 2026 — Kelime Avı 2.0 Wave10A staged Başlangıç Limanı closure kararı
+
+- Wave10A kapsamı yalnız Başlangıç Limanı **L11–20** entegrasyonudur ve implementation + validation tamamlanmıştır.
+- Implementation green HEAD: `f6e8464540faeb78e3ff3306b0970335ecc4873a`.
+- PR #213 **Open / Draft / Unmerged** kalır; closure Ready/merge/release onayı değildir.
+- Başlangıç Limanı **20 available / 100 planned** olarak modellenir.
+- Segment1 = L1–10; Segment2 = L11–20.
+- L10 yalnız Segment1 endpoint'tir.
+- L20 current content frontier'dır; **true route final değildir**.
+- L20 route reward, fake route completion, Gökyüzü false unlock veya nonexistent L21 navigation üretemez.
+- Internal progression route-local 1–100 kalır.
+- Global 1–800 numbering yalnız player-facing display projection'dır ve persist edilmez.
+- Persistence/progression/segment/milestone/route-final semantics local index authority kullanır.
+- Schema v3 ve `bilgi_rotasi_word_hunt_progress_v1_` storage prefix korunur.
+- Old v3 progress korunur.
+- Historical Başlangıç Segment1 access/reward semantics frozen legacy L1–10 authority üzerinden değerlendirilir; current L11–20 historical completion'a dahil edilmez.
+- Locked production L11–20 evidence korunur; Segment1 L1–10 unchanged kalır.
+- Exact implementation validation seti:
+- Cumulative Validation #168 — Run ID `35646621194` — **SUCCESS**
+- Content Factory #43 — Run ID `35646621195` — **SUCCESS**
+- Route Catalog #264 — Run ID `35646621246` — **SUCCESS**
+- Android Visual #648 — Run ID `35646621185` — **SUCCESS**
+- Trilogy Runtime #157 — Run ID `35646621192` — **SUCCESS**
+- Orman Content #54 — Run ID `35646621186` — **SUCCESS**
+- Orman/Kadim #224 — Run ID `35646621268` — **SUCCESS**
+- AdMob #1025 — Run ID `35646621209` — **SUCCESS**
+- Wave10B bu closure ile başlamaz. Başlangıç L21+ veya başka rota L11+ ayrı owner/manager checkpoint gerektirir.
+- No artwork/version/tag/release/Play/merge action bu karara dahil değildir.
+
