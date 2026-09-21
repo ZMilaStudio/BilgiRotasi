@@ -1161,3 +1161,181 @@ Next boundary:
 - Wave 7 closure Wave 8 content migration'ını, strict uniqueness rewrite'ını veya 11–100 content üretimini başlatmaz.
 
 Not: Bu manifest kendi docs-only closure commit SHA'sını self-reference edemez. Yukarıdaki `ce18dfa1...` SHA Wave 7 code/test + Android runtime exact implementation authority'sidir. Bu closure commit'inden sonra oluşan final integration HEAD cumulative validation workflow'unda yeniden doğrulanır; Android visual/runtime proof docs-only commit ile yeniden tetiklenmezse visual authority code/test validated implementation HEAD olarak `ce18dfa1...` kalır.
+## WAVE 8 — EXISTING 10-LEVEL → SEGMENT 1 MIGRATION + LEGACY DUPLICATE CORRECTION CLOSURE
+
+Status:
+- Wave 8: **PASS**
+- Implementation validated exact HEAD: `d07ec30d82ca97931d0a72589d649ff93daae366`
+- Wave 8 migration evidence: `docs/project-memory/KELIME_AVI_2_0_WAVE8_SEGMENT1_MIGRATION_REPORT.md`
+
+Live authority used for closure:
+- Production snapshot: `release/final-closed-test-aab-1.68.8@67c91fce5078bedfd14fb984eacd6f99a26f2792`
+- Owner master contract: `docs/kelime-avi-2-0-master-contract@eafb6ceb94848cae7d0723fbe269615c2c62fa0b`
+- Architecture audit: `docs/kelime-avi-2-0-architecture-audit@8462cc32d438084754bc715e64ff58bfcb9d5b47`
+- Integration PR: **#213 — Open / Draft / Unmerged**
+- Base: `release/final-closed-test-aab-1.68.8`
+
+Migration identity / progress authority:
+- Exact production route order and all **8 route IDs** are preserved.
+- All **80 existing level IDs** are preserved.
+- Every current route remains exactly 10 levels with absolute indexes **1–10**.
+- Every existing `level.routeId` mapping is preserved.
+- Existing progress remains level-ID keyed; no content migration rewrite of user progress is required.
+- Representative v3 roundtrip proof preserves:
+  - `bestStarsByLevelId`
+  - `unlockedInfoCardIds`
+  - `unlockedRouteRewardIds`
+  - `bestBonusFoundCountByLevelId`
+  - `grandfatheredUnlockedRouteIds`
+  - `lastActiveRouteId`
+- `WordHuntProgressCodec.schemaVersion = 3` is unchanged.
+- Storage prefix `bilgi_rotasi_word_hunt_progress_v1_` is unchanged.
+- No new persistence field was introduced.
+
+Segment 1 representation:
+- Current 10-level routes intentionally keep `route.segments.isEmpty`.
+- Existing Wave 3 `WordHuntRouteSegmentHost` legacy Segment 1 adapter is the canonical Wave 8 migration boundary.
+- For every current route, the host exposes exactly 10 nodes with local indexes **1–10** mapped to absolute indexes **1–10** and the exact canonical level IDs.
+- No blind one-segment metadata was added.
+- No owner-facing segment name was invented.
+- Current legacy L10 completion, reward, visual and downstream unlock compatibility is preserved.
+- Explicit V2 authority remains separate: future 100-level + 10-segment routes use positional semantics and only absolute **L100** is true route final; synthetic L10/L50 remain non-final.
+
+Level display-name migration:
+- Existing exact 10-item `levelNames` authorities for **Kayıp Şehir**, **Yeraltı Krallığı** and **Güneş İmparatorluğu** are wired to `WordHuntLevelDefinition.displayName` in exact source order: **30 explicit names total**.
+- Runtime map accessibility, gameplay header and completion presentation consume the model display-name authority without route-ID/title name switches.
+- **Başlangıç Limanı, Gökyüzü Adaları, Orman Yolu, Kadim Orman and Kristal Vadisi** receive no invented owner-facing names and retain `displayNameOrFallback -> Bölüm N`.
+
+Duplicate-debt authority:
+- Frozen pre-Wave8 historical extra-occurrence debt remains:
+  - `baslangic-limani = 7`
+  - `gokyuzu-adalari = 14`
+  - `orman-yolu = 18`
+  - `orman-2 = 7`
+  - other four routes = `0`
+- Historical pair evidence remains testable in `test/word_hunt_2_0_wave0_baseline_test.dart`.
+- Active post-migration route-wide normalized duplicate debt is:
+  - `baslangic-limani = 0`
+  - `gokyuzu-adalari = 0`
+  - `orman-yolu = 0`
+  - `orman-2 = 0`
+  - `kristal-vadisi = 0`
+  - `kayip-sehir = 0`
+  - `yeralti-kralligi = 0`
+  - `gunes-imparatorlugu = 0`
+- TARGET/TARGET, BONUS/BONUS and TARGET/BONUS route-wide collisions therefore all resolve to zero.
+
+Reviewed Segment 1 content fingerprints:
+- `baslangic-limani = 39462daa`
+- `gokyuzu-adalari = 2fd4e4af`
+- `orman-yolu = de4fe1f9`
+- `orman-2 = 71084c8f`
+- Zero-debt content-lock fingerprints remain unchanged:
+  - `kristal-vadisi = fcd1e9ce`
+  - `kayip-sehir = 5c9041c4`
+  - `yeralti-kralligi = 71d752f6`
+  - `gunes-imparatorlugu = 0a6c7f40`
+
+Corrected Segment 1 normalized reserved-set counts, derived read-only from `targetWords + bonusWords`:
+- Başlangıç Limanı: **80**
+- Gökyüzü Adaları: **80**
+- Orman Yolu: **54**
+- Kadim Orman: **67**
+- Kristal Vadisi: **70**
+- Kayıp Şehir: **70**
+- Yeraltı Krallığı: **70**
+- Güneş İmparatorluğu: **70**
+- No reserved set is persisted to user storage.
+
+Content / grid safety:
+- Per-level target-word counts are unchanged from the Wave 8 starting source.
+- Per-level bonus-word counts are unchanged.
+- All current grids remain rectangular **8×8**; grid dimensions are unchanged.
+- Every listed target and bonus word is discoverable through a valid production path.
+- Changed-level production input resolution passes.
+- Changed-level compact `360×640` layout/reachability validation passes.
+- The four zero-debt routes retain their starting grid/target/bonus content fingerprints.
+- Immutable Kayıp Şehir / Yeraltı Krallığı / Güneş İmparatorluğu artwork byte locks remain **PASS**.
+
+Info-card semantic preservation:
+- Existing `infoCardIds` identities and ownership mappings are unchanged.
+- Linked card words remain listed in the level that owns the card.
+- Orman semantic correction is canonical:
+  - L5 `KOZALAK` remains because `orman-info-kozalak` is linked there.
+  - Duplicate L4 `KOZALAK` occurrence is replaced by `PALAMUT`.
+  - Card-linked L7 `GEYİK` remains.
+  - Duplicate L6 BONUS `GEYİK` is replaced by `KİRPİ`.
+- Wave 7 milestone candidate derivation still uses current level `infoCardIds`; legacy L10 milestone reward regression is **PASS**.
+- No duplicate milestone/card grant engine or second canonical save was introduced.
+
+Previous-wave regression authority:
+- Wave 0: **PASS**
+- Wave 1: **PASS**
+- Wave 2: **PASS**
+- Wave 3: **PASS**
+- Wave 4: **PASS**
+- Wave 5 route-aware presentation / common gameplay engine: **PASS**
+- Wave 6 completion/save-before-navigation/legacy L10 + synthetic L100 authority: **PASS**
+- Wave 7 milestone info rewards: **PASS**
+- Book/compass production chrome remains absent: **PASS**
+- Common gameplay/input/path/scoring engine remains shared and unchanged by Wave 8 content migration.
+
+Final implementation validation authority — exact HEAD `d07ec30d82ca97931d0a72589d649ff93daae366`:
+- `Kelime Avı 2.0 Cumulative Validation`
+  - Run: **#131**
+  - Run ID: `35563007300`
+  - Result: **SUCCESS**
+  - Full repository analyzer: **92 existing issues**; Wave 0 baseline: **92**; no worsening.
+  - Targeted changed/new Dart analyze: **No issues found**.
+  - Wave 0–8 dedicated/cumulative gates: **PASS**.
+  - Immutable trilogy: **PASS**.
+  - Full Flutter suite: **846 tests passed**.
+  - Diff whitespace gate: **PASS**.
+- `Kelime Avı Orman Yolu içerik kapısı`
+  - Run: **#17**
+  - Run ID: `35563007253`
+  - Result: **SUCCESS**
+- `Kelime Avı route catalog kapısı`
+  - Run: **#227**
+  - Run ID: `35563007401`
+  - Result: **SUCCESS**
+- `Kelime Avı Android 16 görsel kanıtı`
+  - Run: **#611**
+  - Run ID: `35563007318`
+  - Result: **SUCCESS**
+- `Orman Yolu Android çoklu ekran kanıtı`
+  - Run: **#187**
+  - Run ID: `35563007304`
+  - Result: **SUCCESS**
+  - Orman Yolu and Kadim Orman Android multi-size jobs both: **SUCCESS**.
+- `Kelime Avı üçleme Android 16 runtime görsel kanıtı`
+  - Run: **#120**
+  - Run ID: `35563007212`
+  - Result: **SUCCESS**
+  - Existing runtime contract produced the full **15 screenshot** proof set.
+- `AdMob PR doğrulaması`
+  - Run: **#988**
+  - Run ID: `35563007217`
+  - Result: **SUCCESS**
+  - Analyze/full-test, release APK validation and Android 16 cold-start gates: **PASS**.
+
+Final validation blocker history:
+- Starting closure-validation implementation HEAD `d10f100d6fb85c77f34f6eb37c0998517bced9d6` exposed stale/incorrect test expectations rather than new production content regression:
+  - Wave 8 map semantics test required an exact merged semantics string instead of accepting the node child label.
+  - Changed-level compact test expected the finish CTA before targets were found, although the production CTA is intentionally conditional on `_allTargetsFound`.
+  - Existing Başlangıç L3/L7/L8/L10 fixture assertions still described the pre-Wave8 content.
+- Minimum blocker correction updated tests/fixtures only; production word/grid content and runtime product source were not changed by the final blocker fix.
+- Final exact validation authority therefore advances to `d07ec30d82ca97931d0a72589d649ff93daae366`.
+
+Release / scope safety:
+- No Wave 9 work was started.
+- No content compiler, generator or seeded grid builder was added.
+- No Level 11–100 production content was added.
+- No Segment 2–10 production integration or future segment names were added.
+- No new artwork was added.
+- Route IDs and level IDs remain unchanged.
+- Schema remains v3 and the historical storage prefix is unchanged.
+- No version bump, tag, release, signed production artifact, Play upload or production merge occurred.
+- PR #213 remains **Open / Draft / Unmerged**.
+
+Not: This closure section intentionally does not self-reference its own docs-only commit SHA. The validated implementation authority is `d07ec30d82ca97931d0a72589d649ff93daae366`. After this docs-only closure commit, the new final integration HEAD must pass `Kelime Avı 2.0 Cumulative Validation` again; implementation Android/runtime authority remains the exact implementation HEAD above because the closure commit changes documentation only.
