@@ -1339,3 +1339,249 @@ Release / scope safety:
 - PR #213 remains **Open / Draft / Unmerged**.
 
 Not: This closure section intentionally does not self-reference its own docs-only commit SHA. The validated implementation authority is `d07ec30d82ca97931d0a72589d649ff93daae366`. After this docs-only closure commit, the new final integration HEAD must pass `Kelime Avı 2.0 Cumulative Validation` again; implementation Android/runtime authority remains the exact implementation HEAD above because the closure commit changes documentation only.
+
+## WAVE 9 — KA-02 CONTENT COMPILER + STRICT ROUTE-WIDE UNIQUENESS GATE CLOSURE
+
+Status: **PASS**
+
+Validated implementation authority:
+- Exact code/tool/test implementation HEAD: `b05c3d3ef2773265b5eba99c2df917f16166db41`
+- This closure records the already-validated implementation HEAD above; it intentionally does not self-reference the later docs-only closure commit SHA.
+
+Live authority used for closure:
+- Production snapshot: `release/final-closed-test-aab-1.68.8@67c91fce5078bedfd14fb984eacd6f99a26f2792`
+- Owner master contract: `docs/kelime-avi-2-0-master-contract@eafb6ceb94848cae7d0723fbe269615c2c62fa0b`
+- Architecture audit: `docs/kelime-avi-2-0-architecture-audit@8462cc32d438084754bc715e64ff58bfcb9d5b47`
+- Wave 8 final integration authority: `c289b09b186d3e97d7b13413f84ebc7c994a52f4`
+- Integration PR: **#213 — Open / Draft / Unmerged**
+- Base: `release/final-closed-test-aab-1.68.8`
+
+Canonical KA-02 compiler authority:
+- Canonical CLI/core remains the upgraded existing tool: `tools/word_hunt_batch_generator.py`.
+- No second compiler or second grid-generation algorithm was introduced.
+- Compiler contract version: `ka02-v1`.
+- Canonical source schema: `schemaVersion: 2`.
+- Final supported CLI modes, verified from live source:
+  - compile candidate manifest: `--input ... --output ...`
+  - validate an existing locked artifact: `--validate ...`
+  - verify Segment1 source lock only: `--verify-source-lock-only`
+- The compiler is development/content tooling only. It is not imported by Flutter runtime and never generates player content at app startup.
+- Successful compiler meaning remains **technically valid candidate / CANDIDATE READY FOR REVIEW**, not production approval.
+
+Segment1 source-lock authority:
+- Canonical source lock: `tools/word_hunt_segment1_source_lock.json`.
+- Lock schema: `schemaVersion: 1`.
+- Lock version: `wave8-segment1-v1`.
+- Checked-in lock payload SHA-256 identity: `df568a0badaa5b5e122e9c49179d3ee9b6c4697b22192910a1e63b8c9546a537`.
+- `test/word_hunt_2_0_wave9_content_compiler_test.dart` mechanically re-derives the current production Segment1 catalog and fails on route/order/level/fingerprint/reserved-word/reserved-count/origin or duplicate-debt drift.
+- The Python compiler also verifies the source-lock digest before use.
+
+Wave 8 Segment1 fingerprints remain exact:
+- `baslangic-limani = 39462daa`
+- `gokyuzu-adalari = 2fd4e4af`
+- `orman-yolu = de4fe1f9`
+- `orman-2 = 71084c8f`
+- `kristal-vadisi = fcd1e9ce`
+- `kayip-sehir = 5c9041c4`
+- `yeralti-kralligi = 71d752f6`
+- `gunes-imparatorlugu = 0a6c7f40`
+
+Wave 8 Segment1 normalized reserved counts remain exact:
+- `baslangic-limani = 80`
+- `gokyuzu-adalari = 80`
+- `orman-yolu = 54`
+- `orman-2 = 67`
+- `kristal-vadisi = 70`
+- `kayip-sehir = 70`
+- `yeralti-kralligi = 70`
+- `gunes-imparatorlugu = 70`
+
+Current post-Wave8 Segment1 duplicate debt remains:
+- `baslangic-limani = 0`
+- `gokyuzu-adalari = 0`
+- `orman-yolu = 0`
+- `orman-2 = 0`
+- `kristal-vadisi = 0`
+- `kayip-sehir = 0`
+- `yeralti-kralligi = 0`
+- `gunes-imparatorlugu = 0`
+
+Historical Segment1 validation-boundary blocker:
+- Immutable Wave 8 production Segment1 already contains historical source-lock values including `RÜZGÂR` and `TEZGÂH`.
+- Initial Wave 9 validation incorrectly applied the **new Level 11–100 candidate alphabet boundary** to those already-existing immutable Segment1 source-lock values.
+- Correct final boundary:
+  - Segment1 lock preserves current runtime-normalized production identity/content semantics.
+  - Segment1 historical vocabulary is not re-authored or treated as new candidate vocabulary.
+  - New Level 11–100 candidate source remains strict and fail-closed: supported canonical candidate alphabet, 3–8 runes, no silent space/hyphen/punctuation removal.
+- Corrective implementation commit: `aeb3588be89d25b3beeeae0d0488deafd2aad66f`.
+- Regression-proof commit / final validated implementation HEAD: `b05c3d3ef2773265b5eba99c2df917f16166db41`.
+- No production Segment1 word, grid or route definition was changed by this correction.
+
+Normalization authority:
+- Runtime/Segment1 identity remains semantically compatible with `WordHuntPathEngine.normalizeWord`:
+  - trim
+  - Turkish `i → İ`
+  - Turkish `ı → I`
+  - uppercase
+- Historical Segment1 source values remain preserved after runtime-semantic normalization.
+- New candidate validation additionally enforces the canonical candidate alphabet and 3–8 rune length.
+- New candidate input with spaces, hyphens or unsupported punctuation fails closed rather than being silently transformed.
+
+Strict route-wide uniqueness authority:
+- Uniqueness scope is exactly one route, not the global game.
+- Every route initializes its candidate `seenWords` authority from that route's Segment1 reserved words.
+- The canonical compiler rejects all same-route collision directions:
+  - Segment1 TARGET → candidate TARGET
+  - Segment1 TARGET → candidate BONUS
+  - Segment1 BONUS → candidate TARGET
+  - Segment1 BONUS → candidate BONUS
+  - candidate TARGET → later candidate TARGET
+  - candidate BONUS → later candidate BONUS
+  - candidate TARGET → later candidate BONUS
+  - candidate BONUS → later candidate TARGET
+- Same-level TARGET/TARGET, BONUS/BONUS and TARGET/BONUS normalized collisions fail through the same route-wide authority.
+- The same normalized word on two different routes is explicitly allowed.
+- Duplicate diagnostics retain actionable first-known source, level/index and role evidence.
+
+Variable word-count authority:
+- The historical fixed combined minimum-5 / maximum-10 generator rule is no longer canonical KA-02 authority.
+- The compiler preserves editor-supplied variable TARGET/BONUS counts.
+- Technical minimum is at least one TARGET plus a physically valid compilable grid; no automatic 4+1 structure is invented.
+- Regression `test_variable_word_counts_do_not_use_old_five_word_minimum` passes, including a valid 4 TARGET + 0 BONUS shape and differing per-level count shapes.
+
+Staged Level 11–100 candidate contract:
+- Production candidate indexes `11..100` are supported.
+- Partial/staged manifests are supported; candidate indexes do not need to start at 1 or contain all future levels.
+- Level 10 candidate input is rejected because Levels 1–10 are immutable Segment1 source authority.
+- L20 is not forced route final.
+- L50 remains non-final.
+- L90 remains non-final.
+- L100 must use `routeFinal`.
+- Indexes greater than 100 are rejected.
+- Explicit level IDs are required; the compiler does not invent production ID naming.
+- No actual production Level 11–100 content or Segment2–10 route data was integrated in Wave 9.
+
+Determinism authority:
+- Same normalized semantic input + same seed + same Segment1 source lock + same compiler version produces byte-identical canonical JSON output.
+- Deterministic report bytes are also reproduced.
+- Resolved level seeds and per-level fingerprints are deterministic.
+- Source digest is deterministic SHA-256 over canonical source identity and generation-affecting metadata.
+- Default per-level seed identity derives stably from compiler version + global seed + routeId + absolute level index using SHA-256.
+- Route ordinal/list position is not part of seed identity; reordering unrelated routes does not alter a level's resolved seed.
+- Explicit per-level seed is supported and respected.
+- A deliberately different seed may change generated grid/fingerprint while still satisfying all validation gates.
+- No timestamp, random UUID, Python `hash()`, filesystem-order or network-service identity participates in deterministic output.
+
+Grid / exact-one authority:
+- Candidate grid remains exactly **8×8**.
+- Path rule remains `straightEightDirections`: horizontal, vertical and diagonal in eight physical directions.
+- Existing deterministic backtracking strategy is retained.
+- Deterministic filler is accepted only if every intended TARGET/BONUS word has exactly one physical occurrence.
+- Forward and reverse gestures across the same physical cells are canonicalized as one occurrence.
+- Palindrome handling is regression-tested so words such as `KÖK` are not falsely double-counted.
+- Placement evidence records word/start/direction/cells, and validation independently re-reads the grid rather than trusting metadata.
+- Generation, backtracking and filler retries are bounded; impossible dense content fails deterministically rather than retrying indefinitely.
+
+Source/output lock authority:
+- Compiler contract version participates in deterministic identity.
+- Segment1 source-lock version/digest participates in source identity.
+- Compiler output records deterministic source digest.
+- Each level records resolved seed.
+- Final level/grid/content lock fingerprint uses SHA-256 over canonical relevant level identity, grid, intended words, metadata, seed and placement proof.
+- Validation mode rechecks source-lock identity, source digest, route/index/type contract, route-wide uniqueness, exact-one occurrence, placement/grid integrity, resolved seed and per-level fingerprint.
+- Source-lock drift fails closed.
+- Grid or target tampering without recomputing canonical lock evidence fails validation.
+- Recompiling the same locked semantic input reproduces the same grid/fingerprint contract.
+
+Legacy release-stock tooling:
+- `tools/word_hunt_release_stock_manifest.py` is retained as historical compatibility tooling.
+- `tools/word_hunt_release_stock_check.py` is retained as historical compatibility tooling.
+- Neither script is canonical Wave 9 KA-02 content authority.
+- They were not deleted or promoted into Kelime Avı 2.0 production-content authority during closure.
+
+KA-04 safety:
+- KA-04 Content Quality Scoring was **not started**.
+- Wave 9 adds no AI content-quality score, semantic ranking, grid-beauty score, difficulty scoring engine or automatic editorial approval.
+- Wave 9 remains technical compiler/validation infrastructure only.
+
+Runtime / production / persistence safety:
+- Mechanical Wave 8 final integration → Wave 9 implementation diff contains **zero `lib/` product/runtime files**.
+- It contains **zero artwork/assets** changes.
+- It contains **zero production Segment1 content files**.
+- No runtime generator exists.
+- No production Level 11–100 content was added.
+- No Segment2–10 production integration was added.
+- No production route definition was expanded beyond existing 10-level authority.
+- All existing **8 route IDs**, **80 existing level IDs**, route mappings and **30 trilogy display names** remain unchanged.
+- Wave 8 production words/grids/fingerprints remain unchanged.
+- `WordHuntProgressCodec.schemaVersion = 3` remains unchanged.
+- Exact live storage prefix remains `bilgi_rotasi_word_hunt_progress_v1_`.
+- No player-save compiler seed, source digest, reserved set or other persistence field was added.
+- No gameplay/navigation/presentation/completion/milestone/reward architecture was changed.
+- Immutable trilogy asset lock remains **PASS**.
+
+Exact implementation validation authority — HEAD `b05c3d3ef2773265b5eba99c2df917f16166db41`:
+- `Kelime Avı 2.0 Cumulative Validation`
+  - Run: **#141**
+  - Run ID: `35581770031`
+  - Result: **SUCCESS**
+  - Wave 0–9 cumulative gates: **PASS**
+  - Wave 9 Segment1 source-lock parity: **PASS**
+  - Wave 9 compiler Python tests: **PASS**
+  - Wave 9 deterministic compiler proof: **PASS**
+  - Wave 9 strict uniqueness/reserved-set proof: **PASS**
+  - Wave 9 locked-output validation proof: **PASS**
+  - Full repository analyzer: **92 existing issues**, equal to the 92 baseline; no worsening.
+  - Targeted analyze: **No issues found**.
+  - Immutable trilogy: **PASS**.
+  - Full Flutter suite: **848 tests passed**.
+  - Diff whitespace gate: **PASS**.
+- `Kelime Avı Content Factory`
+  - Run: **#16**
+  - Run ID: `35581769621`
+  - Result: **SUCCESS**
+- `Kelime Avı route catalog kapısı`
+  - Run: **#237**
+  - Run ID: `35581769754`
+  - Result: **SUCCESS**
+- `Kelime Avı Orman Yolu içerik kapısı`
+  - Run: **#27**
+  - Run ID: `35581769757`
+  - Result: **SUCCESS**
+- `Kelime Avı Android 16 görsel kanıtı`
+  - Run: **#621**
+  - Run ID: `35581769737`
+  - Result: **SUCCESS**
+- `Orman Yolu Android çoklu ekran kanıtı`
+  - Run: **#197**
+  - Run ID: `35581769926`
+  - Result: **SUCCESS**
+- `Kelime Avı üçleme Android 16 runtime görsel kanıtı`
+  - Run: **#130**
+  - Run ID: `35581769690`
+  - Result: **SUCCESS**
+- `AdMob PR doğrulaması`
+  - Run: **#998**
+  - Run ID: `35581769726`
+  - Result: **SUCCESS**
+- All listed implementation validation workflows above are attached to the exact same implementation SHA `b05c3d3ef2773265b5eba99c2df917f16166db41`.
+
+Focused Wave 9 technical contract:
+- `docs/project-memory/KELIME_AVI_2_0_WAVE9_CONTENT_COMPILER_CONTRACT.md`
+
+Release / scope safety:
+- Wave 10 was not started.
+- No production candidate batch was created.
+- No production Level 11–100 definitions were generated or integrated.
+- No Segment2–10 production integration or future segment naming was performed.
+- No KA-04 scoring was started.
+- No artwork was changed.
+- No route or existing level identity was changed.
+- No version bump, tag, release, signed APK/AAB, Play Console action or merge occurred.
+- PR #213 remains **Open / Draft / Unmerged**.
+
+Final closure rule:
+- The exact validated implementation authority is `b05c3d3ef2773265b5eba99c2df917f16166db41`.
+- This Wave 9 authority section intentionally does not self-reference the docs-only closure commit SHA.
+- After the docs-only closure commit, the new final integration HEAD must pass `Kelime Avı 2.0 Cumulative Validation` again before manager-level Wave 9 closure is declared.
+
