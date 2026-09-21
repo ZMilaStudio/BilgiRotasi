@@ -20,44 +20,47 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('Wave 6 legacy compatibility', () {
-    test('current legacy 10-level route completion and star wall stay unchanged', () {
-      final starter = WordHuntRouteCatalog.gokyuzu.route;
-      var progress = const WordHuntProgressSnapshot();
+    test(
+      'current legacy 10-level route completion and star wall stay unchanged',
+      () {
+        final starter = WordHuntRouteCatalog.gokyuzu.route;
+        var progress = const WordHuntProgressSnapshot();
 
-      for (var i = 0; i < 9; i++) {
-        progress = progress.recordLevelResult(
-          levelId: starter.levels[i].id,
-          stars: i < 5 ? 3 : 0,
+        for (var i = 0; i < 9; i++) {
+          progress = progress.recordLevelResult(
+            levelId: starter.levels[i].id,
+            stars: i < 5 ? 3 : 0,
+          );
+        }
+        expect(
+          WordHuntRouteProgressEngine.isRouteComplete(starter, progress),
+          isFalse,
         );
-      }
-      expect(
-        WordHuntRouteProgressEngine.isRouteComplete(starter, progress),
-        isFalse,
-      );
 
-      progress = progress.recordLevelResult(
-        levelId: starter.levels.last.id,
-        stars: 1,
-      );
-      expect(
-        WordHuntRouteProgressEngine.totalStars(starter, progress),
-        lessThan(starter.unlockStarsRequired),
-      );
-      expect(
-        WordHuntRouteProgressEngine.isRouteComplete(starter, progress),
-        isFalse,
-      );
+        progress = progress.recordLevelResult(
+          levelId: starter.levels.last.id,
+          stars: 1,
+        );
+        expect(
+          WordHuntRouteProgressEngine.totalStars(starter, progress),
+          lessThan(starter.unlockStarsRequired),
+        );
+        expect(
+          WordHuntRouteProgressEngine.isRouteComplete(starter, progress),
+          isFalse,
+        );
 
-      progress = progress.recordLevelResult(
-        levelId: starter.levels[5].id,
-        stars: 3,
-      );
-      expect(
-        WordHuntRouteProgressEngine.isRouteComplete(starter, progress),
-        isTrue,
-      );
-      expect(WordHuntRouteCatalog.orman.isUnlocked(progress), isTrue);
-    });
+        progress = progress.recordLevelResult(
+          levelId: starter.levels[5].id,
+          stars: 3,
+        );
+        expect(
+          WordHuntRouteProgressEngine.isRouteComplete(starter, progress),
+          isTrue,
+        );
+        expect(WordHuntRouteCatalog.orman.isUnlocked(progress), isTrue);
+      },
+    );
 
     test('legacy routes derive only segment 1', () {
       expect(
