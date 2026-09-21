@@ -593,6 +593,8 @@ void main() {
       for (final entry in WordHuntRouteCatalog.entries) {
         for (final level in entry.route.levels) {
           if (!_changedLevelIds.contains(level.id)) continue;
+          // The finish CTA is conditional on all targets being found.
+          // Exercise the real canonical input paths before checking reachability.
           for (final word in level.targetWords) {
             final path = _findStraightPath(level.grid, word);
             expect(path, isNotNull, reason: '${level.id}:$word');
