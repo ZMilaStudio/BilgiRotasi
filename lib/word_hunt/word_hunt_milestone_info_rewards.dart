@@ -58,12 +58,12 @@ abstract final class WordHuntMilestoneInfoRewardEngine {
     }
 
     final absoluteLevelIndex = completedOffset + 1;
-    final explicitV2 = WordHuntSegmentProjection.isExplicitV2Route(route);
+    final segmentedRoute = WordHuntSegmentProjection.isSegmentedRoute(route);
 
     int segmentIndex;
     int segmentStart;
     int segmentEnd;
-    if (explicitV2) {
+    if (segmentedRoute) {
       final projection = WordHuntSegmentProjection.forLevel(
         route,
         absoluteLevelIndex,

@@ -97,6 +97,7 @@ class WordHuntRouteDefinition {
     required this.levels,
     required this.routeRewardId,
     this.segments = const <WordHuntSegmentDefinition>[],
+    this.plannedLevelCount,
   });
 
   final String id;
@@ -106,8 +107,15 @@ class WordHuntRouteDefinition {
   final List<WordHuntLevelDefinition> levels;
   final String routeRewardId;
   final List<WordHuntSegmentDefinition> segments;
+  final int? plannedLevelCount;
 
-  int get maximumStars => levels.length * 3;
+  int get availableLevelCount => levels.length;
+
+  int get plannedRouteLevelCount => plannedLevelCount ?? levels.length;
+
+  int get maximumStars => availableLevelCount * 3;
+
+  int get plannedMaximumStars => plannedRouteLevelCount * 3;
 }
 
 class WordHuntDefinitionValidator {
@@ -231,6 +239,13 @@ class WordHuntDefinitionValidator {
       return errors;
     }
 
+    if (route.plannedRouteLevelCount < route.levels.length) {
+      errors.add('plannedLevelCount mevcut bölüm sayısından küçük olamaz');
+    }
+    if (route.plannedRouteLevelCount > 100) {
+      errors.add('plannedLevelCount 100 değerini aşamaz');
+    }
+
     if (route.unlockStarsRequired < 0 ||
         route.unlockStarsRequired > route.maximumStars) {
       errors.add('unlockStarsRequired rota yıldız aralığında olmalı');
@@ -251,8 +266,21 @@ class WordHuntDefinitionValidator {
       errors.addAll(validateLevel(level).map((error) => '${level.id}: $error'));
     }
 
-    if (route.levels.last.type != WordHuntLevelType.routeFinal) {
-      errors.add('rotanın son bölümü rota finali olmalı');
+    if (route.segments.isEmpty) {
+      if (route.levels.last.type != WordHuntLevelType.routeFinal) {
+        errors.add('legacy rotanın son bölümü rota finali olmalı');
+      }
+    } else {
+      final completeV2 =
+          route.levels.length == 100 && route.plannedRouteLevelCount == 100;
+      if (completeV2 &&
+          route.levels.last.type != WordHuntLevelType.routeFinal) {
+        errors.add('100 bölümlük 2.0 rotanın L100 bölümü rota finali olmalı');
+      }
+      if (!completeV2 &&
+          route.levels.last.type == WordHuntLevelType.routeFinal) {
+        errors.add('staged 2.0 içerik sınırı rota finali olamaz');
+      }
     }
 
     _validateSegments(route, errors);
@@ -316,6 +344,28 @@ class WordHuntDefinitionValidator {
 
     if (expectedStart != route.levels.length + 1) {
       errors.add('segment aralıkları tüm rota bölümlerini kapsamalı');
+    }
+
+    if (route.levels.length % 10 != 0) {
+      errors.add('segmentli rota mevcut içerikte 10 bölümlük bloklar taşımalı');
+    } else if (route.segments.length != route.levels.length ~/ 10) {
+      errors.add('segment sayısı mevcut 10 bölümlük blok sayısıyla eşleşmeli');
+    }
+
+    for (var offset = 0; offset < route.segments.length; offset++) {
+      final segment = route.segments[offset];
+      final expectedIndex = offset + 1;
+      final expectedSegmentStart = offset * 10 + 1;
+      final expectedSegmentEnd = expectedSegmentStart + 9;
+      if (segment.index != expectedIndex ||
+          segment.startLevelIndex != expectedSegmentStart ||
+          segment.endLevelIndex != expectedSegmentEnd ||
+          segment.levelCount != 10) {
+        errors.add(
+          '${segment.id}: segmentli rotada segment $expectedIndex '
+          'aralığı $expectedSegmentStart-$expectedSegmentEnd olmalı',
+        );
+      }
     }
 
     if (route.levels.length == 100) {

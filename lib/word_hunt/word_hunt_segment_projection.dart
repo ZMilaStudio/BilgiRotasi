@@ -11,8 +11,10 @@ class WordHuntSegmentProjection {
     required this.level,
     required this.isSegmentStart,
     required this.isSegmentEnd,
-    required bool explicitV2Route,
-  }) : _explicitV2Route = explicitV2Route;
+    required bool segmentedRoute,
+    required bool completeV2Route,
+  }) : _segmentedRoute = segmentedRoute,
+       _completeV2Route = completeV2Route;
 
   final int absoluteLevelIndex;
   final int segmentIndex;
@@ -23,13 +25,14 @@ class WordHuntSegmentProjection {
   final WordHuntLevelDefinition level;
   final bool isSegmentStart;
   final bool isSegmentEnd;
-  final bool _explicitV2Route;
+  final bool _segmentedRoute;
+  final bool _completeV2Route;
 
   bool get isSegmentMilestone => isSegmentEnd;
 
-  bool get isMajorMidpoint => _explicitV2Route && absoluteLevelIndex == 50;
+  bool get isMajorMidpoint => _segmentedRoute && absoluteLevelIndex == 50;
 
-  bool get isTrueRouteFinal => _explicitV2Route && absoluteLevelIndex == 100;
+  bool get isTrueRouteFinal => _completeV2Route && absoluteLevelIndex == 100;
 
   static WordHuntSegmentProjection forLevel(
     WordHuntRouteDefinition route,
@@ -43,8 +46,10 @@ class WordHuntSegmentProjection {
         'absoluteLevelIndex',
       );
     }
-    if (route.segments.isEmpty) {
-      throw StateError('Rota explicit segment metadata taşımıyor.');
+    if (!isSegmentedRoute(route)) {
+      throw StateError(
+        'Rota geçerli 10-node explicit segment metadata taşımıyor.',
+      );
     }
 
     WordHuntSegmentDefinition? match;
@@ -72,12 +77,16 @@ class WordHuntSegmentProjection {
       level: route.levels[absoluteLevelIndex - 1],
       isSegmentStart: absoluteLevelIndex == match.startLevelIndex,
       isSegmentEnd: absoluteLevelIndex == match.endLevelIndex,
-      explicitV2Route: isExplicitV2Route(route),
+      segmentedRoute: true,
+      completeV2Route: isCompleteV2Route(route),
     );
   }
 
-  static bool isExplicitV2Route(WordHuntRouteDefinition route) {
-    if (route.levels.length != 100 || route.segments.length != 10) {
+  static bool isSegmentedRoute(WordHuntRouteDefinition route) {
+    if (route.levels.isEmpty ||
+        route.segments.isEmpty ||
+        route.levels.length % 10 != 0 ||
+        route.segments.length != route.levels.length ~/ 10) {
       return false;
     }
 
@@ -86,11 +95,23 @@ class WordHuntSegmentProjection {
       final expectedStart = offset * 10 + 1;
       if (segment.index != offset + 1 ||
           segment.startLevelIndex != expectedStart ||
-          segment.endLevelIndex != expectedStart + 9) {
+          segment.endLevelIndex != expectedStart + 9 ||
+          segment.levelCount != 10) {
         return false;
       }
     }
-
     return true;
   }
+
+  static bool isCompleteV2Route(WordHuntRouteDefinition route) {
+    return isSegmentedRoute(route) &&
+        route.levels.length == 100 &&
+        route.segments.length == 10 &&
+        route.plannedRouteLevelCount == 100;
+  }
+
+  /// Wave 1–9 API compatibility: "explicit V2" historically meant complete
+  /// 100-level/10-segment authority.
+  static bool isExplicitV2Route(WordHuntRouteDefinition route) =>
+      isCompleteV2Route(route);
 }

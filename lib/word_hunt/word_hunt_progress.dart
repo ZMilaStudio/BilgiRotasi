@@ -167,7 +167,10 @@ class WordHuntRouteProgressEngine {
       return false;
     }
 
-    if (WordHuntSegmentProjection.isExplicitV2Route(route)) {
+    if (WordHuntSegmentProjection.isSegmentedRoute(route)) {
+      if (!WordHuntSegmentProjection.isCompleteV2Route(route)) {
+        return false;
+      }
       final trueFinalLevel = route.levels[99];
       return isLevelCompleted(trueFinalLevel, progress);
     }
