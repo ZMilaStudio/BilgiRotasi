@@ -11,9 +11,22 @@ import 'word_hunt_starter_content.dart';
 import 'word_hunt_yeralti_kralligi_content.dart';
 
 abstract final class WordHuntLegacyProgressMigration {
+  static final WordHuntRouteDefinition _frozenLegacyStarterRoute =
+      WordHuntRouteDefinition(
+        id: WordHuntStarterContent.baslangicLimani.id,
+        title: WordHuntStarterContent.baslangicLimani.title,
+        theme: WordHuntStarterContent.baslangicLimani.theme,
+        unlockStarsRequired:
+            WordHuntStarterContent.baslangicLimani.unlockStarsRequired,
+        levels: List<WordHuntLevelDefinition>.unmodifiable(
+          WordHuntStarterContent.baslangicLimani.levels.take(10),
+        ),
+        routeRewardId: WordHuntStarterContent.baslangicLimani.routeRewardId,
+      );
+
   static final List<WordHuntRouteDefinition> frozenLegacyRoutes =
       <WordHuntRouteDefinition>[
-        WordHuntStarterContent.baslangicLimani,
+        _frozenLegacyStarterRoute,
         WordHuntGokyuzuContent.gokyuzuAdalari,
         WordHuntOrmanContent.ormanYolu,
         WordHuntOrman2Content.orman2,
