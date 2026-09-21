@@ -53,12 +53,19 @@ jobs:
         run: flutter pub get
 
       - name: Corpus Dart format gate
-        run: >-
-          dart format
-          --output=none
-          --set-exit-if-changed
-          tools/word_hunt_corpus_support.dart
-          tools/word_hunt_production_corpus_lock_test.dart
+        run: |
+          dart format \
+            tools/word_hunt_corpus_support.dart \
+            tools/word_hunt_production_corpus_lock_test.dart
+          if ! git diff --quiet -- \
+            tools/word_hunt_corpus_support.dart \
+            tools/word_hunt_production_corpus_lock_test.dart; then
+            echo "::error::Dart formatter changed checked-in corpus tooling source."
+            git --no-pager diff -- \
+              tools/word_hunt_corpus_support.dart \
+              tools/word_hunt_production_corpus_lock_test.dart
+            exit 1
+          fi
 
       - name: Production Dart corpus lock parity
         run: >-
