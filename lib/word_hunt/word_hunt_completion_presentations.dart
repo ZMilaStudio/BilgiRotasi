@@ -24,6 +24,7 @@ class WordHuntCompletionPresentation extends StatelessWidget {
       WordHuntCompletionDestinationKind.nextLevel => 'Sonraki Bölüm',
       WordHuntCompletionDestinationKind.nextSegment => 'Sonraki Bölge',
       WordHuntCompletionDestinationKind.nextRoute => 'Sonraki Rotaya Geç',
+      WordHuntCompletionDestinationKind.contentFrontier => 'Haritaya Dön',
       WordHuntCompletionDestinationKind.returnToRoute => 'Haritaya Dön',
       WordHuntCompletionDestinationKind.terminalRouteComplete => 'Rotalar',
     };
