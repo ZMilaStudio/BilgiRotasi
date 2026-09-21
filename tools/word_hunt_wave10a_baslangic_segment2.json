@@ -1,0 +1,127 @@
+{
+  "schemaVersion": 2,
+  "seed": 20260921,
+  "routes": [
+    {
+      "routeId": "baslangic-limani",
+      "levels": [
+        {
+          "id": "baslangic-11",
+          "index": 11,
+          "type": "normal",
+          "targetWords": ["KIYI", "İSKELE", "VAPUR", "YELKEN", "ÇAPA"],
+          "bonusWords": ["HALAT"],
+          "starRules": {
+            "twoStarMaxMistakes": 2,
+            "threeStarMaxMistakes": 0
+          }
+        },
+        {
+          "id": "baslangic-12",
+          "index": 12,
+          "type": "normal",
+          "targetWords": ["TEKNE", "KÜREK", "DÜMEN", "BURUN", "KÖRFEZ"],
+          "bonusWords": ["RÜZGAR"],
+          "starRules": {
+            "twoStarMaxMistakes": 2,
+            "threeStarMaxMistakes": 0
+          }
+        },
+        {
+          "id": "baslangic-13",
+          "index": 13,
+          "type": "normal",
+          "targetWords": ["SANDAL", "FERİBOT", "MARİNA", "AMBAR", "KASA"],
+          "bonusWords": ["BARINAK"],
+          "starRules": {
+            "twoStarMaxMistakes": 2,
+            "threeStarMaxMistakes": 0
+          }
+        },
+        {
+          "id": "baslangic-14",
+          "index": 14,
+          "type": "normal",
+          "targetWords": ["FENER", "IŞIK", "SİNYAL", "KILAVUZ", "MERCEK"],
+          "bonusWords": ["ŞAMANDRA"],
+          "starRules": {
+            "twoStarMaxMistakes": 2,
+            "threeStarMaxMistakes": 0
+          }
+        },
+        {
+          "id": "baslangic-15",
+          "index": 15,
+          "type": "challenge",
+          "targetWords": ["MOTOR", "PERVANE", "YAKIT", "AKINTI", "KÖPRÜ"],
+          "bonusWords": ["MAKİNE"],
+          "timeLimitSeconds": 120,
+          "starRules": {
+            "twoStarMaxSeconds": 100,
+            "threeStarMaxSeconds": 75,
+            "twoStarMaxMistakes": 2,
+            "threeStarMaxMistakes": 0
+          }
+        },
+        {
+          "id": "baslangic-16",
+          "index": 16,
+          "type": "normal",
+          "targetWords": ["TAYFA", "GÜVERTE", "KAMARA", "BAYRAK", "BACA"],
+          "bonusWords": ["GÜVERCİN"],
+          "starRules": {
+            "twoStarMaxMistakes": 2,
+            "threeStarMaxMistakes": 0
+          }
+        },
+        {
+          "id": "baslangic-17",
+          "index": 17,
+          "type": "normal",
+          "targetWords": ["YÜK", "SANDIK", "VARİL", "ÇUVAL", "PALET"],
+          "bonusWords": ["FORKLİFT"],
+          "starRules": {
+            "twoStarMaxMistakes": 2,
+            "threeStarMaxMistakes": 0
+          }
+        },
+        {
+          "id": "baslangic-18",
+          "index": 18,
+          "type": "normal",
+          "targetWords": ["BİLET", "SEFER", "DURAK", "PERON", "VALİZ"],
+          "bonusWords": ["YOLCU"],
+          "starRules": {
+            "twoStarMaxMistakes": 2,
+            "threeStarMaxMistakes": 0
+          }
+        },
+        {
+          "id": "baslangic-19",
+          "index": 19,
+          "type": "normal",
+          "targetWords": ["FIRTINA", "YAĞMUR", "BULUT", "ŞİMŞEK", "SİS"],
+          "bonusWords": ["GÖKGÜRÜ"],
+          "starRules": {
+            "twoStarMaxMistakes": 2,
+            "threeStarMaxMistakes": 0
+          }
+        },
+        {
+          "id": "baslangic-20",
+          "index": 20,
+          "type": "challenge",
+          "targetWords": ["UFUK", "SEYİR", "MAVİ", "KUMSAL", "DOLUNAY"],
+          "bonusWords": ["MENZİL"],
+          "timeLimitSeconds": 120,
+          "starRules": {
+            "twoStarMaxSeconds": 100,
+            "threeStarMaxSeconds": 75,
+            "twoStarMaxMistakes": 2,
+            "threeStarMaxMistakes": 0
+          }
+        }
+      ]
+    }
+  ]
+}
