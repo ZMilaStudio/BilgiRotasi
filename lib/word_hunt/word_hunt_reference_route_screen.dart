@@ -161,7 +161,8 @@ class WordHuntReferenceRouteScreen extends StatelessWidget {
       segmentIndex: segmentIndex,
     );
     if (route.id == WordHuntStarterContent.baslangicLimani.id &&
-        sceneAssetPath == null) {
+        sceneAssetPath == null &&
+        segmentIndex == 1) {
       final nodeNineOpen = WordHuntRouteProgressEngine.isLevelUnlocked(
         route,
         progress,
