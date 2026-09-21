@@ -1,0 +1,4008 @@
+{
+  "schemaVersion": 1,
+  "lockVersion": "wave8-segment1-v1",
+  "purpose": "NON-PRODUCTION tooling source lock for KA-02 compiler",
+  "wave8ImplementationAuthority": "d07ec30d82ca97931d0a72589d649ff93daae366",
+  "wave8FinalIntegrationAuthority": "c289b09b186d3e97d7b13413f84ebc7c994a52f4",
+  "routes": [
+    {
+      "routeId": "baslangic-limani",
+      "contentFingerprint": "39462daa",
+      "reservedWordCount": 80,
+      "reservedWords": [
+        "ANIT",
+        "ANKARA",
+        "ARI",
+        "AĞAÇ",
+        "BAL",
+        "BAŞKENT",
+        "BİLGİ",
+        "DALGA",
+        "DENİZ",
+        "DERS",
+        "DOĞA",
+        "DÜNYA",
+        "ELMA",
+        "FAUL",
+        "GEMİ",
+        "GEZEGEN",
+        "GOL",
+        "GÜNEŞ",
+        "HARİTA",
+        "HAZİNE",
+        "HEDEF",
+        "HIZ",
+        "HIZLI",
+        "KALE",
+        "KALEM",
+        "KANAT",
+        "KAPTAN",
+        "KAĞIT",
+        "KEŞİF",
+        "KOVAN",
+        "KOŞU",
+        "KRATER",
+        "KULE",
+        "KİTAP",
+        "LİMAN",
+        "MACERA",
+        "MARS",
+        "MARTI",
+        "MASA",
+        "MAÇ",
+        "MECLİS",
+        "MEYVE",
+        "NEHİR",
+        "NEKTAR",
+        "NİŞAN",
+        "OKUL",
+        "ORMAN",
+        "OYUN",
+        "OYUNCU",
+        "PARKUR",
+        "PETEK",
+        "POLEN",
+        "PUSULA",
+        "ROKET",
+        "ROTA",
+        "SAAT",
+        "SAHİL",
+        "SAYFA",
+        "SINIF",
+        "SKOR",
+        "SPOR",
+        "SÜRE",
+        "TAKIM",
+        "TOP",
+        "TOPRAK",
+        "TÜRKİYE",
+        "UYDU",
+        "UZAY",
+        "YAPRAK",
+        "YEŞİL",
+        "YILDIZ",
+        "YOL",
+        "YÖRÜNGE",
+        "ZAMAN",
+        "ÇABUK",
+        "ÇAYIR",
+        "ÇİÇEK",
+        "ÖDEV",
+        "İPUCU",
+        "ŞEHİR"
+      ],
+      "wordOrigins": [
+        {
+          "word": "ANIT",
+          "levelId": "baslangic-5",
+          "index": 5,
+          "role": "BONUS"
+        },
+        {
+          "word": "ANKARA",
+          "levelId": "baslangic-5",
+          "index": 5,
+          "role": "TARGET"
+        },
+        {
+          "word": "ARI",
+          "levelId": "baslangic-7",
+          "index": 7,
+          "role": "TARGET"
+        },
+        {
+          "word": "AĞAÇ",
+          "levelId": "baslangic-6",
+          "index": 6,
+          "role": "TARGET"
+        },
+        {
+          "word": "BAL",
+          "levelId": "baslangic-7",
+          "index": 7,
+          "role": "TARGET"
+        },
+        {
+          "word": "BAŞKENT",
+          "levelId": "baslangic-5",
+          "index": 5,
+          "role": "TARGET"
+        },
+        {
+          "word": "BİLGİ",
+          "levelId": "baslangic-1",
+          "index": 1,
+          "role": "TARGET"
+        },
+        {
+          "word": "DALGA",
+          "levelId": "baslangic-2",
+          "index": 2,
+          "role": "TARGET"
+        },
+        {
+          "word": "DENİZ",
+          "levelId": "baslangic-2",
+          "index": 2,
+          "role": "TARGET"
+        },
+        {
+          "word": "DERS",
+          "levelId": "baslangic-3",
+          "index": 3,
+          "role": "TARGET"
+        },
+        {
+          "word": "DOĞA",
+          "levelId": "baslangic-6",
+          "index": 6,
+          "role": "TARGET"
+        },
+        {
+          "word": "DÜNYA",
+          "levelId": "baslangic-9",
+          "index": 9,
+          "role": "TARGET"
+        },
+        {
+          "word": "ELMA",
+          "levelId": "baslangic-1",
+          "index": 1,
+          "role": "BONUS"
+        },
+        {
+          "word": "FAUL",
+          "levelId": "baslangic-8",
+          "index": 8,
+          "role": "TARGET"
+        },
+        {
+          "word": "GEMİ",
+          "levelId": "baslangic-2",
+          "index": 2,
+          "role": "TARGET"
+        },
+        {
+          "word": "GEZEGEN",
+          "levelId": "baslangic-9",
+          "index": 9,
+          "role": "TARGET"
+        },
+        {
+          "word": "GOL",
+          "levelId": "baslangic-8",
+          "index": 8,
+          "role": "TARGET"
+        },
+        {
+          "word": "GÜNEŞ",
+          "levelId": "baslangic-9",
+          "index": 9,
+          "role": "TARGET"
+        },
+        {
+          "word": "HARİTA",
+          "levelId": "baslangic-10",
+          "index": 10,
+          "role": "TARGET"
+        },
+        {
+          "word": "HAZİNE",
+          "levelId": "baslangic-10",
+          "index": 10,
+          "role": "BONUS"
+        },
+        {
+          "word": "HEDEF",
+          "levelId": "baslangic-4",
+          "index": 4,
+          "role": "TARGET"
+        },
+        {
+          "word": "HIZ",
+          "levelId": "baslangic-8",
+          "index": 8,
+          "role": "BONUS"
+        },
+        {
+          "word": "HIZLI",
+          "levelId": "baslangic-4",
+          "index": 4,
+          "role": "TARGET"
+        },
+        {
+          "word": "KALE",
+          "levelId": "baslangic-5",
+          "index": 5,
+          "role": "TARGET"
+        },
+        {
+          "word": "KALEM",
+          "levelId": "baslangic-1",
+          "index": 1,
+          "role": "TARGET"
+        },
+        {
+          "word": "KANAT",
+          "levelId": "baslangic-7",
+          "index": 7,
+          "role": "TARGET"
+        },
+        {
+          "word": "KAPTAN",
+          "levelId": "baslangic-10",
+          "index": 10,
+          "role": "TARGET"
+        },
+        {
+          "word": "KAĞIT",
+          "levelId": "baslangic-3",
+          "index": 3,
+          "role": "TARGET"
+        },
+        {
+          "word": "KEŞİF",
+          "levelId": "baslangic-10",
+          "index": 10,
+          "role": "TARGET"
+        },
+        {
+          "word": "KOVAN",
+          "levelId": "baslangic-7",
+          "index": 7,
+          "role": "TARGET"
+        },
+        {
+          "word": "KOŞU",
+          "levelId": "baslangic-4",
+          "index": 4,
+          "role": "BONUS"
+        },
+        {
+          "word": "KRATER",
+          "levelId": "baslangic-9",
+          "index": 9,
+          "role": "TARGET"
+        },
+        {
+          "word": "KULE",
+          "levelId": "baslangic-5",
+          "index": 5,
+          "role": "TARGET"
+        },
+        {
+          "word": "KİTAP",
+          "levelId": "baslangic-3",
+          "index": 3,
+          "role": "TARGET"
+        },
+        {
+          "word": "LİMAN",
+          "levelId": "baslangic-2",
+          "index": 2,
+          "role": "TARGET"
+        },
+        {
+          "word": "MACERA",
+          "levelId": "baslangic-10",
+          "index": 10,
+          "role": "TARGET"
+        },
+        {
+          "word": "MARS",
+          "levelId": "baslangic-9",
+          "index": 9,
+          "role": "TARGET"
+        },
+        {
+          "word": "MARTI",
+          "levelId": "baslangic-2",
+          "index": 2,
+          "role": "BONUS"
+        },
+        {
+          "word": "MASA",
+          "levelId": "baslangic-1",
+          "index": 1,
+          "role": "TARGET"
+        },
+        {
+          "word": "MAÇ",
+          "levelId": "baslangic-8",
+          "index": 8,
+          "role": "TARGET"
+        },
+        {
+          "word": "MECLİS",
+          "levelId": "baslangic-5",
+          "index": 5,
+          "role": "TARGET"
+        },
+        {
+          "word": "MEYVE",
+          "levelId": "baslangic-7",
+          "index": 7,
+          "role": "TARGET"
+        },
+        {
+          "word": "NEHİR",
+          "levelId": "baslangic-6",
+          "index": 6,
+          "role": "TARGET"
+        },
+        {
+          "word": "NEKTAR",
+          "levelId": "baslangic-7",
+          "index": 7,
+          "role": "TARGET"
+        },
+        {
+          "word": "NİŞAN",
+          "levelId": "baslangic-10",
+          "index": 10,
+          "role": "TARGET"
+        },
+        {
+          "word": "OKUL",
+          "levelId": "baslangic-3",
+          "index": 3,
+          "role": "TARGET"
+        },
+        {
+          "word": "ORMAN",
+          "levelId": "baslangic-6",
+          "index": 6,
+          "role": "TARGET"
+        },
+        {
+          "word": "OYUN",
+          "levelId": "baslangic-1",
+          "index": 1,
+          "role": "TARGET"
+        },
+        {
+          "word": "OYUNCU",
+          "levelId": "baslangic-8",
+          "index": 8,
+          "role": "TARGET"
+        },
+        {
+          "word": "PARKUR",
+          "levelId": "baslangic-10",
+          "index": 10,
+          "role": "TARGET"
+        },
+        {
+          "word": "PETEK",
+          "levelId": "baslangic-7",
+          "index": 7,
+          "role": "TARGET"
+        },
+        {
+          "word": "POLEN",
+          "levelId": "baslangic-7",
+          "index": 7,
+          "role": "TARGET"
+        },
+        {
+          "word": "PUSULA",
+          "levelId": "baslangic-10",
+          "index": 10,
+          "role": "TARGET"
+        },
+        {
+          "word": "ROKET",
+          "levelId": "baslangic-9",
+          "index": 9,
+          "role": "BONUS"
+        },
+        {
+          "word": "ROTA",
+          "levelId": "baslangic-1",
+          "index": 1,
+          "role": "TARGET"
+        },
+        {
+          "word": "SAAT",
+          "levelId": "baslangic-4",
+          "index": 4,
+          "role": "TARGET"
+        },
+        {
+          "word": "SAHİL",
+          "levelId": "baslangic-2",
+          "index": 2,
+          "role": "TARGET"
+        },
+        {
+          "word": "SAYFA",
+          "levelId": "baslangic-3",
+          "index": 3,
+          "role": "BONUS"
+        },
+        {
+          "word": "SINIF",
+          "levelId": "baslangic-3",
+          "index": 3,
+          "role": "TARGET"
+        },
+        {
+          "word": "SKOR",
+          "levelId": "baslangic-8",
+          "index": 8,
+          "role": "BONUS"
+        },
+        {
+          "word": "SPOR",
+          "levelId": "baslangic-8",
+          "index": 8,
+          "role": "TARGET"
+        },
+        {
+          "word": "SÜRE",
+          "levelId": "baslangic-4",
+          "index": 4,
+          "role": "TARGET"
+        },
+        {
+          "word": "TAKIM",
+          "levelId": "baslangic-8",
+          "index": 8,
+          "role": "TARGET"
+        },
+        {
+          "word": "TOP",
+          "levelId": "baslangic-8",
+          "index": 8,
+          "role": "TARGET"
+        },
+        {
+          "word": "TOPRAK",
+          "levelId": "baslangic-6",
+          "index": 6,
+          "role": "TARGET"
+        },
+        {
+          "word": "TÜRKİYE",
+          "levelId": "baslangic-5",
+          "index": 5,
+          "role": "TARGET"
+        },
+        {
+          "word": "UYDU",
+          "levelId": "baslangic-9",
+          "index": 9,
+          "role": "TARGET"
+        },
+        {
+          "word": "UZAY",
+          "levelId": "baslangic-9",
+          "index": 9,
+          "role": "TARGET"
+        },
+        {
+          "word": "YAPRAK",
+          "levelId": "baslangic-6",
+          "index": 6,
+          "role": "BONUS"
+        },
+        {
+          "word": "YEŞİL",
+          "levelId": "baslangic-6",
+          "index": 6,
+          "role": "TARGET"
+        },
+        {
+          "word": "YILDIZ",
+          "levelId": "baslangic-9",
+          "index": 9,
+          "role": "TARGET"
+        },
+        {
+          "word": "YOL",
+          "levelId": "baslangic-10",
+          "index": 10,
+          "role": "TARGET"
+        },
+        {
+          "word": "YÖRÜNGE",
+          "levelId": "baslangic-9",
+          "index": 9,
+          "role": "TARGET"
+        },
+        {
+          "word": "ZAMAN",
+          "levelId": "baslangic-4",
+          "index": 4,
+          "role": "TARGET"
+        },
+        {
+          "word": "ÇABUK",
+          "levelId": "baslangic-4",
+          "index": 4,
+          "role": "TARGET"
+        },
+        {
+          "word": "ÇAYIR",
+          "levelId": "baslangic-7",
+          "index": 7,
+          "role": "BONUS"
+        },
+        {
+          "word": "ÇİÇEK",
+          "levelId": "baslangic-6",
+          "index": 6,
+          "role": "TARGET"
+        },
+        {
+          "word": "ÖDEV",
+          "levelId": "baslangic-3",
+          "index": 3,
+          "role": "TARGET"
+        },
+        {
+          "word": "İPUCU",
+          "levelId": "baslangic-10",
+          "index": 10,
+          "role": "TARGET"
+        },
+        {
+          "word": "ŞEHİR",
+          "levelId": "baslangic-5",
+          "index": 5,
+          "role": "TARGET"
+        }
+      ]
+    },
+    {
+      "routeId": "gokyuzu-adalari",
+      "contentFingerprint": "2fd4e4af",
+      "reservedWordCount": 80,
+      "reservedWords": [
+        "ALEV",
+        "ALTIN",
+        "ANAHTAR",
+        "BAHÇE",
+        "BALON",
+        "BULUT",
+        "DAMLA",
+        "DUMAN",
+        "ESİNTİ",
+        "EVREN",
+        "FIRTINA",
+        "GAGA",
+        "GALAKSİ",
+        "GECE",
+        "GEMİ",
+        "GEZEGEN",
+        "GÖKLER",
+        "GÖKTAŞI",
+        "GÖKYÜZÜ",
+        "GÖLGE",
+        "GÜNDÜZ",
+        "GÜNEŞ",
+        "GÜRÜLTÜ",
+        "GİZEM",
+        "GİZLİ",
+        "HALAT",
+        "HARİTA",
+        "HAZİNE",
+        "HİLAL",
+        "IŞIK",
+        "IŞIN",
+        "KANAT",
+        "KAPTAN",
+        "KARTAL",
+        "KULE",
+        "KÖPRÜ",
+        "LAMBA",
+        "LİMAN",
+        "MACERA",
+        "MAĞARA",
+        "MEHTAP",
+        "MELTEM",
+        "METEOR",
+        "MOTOR",
+        "PARLAK",
+        "PENÇE",
+        "PERVANE",
+        "PRİZMA",
+        "PUSULA",
+        "RENK",
+        "RIHTIM",
+        "ROKET",
+        "RÜZGAR",
+        "SANDIK",
+        "SARAY",
+        "SERAP",
+        "SERÇE",
+        "SIRLAR",
+        "SİLÜET",
+        "TAHT",
+        "TELESKOP",
+        "TOMURCUK",
+        "TÜYLER",
+        "UZAY",
+        "UÇAK",
+        "UÇUŞ",
+        "YAĞIŞ",
+        "YAĞMUR",
+        "YILDIRIM",
+        "YILDIZ",
+        "YUVA",
+        "YÖRÜNGE",
+        "ZAFER",
+        "ZİRVE",
+        "ÇİÇEK",
+        "İSKELE",
+        "İZLER",
+        "ŞAFAK",
+        "ŞULE",
+        "ŞİMŞEK"
+      ],
+      "wordOrigins": [
+        {
+          "word": "ALEV",
+          "levelId": "gokyuzu-7",
+          "index": 7,
+          "role": "TARGET"
+        },
+        {
+          "word": "ALTIN",
+          "levelId": "gokyuzu-10",
+          "index": 10,
+          "role": "TARGET"
+        },
+        {
+          "word": "ANAHTAR",
+          "levelId": "gokyuzu-8",
+          "index": 8,
+          "role": "TARGET"
+        },
+        {
+          "word": "BAHÇE",
+          "levelId": "gokyuzu-2",
+          "index": 2,
+          "role": "TARGET"
+        },
+        {
+          "word": "BALON",
+          "levelId": "gokyuzu-6",
+          "index": 6,
+          "role": "TARGET"
+        },
+        {
+          "word": "BULUT",
+          "levelId": "gokyuzu-2",
+          "index": 2,
+          "role": "TARGET"
+        },
+        {
+          "word": "DAMLA",
+          "levelId": "gokyuzu-2",
+          "index": 2,
+          "role": "TARGET"
+        },
+        {
+          "word": "DUMAN",
+          "levelId": "gokyuzu-5",
+          "index": 5,
+          "role": "TARGET"
+        },
+        {
+          "word": "ESİNTİ",
+          "levelId": "gokyuzu-1",
+          "index": 1,
+          "role": "TARGET"
+        },
+        {
+          "word": "EVREN",
+          "levelId": "gokyuzu-9",
+          "index": 9,
+          "role": "TARGET"
+        },
+        {
+          "word": "FIRTINA",
+          "levelId": "gokyuzu-5",
+          "index": 5,
+          "role": "TARGET"
+        },
+        {
+          "word": "GAGA",
+          "levelId": "gokyuzu-3",
+          "index": 3,
+          "role": "TARGET"
+        },
+        {
+          "word": "GALAKSİ",
+          "levelId": "gokyuzu-9",
+          "index": 9,
+          "role": "TARGET"
+        },
+        {
+          "word": "GECE",
+          "levelId": "gokyuzu-7",
+          "index": 7,
+          "role": "TARGET"
+        },
+        {
+          "word": "GEMİ",
+          "levelId": "gokyuzu-6",
+          "index": 6,
+          "role": "TARGET"
+        },
+        {
+          "word": "GEZEGEN",
+          "levelId": "gokyuzu-9",
+          "index": 9,
+          "role": "TARGET"
+        },
+        {
+          "word": "GÖKLER",
+          "levelId": "gokyuzu-10",
+          "index": 10,
+          "role": "TARGET"
+        },
+        {
+          "word": "GÖKTAŞI",
+          "levelId": "gokyuzu-9",
+          "index": 9,
+          "role": "TARGET"
+        },
+        {
+          "word": "GÖKYÜZÜ",
+          "levelId": "gokyuzu-7",
+          "index": 7,
+          "role": "TARGET"
+        },
+        {
+          "word": "GÖLGE",
+          "levelId": "gokyuzu-2",
+          "index": 2,
+          "role": "TARGET"
+        },
+        {
+          "word": "GÜNDÜZ",
+          "levelId": "gokyuzu-4",
+          "index": 4,
+          "role": "TARGET"
+        },
+        {
+          "word": "GÜNEŞ",
+          "levelId": "gokyuzu-10",
+          "index": 10,
+          "role": "TARGET"
+        },
+        {
+          "word": "GÜRÜLTÜ",
+          "levelId": "gokyuzu-5",
+          "index": 5,
+          "role": "TARGET"
+        },
+        {
+          "word": "GİZEM",
+          "levelId": "gokyuzu-8",
+          "index": 8,
+          "role": "TARGET"
+        },
+        {
+          "word": "GİZLİ",
+          "levelId": "gokyuzu-8",
+          "index": 8,
+          "role": "TARGET"
+        },
+        {
+          "word": "HALAT",
+          "levelId": "gokyuzu-6",
+          "index": 6,
+          "role": "TARGET"
+        },
+        {
+          "word": "HARİTA",
+          "levelId": "gokyuzu-8",
+          "index": 8,
+          "role": "TARGET"
+        },
+        {
+          "word": "HAZİNE",
+          "levelId": "gokyuzu-8",
+          "index": 8,
+          "role": "BONUS"
+        },
+        {
+          "word": "HİLAL",
+          "levelId": "gokyuzu-7",
+          "index": 7,
+          "role": "TARGET"
+        },
+        {
+          "word": "IŞIK",
+          "levelId": "gokyuzu-4",
+          "index": 4,
+          "role": "TARGET"
+        },
+        {
+          "word": "IŞIN",
+          "levelId": "gokyuzu-9",
+          "index": 9,
+          "role": "TARGET"
+        },
+        {
+          "word": "KANAT",
+          "levelId": "gokyuzu-1",
+          "index": 1,
+          "role": "TARGET"
+        },
+        {
+          "word": "KAPTAN",
+          "levelId": "gokyuzu-6",
+          "index": 6,
+          "role": "BONUS"
+        },
+        {
+          "word": "KARTAL",
+          "levelId": "gokyuzu-3",
+          "index": 3,
+          "role": "TARGET"
+        },
+        {
+          "word": "KULE",
+          "levelId": "gokyuzu-5",
+          "index": 5,
+          "role": "TARGET"
+        },
+        {
+          "word": "KÖPRÜ",
+          "levelId": "gokyuzu-4",
+          "index": 4,
+          "role": "TARGET"
+        },
+        {
+          "word": "LAMBA",
+          "levelId": "gokyuzu-7",
+          "index": 7,
+          "role": "TARGET"
+        },
+        {
+          "word": "LİMAN",
+          "levelId": "gokyuzu-6",
+          "index": 6,
+          "role": "TARGET"
+        },
+        {
+          "word": "MACERA",
+          "levelId": "gokyuzu-10",
+          "index": 10,
+          "role": "TARGET"
+        },
+        {
+          "word": "MAĞARA",
+          "levelId": "gokyuzu-8",
+          "index": 8,
+          "role": "TARGET"
+        },
+        {
+          "word": "MEHTAP",
+          "levelId": "gokyuzu-7",
+          "index": 7,
+          "role": "BONUS"
+        },
+        {
+          "word": "MELTEM",
+          "levelId": "gokyuzu-5",
+          "index": 5,
+          "role": "TARGET"
+        },
+        {
+          "word": "METEOR",
+          "levelId": "gokyuzu-9",
+          "index": 9,
+          "role": "TARGET"
+        },
+        {
+          "word": "MOTOR",
+          "levelId": "gokyuzu-6",
+          "index": 6,
+          "role": "TARGET"
+        },
+        {
+          "word": "PARLAK",
+          "levelId": "gokyuzu-4",
+          "index": 4,
+          "role": "BONUS"
+        },
+        {
+          "word": "PENÇE",
+          "levelId": "gokyuzu-3",
+          "index": 3,
+          "role": "TARGET"
+        },
+        {
+          "word": "PERVANE",
+          "levelId": "gokyuzu-6",
+          "index": 6,
+          "role": "TARGET"
+        },
+        {
+          "word": "PRİZMA",
+          "levelId": "gokyuzu-4",
+          "index": 4,
+          "role": "TARGET"
+        },
+        {
+          "word": "PUSULA",
+          "levelId": "gokyuzu-1",
+          "index": 1,
+          "role": "BONUS"
+        },
+        {
+          "word": "RENK",
+          "levelId": "gokyuzu-4",
+          "index": 4,
+          "role": "TARGET"
+        },
+        {
+          "word": "RIHTIM",
+          "levelId": "gokyuzu-7",
+          "index": 7,
+          "role": "TARGET"
+        },
+        {
+          "word": "ROKET",
+          "levelId": "gokyuzu-9",
+          "index": 9,
+          "role": "BONUS"
+        },
+        {
+          "word": "RÜZGAR",
+          "levelId": "gokyuzu-1",
+          "index": 1,
+          "role": "TARGET"
+        },
+        {
+          "word": "SANDIK",
+          "levelId": "gokyuzu-8",
+          "index": 8,
+          "role": "TARGET"
+        },
+        {
+          "word": "SARAY",
+          "levelId": "gokyuzu-10",
+          "index": 10,
+          "role": "TARGET"
+        },
+        {
+          "word": "SERAP",
+          "levelId": "gokyuzu-1",
+          "index": 1,
+          "role": "TARGET"
+        },
+        {
+          "word": "SERÇE",
+          "levelId": "gokyuzu-3",
+          "index": 3,
+          "role": "BONUS"
+        },
+        {
+          "word": "SIRLAR",
+          "levelId": "gokyuzu-8",
+          "index": 8,
+          "role": "BONUS"
+        },
+        {
+          "word": "SİLÜET",
+          "levelId": "gokyuzu-7",
+          "index": 7,
+          "role": "TARGET"
+        },
+        {
+          "word": "TAHT",
+          "levelId": "gokyuzu-10",
+          "index": 10,
+          "role": "TARGET"
+        },
+        {
+          "word": "TELESKOP",
+          "levelId": "gokyuzu-9",
+          "index": 9,
+          "role": "TARGET"
+        },
+        {
+          "word": "TOMURCUK",
+          "levelId": "gokyuzu-2",
+          "index": 2,
+          "role": "BONUS"
+        },
+        {
+          "word": "TÜYLER",
+          "levelId": "gokyuzu-3",
+          "index": 3,
+          "role": "TARGET"
+        },
+        {
+          "word": "UZAY",
+          "levelId": "gokyuzu-9",
+          "index": 9,
+          "role": "TARGET"
+        },
+        {
+          "word": "UÇAK",
+          "levelId": "gokyuzu-3",
+          "index": 3,
+          "role": "TARGET"
+        },
+        {
+          "word": "UÇUŞ",
+          "levelId": "gokyuzu-1",
+          "index": 1,
+          "role": "TARGET"
+        },
+        {
+          "word": "YAĞIŞ",
+          "levelId": "gokyuzu-5",
+          "index": 5,
+          "role": "TARGET"
+        },
+        {
+          "word": "YAĞMUR",
+          "levelId": "gokyuzu-4",
+          "index": 4,
+          "role": "TARGET"
+        },
+        {
+          "word": "YILDIRIM",
+          "levelId": "gokyuzu-5",
+          "index": 5,
+          "role": "BONUS"
+        },
+        {
+          "word": "YILDIZ",
+          "levelId": "gokyuzu-7",
+          "index": 7,
+          "role": "TARGET"
+        },
+        {
+          "word": "YUVA",
+          "levelId": "gokyuzu-3",
+          "index": 3,
+          "role": "TARGET"
+        },
+        {
+          "word": "YÖRÜNGE",
+          "levelId": "gokyuzu-9",
+          "index": 9,
+          "role": "TARGET"
+        },
+        {
+          "word": "ZAFER",
+          "levelId": "gokyuzu-10",
+          "index": 10,
+          "role": "BONUS"
+        },
+        {
+          "word": "ZİRVE",
+          "levelId": "gokyuzu-10",
+          "index": 10,
+          "role": "TARGET"
+        },
+        {
+          "word": "ÇİÇEK",
+          "levelId": "gokyuzu-2",
+          "index": 2,
+          "role": "TARGET"
+        },
+        {
+          "word": "İSKELE",
+          "levelId": "gokyuzu-6",
+          "index": 6,
+          "role": "TARGET"
+        },
+        {
+          "word": "İZLER",
+          "levelId": "gokyuzu-8",
+          "index": 8,
+          "role": "TARGET"
+        },
+        {
+          "word": "ŞAFAK",
+          "levelId": "gokyuzu-10",
+          "index": 10,
+          "role": "TARGET"
+        },
+        {
+          "word": "ŞULE",
+          "levelId": "gokyuzu-10",
+          "index": 10,
+          "role": "TARGET"
+        },
+        {
+          "word": "ŞİMŞEK",
+          "levelId": "gokyuzu-5",
+          "index": 5,
+          "role": "TARGET"
+        }
+      ]
+    },
+    {
+      "routeId": "orman-yolu",
+      "contentFingerprint": "de4fe1f9",
+      "reservedWordCount": 54,
+      "reservedWords": [
+        "ARI",
+        "AĞAÇ",
+        "BAHÇE",
+        "CANLI",
+        "DAL",
+        "DAMLA",
+        "DERE",
+        "DOĞA",
+        "FİDAN",
+        "FİDE",
+        "GEYİK",
+        "GÖLGE",
+        "ISLAK",
+        "KABUK",
+        "KAVAK",
+        "KAYA",
+        "KEŞİF",
+        "KOL",
+        "KORU",
+        "KOZALAK",
+        "KUMSAL",
+        "KUŞ",
+        "KÖK",
+        "KİRPİ",
+        "LALE",
+        "MACERA",
+        "MANTAR",
+        "MEŞE",
+        "ORMAN",
+        "OTLAR",
+        "OYUK",
+        "PALAMUT",
+        "PARKUR",
+        "PATİKA",
+        "PINAR",
+        "SERİN",
+        "SÜRGÜN",
+        "SİNCAP",
+        "TAVŞAN",
+        "TOPRAK",
+        "TOYNAK",
+        "TÜY",
+        "UYUM",
+        "YAPRAK",
+        "YAĞMUR",
+        "YEMİŞ",
+        "YOLCULUK",
+        "YUVA",
+        "ÇAM",
+        "ÇAMUR",
+        "ÇAY",
+        "ÇİMEN",
+        "ÇİÇEK",
+        "İZLER"
+      ],
+      "wordOrigins": [
+        {
+          "word": "ARI",
+          "levelId": "orman-yolu-03",
+          "index": 3,
+          "role": "TARGET"
+        },
+        {
+          "word": "AĞAÇ",
+          "levelId": "orman-yolu-01",
+          "index": 1,
+          "role": "TARGET"
+        },
+        {
+          "word": "BAHÇE",
+          "levelId": "orman-yolu-10",
+          "index": 10,
+          "role": "TARGET"
+        },
+        {
+          "word": "CANLI",
+          "levelId": "orman-yolu-10",
+          "index": 10,
+          "role": "TARGET"
+        },
+        {
+          "word": "DAL",
+          "levelId": "orman-yolu-01",
+          "index": 1,
+          "role": "TARGET"
+        },
+        {
+          "word": "DAMLA",
+          "levelId": "orman-yolu-08",
+          "index": 8,
+          "role": "TARGET"
+        },
+        {
+          "word": "DERE",
+          "levelId": "orman-yolu-04",
+          "index": 4,
+          "role": "TARGET"
+        },
+        {
+          "word": "DOĞA",
+          "levelId": "orman-yolu-10",
+          "index": 10,
+          "role": "TARGET"
+        },
+        {
+          "word": "FİDAN",
+          "levelId": "orman-yolu-02",
+          "index": 2,
+          "role": "TARGET"
+        },
+        {
+          "word": "FİDE",
+          "levelId": "orman-yolu-07",
+          "index": 7,
+          "role": "TARGET"
+        },
+        {
+          "word": "GEYİK",
+          "levelId": "orman-yolu-07",
+          "index": 7,
+          "role": "TARGET"
+        },
+        {
+          "word": "GÖLGE",
+          "levelId": "orman-yolu-03",
+          "index": 3,
+          "role": "BONUS"
+        },
+        {
+          "word": "ISLAK",
+          "levelId": "orman-yolu-08",
+          "index": 8,
+          "role": "BONUS"
+        },
+        {
+          "word": "KABUK",
+          "levelId": "orman-yolu-09",
+          "index": 9,
+          "role": "BONUS"
+        },
+        {
+          "word": "KAVAK",
+          "levelId": "orman-yolu-03",
+          "index": 3,
+          "role": "TARGET"
+        },
+        {
+          "word": "KAYA",
+          "levelId": "orman-yolu-06",
+          "index": 6,
+          "role": "TARGET"
+        },
+        {
+          "word": "KEŞİF",
+          "levelId": "orman-yolu-10",
+          "index": 10,
+          "role": "TARGET"
+        },
+        {
+          "word": "KOL",
+          "levelId": "orman-yolu-07",
+          "index": 7,
+          "role": "TARGET"
+        },
+        {
+          "word": "KORU",
+          "levelId": "orman-yolu-02",
+          "index": 2,
+          "role": "TARGET"
+        },
+        {
+          "word": "KOZALAK",
+          "levelId": "orman-yolu-05",
+          "index": 5,
+          "role": "TARGET"
+        },
+        {
+          "word": "KUMSAL",
+          "levelId": "orman-yolu-04",
+          "index": 4,
+          "role": "TARGET"
+        },
+        {
+          "word": "KUŞ",
+          "levelId": "orman-yolu-02",
+          "index": 2,
+          "role": "TARGET"
+        },
+        {
+          "word": "KÖK",
+          "levelId": "orman-yolu-01",
+          "index": 1,
+          "role": "TARGET"
+        },
+        {
+          "word": "KİRPİ",
+          "levelId": "orman-yolu-06",
+          "index": 6,
+          "role": "BONUS"
+        },
+        {
+          "word": "LALE",
+          "levelId": "orman-yolu-06",
+          "index": 6,
+          "role": "TARGET"
+        },
+        {
+          "word": "MACERA",
+          "levelId": "orman-yolu-10",
+          "index": 10,
+          "role": "BONUS"
+        },
+        {
+          "word": "MANTAR",
+          "levelId": "orman-yolu-04",
+          "index": 4,
+          "role": "TARGET"
+        },
+        {
+          "word": "MEŞE",
+          "levelId": "orman-yolu-02",
+          "index": 2,
+          "role": "TARGET"
+        },
+        {
+          "word": "ORMAN",
+          "levelId": "orman-yolu-01",
+          "index": 1,
+          "role": "TARGET"
+        },
+        {
+          "word": "OTLAR",
+          "levelId": "orman-yolu-05",
+          "index": 5,
+          "role": "TARGET"
+        },
+        {
+          "word": "OYUK",
+          "levelId": "orman-yolu-09",
+          "index": 9,
+          "role": "TARGET"
+        },
+        {
+          "word": "PALAMUT",
+          "levelId": "orman-yolu-04",
+          "index": 4,
+          "role": "TARGET"
+        },
+        {
+          "word": "PARKUR",
+          "levelId": "orman-yolu-08",
+          "index": 8,
+          "role": "TARGET"
+        },
+        {
+          "word": "PATİKA",
+          "levelId": "orman-yolu-05",
+          "index": 5,
+          "role": "TARGET"
+        },
+        {
+          "word": "PINAR",
+          "levelId": "orman-yolu-08",
+          "index": 8,
+          "role": "TARGET"
+        },
+        {
+          "word": "SERİN",
+          "levelId": "orman-yolu-04",
+          "index": 4,
+          "role": "TARGET"
+        },
+        {
+          "word": "SÜRGÜN",
+          "levelId": "orman-yolu-07",
+          "index": 7,
+          "role": "TARGET"
+        },
+        {
+          "word": "SİNCAP",
+          "levelId": "orman-yolu-06",
+          "index": 6,
+          "role": "TARGET"
+        },
+        {
+          "word": "TAVŞAN",
+          "levelId": "orman-yolu-07",
+          "index": 7,
+          "role": "TARGET"
+        },
+        {
+          "word": "TOPRAK",
+          "levelId": "orman-yolu-03",
+          "index": 3,
+          "role": "TARGET"
+        },
+        {
+          "word": "TOYNAK",
+          "levelId": "orman-yolu-09",
+          "index": 9,
+          "role": "TARGET"
+        },
+        {
+          "word": "TÜY",
+          "levelId": "orman-yolu-09",
+          "index": 9,
+          "role": "TARGET"
+        },
+        {
+          "word": "UYUM",
+          "levelId": "orman-yolu-10",
+          "index": 10,
+          "role": "TARGET"
+        },
+        {
+          "word": "YAPRAK",
+          "levelId": "orman-yolu-01",
+          "index": 1,
+          "role": "TARGET"
+        },
+        {
+          "word": "YAĞMUR",
+          "levelId": "orman-yolu-08",
+          "index": 8,
+          "role": "TARGET"
+        },
+        {
+          "word": "YEMİŞ",
+          "levelId": "orman-yolu-09",
+          "index": 9,
+          "role": "TARGET"
+        },
+        {
+          "word": "YOLCULUK",
+          "levelId": "orman-yolu-10",
+          "index": 10,
+          "role": "TARGET"
+        },
+        {
+          "word": "YUVA",
+          "levelId": "orman-yolu-03",
+          "index": 3,
+          "role": "TARGET"
+        },
+        {
+          "word": "ÇAM",
+          "levelId": "orman-yolu-02",
+          "index": 2,
+          "role": "TARGET"
+        },
+        {
+          "word": "ÇAMUR",
+          "levelId": "orman-yolu-08",
+          "index": 8,
+          "role": "TARGET"
+        },
+        {
+          "word": "ÇAY",
+          "levelId": "orman-yolu-05",
+          "index": 5,
+          "role": "TARGET"
+        },
+        {
+          "word": "ÇİMEN",
+          "levelId": "orman-yolu-06",
+          "index": 6,
+          "role": "TARGET"
+        },
+        {
+          "word": "ÇİÇEK",
+          "levelId": "orman-yolu-05",
+          "index": 5,
+          "role": "TARGET"
+        },
+        {
+          "word": "İZLER",
+          "levelId": "orman-yolu-09",
+          "index": 9,
+          "role": "TARGET"
+        }
+      ]
+    },
+    {
+      "routeId": "orman-2",
+      "contentFingerprint": "71084c8f",
+      "reservedWordCount": 67,
+      "reservedWords": [
+        "AKINTI",
+        "AYIŞIĞI",
+        "BAYKUŞ",
+        "DAMAR",
+        "DAMLA",
+        "DAİRE",
+        "DENGE",
+        "DESEN",
+        "DUVAR",
+        "EFSANE",
+        "EĞRELTİ",
+        "FISILTI",
+        "GECE",
+        "GEÇİT",
+        "GÖLET",
+        "GÖVDE",
+        "GİZEM",
+        "HALAT",
+        "HALKA",
+        "HARABE",
+        "ILIK",
+        "IŞIK",
+        "KABUK",
+        "KADİM",
+        "KALP",
+        "KANAT",
+        "KAPI",
+        "KAYNAK",
+        "KEMER",
+        "KIYI",
+        "KORU",
+        "KÖPRÜ",
+        "LİKEN",
+        "MANTAR",
+        "MEVSİM",
+        "MÜHÜR",
+        "MİSEL",
+        "NEHİR",
+        "NEM",
+        "OYMA",
+        "PENÇE",
+        "PUS",
+        "SAP",
+        "SARMAŞIK",
+        "SEMBOL",
+        "SERİN",
+        "SPOR",
+        "SÜTUN",
+        "SİS",
+        "TAHTA",
+        "TAŞ",
+        "TOHUM",
+        "YANKI",
+        "YARASA",
+        "YAZI",
+        "YAŞAM",
+        "YOSUN",
+        "YÜZÜK",
+        "ZAMAN",
+        "ÇAKIL",
+        "ÇINAR",
+        "ÇİVİ",
+        "ÇİĞ",
+        "İŞARET",
+        "ŞAPKA",
+        "ŞELALE",
+        "ŞİFRE"
+      ],
+      "wordOrigins": [
+        {
+          "word": "AKINTI",
+          "levelId": "orman-2-03",
+          "index": 3,
+          "role": "BONUS"
+        },
+        {
+          "word": "AYIŞIĞI",
+          "levelId": "orman-2-05",
+          "index": 5,
+          "role": "BONUS"
+        },
+        {
+          "word": "BAYKUŞ",
+          "levelId": "orman-2-05",
+          "index": 5,
+          "role": "TARGET"
+        },
+        {
+          "word": "DAMAR",
+          "levelId": "orman-2-09",
+          "index": 9,
+          "role": "TARGET"
+        },
+        {
+          "word": "DAMLA",
+          "levelId": "orman-2-02",
+          "index": 2,
+          "role": "TARGET"
+        },
+        {
+          "word": "DAİRE",
+          "levelId": "orman-2-08",
+          "index": 8,
+          "role": "BONUS"
+        },
+        {
+          "word": "DENGE",
+          "levelId": "orman-2-10",
+          "index": 10,
+          "role": "TARGET"
+        },
+        {
+          "word": "DESEN",
+          "levelId": "orman-2-08",
+          "index": 8,
+          "role": "TARGET"
+        },
+        {
+          "word": "DUVAR",
+          "levelId": "orman-2-06",
+          "index": 6,
+          "role": "TARGET"
+        },
+        {
+          "word": "EFSANE",
+          "levelId": "orman-2-10",
+          "index": 10,
+          "role": "TARGET"
+        },
+        {
+          "word": "EĞRELTİ",
+          "levelId": "orman-2-01",
+          "index": 1,
+          "role": "TARGET"
+        },
+        {
+          "word": "FISILTI",
+          "levelId": "orman-2-05",
+          "index": 5,
+          "role": "BONUS"
+        },
+        {
+          "word": "GECE",
+          "levelId": "orman-2-05",
+          "index": 5,
+          "role": "TARGET"
+        },
+        {
+          "word": "GEÇİT",
+          "levelId": "orman-2-03",
+          "index": 3,
+          "role": "TARGET"
+        },
+        {
+          "word": "GÖLET",
+          "levelId": "orman-2-07",
+          "index": 7,
+          "role": "TARGET"
+        },
+        {
+          "word": "GÖVDE",
+          "levelId": "orman-2-09",
+          "index": 9,
+          "role": "BONUS"
+        },
+        {
+          "word": "GİZEM",
+          "levelId": "orman-2-10",
+          "index": 10,
+          "role": "TARGET"
+        },
+        {
+          "word": "HALAT",
+          "levelId": "orman-2-03",
+          "index": 3,
+          "role": "TARGET"
+        },
+        {
+          "word": "HALKA",
+          "levelId": "orman-2-04",
+          "index": 4,
+          "role": "BONUS"
+        },
+        {
+          "word": "HARABE",
+          "levelId": "orman-2-06",
+          "index": 6,
+          "role": "TARGET"
+        },
+        {
+          "word": "ILIK",
+          "levelId": "orman-2-07",
+          "index": 7,
+          "role": "BONUS"
+        },
+        {
+          "word": "IŞIK",
+          "levelId": "orman-2-10",
+          "index": 10,
+          "role": "TARGET"
+        },
+        {
+          "word": "KABUK",
+          "levelId": "orman-2-01",
+          "index": 1,
+          "role": "TARGET"
+        },
+        {
+          "word": "KADİM",
+          "levelId": "orman-2-10",
+          "index": 10,
+          "role": "TARGET"
+        },
+        {
+          "word": "KALP",
+          "levelId": "orman-2-10",
+          "index": 10,
+          "role": "BONUS"
+        },
+        {
+          "word": "KANAT",
+          "levelId": "orman-2-05",
+          "index": 5,
+          "role": "TARGET"
+        },
+        {
+          "word": "KAPI",
+          "levelId": "orman-2-06",
+          "index": 6,
+          "role": "BONUS"
+        },
+        {
+          "word": "KAYNAK",
+          "levelId": "orman-2-07",
+          "index": 7,
+          "role": "TARGET"
+        },
+        {
+          "word": "KEMER",
+          "levelId": "orman-2-06",
+          "index": 6,
+          "role": "TARGET"
+        },
+        {
+          "word": "KIYI",
+          "levelId": "orman-2-07",
+          "index": 7,
+          "role": "BONUS"
+        },
+        {
+          "word": "KORU",
+          "levelId": "orman-2-10",
+          "index": 10,
+          "role": "BONUS"
+        },
+        {
+          "word": "KÖPRÜ",
+          "levelId": "orman-2-03",
+          "index": 3,
+          "role": "TARGET"
+        },
+        {
+          "word": "LİKEN",
+          "levelId": "orman-2-09",
+          "index": 9,
+          "role": "TARGET"
+        },
+        {
+          "word": "MANTAR",
+          "levelId": "orman-2-04",
+          "index": 4,
+          "role": "TARGET"
+        },
+        {
+          "word": "MEVSİM",
+          "levelId": "orman-2-09",
+          "index": 9,
+          "role": "BONUS"
+        },
+        {
+          "word": "MÜHÜR",
+          "levelId": "orman-2-08",
+          "index": 8,
+          "role": "TARGET"
+        },
+        {
+          "word": "MİSEL",
+          "levelId": "orman-2-04",
+          "index": 4,
+          "role": "TARGET"
+        },
+        {
+          "word": "NEHİR",
+          "levelId": "orman-2-07",
+          "index": 7,
+          "role": "TARGET"
+        },
+        {
+          "word": "NEM",
+          "levelId": "orman-2-02",
+          "index": 2,
+          "role": "TARGET"
+        },
+        {
+          "word": "OYMA",
+          "levelId": "orman-2-06",
+          "index": 6,
+          "role": "TARGET"
+        },
+        {
+          "word": "PENÇE",
+          "levelId": "orman-2-05",
+          "index": 5,
+          "role": "TARGET"
+        },
+        {
+          "word": "PUS",
+          "levelId": "orman-2-02",
+          "index": 2,
+          "role": "TARGET"
+        },
+        {
+          "word": "SAP",
+          "levelId": "orman-2-04",
+          "index": 4,
+          "role": "TARGET"
+        },
+        {
+          "word": "SARMAŞIK",
+          "levelId": "orman-2-01",
+          "index": 1,
+          "role": "TARGET"
+        },
+        {
+          "word": "SEMBOL",
+          "levelId": "orman-2-08",
+          "index": 8,
+          "role": "TARGET"
+        },
+        {
+          "word": "SERİN",
+          "levelId": "orman-2-02",
+          "index": 2,
+          "role": "TARGET"
+        },
+        {
+          "word": "SPOR",
+          "levelId": "orman-2-04",
+          "index": 4,
+          "role": "TARGET"
+        },
+        {
+          "word": "SÜTUN",
+          "levelId": "orman-2-06",
+          "index": 6,
+          "role": "TARGET"
+        },
+        {
+          "word": "SİS",
+          "levelId": "orman-2-02",
+          "index": 2,
+          "role": "TARGET"
+        },
+        {
+          "word": "TAHTA",
+          "levelId": "orman-2-03",
+          "index": 3,
+          "role": "TARGET"
+        },
+        {
+          "word": "TAŞ",
+          "levelId": "orman-2-06",
+          "index": 6,
+          "role": "BONUS"
+        },
+        {
+          "word": "TOHUM",
+          "levelId": "orman-2-09",
+          "index": 9,
+          "role": "TARGET"
+        },
+        {
+          "word": "YANKI",
+          "levelId": "orman-2-02",
+          "index": 2,
+          "role": "BONUS"
+        },
+        {
+          "word": "YARASA",
+          "levelId": "orman-2-05",
+          "index": 5,
+          "role": "TARGET"
+        },
+        {
+          "word": "YAZI",
+          "levelId": "orman-2-08",
+          "index": 8,
+          "role": "TARGET"
+        },
+        {
+          "word": "YAŞAM",
+          "levelId": "orman-2-10",
+          "index": 10,
+          "role": "TARGET"
+        },
+        {
+          "word": "YOSUN",
+          "levelId": "orman-2-01",
+          "index": 1,
+          "role": "TARGET"
+        },
+        {
+          "word": "YÜZÜK",
+          "levelId": "orman-2-09",
+          "index": 9,
+          "role": "TARGET"
+        },
+        {
+          "word": "ZAMAN",
+          "levelId": "orman-2-09",
+          "index": 9,
+          "role": "TARGET"
+        },
+        {
+          "word": "ÇAKIL",
+          "levelId": "orman-2-07",
+          "index": 7,
+          "role": "TARGET"
+        },
+        {
+          "word": "ÇINAR",
+          "levelId": "orman-2-09",
+          "index": 9,
+          "role": "TARGET"
+        },
+        {
+          "word": "ÇİVİ",
+          "levelId": "orman-2-03",
+          "index": 3,
+          "role": "TARGET"
+        },
+        {
+          "word": "ÇİĞ",
+          "levelId": "orman-2-01",
+          "index": 1,
+          "role": "TARGET"
+        },
+        {
+          "word": "İŞARET",
+          "levelId": "orman-2-08",
+          "index": 8,
+          "role": "TARGET"
+        },
+        {
+          "word": "ŞAPKA",
+          "levelId": "orman-2-04",
+          "index": 4,
+          "role": "TARGET"
+        },
+        {
+          "word": "ŞELALE",
+          "levelId": "orman-2-07",
+          "index": 7,
+          "role": "TARGET"
+        },
+        {
+          "word": "ŞİFRE",
+          "levelId": "orman-2-08",
+          "index": 8,
+          "role": "BONUS"
+        }
+      ]
+    },
+    {
+      "routeId": "kristal-vadisi",
+      "contentFingerprint": "fcd1e9ce",
+      "reservedWordCount": 70,
+      "reservedWords": [
+        "AKİK",
+        "AMETİST",
+        "BACA",
+        "BASINÇ",
+        "BAZALT",
+        "CEVHER",
+        "DEPREM",
+        "DOKU",
+        "DİKİT",
+        "EKSEN",
+        "ELMAS",
+        "FAY",
+        "FELDSPAT",
+        "GRANİT",
+        "IŞIN",
+        "KALSİT",
+        "KATMAN",
+        "KAYAÇ",
+        "KIRIK",
+        "KIRILMA",
+        "KOR",
+        "KOVUK",
+        "KRATER",
+        "KRİSTAL",
+        "KUVARS",
+        "KÖŞE",
+        "KÜKÜRT",
+        "KÜL",
+        "KÜP",
+        "LAV",
+        "LEVHA",
+        "MADEN",
+        "MAGMA",
+        "MANTO",
+        "MATLIK",
+        "MAĞARA",
+        "MERMER",
+        "MİKA",
+        "MİNERAL",
+        "OBSİDYEN",
+        "ODAK",
+        "ONİKS",
+        "OPAL",
+        "OYUK",
+        "PARILTI",
+        "PARLAK",
+        "POMZA",
+        "PRİZMA",
+        "PÜSKÜRME",
+        "PİRİT",
+        "RENK",
+        "SAFİR",
+        "SARKIT",
+        "SAYDAM",
+        "SERTLİK",
+        "SONDAJ",
+        "SİMETRİ",
+        "TOPAZ",
+        "TORTUL",
+        "TÜF",
+        "TÜNEL",
+        "YAKUT",
+        "YANSIMA",
+        "YÜZEY",
+        "ZÜMRÜT",
+        "ÇAKIL",
+        "ÇATLAK",
+        "ÇİZGİ",
+        "ÖRGÜ",
+        "İĞNE"
+      ],
+      "wordOrigins": [
+        {
+          "word": "AKİK",
+          "levelId": "kristal-vadisi-10",
+          "index": 10,
+          "role": "BONUS"
+        },
+        {
+          "word": "AMETİST",
+          "levelId": "kristal-vadisi-10",
+          "index": 10,
+          "role": "TARGET"
+        },
+        {
+          "word": "BACA",
+          "levelId": "kristal-vadisi-09",
+          "index": 9,
+          "role": "BONUS"
+        },
+        {
+          "word": "BASINÇ",
+          "levelId": "kristal-vadisi-08",
+          "index": 8,
+          "role": "TARGET"
+        },
+        {
+          "word": "BAZALT",
+          "levelId": "kristal-vadisi-07",
+          "index": 7,
+          "role": "TARGET"
+        },
+        {
+          "word": "CEVHER",
+          "levelId": "kristal-vadisi-02",
+          "index": 2,
+          "role": "BONUS"
+        },
+        {
+          "word": "DEPREM",
+          "levelId": "kristal-vadisi-08",
+          "index": 8,
+          "role": "TARGET"
+        },
+        {
+          "word": "DOKU",
+          "levelId": "kristal-vadisi-06",
+          "index": 6,
+          "role": "TARGET"
+        },
+        {
+          "word": "DİKİT",
+          "levelId": "kristal-vadisi-03",
+          "index": 3,
+          "role": "TARGET"
+        },
+        {
+          "word": "EKSEN",
+          "levelId": "kristal-vadisi-05",
+          "index": 5,
+          "role": "TARGET"
+        },
+        {
+          "word": "ELMAS",
+          "levelId": "kristal-vadisi-10",
+          "index": 10,
+          "role": "BONUS"
+        },
+        {
+          "word": "FAY",
+          "levelId": "kristal-vadisi-08",
+          "index": 8,
+          "role": "TARGET"
+        },
+        {
+          "word": "FELDSPAT",
+          "levelId": "kristal-vadisi-02",
+          "index": 2,
+          "role": "TARGET"
+        },
+        {
+          "word": "GRANİT",
+          "levelId": "kristal-vadisi-07",
+          "index": 7,
+          "role": "TARGET"
+        },
+        {
+          "word": "IŞIN",
+          "levelId": "kristal-vadisi-04",
+          "index": 4,
+          "role": "BONUS"
+        },
+        {
+          "word": "KALSİT",
+          "levelId": "kristal-vadisi-02",
+          "index": 2,
+          "role": "TARGET"
+        },
+        {
+          "word": "KATMAN",
+          "levelId": "kristal-vadisi-01",
+          "index": 1,
+          "role": "TARGET"
+        },
+        {
+          "word": "KAYAÇ",
+          "levelId": "kristal-vadisi-01",
+          "index": 1,
+          "role": "TARGET"
+        },
+        {
+          "word": "KIRIK",
+          "levelId": "kristal-vadisi-06",
+          "index": 6,
+          "role": "TARGET"
+        },
+        {
+          "word": "KIRILMA",
+          "levelId": "kristal-vadisi-04",
+          "index": 4,
+          "role": "TARGET"
+        },
+        {
+          "word": "KOR",
+          "levelId": "kristal-vadisi-09",
+          "index": 9,
+          "role": "BONUS"
+        },
+        {
+          "word": "KOVUK",
+          "levelId": "kristal-vadisi-03",
+          "index": 3,
+          "role": "BONUS"
+        },
+        {
+          "word": "KRATER",
+          "levelId": "kristal-vadisi-09",
+          "index": 9,
+          "role": "TARGET"
+        },
+        {
+          "word": "KRİSTAL",
+          "levelId": "kristal-vadisi-05",
+          "index": 5,
+          "role": "TARGET"
+        },
+        {
+          "word": "KUVARS",
+          "levelId": "kristal-vadisi-02",
+          "index": 2,
+          "role": "TARGET"
+        },
+        {
+          "word": "KÖŞE",
+          "levelId": "kristal-vadisi-05",
+          "index": 5,
+          "role": "TARGET"
+        },
+        {
+          "word": "KÜKÜRT",
+          "levelId": "kristal-vadisi-09",
+          "index": 9,
+          "role": "TARGET"
+        },
+        {
+          "word": "KÜL",
+          "levelId": "kristal-vadisi-09",
+          "index": 9,
+          "role": "TARGET"
+        },
+        {
+          "word": "KÜP",
+          "levelId": "kristal-vadisi-05",
+          "index": 5,
+          "role": "BONUS"
+        },
+        {
+          "word": "LAV",
+          "levelId": "kristal-vadisi-09",
+          "index": 9,
+          "role": "TARGET"
+        },
+        {
+          "word": "LEVHA",
+          "levelId": "kristal-vadisi-08",
+          "index": 8,
+          "role": "TARGET"
+        },
+        {
+          "word": "MADEN",
+          "levelId": "kristal-vadisi-01",
+          "index": 1,
+          "role": "TARGET"
+        },
+        {
+          "word": "MAGMA",
+          "levelId": "kristal-vadisi-09",
+          "index": 9,
+          "role": "TARGET"
+        },
+        {
+          "word": "MANTO",
+          "levelId": "kristal-vadisi-08",
+          "index": 8,
+          "role": "BONUS"
+        },
+        {
+          "word": "MATLIK",
+          "levelId": "kristal-vadisi-06",
+          "index": 6,
+          "role": "BONUS"
+        },
+        {
+          "word": "MAĞARA",
+          "levelId": "kristal-vadisi-03",
+          "index": 3,
+          "role": "TARGET"
+        },
+        {
+          "word": "MERMER",
+          "levelId": "kristal-vadisi-07",
+          "index": 7,
+          "role": "TARGET"
+        },
+        {
+          "word": "MİKA",
+          "levelId": "kristal-vadisi-02",
+          "index": 2,
+          "role": "TARGET"
+        },
+        {
+          "word": "MİNERAL",
+          "levelId": "kristal-vadisi-01",
+          "index": 1,
+          "role": "TARGET"
+        },
+        {
+          "word": "OBSİDYEN",
+          "levelId": "kristal-vadisi-07",
+          "index": 7,
+          "role": "TARGET"
+        },
+        {
+          "word": "ODAK",
+          "levelId": "kristal-vadisi-08",
+          "index": 8,
+          "role": "TARGET"
+        },
+        {
+          "word": "ONİKS",
+          "levelId": "kristal-vadisi-10",
+          "index": 10,
+          "role": "TARGET"
+        },
+        {
+          "word": "OPAL",
+          "levelId": "kristal-vadisi-10",
+          "index": 10,
+          "role": "TARGET"
+        },
+        {
+          "word": "OYUK",
+          "levelId": "kristal-vadisi-03",
+          "index": 3,
+          "role": "TARGET"
+        },
+        {
+          "word": "PARILTI",
+          "levelId": "kristal-vadisi-04",
+          "index": 4,
+          "role": "TARGET"
+        },
+        {
+          "word": "PARLAK",
+          "levelId": "kristal-vadisi-06",
+          "index": 6,
+          "role": "TARGET"
+        },
+        {
+          "word": "POMZA",
+          "levelId": "kristal-vadisi-07",
+          "index": 7,
+          "role": "TARGET"
+        },
+        {
+          "word": "PRİZMA",
+          "levelId": "kristal-vadisi-04",
+          "index": 4,
+          "role": "TARGET"
+        },
+        {
+          "word": "PÜSKÜRME",
+          "levelId": "kristal-vadisi-09",
+          "index": 9,
+          "role": "TARGET"
+        },
+        {
+          "word": "PİRİT",
+          "levelId": "kristal-vadisi-02",
+          "index": 2,
+          "role": "TARGET"
+        },
+        {
+          "word": "RENK",
+          "levelId": "kristal-vadisi-04",
+          "index": 4,
+          "role": "BONUS"
+        },
+        {
+          "word": "SAFİR",
+          "levelId": "kristal-vadisi-10",
+          "index": 10,
+          "role": "TARGET"
+        },
+        {
+          "word": "SARKIT",
+          "levelId": "kristal-vadisi-03",
+          "index": 3,
+          "role": "TARGET"
+        },
+        {
+          "word": "SAYDAM",
+          "levelId": "kristal-vadisi-04",
+          "index": 4,
+          "role": "TARGET"
+        },
+        {
+          "word": "SERTLİK",
+          "levelId": "kristal-vadisi-06",
+          "index": 6,
+          "role": "TARGET"
+        },
+        {
+          "word": "SONDAJ",
+          "levelId": "kristal-vadisi-01",
+          "index": 1,
+          "role": "BONUS"
+        },
+        {
+          "word": "SİMETRİ",
+          "levelId": "kristal-vadisi-05",
+          "index": 5,
+          "role": "TARGET"
+        },
+        {
+          "word": "TOPAZ",
+          "levelId": "kristal-vadisi-10",
+          "index": 10,
+          "role": "TARGET"
+        },
+        {
+          "word": "TORTUL",
+          "levelId": "kristal-vadisi-07",
+          "index": 7,
+          "role": "TARGET"
+        },
+        {
+          "word": "TÜF",
+          "levelId": "kristal-vadisi-07",
+          "index": 7,
+          "role": "BONUS"
+        },
+        {
+          "word": "TÜNEL",
+          "levelId": "kristal-vadisi-03",
+          "index": 3,
+          "role": "TARGET"
+        },
+        {
+          "word": "YAKUT",
+          "levelId": "kristal-vadisi-10",
+          "index": 10,
+          "role": "TARGET"
+        },
+        {
+          "word": "YANSIMA",
+          "levelId": "kristal-vadisi-04",
+          "index": 4,
+          "role": "TARGET"
+        },
+        {
+          "word": "YÜZEY",
+          "levelId": "kristal-vadisi-05",
+          "index": 5,
+          "role": "TARGET"
+        },
+        {
+          "word": "ZÜMRÜT",
+          "levelId": "kristal-vadisi-10",
+          "index": 10,
+          "role": "TARGET"
+        },
+        {
+          "word": "ÇAKIL",
+          "levelId": "kristal-vadisi-01",
+          "index": 1,
+          "role": "TARGET"
+        },
+        {
+          "word": "ÇATLAK",
+          "levelId": "kristal-vadisi-08",
+          "index": 8,
+          "role": "TARGET"
+        },
+        {
+          "word": "ÇİZGİ",
+          "levelId": "kristal-vadisi-06",
+          "index": 6,
+          "role": "TARGET"
+        },
+        {
+          "word": "ÖRGÜ",
+          "levelId": "kristal-vadisi-05",
+          "index": 5,
+          "role": "TARGET"
+        },
+        {
+          "word": "İĞNE",
+          "levelId": "kristal-vadisi-05",
+          "index": 5,
+          "role": "BONUS"
+        }
+      ]
+    },
+    {
+      "routeId": "kayip-sehir",
+      "contentFingerprint": "5c9041c4",
+      "reservedWordCount": 70,
+      "reservedWords": [
+        "AKIŞ",
+        "ANAHTAR",
+        "ARK",
+        "AVLU",
+        "BRONZ",
+        "CEPHE",
+        "DAMGA",
+        "DUVAR",
+        "DİREK",
+        "EROZYON",
+        "EŞİK",
+        "FERMAN",
+        "FIRTINA",
+        "FRESK",
+        "GALERİ",
+        "GEÇİT",
+        "GÖRÜŞ",
+        "GİRİŞ",
+        "HEDEF",
+        "HORTUM",
+        "KABARTMA",
+        "KALINTI",
+        "KAPI",
+        "KEMER",
+        "KERVAN",
+        "KULE",
+        "KUM",
+        "KUMAŞ",
+        "KUMUL",
+        "KURAK",
+        "KUYU",
+        "LEVHA",
+        "MABET",
+        "MENZİL",
+        "MERDİVEN",
+        "MOTİF",
+        "MOZAİK",
+        "MÜHÜR",
+        "MİMARİ",
+        "OLUK",
+        "OYMA",
+        "PUSULA",
+        "REVAK",
+        "ROTA",
+        "RÜZGÂR",
+        "SARAY",
+        "SARNIÇ",
+        "SAÇAK",
+        "SEMBOL",
+        "SERAMİK",
+        "SIR",
+        "SIĞINAK",
+        "SUR",
+        "SÜRGÜ",
+        "SÜTUN",
+        "TEZGÂH",
+        "TORTU",
+        "TOZ",
+        "TÜCCAR",
+        "TİCARET",
+        "YALDIZ",
+        "YERALTI",
+        "YÜK",
+        "YÜZEY",
+        "ÇARŞI",
+        "ÇEMBER",
+        "İNİŞ",
+        "İZLER",
+        "İŞARET",
+        "İŞLEME"
+      ],
+      "wordOrigins": [
+        {
+          "word": "AKIŞ",
+          "levelId": "kayip-sehir-08",
+          "index": 8,
+          "role": "TARGET"
+        },
+        {
+          "word": "ANAHTAR",
+          "levelId": "kayip-sehir-10",
+          "index": 10,
+          "role": "BONUS"
+        },
+        {
+          "word": "ARK",
+          "levelId": "kayip-sehir-08",
+          "index": 8,
+          "role": "TARGET"
+        },
+        {
+          "word": "AVLU",
+          "levelId": "kayip-sehir-07",
+          "index": 7,
+          "role": "TARGET"
+        },
+        {
+          "word": "BRONZ",
+          "levelId": "kayip-sehir-06",
+          "index": 6,
+          "role": "TARGET"
+        },
+        {
+          "word": "CEPHE",
+          "levelId": "kayip-sehir-03",
+          "index": 3,
+          "role": "TARGET"
+        },
+        {
+          "word": "DAMGA",
+          "levelId": "kayip-sehir-09",
+          "index": 9,
+          "role": "TARGET"
+        },
+        {
+          "word": "DUVAR",
+          "levelId": "kayip-sehir-03",
+          "index": 3,
+          "role": "TARGET"
+        },
+        {
+          "word": "DİREK",
+          "levelId": "kayip-sehir-07",
+          "index": 7,
+          "role": "TARGET"
+        },
+        {
+          "word": "EROZYON",
+          "levelId": "kayip-sehir-02",
+          "index": 2,
+          "role": "BONUS"
+        },
+        {
+          "word": "EŞİK",
+          "levelId": "kayip-sehir-04",
+          "index": 4,
+          "role": "TARGET"
+        },
+        {
+          "word": "FERMAN",
+          "levelId": "kayip-sehir-09",
+          "index": 9,
+          "role": "BONUS"
+        },
+        {
+          "word": "FIRTINA",
+          "levelId": "kayip-sehir-05",
+          "index": 5,
+          "role": "TARGET"
+        },
+        {
+          "word": "FRESK",
+          "levelId": "kayip-sehir-09",
+          "index": 9,
+          "role": "BONUS"
+        },
+        {
+          "word": "GALERİ",
+          "levelId": "kayip-sehir-09",
+          "index": 9,
+          "role": "TARGET"
+        },
+        {
+          "word": "GEÇİT",
+          "levelId": "kayip-sehir-04",
+          "index": 4,
+          "role": "BONUS"
+        },
+        {
+          "word": "GÖRÜŞ",
+          "levelId": "kayip-sehir-05",
+          "index": 5,
+          "role": "TARGET"
+        },
+        {
+          "word": "GİRİŞ",
+          "levelId": "kayip-sehir-04",
+          "index": 4,
+          "role": "BONUS"
+        },
+        {
+          "word": "HEDEF",
+          "levelId": "kayip-sehir-05",
+          "index": 5,
+          "role": "TARGET"
+        },
+        {
+          "word": "HORTUM",
+          "levelId": "kayip-sehir-05",
+          "index": 5,
+          "role": "BONUS"
+        },
+        {
+          "word": "KABARTMA",
+          "levelId": "kayip-sehir-09",
+          "index": 9,
+          "role": "TARGET"
+        },
+        {
+          "word": "KALINTI",
+          "levelId": "kayip-sehir-03",
+          "index": 3,
+          "role": "TARGET"
+        },
+        {
+          "word": "KAPI",
+          "levelId": "kayip-sehir-04",
+          "index": 4,
+          "role": "TARGET"
+        },
+        {
+          "word": "KEMER",
+          "levelId": "kayip-sehir-03",
+          "index": 3,
+          "role": "TARGET"
+        },
+        {
+          "word": "KERVAN",
+          "levelId": "kayip-sehir-01",
+          "index": 1,
+          "role": "TARGET"
+        },
+        {
+          "word": "KULE",
+          "levelId": "kayip-sehir-04",
+          "index": 4,
+          "role": "TARGET"
+        },
+        {
+          "word": "KUM",
+          "levelId": "kayip-sehir-02",
+          "index": 2,
+          "role": "TARGET"
+        },
+        {
+          "word": "KUMAŞ",
+          "levelId": "kayip-sehir-06",
+          "index": 6,
+          "role": "TARGET"
+        },
+        {
+          "word": "KUMUL",
+          "levelId": "kayip-sehir-02",
+          "index": 2,
+          "role": "TARGET"
+        },
+        {
+          "word": "KURAK",
+          "levelId": "kayip-sehir-08",
+          "index": 8,
+          "role": "BONUS"
+        },
+        {
+          "word": "KUYU",
+          "levelId": "kayip-sehir-08",
+          "index": 8,
+          "role": "TARGET"
+        },
+        {
+          "word": "LEVHA",
+          "levelId": "kayip-sehir-04",
+          "index": 4,
+          "role": "TARGET"
+        },
+        {
+          "word": "MABET",
+          "levelId": "kayip-sehir-09",
+          "index": 9,
+          "role": "TARGET"
+        },
+        {
+          "word": "MENZİL",
+          "levelId": "kayip-sehir-01",
+          "index": 1,
+          "role": "TARGET"
+        },
+        {
+          "word": "MERDİVEN",
+          "levelId": "kayip-sehir-10",
+          "index": 10,
+          "role": "TARGET"
+        },
+        {
+          "word": "MOTİF",
+          "levelId": "kayip-sehir-09",
+          "index": 9,
+          "role": "TARGET"
+        },
+        {
+          "word": "MOZAİK",
+          "levelId": "kayip-sehir-07",
+          "index": 7,
+          "role": "TARGET"
+        },
+        {
+          "word": "MÜHÜR",
+          "levelId": "kayip-sehir-10",
+          "index": 10,
+          "role": "TARGET"
+        },
+        {
+          "word": "MİMARİ",
+          "levelId": "kayip-sehir-03",
+          "index": 3,
+          "role": "BONUS"
+        },
+        {
+          "word": "OLUK",
+          "levelId": "kayip-sehir-08",
+          "index": 8,
+          "role": "TARGET"
+        },
+        {
+          "word": "OYMA",
+          "levelId": "kayip-sehir-02",
+          "index": 2,
+          "role": "TARGET"
+        },
+        {
+          "word": "PUSULA",
+          "levelId": "kayip-sehir-05",
+          "index": 5,
+          "role": "TARGET"
+        },
+        {
+          "word": "REVAK",
+          "levelId": "kayip-sehir-07",
+          "index": 7,
+          "role": "TARGET"
+        },
+        {
+          "word": "ROTA",
+          "levelId": "kayip-sehir-01",
+          "index": 1,
+          "role": "TARGET"
+        },
+        {
+          "word": "RÜZGÂR",
+          "levelId": "kayip-sehir-02",
+          "index": 2,
+          "role": "TARGET"
+        },
+        {
+          "word": "SARAY",
+          "levelId": "kayip-sehir-09",
+          "index": 9,
+          "role": "TARGET"
+        },
+        {
+          "word": "SARNIÇ",
+          "levelId": "kayip-sehir-08",
+          "index": 8,
+          "role": "TARGET"
+        },
+        {
+          "word": "SAÇAK",
+          "levelId": "kayip-sehir-07",
+          "index": 7,
+          "role": "TARGET"
+        },
+        {
+          "word": "SEMBOL",
+          "levelId": "kayip-sehir-10",
+          "index": 10,
+          "role": "TARGET"
+        },
+        {
+          "word": "SERAMİK",
+          "levelId": "kayip-sehir-06",
+          "index": 6,
+          "role": "BONUS"
+        },
+        {
+          "word": "SIR",
+          "levelId": "kayip-sehir-10",
+          "index": 10,
+          "role": "TARGET"
+        },
+        {
+          "word": "SIĞINAK",
+          "levelId": "kayip-sehir-05",
+          "index": 5,
+          "role": "TARGET"
+        },
+        {
+          "word": "SUR",
+          "levelId": "kayip-sehir-04",
+          "index": 4,
+          "role": "TARGET"
+        },
+        {
+          "word": "SÜRGÜ",
+          "levelId": "kayip-sehir-10",
+          "index": 10,
+          "role": "TARGET"
+        },
+        {
+          "word": "SÜTUN",
+          "levelId": "kayip-sehir-03",
+          "index": 3,
+          "role": "TARGET"
+        },
+        {
+          "word": "TEZGÂH",
+          "levelId": "kayip-sehir-06",
+          "index": 6,
+          "role": "TARGET"
+        },
+        {
+          "word": "TORTU",
+          "levelId": "kayip-sehir-08",
+          "index": 8,
+          "role": "TARGET"
+        },
+        {
+          "word": "TOZ",
+          "levelId": "kayip-sehir-05",
+          "index": 5,
+          "role": "BONUS"
+        },
+        {
+          "word": "TÜCCAR",
+          "levelId": "kayip-sehir-06",
+          "index": 6,
+          "role": "TARGET"
+        },
+        {
+          "word": "TİCARET",
+          "levelId": "kayip-sehir-01",
+          "index": 1,
+          "role": "BONUS"
+        },
+        {
+          "word": "YALDIZ",
+          "levelId": "kayip-sehir-07",
+          "index": 7,
+          "role": "BONUS"
+        },
+        {
+          "word": "YERALTI",
+          "levelId": "kayip-sehir-10",
+          "index": 10,
+          "role": "TARGET"
+        },
+        {
+          "word": "YÜK",
+          "levelId": "kayip-sehir-01",
+          "index": 1,
+          "role": "TARGET"
+        },
+        {
+          "word": "YÜZEY",
+          "levelId": "kayip-sehir-02",
+          "index": 2,
+          "role": "TARGET"
+        },
+        {
+          "word": "ÇARŞI",
+          "levelId": "kayip-sehir-06",
+          "index": 6,
+          "role": "TARGET"
+        },
+        {
+          "word": "ÇEMBER",
+          "levelId": "kayip-sehir-10",
+          "index": 10,
+          "role": "TARGET"
+        },
+        {
+          "word": "İNİŞ",
+          "levelId": "kayip-sehir-10",
+          "index": 10,
+          "role": "BONUS"
+        },
+        {
+          "word": "İZLER",
+          "levelId": "kayip-sehir-01",
+          "index": 1,
+          "role": "TARGET"
+        },
+        {
+          "word": "İŞARET",
+          "levelId": "kayip-sehir-05",
+          "index": 5,
+          "role": "TARGET"
+        },
+        {
+          "word": "İŞLEME",
+          "levelId": "kayip-sehir-07",
+          "index": 7,
+          "role": "TARGET"
+        }
+      ]
+    },
+    {
+      "routeId": "yeralti-kralligi",
+      "contentFingerprint": "71d752f6",
+      "reservedWordCount": 70,
+      "reservedWords": [
+        "AKINTI",
+        "ALTIN",
+        "AMBLEM",
+        "ANIT",
+        "AĞIRLIK",
+        "BAKIR",
+        "BELGE",
+        "BORU",
+        "BURÇ",
+        "BİLGİ",
+        "DAMAR",
+        "DEHLİZ",
+        "DERİN",
+        "DOĞU",
+        "DÖNÜŞ",
+        "DÜZENEK",
+        "ELÇİ",
+        "GÖKSEL",
+        "GÜNEŞ",
+        "HALKA",
+        "HAT",
+        "HAZNE",
+        "HAZİNE",
+        "HEYET",
+        "KABUL",
+        "KADEME",
+        "KADRAN",
+        "KANAL",
+        "KASNAK",
+        "KAYA",
+        "KAYIT",
+        "KOL",
+        "KONUM",
+        "KORİDOR",
+        "KÜRSÜ",
+        "KİLİT",
+        "KİTABE",
+        "LOŞLUK",
+        "MAKAM",
+        "MAKARA",
+        "MERASİM",
+        "MEŞALE",
+        "MÜHÜR",
+        "MİHVER",
+        "MİL",
+        "OYUK",
+        "PAYE",
+        "PERGEL",
+        "PİM",
+        "SANDIK",
+        "SARNIÇ",
+        "SAVAK",
+        "SIRA",
+        "TABLET",
+        "TARİH",
+        "TONOZ",
+        "TURKUAZ",
+        "TÜNEL",
+        "USTURLAP",
+        "VANA",
+        "YAZIT",
+        "YILDIZ",
+        "YONTU",
+        "ÇENTİK",
+        "ÖLÇEK",
+        "İLETİM",
+        "İNİŞ",
+        "İPUCU",
+        "ŞEBEKE",
+        "ŞİFRE"
+      ],
+      "wordOrigins": [
+        {
+          "word": "AKINTI",
+          "levelId": "yeralti-kralligi-03",
+          "index": 3,
+          "role": "TARGET"
+        },
+        {
+          "word": "ALTIN",
+          "levelId": "yeralti-kralligi-09",
+          "index": 9,
+          "role": "TARGET"
+        },
+        {
+          "word": "AMBLEM",
+          "levelId": "yeralti-kralligi-07",
+          "index": 7,
+          "role": "TARGET"
+        },
+        {
+          "word": "ANIT",
+          "levelId": "yeralti-kralligi-08",
+          "index": 8,
+          "role": "TARGET"
+        },
+        {
+          "word": "AĞIRLIK",
+          "levelId": "yeralti-kralligi-06",
+          "index": 6,
+          "role": "TARGET"
+        },
+        {
+          "word": "BAKIR",
+          "levelId": "yeralti-kralligi-04",
+          "index": 4,
+          "role": "TARGET"
+        },
+        {
+          "word": "BELGE",
+          "levelId": "yeralti-kralligi-08",
+          "index": 8,
+          "role": "TARGET"
+        },
+        {
+          "word": "BORU",
+          "levelId": "yeralti-kralligi-04",
+          "index": 4,
+          "role": "TARGET"
+        },
+        {
+          "word": "BURÇ",
+          "levelId": "yeralti-kralligi-10",
+          "index": 10,
+          "role": "TARGET"
+        },
+        {
+          "word": "BİLGİ",
+          "levelId": "yeralti-kralligi-09",
+          "index": 9,
+          "role": "BONUS"
+        },
+        {
+          "word": "DAMAR",
+          "levelId": "yeralti-kralligi-02",
+          "index": 2,
+          "role": "TARGET"
+        },
+        {
+          "word": "DEHLİZ",
+          "levelId": "yeralti-kralligi-01",
+          "index": 1,
+          "role": "TARGET"
+        },
+        {
+          "word": "DERİN",
+          "levelId": "yeralti-kralligi-01",
+          "index": 1,
+          "role": "TARGET"
+        },
+        {
+          "word": "DOĞU",
+          "levelId": "yeralti-kralligi-10",
+          "index": 10,
+          "role": "TARGET"
+        },
+        {
+          "word": "DÖNÜŞ",
+          "levelId": "yeralti-kralligi-05",
+          "index": 5,
+          "role": "TARGET"
+        },
+        {
+          "word": "DÜZENEK",
+          "levelId": "yeralti-kralligi-05",
+          "index": 5,
+          "role": "TARGET"
+        },
+        {
+          "word": "ELÇİ",
+          "levelId": "yeralti-kralligi-07",
+          "index": 7,
+          "role": "BONUS"
+        },
+        {
+          "word": "GÖKSEL",
+          "levelId": "yeralti-kralligi-10",
+          "index": 10,
+          "role": "TARGET"
+        },
+        {
+          "word": "GÜNEŞ",
+          "levelId": "yeralti-kralligi-10",
+          "index": 10,
+          "role": "TARGET"
+        },
+        {
+          "word": "HALKA",
+          "levelId": "yeralti-kralligi-05",
+          "index": 5,
+          "role": "TARGET"
+        },
+        {
+          "word": "HAT",
+          "levelId": "yeralti-kralligi-04",
+          "index": 4,
+          "role": "TARGET"
+        },
+        {
+          "word": "HAZNE",
+          "levelId": "yeralti-kralligi-03",
+          "index": 3,
+          "role": "TARGET"
+        },
+        {
+          "word": "HAZİNE",
+          "levelId": "yeralti-kralligi-09",
+          "index": 9,
+          "role": "TARGET"
+        },
+        {
+          "word": "HEYET",
+          "levelId": "yeralti-kralligi-07",
+          "index": 7,
+          "role": "TARGET"
+        },
+        {
+          "word": "KABUL",
+          "levelId": "yeralti-kralligi-07",
+          "index": 7,
+          "role": "TARGET"
+        },
+        {
+          "word": "KADEME",
+          "levelId": "yeralti-kralligi-01",
+          "index": 1,
+          "role": "TARGET"
+        },
+        {
+          "word": "KADRAN",
+          "levelId": "yeralti-kralligi-10",
+          "index": 10,
+          "role": "BONUS"
+        },
+        {
+          "word": "KANAL",
+          "levelId": "yeralti-kralligi-04",
+          "index": 4,
+          "role": "TARGET"
+        },
+        {
+          "word": "KASNAK",
+          "levelId": "yeralti-kralligi-06",
+          "index": 6,
+          "role": "TARGET"
+        },
+        {
+          "word": "KAYA",
+          "levelId": "yeralti-kralligi-02",
+          "index": 2,
+          "role": "TARGET"
+        },
+        {
+          "word": "KAYIT",
+          "levelId": "yeralti-kralligi-08",
+          "index": 8,
+          "role": "BONUS"
+        },
+        {
+          "word": "KOL",
+          "levelId": "yeralti-kralligi-06",
+          "index": 6,
+          "role": "TARGET"
+        },
+        {
+          "word": "KONUM",
+          "levelId": "yeralti-kralligi-10",
+          "index": 10,
+          "role": "TARGET"
+        },
+        {
+          "word": "KORİDOR",
+          "levelId": "yeralti-kralligi-02",
+          "index": 2,
+          "role": "BONUS"
+        },
+        {
+          "word": "KÜRSÜ",
+          "levelId": "yeralti-kralligi-07",
+          "index": 7,
+          "role": "TARGET"
+        },
+        {
+          "word": "KİLİT",
+          "levelId": "yeralti-kralligi-05",
+          "index": 5,
+          "role": "TARGET"
+        },
+        {
+          "word": "KİTABE",
+          "levelId": "yeralti-kralligi-08",
+          "index": 8,
+          "role": "TARGET"
+        },
+        {
+          "word": "LOŞLUK",
+          "levelId": "yeralti-kralligi-01",
+          "index": 1,
+          "role": "BONUS"
+        },
+        {
+          "word": "MAKAM",
+          "levelId": "yeralti-kralligi-07",
+          "index": 7,
+          "role": "TARGET"
+        },
+        {
+          "word": "MAKARA",
+          "levelId": "yeralti-kralligi-06",
+          "index": 6,
+          "role": "BONUS"
+        },
+        {
+          "word": "MERASİM",
+          "levelId": "yeralti-kralligi-07",
+          "index": 7,
+          "role": "TARGET"
+        },
+        {
+          "word": "MEŞALE",
+          "levelId": "yeralti-kralligi-01",
+          "index": 1,
+          "role": "TARGET"
+        },
+        {
+          "word": "MÜHÜR",
+          "levelId": "yeralti-kralligi-10",
+          "index": 10,
+          "role": "TARGET"
+        },
+        {
+          "word": "MİHVER",
+          "levelId": "yeralti-kralligi-06",
+          "index": 6,
+          "role": "TARGET"
+        },
+        {
+          "word": "MİL",
+          "levelId": "yeralti-kralligi-06",
+          "index": 6,
+          "role": "TARGET"
+        },
+        {
+          "word": "OYUK",
+          "levelId": "yeralti-kralligi-02",
+          "index": 2,
+          "role": "TARGET"
+        },
+        {
+          "word": "PAYE",
+          "levelId": "yeralti-kralligi-03",
+          "index": 3,
+          "role": "TARGET"
+        },
+        {
+          "word": "PERGEL",
+          "levelId": "yeralti-kralligi-09",
+          "index": 9,
+          "role": "TARGET"
+        },
+        {
+          "word": "PİM",
+          "levelId": "yeralti-kralligi-05",
+          "index": 5,
+          "role": "BONUS"
+        },
+        {
+          "word": "SANDIK",
+          "levelId": "yeralti-kralligi-09",
+          "index": 9,
+          "role": "BONUS"
+        },
+        {
+          "word": "SARNIÇ",
+          "levelId": "yeralti-kralligi-03",
+          "index": 3,
+          "role": "TARGET"
+        },
+        {
+          "word": "SAVAK",
+          "levelId": "yeralti-kralligi-03",
+          "index": 3,
+          "role": "BONUS"
+        },
+        {
+          "word": "SIRA",
+          "levelId": "yeralti-kralligi-05",
+          "index": 5,
+          "role": "TARGET"
+        },
+        {
+          "word": "TABLET",
+          "levelId": "yeralti-kralligi-09",
+          "index": 9,
+          "role": "TARGET"
+        },
+        {
+          "word": "TARİH",
+          "levelId": "yeralti-kralligi-08",
+          "index": 8,
+          "role": "TARGET"
+        },
+        {
+          "word": "TONOZ",
+          "levelId": "yeralti-kralligi-03",
+          "index": 3,
+          "role": "TARGET"
+        },
+        {
+          "word": "TURKUAZ",
+          "levelId": "yeralti-kralligi-04",
+          "index": 4,
+          "role": "BONUS"
+        },
+        {
+          "word": "TÜNEL",
+          "levelId": "yeralti-kralligi-02",
+          "index": 2,
+          "role": "TARGET"
+        },
+        {
+          "word": "USTURLAP",
+          "levelId": "yeralti-kralligi-09",
+          "index": 9,
+          "role": "TARGET"
+        },
+        {
+          "word": "VANA",
+          "levelId": "yeralti-kralligi-04",
+          "index": 4,
+          "role": "TARGET"
+        },
+        {
+          "word": "YAZIT",
+          "levelId": "yeralti-kralligi-08",
+          "index": 8,
+          "role": "TARGET"
+        },
+        {
+          "word": "YILDIZ",
+          "levelId": "yeralti-kralligi-10",
+          "index": 10,
+          "role": "TARGET"
+        },
+        {
+          "word": "YONTU",
+          "levelId": "yeralti-kralligi-08",
+          "index": 8,
+          "role": "TARGET"
+        },
+        {
+          "word": "ÇENTİK",
+          "levelId": "yeralti-kralligi-05",
+          "index": 5,
+          "role": "BONUS"
+        },
+        {
+          "word": "ÖLÇEK",
+          "levelId": "yeralti-kralligi-09",
+          "index": 9,
+          "role": "TARGET"
+        },
+        {
+          "word": "İLETİM",
+          "levelId": "yeralti-kralligi-04",
+          "index": 4,
+          "role": "BONUS"
+        },
+        {
+          "word": "İNİŞ",
+          "levelId": "yeralti-kralligi-01",
+          "index": 1,
+          "role": "TARGET"
+        },
+        {
+          "word": "İPUCU",
+          "levelId": "yeralti-kralligi-10",
+          "index": 10,
+          "role": "BONUS"
+        },
+        {
+          "word": "ŞEBEKE",
+          "levelId": "yeralti-kralligi-02",
+          "index": 2,
+          "role": "TARGET"
+        },
+        {
+          "word": "ŞİFRE",
+          "levelId": "yeralti-kralligi-05",
+          "index": 5,
+          "role": "TARGET"
+        }
+      ]
+    },
+    {
+      "routeId": "gunes-imparatorlugu",
+      "contentFingerprint": "0a6c7f40",
+      "reservedWordCount": 70,
+      "reservedWords": [
+        "ADIM",
+        "ALAY",
+        "ALTIN",
+        "ARMA",
+        "AYNA",
+        "AÇI",
+        "BASAMAK",
+        "BİRLİK",
+        "DENGE",
+        "DÖNGÜ",
+        "DİŞLİ",
+        "EKSEN",
+        "EKİNOKS",
+        "GEZEGEN",
+        "GÖK",
+        "GÖKYÜZÜ",
+        "GÖLGE",
+        "GÖRKEM",
+        "GÖZLEM",
+        "GÜNEŞ",
+        "HANEDAN",
+        "HARİTA",
+        "HÜKÜMDAR",
+        "HİZA",
+        "IŞIK",
+        "IŞILTI",
+        "IŞIN",
+        "KAİDE",
+        "KIRILMA",
+        "KIZIL",
+        "KRALİYET",
+        "KUBBE",
+        "KUTSAL",
+        "KUTUP",
+        "KÖKEN",
+        "KÜRE",
+        "MERKEZ",
+        "MERİDYEN",
+        "MEVSİM",
+        "MEYDAN",
+        "MİRAS",
+        "NİŞAN",
+        "ODAK",
+        "PLAKA",
+        "PORTİK",
+        "SAAT",
+        "SALON",
+        "SALTANAT",
+        "SANCAK",
+        "SUNAK",
+        "SÜTUN",
+        "SİMGE",
+        "TAHT",
+        "TAKIM",
+        "TAKVİM",
+        "TAPINAK",
+        "TAÇ",
+        "TAŞ",
+        "TÖREN",
+        "UFUK",
+        "UYGARLIK",
+        "YANSIMA",
+        "YILDIZ",
+        "YOL",
+        "YÖN",
+        "YÖRÜNGE",
+        "ZAMAN",
+        "ÇARK",
+        "İBRE",
+        "ŞAFAK"
+      ],
+      "wordOrigins": [
+        {
+          "word": "ADIM",
+          "levelId": "gunes-imparatorlugu-06",
+          "index": 6,
+          "role": "TARGET"
+        },
+        {
+          "word": "ALAY",
+          "levelId": "gunes-imparatorlugu-06",
+          "index": 6,
+          "role": "TARGET"
+        },
+        {
+          "word": "ALTIN",
+          "levelId": "gunes-imparatorlugu-10",
+          "index": 10,
+          "role": "BONUS"
+        },
+        {
+          "word": "ARMA",
+          "levelId": "gunes-imparatorlugu-09",
+          "index": 9,
+          "role": "TARGET"
+        },
+        {
+          "word": "AYNA",
+          "levelId": "gunes-imparatorlugu-05",
+          "index": 5,
+          "role": "TARGET"
+        },
+        {
+          "word": "AÇI",
+          "levelId": "gunes-imparatorlugu-05",
+          "index": 5,
+          "role": "TARGET"
+        },
+        {
+          "word": "BASAMAK",
+          "levelId": "gunes-imparatorlugu-07",
+          "index": 7,
+          "role": "TARGET"
+        },
+        {
+          "word": "BİRLİK",
+          "levelId": "gunes-imparatorlugu-10",
+          "index": 10,
+          "role": "TARGET"
+        },
+        {
+          "word": "DENGE",
+          "levelId": "gunes-imparatorlugu-05",
+          "index": 5,
+          "role": "TARGET"
+        },
+        {
+          "word": "DÖNGÜ",
+          "levelId": "gunes-imparatorlugu-08",
+          "index": 8,
+          "role": "TARGET"
+        },
+        {
+          "word": "DİŞLİ",
+          "levelId": "gunes-imparatorlugu-08",
+          "index": 8,
+          "role": "TARGET"
+        },
+        {
+          "word": "EKSEN",
+          "levelId": "gunes-imparatorlugu-08",
+          "index": 8,
+          "role": "TARGET"
+        },
+        {
+          "word": "EKİNOKS",
+          "levelId": "gunes-imparatorlugu-05",
+          "index": 5,
+          "role": "TARGET"
+        },
+        {
+          "word": "GEZEGEN",
+          "levelId": "gunes-imparatorlugu-03",
+          "index": 3,
+          "role": "TARGET"
+        },
+        {
+          "word": "GÖK",
+          "levelId": "gunes-imparatorlugu-04",
+          "index": 4,
+          "role": "TARGET"
+        },
+        {
+          "word": "GÖKYÜZÜ",
+          "levelId": "gunes-imparatorlugu-03",
+          "index": 3,
+          "role": "TARGET"
+        },
+        {
+          "word": "GÖLGE",
+          "levelId": "gunes-imparatorlugu-02",
+          "index": 2,
+          "role": "TARGET"
+        },
+        {
+          "word": "GÖRKEM",
+          "levelId": "gunes-imparatorlugu-10",
+          "index": 10,
+          "role": "TARGET"
+        },
+        {
+          "word": "GÖZLEM",
+          "levelId": "gunes-imparatorlugu-04",
+          "index": 4,
+          "role": "TARGET"
+        },
+        {
+          "word": "GÜNEŞ",
+          "levelId": "gunes-imparatorlugu-10",
+          "index": 10,
+          "role": "TARGET"
+        },
+        {
+          "word": "HANEDAN",
+          "levelId": "gunes-imparatorlugu-09",
+          "index": 9,
+          "role": "BONUS"
+        },
+        {
+          "word": "HARİTA",
+          "levelId": "gunes-imparatorlugu-04",
+          "index": 4,
+          "role": "TARGET"
+        },
+        {
+          "word": "HÜKÜMDAR",
+          "levelId": "gunes-imparatorlugu-09",
+          "index": 9,
+          "role": "TARGET"
+        },
+        {
+          "word": "HİZA",
+          "levelId": "gunes-imparatorlugu-02",
+          "index": 2,
+          "role": "TARGET"
+        },
+        {
+          "word": "IŞIK",
+          "levelId": "gunes-imparatorlugu-01",
+          "index": 1,
+          "role": "TARGET"
+        },
+        {
+          "word": "IŞILTI",
+          "levelId": "gunes-imparatorlugu-10",
+          "index": 10,
+          "role": "BONUS"
+        },
+        {
+          "word": "IŞIN",
+          "levelId": "gunes-imparatorlugu-01",
+          "index": 1,
+          "role": "BONUS"
+        },
+        {
+          "word": "KAİDE",
+          "levelId": "gunes-imparatorlugu-07",
+          "index": 7,
+          "role": "BONUS"
+        },
+        {
+          "word": "KIRILMA",
+          "levelId": "gunes-imparatorlugu-05",
+          "index": 5,
+          "role": "BONUS"
+        },
+        {
+          "word": "KIZIL",
+          "levelId": "gunes-imparatorlugu-06",
+          "index": 6,
+          "role": "TARGET"
+        },
+        {
+          "word": "KRALİYET",
+          "levelId": "gunes-imparatorlugu-09",
+          "index": 9,
+          "role": "TARGET"
+        },
+        {
+          "word": "KUBBE",
+          "levelId": "gunes-imparatorlugu-07",
+          "index": 7,
+          "role": "TARGET"
+        },
+        {
+          "word": "KUTSAL",
+          "levelId": "gunes-imparatorlugu-07",
+          "index": 7,
+          "role": "TARGET"
+        },
+        {
+          "word": "KUTUP",
+          "levelId": "gunes-imparatorlugu-04",
+          "index": 4,
+          "role": "TARGET"
+        },
+        {
+          "word": "KÖKEN",
+          "levelId": "gunes-imparatorlugu-10",
+          "index": 10,
+          "role": "TARGET"
+        },
+        {
+          "word": "KÜRE",
+          "levelId": "gunes-imparatorlugu-04",
+          "index": 4,
+          "role": "BONUS"
+        },
+        {
+          "word": "MERKEZ",
+          "levelId": "gunes-imparatorlugu-10",
+          "index": 10,
+          "role": "TARGET"
+        },
+        {
+          "word": "MERİDYEN",
+          "levelId": "gunes-imparatorlugu-04",
+          "index": 4,
+          "role": "BONUS"
+        },
+        {
+          "word": "MEVSİM",
+          "levelId": "gunes-imparatorlugu-08",
+          "index": 8,
+          "role": "TARGET"
+        },
+        {
+          "word": "MEYDAN",
+          "levelId": "gunes-imparatorlugu-03",
+          "index": 3,
+          "role": "TARGET"
+        },
+        {
+          "word": "MİRAS",
+          "levelId": "gunes-imparatorlugu-09",
+          "index": 9,
+          "role": "TARGET"
+        },
+        {
+          "word": "NİŞAN",
+          "levelId": "gunes-imparatorlugu-06",
+          "index": 6,
+          "role": "BONUS"
+        },
+        {
+          "word": "ODAK",
+          "levelId": "gunes-imparatorlugu-05",
+          "index": 5,
+          "role": "TARGET"
+        },
+        {
+          "word": "PLAKA",
+          "levelId": "gunes-imparatorlugu-05",
+          "index": 5,
+          "role": "BONUS"
+        },
+        {
+          "word": "PORTİK",
+          "levelId": "gunes-imparatorlugu-07",
+          "index": 7,
+          "role": "TARGET"
+        },
+        {
+          "word": "SAAT",
+          "levelId": "gunes-imparatorlugu-02",
+          "index": 2,
+          "role": "TARGET"
+        },
+        {
+          "word": "SALON",
+          "levelId": "gunes-imparatorlugu-09",
+          "index": 9,
+          "role": "TARGET"
+        },
+        {
+          "word": "SALTANAT",
+          "levelId": "gunes-imparatorlugu-09",
+          "index": 9,
+          "role": "TARGET"
+        },
+        {
+          "word": "SANCAK",
+          "levelId": "gunes-imparatorlugu-06",
+          "index": 6,
+          "role": "TARGET"
+        },
+        {
+          "word": "SUNAK",
+          "levelId": "gunes-imparatorlugu-07",
+          "index": 7,
+          "role": "TARGET"
+        },
+        {
+          "word": "SÜTUN",
+          "levelId": "gunes-imparatorlugu-02",
+          "index": 2,
+          "role": "TARGET"
+        },
+        {
+          "word": "SİMGE",
+          "levelId": "gunes-imparatorlugu-03",
+          "index": 3,
+          "role": "BONUS"
+        },
+        {
+          "word": "TAHT",
+          "levelId": "gunes-imparatorlugu-10",
+          "index": 10,
+          "role": "TARGET"
+        },
+        {
+          "word": "TAKIM",
+          "levelId": "gunes-imparatorlugu-04",
+          "index": 4,
+          "role": "TARGET"
+        },
+        {
+          "word": "TAKVİM",
+          "levelId": "gunes-imparatorlugu-08",
+          "index": 8,
+          "role": "TARGET"
+        },
+        {
+          "word": "TAPINAK",
+          "levelId": "gunes-imparatorlugu-07",
+          "index": 7,
+          "role": "TARGET"
+        },
+        {
+          "word": "TAÇ",
+          "levelId": "gunes-imparatorlugu-09",
+          "index": 9,
+          "role": "BONUS"
+        },
+        {
+          "word": "TAŞ",
+          "levelId": "gunes-imparatorlugu-01",
+          "index": 1,
+          "role": "TARGET"
+        },
+        {
+          "word": "TÖREN",
+          "levelId": "gunes-imparatorlugu-06",
+          "index": 6,
+          "role": "TARGET"
+        },
+        {
+          "word": "UFUK",
+          "levelId": "gunes-imparatorlugu-01",
+          "index": 1,
+          "role": "TARGET"
+        },
+        {
+          "word": "UYGARLIK",
+          "levelId": "gunes-imparatorlugu-10",
+          "index": 10,
+          "role": "TARGET"
+        },
+        {
+          "word": "YANSIMA",
+          "levelId": "gunes-imparatorlugu-05",
+          "index": 5,
+          "role": "TARGET"
+        },
+        {
+          "word": "YILDIZ",
+          "levelId": "gunes-imparatorlugu-03",
+          "index": 3,
+          "role": "TARGET"
+        },
+        {
+          "word": "YOL",
+          "levelId": "gunes-imparatorlugu-01",
+          "index": 1,
+          "role": "TARGET"
+        },
+        {
+          "word": "YÖN",
+          "levelId": "gunes-imparatorlugu-02",
+          "index": 2,
+          "role": "TARGET"
+        },
+        {
+          "word": "YÖRÜNGE",
+          "levelId": "gunes-imparatorlugu-03",
+          "index": 3,
+          "role": "TARGET"
+        },
+        {
+          "word": "ZAMAN",
+          "levelId": "gunes-imparatorlugu-08",
+          "index": 8,
+          "role": "BONUS"
+        },
+        {
+          "word": "ÇARK",
+          "levelId": "gunes-imparatorlugu-08",
+          "index": 8,
+          "role": "TARGET"
+        },
+        {
+          "word": "İBRE",
+          "levelId": "gunes-imparatorlugu-02",
+          "index": 2,
+          "role": "BONUS"
+        },
+        {
+          "word": "ŞAFAK",
+          "levelId": "gunes-imparatorlugu-01",
+          "index": 1,
+          "role": "TARGET"
+        }
+      ]
+    }
+  ]
+}
