@@ -9,12 +9,12 @@ import 'package:flutter_test/flutter_test.dart';
 
 /// Wave 0 migration baselines.
 ///
-/// These snapshots intentionally lock the exact pre-migration production state.
-/// Content fingerprints are NOT an "immutable forever" rule: the owner-approved
-/// legacy duplicate-correction wave may change target/bonus words and grids.
-/// Such a change must update the affected fingerprint/debt snapshot explicitly
-/// in the same reviewed migration change. Route IDs, level IDs, indexes and
-/// routeId mappings remain immutable migration identities.
+/// These snapshots lock immutable migration identities plus the reviewed current
+/// Segment 1 content state. Content fingerprints are NOT an "immutable forever"
+/// rule: Wave 8 applies the owner-approved legacy duplicate correction only to
+/// the affected routes. The exact pre-Wave8 duplicate pairs remain frozen below
+/// as historical migration evidence. Route IDs, level IDs, indexes and routeId
+/// mappings remain immutable migration identities.
 void main() {
   const expectedRouteIds = <String>[
     'baslangic-limani',
@@ -127,17 +127,17 @@ void main() {
   };
 
   const expectedContentFingerprints = <String, String>{
-    'baslangic-limani': '31f8e6fa',
-    'gokyuzu-adalari': '0466644f',
-    'orman-yolu': 'c297be09',
-    'orman-2': 'de83535d',
+    'baslangic-limani': '39462daa',
+    'gokyuzu-adalari': '2fd4e4af',
+    'orman-yolu': '7aae6da3',
+    'orman-2': '71084c8f',
     'kristal-vadisi': 'fcd1e9ce',
     'kayip-sehir': '5c9041c4',
     'yeralti-kralligi': '71d752f6',
     'gunes-imparatorlugu': '0a6c7f40',
   };
 
-  const expectedDuplicateDebt = <String, List<String>>{
+  const preWave8DuplicateDebt = <String, List<String>>{
     'baslangic-limani': <String>[
       'KALEM|baslangic-1:TARGET|baslangic-3:TARGET',
       'ÇİÇEK|baslangic-6:TARGET|baslangic-7:TARGET',
@@ -226,7 +226,7 @@ void main() {
   });
 
   test(
-    'Wave 0 captures exact pre-migration Segment 1 content fingerprints',
+    'Wave 0 locks reviewed Wave 8 Segment 1 content fingerprints',
     () {
       final actual = <String, String>{
         for (final entry in WordHuntRouteCatalog.entries)
@@ -237,27 +237,22 @@ void main() {
     },
   );
 
-  test(
-    'Wave 0 captures approved legacy duplicate debt without claiming strict PASS',
-    () {
-      final actual = <String, List<String>>{
-        for (final entry in WordHuntRouteCatalog.entries)
-          entry.route.id: _duplicateDebt(entry.route),
-      };
+  test('Wave 0 retains frozen pre-Wave8 duplicate debt evidence', () {
+    expect(preWave8DuplicateDebt['baslangic-limani'], hasLength(7));
+    expect(preWave8DuplicateDebt['gokyuzu-adalari'], hasLength(14));
+    expect(preWave8DuplicateDebt['orman-yolu'], hasLength(18));
+    expect(preWave8DuplicateDebt['orman-2'], hasLength(7));
+    expect(preWave8DuplicateDebt['kristal-vadisi'], isEmpty);
+    expect(preWave8DuplicateDebt['kayip-sehir'], isEmpty);
+    expect(preWave8DuplicateDebt['yeralti-kralligi'], isEmpty);
+    expect(preWave8DuplicateDebt['gunes-imparatorlugu'], isEmpty);
+  });
 
-      expect(actual, expectedDuplicateDebt);
-
-      expect(actual['baslangic-limani'], isNotEmpty);
-      expect(actual['gokyuzu-adalari'], isNotEmpty);
-      expect(actual['orman-yolu'], isNotEmpty);
-      expect(actual['orman-2'], isNotEmpty);
-
-      expect(actual['kristal-vadisi'], isEmpty);
-      expect(actual['kayip-sehir'], isEmpty);
-      expect(actual['yeralti-kralligi'], isEmpty);
-      expect(actual['gunes-imparatorlugu'], isEmpty);
-    },
-  );
+  test('Wave 0 current Segment 1 content has zero duplicate debt after Wave 8', () {
+    for (final entry in WordHuntRouteCatalog.entries) {
+      expect(_duplicateDebt(entry.route), isEmpty, reason: entry.route.id);
+    }
+  });
 
   test('Wave 0 storage identity survives owner-approved Wave 2 schema v3', () {
     expect(WordHuntProgressCodec.schemaVersion, 3);

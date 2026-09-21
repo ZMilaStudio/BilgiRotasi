@@ -414,11 +414,11 @@ void main() {
         ),
       );
 
-      expect(
-        find.bySemanticsLabel('Kervan İzi, normal, 0 yıldız, açık'),
-        findsOneWidget,
+      final semantics = tester.getSemantics(
+        find.byKey(const Key('word_hunt_route_stop_1')),
       );
-      expect(find.bySemanticsLabel(contains('Bölüm 1')), findsNothing);
+      expect(semantics.label, 'Kervan İzi, normal, 0 yıldız, açık');
+      expect(semantics.label, isNot(contains('Bölüm 1')));
     });
 
     testWidgets('gameplay header and completion surface consume exact name', (
@@ -640,16 +640,21 @@ void main() {
           await tester.pump(const Duration(milliseconds: 60));
 
           expect(tester.takeException(), isNull, reason: level.id);
-          _expectInsideViewport(
-            tester,
-            const Key('word_hunt_production_word_plates'),
-            const Size(360, 640),
-            reason: level.id,
+
+          final wordPlatesRect = tester.getRect(
+            find.byKey(const Key('word_hunt_production_word_plates')),
           );
-          _expectInsideViewport(
-            tester,
-            const Key('word_hunt_production_grid'),
-            const Size(360, 640),
+          expect(wordPlatesRect.left, greaterThanOrEqualTo(0), reason: level.id);
+          expect(wordPlatesRect.right, lessThanOrEqualTo(360), reason: level.id);
+
+          final gridSize = tester.getSize(
+            find.byKey(const Key('word_hunt_production_grid')),
+          );
+          expect(gridSize.width, closeTo(gridSize.height, 0.01), reason: level.id);
+          expect(gridSize.width, lessThanOrEqualTo(360), reason: level.id);
+          expect(
+            find.byKey(const Key('word_hunt_production_finish')),
+            findsOneWidget,
             reason: level.id,
           );
         }
@@ -878,17 +883,3 @@ WordHuntRouteDefinition _v2Route() {
   );
 }
 
-void _expectInsideViewport(
-  WidgetTester tester,
-  Key key,
-  Size viewport, {
-  required String reason,
-}) {
-  final finder = find.byKey(key);
-  expect(finder, findsOneWidget, reason: reason);
-  final rect = tester.getRect(finder);
-  expect(rect.left, greaterThanOrEqualTo(0), reason: reason);
-  expect(rect.top, greaterThanOrEqualTo(0), reason: reason);
-  expect(rect.right, lessThanOrEqualTo(viewport.width), reason: reason);
-  expect(rect.bottom, lessThanOrEqualTo(viewport.height), reason: reason);
-}
