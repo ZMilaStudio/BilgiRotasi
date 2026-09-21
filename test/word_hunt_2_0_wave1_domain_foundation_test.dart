@@ -9,13 +9,25 @@ void main() {
       expect(WordHuntRouteCatalog.entries, hasLength(8));
 
       for (final entry in WordHuntRouteCatalog.entries) {
+        final route = entry.route;
         expect(
-          WordHuntDefinitionValidator.validateRoute(entry.route),
+          WordHuntDefinitionValidator.validateRoute(route),
           isEmpty,
-          reason: entry.route.id,
+          reason: route.id,
         );
-        expect(entry.route.levels, hasLength(10), reason: entry.route.id);
-        expect(entry.route.segments, isEmpty, reason: entry.route.id);
+
+        if (route.id == 'baslangic-limani') {
+          expect(route.levels, hasLength(20), reason: route.id);
+          expect(route.plannedLevelCount, 100, reason: route.id);
+          expect(route.segments, hasLength(2), reason: route.id);
+          expect(route.segments[0].startLevelIndex, 1, reason: route.id);
+          expect(route.segments[0].endLevelIndex, 10, reason: route.id);
+          expect(route.segments[1].startLevelIndex, 11, reason: route.id);
+          expect(route.segments[1].endLevelIndex, 20, reason: route.id);
+        } else {
+          expect(route.levels, hasLength(10), reason: route.id);
+          expect(route.segments, isEmpty, reason: route.id);
+        }
       }
     });
 
