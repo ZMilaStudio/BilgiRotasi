@@ -4,9 +4,11 @@ on:
   pull_request:
     paths:
       - 'tools/word_hunt_batch_generator.py'
+      - 'tools/word_hunt_content_factory.sample.json'
+      - 'tools/word_hunt_segment1_source_lock.json'
+      - 'tools/tests/test_word_hunt_content_compiler.py'
       - 'tools/word_hunt_release_stock_manifest.py'
       - 'tools/word_hunt_release_stock_check.py'
-      - 'tools/word_hunt_content_factory*.json'
       - '.github/workflows/word-hunt-content-factory.yml'
   workflow_dispatch:
 
@@ -21,84 +23,39 @@ jobs:
       - name: Kaynağı indir
         uses: actions/checkout@v4
 
-      - name: Python kur
+      - name: Python 3.12 kur
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
 
-      - name: Python syntax doğrula
+      - name: Canonical ve legacy tooling syntax doğrula
         run: |
           python3 -m py_compile tools/word_hunt_batch_generator.py
+          python3 -m py_compile tools/tests/test_word_hunt_content_compiler.py
           python3 -m py_compile tools/word_hunt_release_stock_manifest.py
           python3 -m py_compile tools/word_hunt_release_stock_check.py
 
-      - name: Örnek manifestten 8x8 grid üret ve doğrula
-        run: |
-          python3 tools/word_hunt_batch_generator.py \
-            --input tools/word_hunt_content_factory.sample.json \
-            --output /tmp/word_hunt_factory_sample.generated.json \
-            --report /tmp/word_hunt_factory_sample.report.txt
-          grep -Fq 'exact-one occurrence: PASS' /tmp/word_hunt_factory_sample.report.txt
-          grep -Fq 'Toplam bölüm: 2' /tmp/word_hunt_factory_sample.report.txt
-          grep -Fq 'Yayın stoğu hazır: HAYIR' /tmp/word_hunt_factory_sample.report.txt
+      - name: KA-02 Segment1 source lock doğrula
+        run: >-
+          python3 tools/word_hunt_batch_generator.py
+          --verify-source-lock-only
+          --source-lock tools/word_hunt_segment1_source_lock.json
 
-      - name: 200 bölüm altı release gate negatif testi
-        run: |
-          set +e
-          python3 tools/word_hunt_batch_generator.py \
-            --input tools/word_hunt_content_factory.sample.json \
-            --output /tmp/should_fail.json \
-            --require-release-stock
-          code=$?
-          set -e
-          test "$code" -eq 2
+      - name: KA-02 Python contract tests
+        run: python3 -m unittest tools.tests.test_word_hunt_content_compiler -v
 
-      - name: 180 yeni bölüm manifestini üret
+      - name: NON-PRODUCTION sample iki kez derle
         run: |
-          python3 tools/word_hunt_release_stock_manifest.py \
-            --output /tmp/word_hunt_release_stock.manifest.json
+          python3 tools/word_hunt_batch_generator.py             --input tools/word_hunt_content_factory.sample.json             --source-lock tools/word_hunt_segment1_source_lock.json             --output /tmp/ka02-a.json             --report /tmp/ka02-a.txt
+          python3 tools/word_hunt_batch_generator.py             --input tools/word_hunt_content_factory.sample.json             --source-lock tools/word_hunt_segment1_source_lock.json             --output /tmp/ka02-b.json             --report /tmp/ka02-b.txt
+          cmp /tmp/ka02-a.json /tmp/ka02-b.json
+          cmp /tmp/ka02-a.txt /tmp/ka02-b.txt
+          grep -Fq 'Status: COMPILE PASS' /tmp/ka02-a.txt
+          grep -Fq 'Candidate state: CANDIDATE READY FOR REVIEW' /tmp/ka02-a.txt
 
-      - name: Canonical 5-8-9-10 bölüm tiplerini doğrula
-        run: |
-          python3 - <<'PY'
-          import json
-          from pathlib import Path
-
-          data = json.loads(
-              Path('/tmp/word_hunt_release_stock.manifest.json').read_text(encoding='utf-8')
-          )
-          expected = {
-              5: 'challenge',
-              8: 'normal',
-              9: 'normal',
-              10: 'routeFinal',
-          }
-          for route in data['routes']:
-              levels = {level['index']: level for level in route['levels']}
-              assert len(levels) == 10, route['id']
-              for index, level_type in expected.items():
-                  actual = levels[index]['type']
-                  assert actual == level_type, (
-                      route['id'], index, actual, level_type
-                  )
-              assert levels[5].get('timeLimitSeconds') == 60, route['id']
-              assert levels[10].get('timeLimitSeconds') == 120, route['id']
-          print('CANONICAL_LEVEL_TYPES: PASS')
-          PY
-
-      - name: 180 yeni bölümü üret ve exact-one doğrula
-        run: |
-          python3 tools/word_hunt_batch_generator.py \
-            --input /tmp/word_hunt_release_stock.manifest.json \
-            --output /tmp/word_hunt_release_stock.generated.json \
-            --report /tmp/word_hunt_release_stock.report.txt
-          grep -Fq 'Toplam rota: 18' /tmp/word_hunt_release_stock.report.txt
-          grep -Fq 'Toplam bölüm: 180' /tmp/word_hunt_release_stock.report.txt
-          grep -Fq 'exact-one occurrence: PASS' /tmp/word_hunt_release_stock.report.txt
-
-      - name: Mevcut 20 + yeni 180 = minimum 200 yayın stoğu kapısı
-        run: |
-          python3 tools/word_hunt_release_stock_check.py \
-            --generated /tmp/word_hunt_release_stock.generated.json \
-            --approved-existing 20 \
-            --required-total 200
+      - name: Locked output validation mode
+        run: >-
+          python3 tools/word_hunt_batch_generator.py
+          --validate /tmp/ka02-a.json
+          --source-lock tools/word_hunt_segment1_source_lock.json
+          --report /tmp/ka02-validation.txt
