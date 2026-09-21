@@ -1,26 +1,49 @@
 {
-  "schemaVersion": 1,
-  "seed": 20260906,
-  "minimumReleaseLevels": 200,
+  "schemaVersion": 2,
+  "seed": 20260921,
   "routes": [
     {
-      "id": "fabrika-ornek",
-      "title": "Fabrika Örnek Rotası",
-      "theme": "Yalnız content factory doğrulama örneği; production içeriği değildir.",
-      "unlockStarsRequired": 0,
-      "routeRewardId": "reward-fabrika-ornek",
+      "routeId": "baslangic-limani",
       "levels": [
         {
-          "index": 1,
+          "id": "sample-baslangic-11",
+          "index": 11,
           "type": "normal",
-          "targetWords": ["BULUT", "GÜNEŞ", "RÜZGAR", "YILDIZ", "KANAT"],
-          "bonusWords": ["AYNA"]
+          "targetWords": ["KUMRU", "BAMBU", "İNCİR", "VAGON"],
+          "bonusWords": [],
+          "starRules": {
+            "twoStarMaxMistakes": 2,
+            "threeStarMaxMistakes": 0
+          }
         },
         {
-          "index": 2,
-          "type": "routeFinal",
-          "targetWords": ["DENİZ", "FENER", "LİMAN", "MARTI", "YELKEN"],
-          "bonusWords": ["PUSULA"]
+          "id": "sample-baslangic-20",
+          "index": 20,
+          "type": "challenge",
+          "targetWords": ["KUMSAL", "TURNA", "BAVUL"],
+          "bonusWords": ["ÇINAR"],
+          "starRules": {
+            "twoStarMaxSeconds": 90,
+            "threeStarMaxSeconds": 60
+          },
+          "timeLimitSeconds": 120,
+          "seed": 424242
+        }
+      ]
+    },
+    {
+      "routeId": "gokyuzu-adalari",
+      "levels": [
+        {
+          "id": "sample-gokyuzu-11",
+          "index": 11,
+          "type": "normal",
+          "targetWords": ["KUMRU", "BAMBU"],
+          "bonusWords": ["İNCİR"],
+          "starRules": {
+            "twoStarMaxMistakes": 3,
+            "threeStarMaxMistakes": 1
+          }
         }
       ]
     }
