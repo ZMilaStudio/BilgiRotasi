@@ -2,6 +2,8 @@
 
 Status: IMPLEMENTATION CONTRACT / TOOLING ONLY
 
+Validation authority: Wave 9 implementation is valid only when the exact code/tool/test HEAD passes the cumulative Wave0–9 gate; a later authority-closure commit is docs-only.
+
 Wave:
 - WAVE 9 — KA-02 CONTENT COMPILER + STRICT ROUTE-WIDE UNIQUENESS GATE
 
