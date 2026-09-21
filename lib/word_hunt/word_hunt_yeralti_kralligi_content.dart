@@ -73,6 +73,7 @@ abstract final class WordHuntYeraltiKralligiContent {
         id: 'yeralti-kralligi-01',
         routeId: 'yeralti-kralligi',
         index: 1,
+        displayName: 'Gizli İniş',
         type: WordHuntLevelType.normal,
         grid: <String>[
           'GJZİNİŞU',
@@ -97,6 +98,7 @@ abstract final class WordHuntYeraltiKralligiContent {
         id: 'yeralti-kralligi-02',
         routeId: 'yeralti-kralligi',
         index: 2,
+        displayName: 'Taş Damarlar',
         type: WordHuntLevelType.normal,
         grid: <String>[
           'YPÖRCİRÜ',
@@ -120,6 +122,7 @@ abstract final class WordHuntYeraltiKralligiContent {
         id: 'yeralti-kralligi-03',
         routeId: 'yeralti-kralligi',
         index: 3,
+        displayName: 'Derin Sarnıç',
         type: WordHuntLevelType.normal,
         grid: <String>[
           'TBOĞAEOJ',
@@ -144,6 +147,7 @@ abstract final class WordHuntYeraltiKralligiContent {
         id: 'yeralti-kralligi-04',
         routeId: 'yeralti-kralligi',
         index: 4,
+        displayName: 'Bakır Kanallar',
         type: WordHuntLevelType.normal,
         grid: <String>[
           'IDŞÖACBK',
@@ -168,6 +172,7 @@ abstract final class WordHuntYeraltiKralligiContent {
         id: 'yeralti-kralligi-05',
         routeId: 'yeralti-kralligi',
         index: 5,
+        displayName: 'Halka Kilidi',
         type: WordHuntLevelType.challenge,
         grid: <String>[
           'SIRAKLAH',
@@ -194,6 +199,7 @@ abstract final class WordHuntYeraltiKralligiContent {
         id: 'yeralti-kralligi-06',
         routeId: 'yeralti-kralligi',
         index: 6,
+        displayName: 'Taş Mekanizma',
         type: WordHuntLevelType.normal,
         grid: <String>[
           'VOKĞRÇOC',
@@ -218,6 +224,7 @@ abstract final class WordHuntYeraltiKralligiContent {
         id: 'yeralti-kralligi-07',
         routeId: 'yeralti-kralligi',
         index: 7,
+        displayName: 'Gömülü Salon',
         type: WordHuntLevelType.normal,
         grid: <String>[
           'YİVZHĞÇİ',
@@ -241,6 +248,7 @@ abstract final class WordHuntYeraltiKralligiContent {
         id: 'yeralti-kralligi-08',
         routeId: 'yeralti-kralligi',
         index: 8,
+        displayName: 'Anıt Odası',
         type: WordHuntLevelType.normal,
         grid: <String>[
           'BCĞHLBYT',
@@ -265,6 +273,7 @@ abstract final class WordHuntYeraltiKralligiContent {
         id: 'yeralti-kralligi-09',
         routeId: 'yeralti-kralligi',
         index: 9,
+        displayName: 'Kraliyet Hazinesi',
         type: WordHuntLevelType.normal,
         grid: <String>[
           'GYBİLGİZ',
@@ -289,6 +298,7 @@ abstract final class WordHuntYeraltiKralligiContent {
         id: 'yeralti-kralligi-10',
         routeId: 'yeralti-kralligi',
         index: 10,
+        displayName: 'Göksel Mühür',
         type: WordHuntLevelType.routeFinal,
         grid: <String>[
           'GÖVŞGKPM',

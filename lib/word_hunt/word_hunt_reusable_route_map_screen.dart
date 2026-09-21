@@ -687,7 +687,7 @@ class _ReusableRouteNode extends StatelessWidget {
       button: unlocked,
       enabled: unlocked,
       label:
-          'Bölüm ${level.index}${unlocked ? ', açık' : ', kilitli'}'
+          '${level.displayNameOrFallback}${unlocked ? ', açık' : ', kilitli'}'
           '${completed
               ? ', tamamlandı'
               : current

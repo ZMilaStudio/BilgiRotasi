@@ -52,6 +52,7 @@ class WordHuntCompletionDestination {
   const WordHuntCompletionDestination({
     required this.kind,
     required this.completedAbsoluteLevel,
+    this.completedLevelDisplayName,
     required this.completedSegment,
     required this.localLevel,
     required this.levelCompletedNow,
@@ -68,6 +69,7 @@ class WordHuntCompletionDestination {
 
   final WordHuntCompletionDestinationKind kind;
   final int completedAbsoluteLevel;
+  final String? completedLevelDisplayName;
   final int completedSegment;
   final int localLevel;
   final bool levelCompletedNow;
@@ -192,6 +194,7 @@ abstract final class WordHuntCompletionCoordinator {
     return WordHuntCompletionDestination(
       kind: kind,
       completedAbsoluteLevel: absoluteLevel,
+      completedLevelDisplayName: level.displayName,
       completedSegment: completedSegment,
       localLevel: localLevel,
       levelCompletedNow: levelCompletedNow,

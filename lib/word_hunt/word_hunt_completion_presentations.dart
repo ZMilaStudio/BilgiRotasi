@@ -128,6 +128,19 @@ class WordHuntCompletionPresentation extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 5),
+                      if (destination.completedLevelDisplayName != null) ...<Widget>[
+                        Text(
+                          destination.completedLevelDisplayName!,
+                          key: const Key('word_hunt_completion_level_name'),
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: skin.primaryTextColor,
+                            fontSize: _strong ? 16 : 14,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                      ],
                       Text(
                         summary.routeTitle,
                         key: const Key('word_hunt_completion_route_title'),
