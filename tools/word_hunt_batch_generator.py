@@ -151,6 +151,17 @@ def normalize_runtime_semantics(value: Any) -> str:
     return value.strip().replace("i", "İ").replace("ı", "I").upper()
 
 
+def normalize_locked_word(value: Any) -> str:
+    normalized = normalize_runtime_semantics(value)
+    if not normalized:
+        raise FactoryError("Segment1 locked word trim sonrası boş olamaz")
+    if normalized != value:
+        raise FactoryError(
+            f"Segment1 locked word canonical runtime-normalized olmalı: {value!r} -> {normalized!r}"
+        )
+    return normalized
+
+
 def normalize_word(value: Any) -> str:
     normalized = normalize_runtime_semantics(value)
     if not normalized:
@@ -202,7 +213,7 @@ def validate_source_lock(raw: dict[str, Any]) -> SourceLock:
         words_raw = route.get("reservedWords")
         if not isinstance(words_raw, list):
             raise FactoryError(f"{route_id}: reservedWords list olmalı")
-        words = tuple(normalize_word(word) for word in words_raw)
+        words = tuple(normalize_locked_word(word) for word in words_raw)
         if tuple(sorted(words)) != words:
             raise FactoryError(f"{route_id}: reservedWords canonical sorted olmalı")
         if len(set(words)) != len(words):
@@ -219,7 +230,7 @@ def validate_source_lock(raw: dict[str, Any]) -> SourceLock:
         for origin in origins_raw:
             if not isinstance(origin, dict):
                 raise FactoryError(f"{route_id}: wordOrigin object olmalı")
-            word = normalize_word(origin.get("word"))
+            word = normalize_locked_word(origin.get("word"))
             if word in origins:
                 raise FactoryError(f"{route_id}: duplicate wordOrigin {word}")
             if word not in words:
