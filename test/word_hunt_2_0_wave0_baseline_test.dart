@@ -210,15 +210,16 @@ void main() {
       final route = entry.route;
       final ids = expectedLevelIds[route.id];
       expect(ids, isNotNull, reason: 'Missing baseline for ${route.id}');
-      expect(route.levels, hasLength(10), reason: route.id);
+      final segment1Levels = route.levels.take(10).toList(growable: false);
+      expect(segment1Levels, hasLength(10), reason: route.id);
       expect(
-        route.levels.map((level) => level.id).toList(),
+        segment1Levels.map((level) => level.id).toList(),
         ids,
         reason: route.id,
       );
 
-      for (var offset = 0; offset < route.levels.length; offset++) {
-        final level = route.levels[offset];
+      for (var offset = 0; offset < segment1Levels.length; offset++) {
+        final level = segment1Levels[offset];
         expect(level.index, offset + 1, reason: level.id);
         expect(level.routeId, route.id, reason: level.id);
       }
@@ -332,7 +333,7 @@ void main() {
 String _contentFingerprint(WordHuntRouteDefinition route) {
   final lines = <String>[route.id];
 
-  for (final level in route.levels) {
+  for (final level in route.levels.take(10)) {
     lines
       ..add('${level.index}|${level.id}|${level.routeId}')
       ..add('G:${level.grid.join("/")}')
@@ -360,7 +361,7 @@ List<String> _duplicateDebt(WordHuntRouteDefinition route) {
     debt.add('$normalized|$first|$current');
   }
 
-  for (final level in route.levels) {
+  for (final level in route.levels.take(10)) {
     for (final word in level.targetWords) {
       record(level, 'TARGET', word);
     }
