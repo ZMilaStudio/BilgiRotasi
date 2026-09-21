@@ -2,10 +2,12 @@ import 'package:bilgi_rotasi/word_hunt/word_hunt_completion_orchestration.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_global_level_numbering.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_models.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_progress.dart';
+import 'package:bilgi_rotasi/word_hunt/word_hunt_reference_route_screen.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_route_catalog.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_route_rewards.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_route_segment_host.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_segment_projection.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -110,6 +112,32 @@ void main() {
         host.nodes.map((node) => node.absoluteLevelIndex).toList(),
         List<int>.generate(10, (index) => index + 11),
       );
+    });
+
+    testWidgets('Segment2 does not reuse baked Segment1 master art', (
+      tester,
+    ) async {
+      final progress = _progressThrough(route, 10);
+      await tester.pumpWidget(
+        MaterialApp(
+          home: WordHuntReferenceRouteScreen(
+            route: route,
+            progress: progress,
+            segmentIndex: 2,
+          ),
+        ),
+      );
+      await tester.pump();
+
+      expect(
+        find.byKey(const Key('word_hunt_production_master_art_route')),
+        findsNothing,
+      );
+      expect(
+        find.byKey(const Key('word_hunt_reference_canonical_scene')),
+        findsOneWidget,
+      );
+      expect(find.text('11'), findsOneWidget);
     });
 
     test('content frontier is never interpreted as route completion', () {
