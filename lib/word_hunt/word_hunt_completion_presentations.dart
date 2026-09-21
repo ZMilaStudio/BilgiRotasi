@@ -128,7 +128,8 @@ class WordHuntCompletionPresentation extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 5),
-                      if (destination.completedLevelDisplayName != null) ...<Widget>[
+                      if (destination.completedLevelDisplayName !=
+                          null) ...<Widget>[
                         Text(
                           destination.completedLevelDisplayName!,
                           key: const Key('word_hunt_completion_level_name'),

@@ -225,17 +225,14 @@ void main() {
     }
   });
 
-  test(
-    'Wave 0 locks reviewed Wave 8 Segment 1 content fingerprints',
-    () {
-      final actual = <String, String>{
-        for (final entry in WordHuntRouteCatalog.entries)
-          entry.route.id: _contentFingerprint(entry.route),
-      };
+  test('Wave 0 locks reviewed Wave 8 Segment 1 content fingerprints', () {
+    final actual = <String, String>{
+      for (final entry in WordHuntRouteCatalog.entries)
+        entry.route.id: _contentFingerprint(entry.route),
+    };
 
-      expect(actual, expectedContentFingerprints);
-    },
-  );
+    expect(actual, expectedContentFingerprints);
+  });
 
   test('Wave 0 retains frozen pre-Wave8 duplicate debt evidence', () {
     expect(preWave8DuplicateDebt['baslangic-limani'], hasLength(7));
@@ -248,11 +245,14 @@ void main() {
     expect(preWave8DuplicateDebt['gunes-imparatorlugu'], isEmpty);
   });
 
-  test('Wave 0 current Segment 1 content has zero duplicate debt after Wave 8', () {
-    for (final entry in WordHuntRouteCatalog.entries) {
-      expect(_duplicateDebt(entry.route), isEmpty, reason: entry.route.id);
-    }
-  });
+  test(
+    'Wave 0 current Segment 1 content has zero duplicate debt after Wave 8',
+    () {
+      for (final entry in WordHuntRouteCatalog.entries) {
+        expect(_duplicateDebt(entry.route), isEmpty, reason: entry.route.id);
+      }
+    },
+  );
 
   test('Wave 0 storage identity survives owner-approved Wave 2 schema v3', () {
     expect(WordHuntProgressCodec.schemaVersion, 3);

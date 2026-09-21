@@ -131,13 +131,6 @@ jobs:
           lib/word_hunt/word_hunt_route_selector.dart
           lib/word_hunt/word_hunt_screens.dart
           lib/word_hunt/word_hunt_route_stop.dart
-          lib/word_hunt/word_hunt_starter_content.dart
-          lib/word_hunt/word_hunt_gokyuzu_content.dart
-          lib/word_hunt/word_hunt_orman_content.dart
-          lib/word_hunt/word_hunt_orman2_content.dart
-          lib/word_hunt/word_hunt_kayip_sehir_content.dart
-          lib/word_hunt/word_hunt_yeralti_kralligi_content.dart
-          lib/word_hunt/word_hunt_gunes_imparatorlugu_content.dart
           test/word_hunt_2_0_wave0_baseline_test.dart
           test/word_hunt_2_0_wave1_domain_foundation_test.dart
           test/word_hunt_2_0_wave2_persistence_v3_test.dart
@@ -148,7 +141,6 @@ jobs:
           test/word_hunt_2_0_wave6_completion_orchestration_test.dart
           test/word_hunt_2_0_wave6_completion_layout_test.dart
           test/word_hunt_2_0_wave7_chrome_info_reward_test.dart
-          test/word_hunt_2_0_wave8_segment1_migration_test.dart
           test/word_hunt_pixel_proof_screen_test.dart
           test/word_hunt_gokyuzu_master_art_screen_test.dart
           test/word_hunt_reference_route_screen_test.dart
@@ -165,15 +157,7 @@ jobs:
           lib/word_hunt/word_hunt_route_visual_theme.dart
           lib/word_hunt/word_hunt_themed_production_route_screen.dart
           lib/word_hunt/word_hunt_route_stop.dart
-          lib/word_hunt/word_hunt_starter_content.dart
-          lib/word_hunt/word_hunt_gokyuzu_content.dart
-          lib/word_hunt/word_hunt_orman_content.dart
-          lib/word_hunt/word_hunt_orman2_content.dart
-          lib/word_hunt/word_hunt_kayip_sehir_content.dart
-          lib/word_hunt/word_hunt_yeralti_kralligi_content.dart
-          lib/word_hunt/word_hunt_gunes_imparatorlugu_content.dart
           test/word_hunt_2_0_wave0_baseline_test.dart
-          test/word_hunt_2_0_wave8_segment1_migration_test.dart
           test/word_hunt_2_0_wave6_completion_orchestration_test.dart
           test/word_hunt_2_0_wave6_completion_layout_test.dart;
           git diff --exit-code --
@@ -185,15 +169,7 @@ jobs:
           lib/word_hunt/word_hunt_route_visual_theme.dart
           lib/word_hunt/word_hunt_themed_production_route_screen.dart
           lib/word_hunt/word_hunt_route_stop.dart
-          lib/word_hunt/word_hunt_starter_content.dart
-          lib/word_hunt/word_hunt_gokyuzu_content.dart
-          lib/word_hunt/word_hunt_orman_content.dart
-          lib/word_hunt/word_hunt_orman2_content.dart
-          lib/word_hunt/word_hunt_kayip_sehir_content.dart
-          lib/word_hunt/word_hunt_yeralti_kralligi_content.dart
-          lib/word_hunt/word_hunt_gunes_imparatorlugu_content.dart
           test/word_hunt_2_0_wave0_baseline_test.dart
-          test/word_hunt_2_0_wave8_segment1_migration_test.dart
           test/word_hunt_2_0_wave6_completion_orchestration_test.dart
           test/word_hunt_2_0_wave6_completion_layout_test.dart
 
