@@ -98,6 +98,30 @@ class ContentCompilerTests(unittest.TestCase):
                 with self.assertRaises(compiler.FactoryError):
                     compiler.normalize_word(invalid)
 
+    def test_legacy_segment1_lock_may_preserve_runtime_normalized_diacritic(self) -> None:
+        raw = copy.deepcopy(self.lock.raw)
+        route_lock = raw["routes"][0]
+        route_lock["reservedWords"].append("RÜZGÂR")
+        route_lock["reservedWords"].sort()
+        route_lock["wordOrigins"].append(
+            {
+                "word": "RÜZGÂR",
+                "levelId": "baslangic-limani-legacy",
+                "index": 3,
+                "role": "TARGET",
+            }
+        )
+        route_lock["wordOrigins"].sort(key=lambda item: item["word"])
+        route_lock["reservedWordCount"] = len(route_lock["reservedWords"])
+        raw["lockDigest"] = compiler.source_lock_payload_digest(raw)
+        validated = compiler.validate_source_lock(raw)
+        self.assertIn(
+            "RÜZGÂR",
+            validated.routes["baslangic-limani"].reserved_words,
+        )
+        with self.assertRaises(compiler.FactoryError):
+            compiler.normalize_word("RÜZGÂR")
+
     def test_same_input_seed_is_byte_and_report_identical(self) -> None:
         source = [
             route(
