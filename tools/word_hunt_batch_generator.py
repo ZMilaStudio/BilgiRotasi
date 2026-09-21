@@ -19,8 +19,12 @@ from pathlib import Path
 from typing import Any, Iterable, Sequence
 
 COMPILER_VERSION = "ka02-v1"
+V2_COMPILER_VERSION = "ka02-v2"
 INPUT_SCHEMA_VERSION = 2
 ARTIFACT_SCHEMA_VERSION = 1
+V2_ARTIFACT_SCHEMA_VERSION = 2
+PRODUCTION_CORPUS_SCHEMA_VERSION = 1
+PRODUCTION_CORPUS_KIND = "WORD_HUNT_PRODUCTION_CORPUS_LOCK"
 GRID_SIZE = 8
 ALPHABET = "ABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVYZ"
 WORD_RE = re.compile(r"^[ABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVYZ]{3,8}$")
@@ -41,6 +45,9 @@ MAX_FILL_ATTEMPTS = 600
 MAX_BACKTRACK_NODES = 50_000
 MAX_SEED = (1 << 63) - 1
 DEFAULT_SOURCE_LOCK = Path(__file__).with_name("word_hunt_segment1_source_lock.json")
+DEFAULT_PRODUCTION_CORPUS_LOCK = Path(__file__).with_name(
+    "word_hunt_production_corpus.lock.json"
+)
 
 GENERATION_CONTRACT = {
     "alphabet": ALPHABET,
@@ -84,6 +91,24 @@ class SourceLock:
     lock_version: str
     lock_digest: str
     routes: dict[str, SourceLockRoute]
+
+
+@dataclass(frozen=True)
+class ProductionCorpusRoute:
+    route_id: str
+    available_level_count: int
+    planned_level_count: int
+    reserved_words: tuple[str, ...]
+    origins: dict[str, dict[str, Any]]
+    levels: tuple[dict[str, Any], ...]
+
+
+@dataclass(frozen=True)
+class ProductionCorpusLock:
+    raw: dict[str, Any]
+    source_digest: str
+    route_order: tuple[str, ...]
+    routes: dict[str, ProductionCorpusRoute]
 
 
 class StableRng:
@@ -278,6 +303,244 @@ def load_source_lock(path: Path) -> SourceLock:
     return validate_source_lock(raw)
 
 
+
+def production_corpus_payload_digest(raw: dict[str, Any]) -> str:
+    payload = copy.deepcopy(raw)
+    payload.pop("sourceDigest", None)
+    return sha256_text(canonical_json(payload))
+
+
+def _production_level_material(level: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "localIndex": level["localIndex"],
+        "levelId": level["levelId"],
+        "type": level["type"],
+        "grid": level["grid"],
+        "targetWords": level["targetWords"],
+        "bonusWords": level["bonusWords"],
+        "starRules": level["starRules"],
+        "timeLimitSeconds": level["timeLimitSeconds"],
+        "gridHash": level["gridHash"],
+    }
+
+
+def production_level_fingerprint(level: dict[str, Any]) -> str:
+    return sha256_text(canonical_json(_production_level_material(level)))
+
+
+def validate_production_corpus_lock(raw: dict[str, Any]) -> ProductionCorpusLock:
+    if not isinstance(raw, dict):
+        raise FactoryError("production corpus lock object olmalı")
+    if raw.get("schemaVersion") != PRODUCTION_CORPUS_SCHEMA_VERSION:
+        raise FactoryError("production corpus schema mismatch")
+    if raw.get("kind") != PRODUCTION_CORPUS_KIND:
+        raise FactoryError("production corpus kind mismatch")
+    if raw.get("generatedBy") != "tools/word_hunt_corpus_support.dart":
+        raise FactoryError("production corpus generatedBy mismatch")
+
+    source_digest = raw.get("sourceDigest")
+    if not isinstance(source_digest, str) or not re.fullmatch(
+        r"[0-9a-f]{64}", source_digest
+    ):
+        raise FactoryError("production corpus sourceDigest geçersiz/eksik")
+    actual_digest = production_corpus_payload_digest(raw)
+    if source_digest != actual_digest:
+        raise FactoryError(
+            "production corpus sourceDigest mismatch: "
+            f"stored={source_digest} actual={actual_digest}"
+        )
+
+    route_order_raw = raw.get("routeOrder")
+    routes_raw = raw.get("routes")
+    if not isinstance(route_order_raw, list) or not route_order_raw:
+        raise FactoryError("production corpus routeOrder boş/eksik")
+    if not isinstance(routes_raw, list) or not routes_raw:
+        raise FactoryError("production corpus routes boş/eksik")
+    route_order = tuple(route_order_raw)
+    if any(
+        not isinstance(route_id, str) or not route_id or route_id.strip() != route_id
+        for route_id in route_order
+    ):
+        raise FactoryError("production corpus routeOrder geçersiz")
+    if len(set(route_order)) != len(route_order):
+        raise FactoryError("production corpus routeOrder duplicate içeriyor")
+    if [route.get("routeId") for route in routes_raw] != list(route_order):
+        raise FactoryError("production corpus routes routeOrder ile eşleşmiyor")
+
+    routes: dict[str, ProductionCorpusRoute] = {}
+    for route in routes_raw:
+        if not isinstance(route, dict):
+            raise FactoryError("production corpus route object olmalı")
+        route_id = route.get("routeId")
+        if route_id in routes:
+            raise FactoryError(f"production corpus duplicate routeId {route_id}")
+
+        levels_raw = route.get("levels")
+        if not isinstance(levels_raw, list) or not levels_raw:
+            raise FactoryError(f"{route_id}: production levels boş/eksik")
+        available = _require_int(
+            route.get("availableLevelCount"),
+            f"{route_id}.availableLevelCount",
+            minimum=1,
+        )
+        planned = _require_int(
+            route.get("plannedLevelCount"),
+            f"{route_id}.plannedLevelCount",
+            minimum=1,
+        )
+        if available != len(levels_raw):
+            raise FactoryError(
+                f"{route_id}: availableLevelCount mismatch {available} != {len(levels_raw)}"
+            )
+        if planned < available or planned > 100:
+            raise FactoryError(
+                f"{route_id}: plannedLevelCount {planned} available={available} dışında"
+            )
+
+        seen_level_ids: set[str] = set()
+        projected_words: dict[str, dict[str, Any]] = {}
+        validated_levels: list[dict[str, Any]] = []
+        for offset, raw_level in enumerate(levels_raw):
+            if not isinstance(raw_level, dict):
+                raise FactoryError(f"{route_id}: production level object olmalı")
+            level = copy.deepcopy(raw_level)
+            index = _require_int(
+                level.get("localIndex"),
+                f"{route_id}.level.localIndex",
+                minimum=1,
+            )
+            if index != offset + 1:
+                raise FactoryError(
+                    f"{route_id}: production localIndex 1..N sıralı olmalı"
+                )
+            level_id = level.get("levelId")
+            if not isinstance(level_id, str) or not level_id:
+                raise FactoryError(f"{route_id}: production levelId geçersiz")
+            if level_id in seen_level_ids:
+                raise FactoryError(f"{route_id}: duplicate production levelId {level_id}")
+            seen_level_ids.add(level_id)
+            if level.get("type") not in LEVEL_TYPES:
+                raise FactoryError(f"{route_id}/{level_id}: production type geçersiz")
+
+            grid = level.get("grid")
+            if not isinstance(grid, list) or len(grid) != GRID_SIZE:
+                raise FactoryError(f"{route_id}/{level_id}: production grid 8 row olmalı")
+            if any(not isinstance(row, str) or len(row) != GRID_SIZE for row in grid):
+                raise FactoryError(f"{route_id}/{level_id}: production grid 8x8 olmalı")
+            if any(char not in ALPHABET for row in grid for char in row):
+                raise FactoryError(
+                    f"{route_id}/{level_id}: production grid unsupported alphabet"
+                )
+
+            targets_raw = level.get("targetWords")
+            bonus_raw = level.get("bonusWords")
+            if not isinstance(targets_raw, list) or not targets_raw:
+                raise FactoryError(f"{route_id}/{level_id}: production targets eksik")
+            if not isinstance(bonus_raw, list):
+                raise FactoryError(f"{route_id}/{level_id}: production bonus list olmalı")
+            targets = [normalize_locked_word(word) for word in targets_raw]
+            bonus = [normalize_locked_word(word) for word in bonus_raw]
+            level["targetWords"] = targets
+            level["bonusWords"] = bonus
+            level["starRules"] = _validate_star_rules(
+                level.get("starRules"),
+                f"{route_id}/{level_id}",
+            )
+            time_limit = level.get("timeLimitSeconds")
+            if time_limit is not None:
+                _require_int(
+                    time_limit,
+                    f"{route_id}/{level_id}.timeLimitSeconds",
+                    minimum=1,
+                )
+
+            grid_hash = level.get("gridHash")
+            if grid_hash != sha256_text("\n".join(grid)):
+                raise FactoryError(f"{route_id}/{level_id}: gridHash mismatch")
+            fingerprint = level.get("levelFingerprint")
+            if not isinstance(fingerprint, str) or not re.fullmatch(
+                r"[0-9a-f]{64}", fingerprint
+            ):
+                raise FactoryError(f"{route_id}/{level_id}: levelFingerprint geçersiz")
+            if fingerprint != production_level_fingerprint(level):
+                raise FactoryError(f"{route_id}/{level_id}: levelFingerprint mismatch")
+
+            for role, words in (("TARGET", targets), ("BONUS", bonus)):
+                for word in words:
+                    if word in projected_words:
+                        previous = projected_words[word]
+                        raise FactoryError(
+                            f"route={route_id} word={word} duplicate production "
+                            f"existing={previous['levelId']} "
+                            f"new={level_id}"
+                        )
+                    projected_words[word] = {
+                        "word": word,
+                        "levelId": level_id,
+                        "localIndex": index,
+                        "role": role,
+                    }
+            validated_levels.append(level)
+
+        reserved_raw = route.get("reservedWords")
+        if not isinstance(reserved_raw, list):
+            raise FactoryError(f"{route_id}: reservedWords list olmalı")
+        reserved_words = tuple(normalize_locked_word(word) for word in reserved_raw)
+        if tuple(sorted(reserved_words)) != reserved_words:
+            raise FactoryError(f"{route_id}: reservedWords canonical sorted olmalı")
+        if len(set(reserved_words)) != len(reserved_words):
+            raise FactoryError(f"{route_id}: reservedWords duplicate içeriyor")
+        if set(reserved_words) != set(projected_words):
+            raise FactoryError(f"{route_id}: reservedWords production levels ile uyuşmuyor")
+        reserved_count = _require_int(
+            route.get("reservedWordCount"),
+            f"{route_id}.reservedWordCount",
+            minimum=0,
+        )
+        if reserved_count != len(reserved_words):
+            raise FactoryError(f"{route_id}: reservedWordCount mismatch")
+
+        origins_raw = route.get("wordOrigins")
+        if not isinstance(origins_raw, list) or len(origins_raw) != len(reserved_words):
+            raise FactoryError(f"{route_id}: wordOrigins reservedWords ile birebir olmalı")
+        origins: dict[str, dict[str, Any]] = {}
+        for origin in origins_raw:
+            if not isinstance(origin, dict):
+                raise FactoryError(f"{route_id}: wordOrigin object olmalı")
+            word = normalize_locked_word(origin.get("word"))
+            expected = projected_words.get(word)
+            if expected is None or origin != expected:
+                raise FactoryError(f"{route_id}:{word}: wordOrigin mismatch")
+            origins[word] = copy.deepcopy(origin)
+        if tuple(origin.get("word") for origin in origins_raw) != reserved_words:
+            raise FactoryError(f"{route_id}: wordOrigins canonical word order olmalı")
+
+        routes[route_id] = ProductionCorpusRoute(
+            route_id=route_id,
+            available_level_count=available,
+            planned_level_count=planned,
+            reserved_words=reserved_words,
+            origins=origins,
+            levels=tuple(validated_levels),
+        )
+
+    return ProductionCorpusLock(
+        raw=copy.deepcopy(raw),
+        source_digest=source_digest,
+        route_order=route_order,
+        routes=routes,
+    )
+
+
+def load_production_corpus_lock(path: Path) -> ProductionCorpusLock:
+    try:
+        raw = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        raise FactoryError(
+            f"production corpus lock okunamadı: {path}: {exc}"
+        ) from exc
+    return validate_production_corpus_lock(raw)
+
 def _validate_star_rules(value: Any, label: str) -> dict[str, int | None]:
     if not isinstance(value, dict):
         raise FactoryError(f"{label}: starRules object olmalı")
@@ -453,8 +716,14 @@ def source_digest_for_manifest(manifest: dict[str, Any], lock: SourceLock) -> st
     return sha256_text(canonical_json(payload))
 
 
-def derive_level_seed(global_seed: int, route_id: str, index: int) -> int:
-    material = f"{COMPILER_VERSION}\n{global_seed}\n{route_id}\n{index}".encode("utf-8")
+def derive_level_seed(
+    global_seed: int,
+    route_id: str,
+    index: int,
+    *,
+    compiler_version: str = COMPILER_VERSION,
+) -> int:
+    material = f"{compiler_version}\n{global_seed}\n{route_id}\n{index}".encode("utf-8")
     return int.from_bytes(hashlib.sha256(material).digest()[:8], "big") & MAX_SEED
 
 
@@ -636,6 +905,11 @@ def _duplicate_message(
             f"Segment1 {first.get('levelId')} L{first.get('index')} "
             f"{first.get('role', 'UNKNOWN')}"
         )
+    elif first.get("source") == "production":
+        existing = (
+            f"production {first.get('levelId')} L{first.get('index')} "
+            f"{first.get('role', 'UNKNOWN')}"
+        )
     else:
         existing = (
             f"candidate {first.get('levelId')} L{first.get('index')} "
@@ -651,13 +925,18 @@ def _duplicate_message(
 def enforce_route_uniqueness(
     route_id: str,
     levels: Sequence[dict[str, Any]],
-    lock_route: SourceLockRoute,
+    lock_route: SourceLockRoute | ProductionCorpusRoute,
 ) -> tuple[int, int, int]:
     seen: dict[str, dict[str, Any]] = {}
+    source_name = (
+        "production"
+        if isinstance(lock_route, ProductionCorpusRoute)
+        else "Segment1"
+    )
     for word in lock_route.reserved_words:
         origin = lock_route.origins[word]
         seen[word] = {
-            "source": "Segment1",
+            "source": source_name,
             "levelId": origin["levelId"],
             "index": origin["index"],
             "role": origin["role"],
@@ -692,16 +971,27 @@ def enforce_route_uniqueness(
     return target_count, bonus_count, len(seen)
 
 
-def generate_level(route_id: str, source_level: dict[str, Any], global_seed: int) -> dict[str, Any]:
+def generate_level(
+    route_id: str,
+    source_level: dict[str, Any],
+    global_seed: int,
+    *,
+    compiler_version: str = COMPILER_VERSION,
+) -> dict[str, Any]:
     resolved_seed = (
         source_level["seed"]
         if source_level["seed"] is not None
-        else derive_level_seed(global_seed, route_id, source_level["index"])
+        else derive_level_seed(
+            global_seed,
+            route_id,
+            source_level["index"],
+            compiler_version=compiler_version,
+        )
     )
     words = source_level["targetWords"] + source_level["bonusWords"]
     last_error: FactoryError | None = None
     for retry in range(MAX_GENERATION_ATTEMPTS):
-        rng = StableRng(f"{COMPILER_VERSION}:{resolved_seed}:attempt:{retry}")
+        rng = StableRng(f"{compiler_version}:{resolved_seed}:attempt:{retry}")
         try:
             partial, placements = place_all(words, rng)
             rows = finalize_grid(partial, words, rng)
@@ -958,6 +1248,366 @@ def validate_artifact(artifact: dict[str, Any], lock: SourceLock) -> dict[str, A
     return artifact
 
 
+
+def validate_append_contract(
+    manifest: dict[str, Any],
+    corpus: ProductionCorpusLock,
+) -> None:
+    for route in manifest["routes"]:
+        route_id = route["routeId"]
+        production = corpus.routes[route_id]
+        levels = route["levels"]
+        indexes = [level["index"] for level in levels]
+        expected_start = production.available_level_count + 1
+        expected = list(range(expected_start, expected_start + len(indexes)))
+
+        if any(index <= production.available_level_count for index in indexes):
+            raise FactoryError(
+                f"{route_id}: existing localIndex overwrite yasak; "
+                f"available={production.available_level_count} candidate={indexes}"
+            )
+        if indexes != expected:
+            raise FactoryError(
+                f"{route_id}: candidate current frontier'dan contiguous append olmalı; "
+                f"expected={expected} actual={indexes}"
+            )
+        if indexes[-1] > production.planned_level_count:
+            raise FactoryError(
+                f"{route_id}: candidate plannedLevelCount aşar; "
+                f"planned={production.planned_level_count} candidate={indexes}"
+            )
+
+
+def source_digest_for_manifest_v2(
+    manifest: dict[str, Any],
+    corpus: ProductionCorpusLock,
+) -> str:
+    payload = {
+        "compilerVersion": V2_COMPILER_VERSION,
+        "generationContract": GENERATION_CONTRACT,
+        "manifest": manifest,
+        "productionCorpusLock": {
+            "schemaVersion": PRODUCTION_CORPUS_SCHEMA_VERSION,
+            "sourceDigest": corpus.source_digest,
+        },
+    }
+    return sha256_text(canonical_json(payload))
+
+
+def compile_manifest_v2(
+    data: dict[str, Any],
+    corpus: ProductionCorpusLock,
+) -> dict[str, Any]:
+    manifest = normalize_manifest(data, corpus)
+    validate_append_contract(manifest, corpus)
+    source_digest = source_digest_for_manifest_v2(manifest, corpus)
+    routes_out: list[dict[str, Any]] = []
+    total_levels = 0
+
+    for route in manifest["routes"]:
+        route_id = route["routeId"]
+        corpus_route = corpus.routes[route_id]
+        target_count, bonus_count, ending_reserved = enforce_route_uniqueness(
+            route_id,
+            route["levels"],
+            corpus_route,
+        )
+        levels_out = [
+            generate_level(
+                route_id,
+                level,
+                manifest["seed"],
+                compiler_version=V2_COMPILER_VERSION,
+            )
+            for level in route["levels"]
+        ]
+        total_levels += len(levels_out)
+        routes_out.append({
+            "routeId": route_id,
+            "startingReservedWordCount": len(corpus_route.reserved_words),
+            "candidateTargetCount": target_count,
+            "candidateBonusCount": bonus_count,
+            "endingReservedWordCount": ending_reserved,
+            "strictUniqueness": "PASS",
+            "exactOneGrid": "PASS",
+            "levels": levels_out,
+        })
+
+    artifact = {
+        "artifactSchemaVersion": V2_ARTIFACT_SCHEMA_VERSION,
+        "artifactKind": "NON_PRODUCTION_KA02_CANDIDATE",
+        "compilerVersion": V2_COMPILER_VERSION,
+        "inputSchemaVersion": INPUT_SCHEMA_VERSION,
+        "globalSeed": manifest["seed"],
+        "generationContract": GENERATION_CONTRACT,
+        "productionCorpusLock": {
+            "schemaVersion": PRODUCTION_CORPUS_SCHEMA_VERSION,
+            "sourceDigest": corpus.source_digest,
+        },
+        "sourceDigest": source_digest,
+        "status": "CANDIDATE_READY_FOR_REVIEW",
+        "totalCandidateLevels": total_levels,
+        "routes": routes_out,
+    }
+    validate_artifact_v2(artifact, corpus)
+    return artifact
+
+
+def validate_artifact_v2(
+    artifact: dict[str, Any],
+    corpus: ProductionCorpusLock,
+) -> dict[str, Any]:
+    if not isinstance(artifact, dict):
+        raise FactoryError("artifact object olmalı")
+    if artifact.get("artifactSchemaVersion") != V2_ARTIFACT_SCHEMA_VERSION:
+        raise FactoryError("v2 artifact schema mismatch")
+    if artifact.get("artifactKind") != "NON_PRODUCTION_KA02_CANDIDATE":
+        raise FactoryError("v2 artifactKind mismatch")
+    if artifact.get("compilerVersion") != V2_COMPILER_VERSION:
+        raise FactoryError("v2 compilerVersion mismatch")
+    if artifact.get("inputSchemaVersion") != INPUT_SCHEMA_VERSION:
+        raise FactoryError("v2 input schema mismatch")
+    if artifact.get("generationContract") != GENERATION_CONTRACT:
+        raise FactoryError("v2 generationContract mismatch")
+    lock_info = artifact.get("productionCorpusLock")
+    if lock_info != {
+        "schemaVersion": PRODUCTION_CORPUS_SCHEMA_VERSION,
+        "sourceDigest": corpus.source_digest,
+    }:
+        raise FactoryError("production corpus lock identity mismatch")
+    if artifact.get("status") != "CANDIDATE_READY_FOR_REVIEW":
+        raise FactoryError("v2 artifact status mismatch")
+
+    manifest = _source_projection_from_artifact(artifact)
+    normalized_manifest = normalize_manifest(manifest, corpus)
+    validate_append_contract(normalized_manifest, corpus)
+    expected_source_digest = source_digest_for_manifest_v2(
+        normalized_manifest,
+        corpus,
+    )
+    if artifact.get("sourceDigest") != expected_source_digest:
+        raise FactoryError(
+            "v2 sourceDigest mismatch: "
+            f"stored={artifact.get('sourceDigest')} actual={expected_source_digest}"
+        )
+
+    routes = artifact.get("routes")
+    if not isinstance(routes, list) or not routes:
+        raise FactoryError("v2 artifact routes missing")
+    if [route.get("routeId") for route in routes] != sorted(
+        route.get("routeId") for route in routes
+    ):
+        raise FactoryError("v2 artifact routes must be canonical routeId order")
+
+    total_levels = 0
+    for route in routes:
+        route_id = route.get("routeId")
+        if route_id not in corpus.routes:
+            raise FactoryError(f"v2 artifact unknown routeId {route_id!r}")
+        levels = route.get("levels")
+        if not isinstance(levels, list) or not levels:
+            raise FactoryError(f"{route_id}: v2 artifact levels missing")
+        projected_route = next(
+            item
+            for item in normalized_manifest["routes"]
+            if item["routeId"] == route_id
+        )
+        corpus_route = corpus.routes[route_id]
+        target_count, bonus_count, ending_reserved = enforce_route_uniqueness(
+            route_id,
+            projected_route["levels"],
+            corpus_route,
+        )
+        if route.get("startingReservedWordCount") != len(
+            corpus_route.reserved_words
+        ):
+            raise FactoryError(f"{route_id}: v2 startingReservedWordCount mismatch")
+        if route.get("candidateTargetCount") != target_count:
+            raise FactoryError(f"{route_id}: v2 candidateTargetCount mismatch")
+        if route.get("candidateBonusCount") != bonus_count:
+            raise FactoryError(f"{route_id}: v2 candidateBonusCount mismatch")
+        if route.get("endingReservedWordCount") != ending_reserved:
+            raise FactoryError(f"{route_id}: v2 endingReservedWordCount mismatch")
+        if (
+            route.get("strictUniqueness") != "PASS"
+            or route.get("exactOneGrid") != "PASS"
+        ):
+            raise FactoryError(f"{route_id}: v2 validation status must PASS")
+
+        for source_level, level in zip(
+            projected_route["levels"],
+            levels,
+            strict=True,
+        ):
+            expected_seed = (
+                source_level["seed"]
+                if source_level["seed"] is not None
+                else derive_level_seed(
+                    normalized_manifest["seed"],
+                    route_id,
+                    source_level["index"],
+                    compiler_version=V2_COMPILER_VERSION,
+                )
+            )
+            if level.get("resolvedSeed") != expected_seed:
+                raise FactoryError(
+                    f"{route_id}/{level.get('id')}: v2 resolvedSeed mismatch"
+                )
+            validate_generated_level(level)
+            if level.get("fingerprint") != level_fingerprint(level):
+                raise FactoryError(
+                    f"{route_id}/{level.get('id')}: v2 fingerprint mismatch"
+                )
+        total_levels += len(levels)
+
+    if artifact.get("totalCandidateLevels") != total_levels:
+        raise FactoryError("v2 totalCandidateLevels mismatch")
+    return artifact
+
+
+def write_report_v2(
+    artifact: dict[str, Any],
+    *,
+    validation_only: bool = False,
+) -> str:
+    status = "VALIDATION PASS" if validation_only else "COMPILE PASS"
+    lock = artifact["productionCorpusLock"]
+    lines = [
+        "KELİME AVI KA-02 CONTENT COMPILER",
+        f"Compiler version: {artifact['compilerVersion']}",
+        f"Status: {status}",
+        "Candidate state: CANDIDATE READY FOR REVIEW",
+        f"Source digest: {artifact['sourceDigest']}",
+        (
+            "Production corpus: "
+            f"schema={lock['schemaVersion']} sourceDigest={lock['sourceDigest']}"
+        ),
+        f"Candidate levels: {artifact['totalCandidateLevels']}",
+        "",
+    ]
+    for route in artifact["routes"]:
+        lines.append(
+            f"- route={route['routeId']} levels={len(route['levels'])} "
+            f"reserved={route['startingReservedWordCount']} "
+            f"targets={route['candidateTargetCount']} "
+            f"bonus={route['candidateBonusCount']} "
+            f"endingReserved={route['endingReservedWordCount']} "
+            "uniqueness=PASS exactOne=PASS"
+        )
+        for level in route["levels"]:
+            lines.append(
+                f"  L{level['index']} id={level['id']} "
+                f"seed={level['resolvedSeed']} "
+                f"fingerprint={level['fingerprint']}"
+            )
+    lines.extend([
+        "",
+        "Strict cumulative route-wide uniqueness: PASS",
+        "Contiguous current-frontier append: PASS",
+        "Every intended word exact-one physical occurrence: PASS",
+        (
+            "This artifact is NON-PRODUCTION tooling output; "
+            "owner production approval is separate."
+        ),
+    ])
+    return "\n".join(lines) + "\n"
+
+
+def validate_legacy_v1_evidence(
+    evidence: dict[str, Any],
+    source_lock: SourceLock,
+) -> dict[str, Any]:
+    if evidence.get("schemaVersion") != 1:
+        raise FactoryError("legacy evidence schema mismatch")
+    if evidence.get("compilerVersion") != COMPILER_VERSION:
+        raise FactoryError("legacy evidence compilerVersion mismatch")
+    if not isinstance(evidence.get("sourceDigest"), str) or not re.fullmatch(
+        r"[0-9a-f]{64}",
+        evidence["sourceDigest"],
+    ):
+        raise FactoryError("legacy evidence sourceDigest invalid")
+    lock_info = evidence.get("segment1SourceLock")
+    if not isinstance(lock_info, dict):
+        raise FactoryError("legacy evidence segment1SourceLock missing")
+    if lock_info.get("lockVersion") != source_lock.lock_version:
+        raise FactoryError("legacy evidence lockVersion mismatch")
+    if lock_info.get("lockDigest") != source_lock.lock_digest:
+        raise FactoryError("legacy evidence lockDigest mismatch")
+
+    route_id = evidence.get("routeId")
+    if route_id not in source_lock.routes:
+        raise FactoryError(f"legacy evidence unknown routeId {route_id!r}")
+    levels = evidence.get("levels")
+    if not isinstance(levels, list) or not levels:
+        raise FactoryError("legacy evidence levels missing")
+
+    normalized_levels: list[dict[str, Any]] = []
+    for raw_level in levels:
+        if not isinstance(raw_level, dict):
+            raise FactoryError("legacy evidence level object required")
+        level = copy.deepcopy(raw_level)
+        level_id = level.get("id")
+        if level.get("routeId") != route_id:
+            raise FactoryError(f"{level_id}: legacy routeId mismatch")
+        index = _require_int(level.get("index"), f"{level_id}.index", minimum=11)
+        if index > 100:
+            raise FactoryError(f"{level_id}: legacy index > 100")
+        if level.get("type") not in LEVEL_TYPES:
+            raise FactoryError(f"{level_id}: legacy type invalid")
+        level["targetWords"] = [
+            normalize_word(word) for word in level.get("targetWords", [])
+        ]
+        level["bonusWords"] = [
+            normalize_word(word) for word in level.get("bonusWords", [])
+        ]
+        level["starRules"] = _validate_star_rules(
+            level.get("starRules"),
+            f"legacy/{level_id}",
+        )
+        grid = level.get("grid")
+        if not isinstance(grid, list) or len(grid) != GRID_SIZE:
+            raise FactoryError(f"{level_id}: legacy grid rows invalid")
+        if any(not isinstance(row, str) or len(row) != GRID_SIZE for row in grid):
+            raise FactoryError(f"{level_id}: legacy grid shape invalid")
+        for word in level["targetWords"] + level["bonusWords"]:
+            if count_occurrences(grid, word) != 1:
+                raise FactoryError(
+                    f"{level_id}: legacy exact-one violation word={word}"
+                )
+        if not isinstance(level.get("fingerprint"), str) or not re.fullmatch(
+            r"[0-9a-f]{64}",
+            level["fingerprint"],
+        ):
+            raise FactoryError(f"{level_id}: legacy fingerprint invalid")
+        _require_int(
+            level.get("resolvedSeed"),
+            f"{level_id}.resolvedSeed",
+            minimum=0,
+        )
+        normalized_levels.append(level)
+
+    target_count, bonus_count, ending_reserved = enforce_route_uniqueness(
+        route_id,
+        normalized_levels,
+        source_lock.routes[route_id],
+    )
+    if evidence.get("startingReservedWordCount") != len(
+        source_lock.routes[route_id].reserved_words
+    ):
+        raise FactoryError("legacy startingReservedWordCount mismatch")
+    if evidence.get("candidateTargetCount") != target_count:
+        raise FactoryError("legacy candidateTargetCount mismatch")
+    if evidence.get("candidateBonusCount") != bonus_count:
+        raise FactoryError("legacy candidateBonusCount mismatch")
+    if evidence.get("endingReservedWordCount") != ending_reserved:
+        raise FactoryError("legacy endingReservedWordCount mismatch")
+    if (
+        evidence.get("strictUniqueness") != "PASS"
+        or evidence.get("exactOneGrid") != "PASS"
+    ):
+        raise FactoryError("legacy evidence validation status mismatch")
+    return evidence
+
 def write_report(artifact: dict[str, Any], *, validation_only: bool = False) -> str:
     status = "VALIDATION PASS" if validation_only else "COMPILE PASS"
     lines = [
@@ -1008,24 +1658,55 @@ def _read_json(path: Path, label: str) -> dict[str, Any]:
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Kelime Avı 2.0 KA-02 deterministic NON-PRODUCTION candidate compiler"
+        description=(
+            "Kelime Avı 2.0 KA-02 deterministic NON-PRODUCTION "
+            "candidate compiler"
+        )
     )
     mode = parser.add_mutually_exclusive_group(required=True)
-    mode.add_argument("--input", type=Path, help="schema v2 editorial candidate manifest")
-    mode.add_argument("--validate", type=Path, help="validate a locked compiler artifact")
+    mode.add_argument(
+        "--input",
+        type=Path,
+        help="schema v2 editorial candidate manifest",
+    )
+    mode.add_argument(
+        "--validate",
+        type=Path,
+        help="validate a KA-02 v2 candidate artifact",
+    )
     mode.add_argument(
         "--verify-source-lock-only",
         action="store_true",
-        help="validate Segment1 source-lock digest/shape only",
+        help="validate historical Segment1 source-lock digest/shape only",
+    )
+    mode.add_argument(
+        "--verify-production-corpus-lock-only",
+        action="store_true",
+        help="validate generated current production corpus lock only",
+    )
+    mode.add_argument(
+        "--validate-legacy-v1-evidence",
+        type=Path,
+        help="read-only validate immutable ka02-v1 locked evidence",
     )
     parser.add_argument("--source-lock", type=Path, default=DEFAULT_SOURCE_LOCK)
+    parser.add_argument(
+        "--production-corpus-lock",
+        type=Path,
+        default=DEFAULT_PRODUCTION_CORPUS_LOCK,
+    )
+    parser.add_argument(
+        "--legacy-v1-mode",
+        action="store_true",
+        help=argparse.SUPPRESS,
+    )
     parser.add_argument("--output", type=Path)
     parser.add_argument("--report", type=Path)
     args = parser.parse_args()
 
     try:
-        lock = load_source_lock(args.source_lock)
         if args.verify_source_lock_only:
+            lock = load_source_lock(args.source_lock)
             report = (
                 "SEGMENT1_SOURCE_LOCK: PASS\n"
                 f"lockVersion={lock.lock_version}\n"
@@ -1035,19 +1716,62 @@ def main() -> int:
             sys.stdout.write(report)
             return 0
 
-        if args.input is not None:
-            if args.output is None:
-                raise FactoryError("compile mode requires --output")
-            source = _read_json(args.input, "manifest")
-            artifact = compile_manifest(source, lock)
-            output_bytes = pretty_json(artifact)
-            args.output.parent.mkdir(parents=True, exist_ok=True)
-            args.output.write_text(output_bytes, encoding="utf-8")
-            report = write_report(artifact)
+        if args.verify_production_corpus_lock_only:
+            corpus = load_production_corpus_lock(args.production_corpus_lock)
+            report = (
+                "PRODUCTION_CORPUS_LOCK: PASS\n"
+                f"schemaVersion={PRODUCTION_CORPUS_SCHEMA_VERSION}\n"
+                f"sourceDigest={corpus.source_digest}\n"
+                f"routes={len(corpus.routes)}\n"
+                f"levels={sum(route.available_level_count for route in corpus.routes.values())}\n"
+            )
+            sys.stdout.write(report)
+            return 0
+
+        if args.validate_legacy_v1_evidence is not None:
+            lock = load_source_lock(args.source_lock)
+            evidence = _read_json(
+                args.validate_legacy_v1_evidence,
+                "legacy v1 evidence",
+            )
+            validate_legacy_v1_evidence(evidence, lock)
+            report = (
+                "KA02_LEGACY_V1_EVIDENCE: PASS\n"
+                f"route={evidence['routeId']}\n"
+                f"levels={len(evidence['levels'])}\n"
+                f"sourceDigest={evidence['sourceDigest']}\n"
+            )
+            sys.stdout.write(report)
+            return 0
+
+        if args.legacy_v1_mode:
+            lock = load_source_lock(args.source_lock)
+            if args.input is not None:
+                if args.output is None:
+                    raise FactoryError("compile mode requires --output")
+                source = _read_json(args.input, "manifest")
+                artifact = compile_manifest(source, lock)
+                args.output.parent.mkdir(parents=True, exist_ok=True)
+                args.output.write_text(pretty_json(artifact), encoding="utf-8")
+                report = write_report(artifact)
+            else:
+                artifact = _read_json(args.validate, "artifact")
+                validate_artifact(artifact, lock)
+                report = write_report(artifact, validation_only=True)
         else:
-            artifact = _read_json(args.validate, "artifact")
-            validate_artifact(artifact, lock)
-            report = write_report(artifact, validation_only=True)
+            corpus = load_production_corpus_lock(args.production_corpus_lock)
+            if args.input is not None:
+                if args.output is None:
+                    raise FactoryError("compile mode requires --output")
+                source = _read_json(args.input, "manifest")
+                artifact = compile_manifest_v2(source, corpus)
+                args.output.parent.mkdir(parents=True, exist_ok=True)
+                args.output.write_text(pretty_json(artifact), encoding="utf-8")
+                report = write_report_v2(artifact)
+            else:
+                artifact = _read_json(args.validate, "artifact")
+                validate_artifact_v2(artifact, corpus)
+                report = write_report_v2(artifact, validation_only=True)
 
         if args.report:
             args.report.parent.mkdir(parents=True, exist_ok=True)

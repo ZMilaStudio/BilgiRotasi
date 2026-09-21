@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import copy
 import importlib.util
+import json
 import sys
 import tempfile
 import unittest
@@ -497,6 +498,7 @@ class ContentCompilerTests(unittest.TestCase):
             try:
                 compiler.sys.argv = [
                     "compiler",
+                    "--legacy-v1-mode",
                     "--input",
                     str(manifest_path),
                     "--source-lock",
@@ -509,6 +511,7 @@ class ContentCompilerTests(unittest.TestCase):
                 self.assertEqual(compiler.main(), 0)
                 compiler.sys.argv = [
                     "compiler",
+                    "--legacy-v1-mode",
                     "--input",
                     str(manifest_path),
                     "--source-lock",
@@ -523,6 +526,7 @@ class ContentCompilerTests(unittest.TestCase):
                 self.assertEqual(report_a.read_bytes(), report_b.read_bytes())
                 compiler.sys.argv = [
                     "compiler",
+                    "--legacy-v1-mode",
                     "--validate",
                     str(out_a),
                     "--source-lock",
@@ -531,6 +535,236 @@ class ContentCompilerTests(unittest.TestCase):
                 self.assertEqual(compiler.main(), 0)
             finally:
                 compiler.sys.argv = old_argv
+
+
+PRODUCTION_CORPUS_PATH = Path(__file__).resolve().parents[1] / (
+    "word_hunt_production_corpus.lock.json"
+)
+LEGACY_SOURCE_LOCK_PATH = Path(__file__).resolve().parents[1] / (
+    "word_hunt_segment1_source_lock.json"
+)
+LEGACY_WAVE10A_EVIDENCE_PATH = Path(__file__).resolve().parents[1] / (
+    "word_hunt_wave10a_baslangic_segment2.lock.json"
+)
+
+
+class ContentCompilerV2Tests(unittest.TestCase):
+    def setUp(self) -> None:
+        self.corpus = compiler.load_production_corpus_lock(
+            PRODUCTION_CORPUS_PATH
+        )
+
+    def candidate_levels(self) -> list[dict]:
+        return [
+            level(
+                21,
+                level_id="candidate-21",
+                targets=["LAVANTA", "YELPAZE"],
+                bonus=["CEYLAN"],
+            ),
+            level(
+                22,
+                level_id="candidate-22",
+                targets=["DÜDÜK", "KEMER"],
+                bonus=["KAZMA"],
+            ),
+        ]
+
+    def compile(
+        self,
+        levels: list[dict] | None = None,
+        *,
+        corpus: compiler.ProductionCorpusLock | None = None,
+        seed: int = 20260922,
+    ) -> dict:
+        return compiler.compile_manifest_v2(
+            manifest(
+                [
+                    route(
+                        "baslangic-limani",
+                        levels if levels is not None else self.candidate_levels(),
+                    )
+                ],
+                seed,
+            ),
+            corpus or self.corpus,
+        )
+
+    def test_current_production_corpus_lock_shape_and_digest(self) -> None:
+        self.assertEqual(self.corpus.route_order[0], "baslangic-limani")
+        self.assertEqual(len(self.corpus.routes), 8)
+        self.assertEqual(
+            sum(
+                route.available_level_count
+                for route in self.corpus.routes.values()
+            ),
+            90,
+        )
+        self.assertEqual(
+            self.corpus.source_digest,
+            compiler.production_corpus_payload_digest(self.corpus.raw),
+        )
+
+        starter = self.corpus.routes["baslangic-limani"]
+        self.assertEqual(starter.available_level_count, 20)
+        self.assertEqual(starter.planned_level_count, 100)
+        self.assertEqual(len(starter.reserved_words), 138)
+
+    def test_wave10a_l11_to_l20_is_current_reserved_corpus(self) -> None:
+        starter = self.corpus.routes["baslangic-limani"]
+        self.assertEqual(starter.origins["BARDAK"]["localIndex"], 11)
+        self.assertEqual(starter.origins["FİDAN"]["localIndex"], 11)
+        self.assertEqual(starter.origins["MANDAL"]["localIndex"], 20)
+        self.assertEqual(starter.origins["ŞEMSİYE"]["localIndex"], 20)
+
+    def test_v2_same_input_is_byte_deterministic(self) -> None:
+        first = self.compile()
+        second = self.compile()
+        self.assertEqual(compiler.pretty_json(first), compiler.pretty_json(second))
+        self.assertEqual(first["compilerVersion"], "ka02-v2")
+        self.assertEqual(first["artifactSchemaVersion"], 2)
+        self.assertEqual(
+            first["productionCorpusLock"],
+            {
+                "schemaVersion": 1,
+                "sourceDigest": self.corpus.source_digest,
+            },
+        )
+
+    def test_current_production_duplicate_word_fails(self) -> None:
+        with self.assertRaisesRegex(
+            compiler.FactoryError,
+            r"route=baslangic-limani word=BARDAK.*existing=production",
+        ):
+            self.compile(
+                [
+                    level(
+                        21,
+                        level_id="duplicate-current",
+                        targets=["BARDAK"],
+                    )
+                ]
+            )
+
+    def test_same_candidate_batch_duplicate_fails(self) -> None:
+        with self.assertRaisesRegex(
+            compiler.FactoryError,
+            r"word=LAVANTA.*existing=candidate candidate-21 L21",
+        ):
+            self.compile(
+                [
+                    level(
+                        21,
+                        level_id="candidate-21",
+                        targets=["LAVANTA"],
+                    ),
+                    level(
+                        22,
+                        level_id="candidate-22",
+                        targets=["LAVANTA"],
+                    ),
+                ]
+            )
+
+    def test_existing_index_overwrite_fails(self) -> None:
+        with self.assertRaisesRegex(
+            compiler.FactoryError,
+            "existing localIndex overwrite",
+        ):
+            self.compile(
+                [level(20, level_id="overwrite-20", targets=["LAVANTA"])]
+            )
+
+    def test_gap_or_wrong_frontier_fails(self) -> None:
+        with self.assertRaisesRegex(
+            compiler.FactoryError,
+            "contiguous append",
+        ):
+            self.compile(
+                [level(22, level_id="gap-22", targets=["LAVANTA"])]
+            )
+
+    def test_contiguous_append_passes(self) -> None:
+        artifact = self.compile()
+        self.assertEqual(
+            [level["index"] for level in artifact["routes"][0]["levels"]],
+            [21, 22],
+        )
+        compiler.validate_artifact_v2(artifact, self.corpus)
+
+    def test_planned_level_count_overflow_fails(self) -> None:
+        raw = copy.deepcopy(self.corpus.raw)
+        starter = next(
+            route
+            for route in raw["routes"]
+            if route["routeId"] == "baslangic-limani"
+        )
+        starter["plannedLevelCount"] = 20
+        raw["sourceDigest"] = compiler.production_corpus_payload_digest(raw)
+        capped = compiler.validate_production_corpus_lock(raw)
+
+        with self.assertRaisesRegex(
+            compiler.FactoryError,
+            "plannedLevelCount aşar",
+        ):
+            self.compile(
+                [level(21, level_id="past-plan", targets=["LAVANTA"])],
+                corpus=capped,
+            )
+
+    def test_route_final_remains_forbidden_before_l100(self) -> None:
+        with self.assertRaisesRegex(
+            compiler.FactoryError,
+            "routeFinal forbidden before L100",
+        ):
+            self.compile(
+                [
+                    level(
+                        21,
+                        level_id="false-final",
+                        level_type="routeFinal",
+                        targets=["LAVANTA"],
+                    )
+                ]
+            )
+
+    def test_corpus_digest_participates_in_v2_candidate_identity(self) -> None:
+        first = self.compile()
+        raw = copy.deepcopy(self.corpus.raw)
+        starter = next(
+            route
+            for route in raw["routes"]
+            if route["routeId"] == "baslangic-limani"
+        )
+        starter["plannedLevelCount"] = 99
+        raw["sourceDigest"] = compiler.production_corpus_payload_digest(raw)
+        changed_corpus = compiler.validate_production_corpus_lock(raw)
+        second = self.compile(corpus=changed_corpus)
+
+        self.assertNotEqual(
+            first["productionCorpusLock"]["sourceDigest"],
+            second["productionCorpusLock"]["sourceDigest"],
+        )
+        self.assertNotEqual(first["sourceDigest"], second["sourceDigest"])
+
+    def test_legacy_wave10a_v1_evidence_remains_read_only_valid(self) -> None:
+        legacy_lock = compiler.load_source_lock(LEGACY_SOURCE_LOCK_PATH)
+        evidence = json.loads(
+            LEGACY_WAVE10A_EVIDENCE_PATH.read_text(encoding="utf-8")
+        )
+        validated = compiler.validate_legacy_v1_evidence(
+            evidence,
+            legacy_lock,
+        )
+        self.assertEqual(validated["compilerVersion"], "ka02-v1")
+        self.assertEqual(validated["routeId"], "baslangic-limani")
+        self.assertEqual(len(validated["levels"]), 10)
+
+    def test_v2_turkish_normalization_parity(self) -> None:
+        self.assertEqual(compiler.normalize_runtime_semantics("i"), "İ")
+        self.assertEqual(compiler.normalize_runtime_semantics("ı"), "I")
+        self.assertEqual(compiler.normalize_runtime_semantics("İ"), "İ")
+        self.assertEqual(compiler.normalize_runtime_semantics("I"), "I")
 
 
 if __name__ == "__main__":

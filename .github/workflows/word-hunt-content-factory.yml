@@ -3,10 +3,23 @@ name: Kelime Avı Content Factory
 on:
   pull_request:
     paths:
+      - 'lib/word_hunt/word_hunt_models.dart'
+      - 'lib/word_hunt/word_hunt_route_catalog.dart'
+      - 'lib/word_hunt/word_hunt_starter_content.dart'
+      - 'lib/word_hunt/word_hunt_gokyuzu_content.dart'
+      - 'lib/word_hunt/word_hunt_orman_content.dart'
+      - 'lib/word_hunt/word_hunt_orman2_content.dart'
+      - 'lib/word_hunt/word_hunt_kristal_content.dart'
+      - 'lib/word_hunt/word_hunt_kayip_sehir_content.dart'
+      - 'lib/word_hunt/word_hunt_yeralti_kralligi_content.dart'
+      - 'lib/word_hunt/word_hunt_gunes_imparatorlugu_content.dart'
+      - 'tools/word_hunt_corpus_support.dart'
+      - 'tools/word_hunt_production_corpus_lock_test.dart'
+      - 'tools/word_hunt_production_corpus.lock.json'
       - 'tools/word_hunt_batch_generator.py'
       - 'tools/word_hunt_content_factory.sample.json'
-      - 'tools/word_hunt_wave10a_baslangic_segment2.json'
       - 'tools/word_hunt_segment1_source_lock.json'
+      - 'tools/word_hunt_wave10a_baslangic_segment2.lock.json'
       - 'tools/tests/test_word_hunt_content_compiler.py'
       - 'tools/word_hunt_release_stock_manifest.py'
       - 'tools/word_hunt_release_stock_check.py'
@@ -24,10 +37,34 @@ jobs:
       - name: Kaynağı indir
         uses: actions/checkout@v4
 
+      - name: Flutter 3.44.6 kur
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.6'
+          channel: stable
+          cache: true
+
       - name: Python 3.12 kur
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+
+      - name: Flutter bağımlılıklarını kur
+        run: flutter pub get
+
+      - name: Corpus Dart format gate
+        run: >-
+          dart format
+          --output=none
+          --set-exit-if-changed
+          tools/word_hunt_corpus_support.dart
+          tools/word_hunt_production_corpus_lock_test.dart
+
+      - name: Production Dart corpus lock parity
+        run: >-
+          flutter test
+          tools/word_hunt_production_corpus_lock_test.dart
+          --reporter expanded
 
       - name: Canonical ve legacy tooling syntax doğrula
         run: |
@@ -36,63 +73,51 @@ jobs:
           python3 -m py_compile tools/word_hunt_release_stock_manifest.py
           python3 -m py_compile tools/word_hunt_release_stock_check.py
 
-      - name: KA-02 Segment1 source lock doğrula
+      - name: Historical Segment1 source lock doğrula
         run: >-
           python3 tools/word_hunt_batch_generator.py
           --verify-source-lock-only
           --source-lock tools/word_hunt_segment1_source_lock.json
 
+      - name: Current production corpus lock doğrula
+        run: >-
+          python3 tools/word_hunt_batch_generator.py
+          --verify-production-corpus-lock-only
+          --production-corpus-lock tools/word_hunt_production_corpus.lock.json
+
       - name: KA-02 Python contract tests
         run: python3 -m unittest tools.tests.test_word_hunt_content_compiler -v
 
-      - name: NON-PRODUCTION sample iki kez derle
+      - name: KA-02 v2 sample iki kez derle
         run: |
-          python3 tools/word_hunt_batch_generator.py             --input tools/word_hunt_content_factory.sample.json             --source-lock tools/word_hunt_segment1_source_lock.json             --output /tmp/ka02-a.json             --report /tmp/ka02-a.txt
-          python3 tools/word_hunt_batch_generator.py             --input tools/word_hunt_content_factory.sample.json             --source-lock tools/word_hunt_segment1_source_lock.json             --output /tmp/ka02-b.json             --report /tmp/ka02-b.txt
-          cmp /tmp/ka02-a.json /tmp/ka02-b.json
-          cmp /tmp/ka02-a.txt /tmp/ka02-b.txt
-          grep -Fq 'Status: COMPILE PASS' /tmp/ka02-a.txt
-          grep -Fq 'Candidate state: CANDIDATE READY FOR REVIEW' /tmp/ka02-a.txt
+          python3 tools/word_hunt_batch_generator.py             --input tools/word_hunt_content_factory.sample.json             --production-corpus-lock tools/word_hunt_production_corpus.lock.json             --output /tmp/ka02-v2-a.json             --report /tmp/ka02-v2-a.txt
+          python3 tools/word_hunt_batch_generator.py             --input tools/word_hunt_content_factory.sample.json             --production-corpus-lock tools/word_hunt_production_corpus.lock.json             --output /tmp/ka02-v2-b.json             --report /tmp/ka02-v2-b.txt
+          cmp /tmp/ka02-v2-a.json /tmp/ka02-v2-b.json
+          cmp /tmp/ka02-v2-a.txt /tmp/ka02-v2-b.txt
+          grep -Fq 'Compiler version: ka02-v2' /tmp/ka02-v2-a.txt
+          grep -Fq 'Status: COMPILE PASS' /tmp/ka02-v2-a.txt
+          grep -Fq 'Contiguous current-frontier append: PASS' /tmp/ka02-v2-a.txt
 
-      - name: Locked output validation mode
+      - name: KA-02 v2 locked output validation
         run: >-
           python3 tools/word_hunt_batch_generator.py
-          --validate /tmp/ka02-a.json
-          --source-lock tools/word_hunt_segment1_source_lock.json
-          --report /tmp/ka02-validation.txt
+          --validate /tmp/ka02-v2-a.json
+          --production-corpus-lock tools/word_hunt_production_corpus.lock.json
+          --report /tmp/ka02-v2-validation.txt
 
-
-      - name: Wave10A Başlangıç Segment2 iki kez derle
-        run: |
-          python3 tools/word_hunt_batch_generator.py \
-            --input tools/word_hunt_wave10a_baslangic_segment2.json \
-            --source-lock tools/word_hunt_segment1_source_lock.json \
-            --output /tmp/wave10a-baslangic-a.json \
-            --report /tmp/wave10a-baslangic-a.txt
-          python3 tools/word_hunt_batch_generator.py \
-            --input tools/word_hunt_wave10a_baslangic_segment2.json \
-            --source-lock tools/word_hunt_segment1_source_lock.json \
-            --output /tmp/wave10a-baslangic-b.json \
-            --report /tmp/wave10a-baslangic-b.txt
-          cmp /tmp/wave10a-baslangic-a.json /tmp/wave10a-baslangic-b.json
-          cmp /tmp/wave10a-baslangic-a.txt /tmp/wave10a-baslangic-b.txt
-          grep -Fq 'Status: COMPILE PASS' /tmp/wave10a-baslangic-a.txt
-          grep -Fq 'Candidate state: CANDIDATE READY FOR REVIEW' /tmp/wave10a-baslangic-a.txt
-
-      - name: Wave10A locked output validation
+      - name: Immutable Wave10A ka02-v1 evidence doğrula
         run: >-
           python3 tools/word_hunt_batch_generator.py
-          --validate /tmp/wave10a-baslangic-a.json
+          --validate-legacy-v1-evidence tools/word_hunt_wave10a_baslangic_segment2.lock.json
           --source-lock tools/word_hunt_segment1_source_lock.json
-          --report /tmp/wave10a-baslangic-validation.txt
 
-      - name: Wave10A candidate artifact yükle
+      - name: KA-02 v2 sample artifact yükle
         uses: actions/upload-artifact@v4
         with:
-          name: word-hunt-wave10a-baslangic-segment2-candidate
+          name: word-hunt-ka02-v2-sample
           path: |
-            /tmp/wave10a-baslangic-a.json
-            /tmp/wave10a-baslangic-a.txt
-            /tmp/wave10a-baslangic-validation.txt
+            /tmp/ka02-v2-a.json
+            /tmp/ka02-v2-a.txt
+            /tmp/ka02-v2-validation.txt
           if-no-files-found: error
           retention-days: 14
