@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'word_hunt_global_level_numbering.dart';
 import 'word_hunt_home_projection.dart';
 
 class WordHuntHomeScreen extends StatelessWidget {
@@ -17,6 +18,10 @@ class WordHuntHomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final destination = projection.continueDestination;
+    final globalLevel = WordHuntGlobalLevelNumbering.globalDisplayNumber(
+      routeId: destination.route.id,
+      localIndex: destination.absoluteLevelIndex,
+    );
 
     return Scaffold(
       key: const Key('word_hunt_home_screen'),
@@ -52,7 +57,7 @@ class WordHuntHomeScreen extends StatelessWidget {
               title: destination.routeTitle,
               subtitle:
                   '${destination.displayName} • '
-                  'Bölüm ${destination.absoluteLevelIndex} • '
+                  'Bölüm $globalLevel • '
                   'Bölge ${destination.activeSegmentIndex}',
               onTap: () => onContinue(destination),
             ),
