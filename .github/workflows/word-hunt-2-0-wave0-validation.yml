@@ -57,6 +57,12 @@ on:
       - 'test/word_hunt_2_0_wave6_completion_layout_test.dart'
       - 'test/word_hunt_2_0_wave7_chrome_info_reward_test.dart'
       - 'test/word_hunt_2_0_wave8_segment1_migration_test.dart'
+      - 'test/word_hunt_2_0_wave9_content_compiler_test.dart'
+      - 'tools/word_hunt_batch_generator.py'
+      - 'tools/word_hunt_content_factory.sample.json'
+      - 'tools/word_hunt_segment1_source_lock.json'
+      - 'tools/tests/test_word_hunt_content_compiler.py'
+      - '.github/workflows/word-hunt-content-factory.yml'
       - 'test/word_hunt_pixel_proof_screen_test.dart'
       - 'test/word_hunt_gokyuzu_master_art_screen_test.dart'
       - 'test/word_hunt_reference_route_screen_test.dart'
@@ -95,7 +101,7 @@ jobs:
       - name: Bağımlılıkları kur
         run: flutter pub get
 
-      - name: Wave 0+1+2+3+4+5+6+7+8 Dart format gate
+      - name: Wave 0+1+2+3+4+5+6+7+8+9 Dart format gate
         run: >-
           dart format
           lib/main.dart
@@ -141,6 +147,8 @@ jobs:
           test/word_hunt_2_0_wave6_completion_orchestration_test.dart
           test/word_hunt_2_0_wave6_completion_layout_test.dart
           test/word_hunt_2_0_wave7_chrome_info_reward_test.dart
+          test/word_hunt_2_0_wave8_segment1_migration_test.dart
+          test/word_hunt_2_0_wave9_content_compiler_test.dart
           test/word_hunt_pixel_proof_screen_test.dart
           test/word_hunt_gokyuzu_master_art_screen_test.dart
           test/word_hunt_reference_route_screen_test.dart
@@ -189,7 +197,7 @@ jobs:
           echo "Full analyzer issue count: $issues (Wave 0 baseline: 92)"
           test "$issues" -le 92
 
-      - name: Wave 1+2+3+4+5+6+7+8 targeted analyze gate
+      - name: Wave 1+2+3+4+5+6+7+8+9 targeted analyze gate
         run: >-
           flutter analyze --no-pub
           lib/account_cloud.dart
@@ -241,6 +249,7 @@ jobs:
           test/word_hunt_2_0_wave6_completion_layout_test.dart
           test/word_hunt_2_0_wave7_chrome_info_reward_test.dart
           test/word_hunt_2_0_wave8_segment1_migration_test.dart
+          test/word_hunt_2_0_wave9_content_compiler_test.dart
           test/word_hunt_pixel_proof_screen_test.dart
           test/word_hunt_gokyuzu_master_art_screen_test.dart
           test/word_hunt_reference_route_screen_test.dart
@@ -281,6 +290,40 @@ jobs:
 
       - name: Wave 8 Segment 1 migration and strict uniqueness tests
         run: flutter test test/word_hunt_2_0_wave8_segment1_migration_test.dart --reporter expanded
+
+      - name: Wave 9 Segment1 source-lock parity
+        run: flutter test test/word_hunt_2_0_wave9_content_compiler_test.dart --reporter expanded
+
+      - name: Wave 9 compiler Python tests
+        run: python3 -m unittest tools.tests.test_word_hunt_content_compiler -v
+
+      - name: Wave 9 deterministic compiler proof
+        run: |
+          python3 tools/word_hunt_batch_generator.py \
+            --input tools/word_hunt_content_factory.sample.json \
+            --source-lock tools/word_hunt_segment1_source_lock.json \
+            --output /tmp/wave9-a.json \
+            --report /tmp/wave9-a.txt
+          python3 tools/word_hunt_batch_generator.py \
+            --input tools/word_hunt_content_factory.sample.json \
+            --source-lock tools/word_hunt_segment1_source_lock.json \
+            --output /tmp/wave9-b.json \
+            --report /tmp/wave9-b.txt
+          cmp /tmp/wave9-a.json /tmp/wave9-b.json
+          cmp /tmp/wave9-a.txt /tmp/wave9-b.txt
+
+      - name: Wave 9 strict uniqueness and reserved-set proof
+        run: >-
+          python3 tools/word_hunt_batch_generator.py
+          --verify-source-lock-only
+          --source-lock tools/word_hunt_segment1_source_lock.json
+
+      - name: Wave 9 locked-output validation proof
+        run: >-
+          python3 tools/word_hunt_batch_generator.py
+          --validate /tmp/wave9-a.json
+          --source-lock tools/word_hunt_segment1_source_lock.json
+          --report /tmp/wave9-validation.txt
 
       - name: Deferred completion wrapper regression
         run: flutter test test/word_hunt_deferred_completion_level_screen_test.dart --reporter expanded
