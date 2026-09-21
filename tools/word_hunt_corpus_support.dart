@@ -24,15 +24,16 @@ String _sha256Text(String value) =>
 
 Object? _canonicalize(Object? value) {
   if (value is Map) {
-    final entries = value.entries
-        .map(
-          (entry) => MapEntry<String, Object?>(
-            entry.key.toString(),
-            _canonicalize(entry.value),
-          ),
-        )
-        .toList()
-      ..sort((left, right) => left.key.compareTo(right.key));
+    final entries =
+        value.entries
+            .map(
+              (entry) => MapEntry<String, Object?>(
+                entry.key.toString(),
+                _canonicalize(entry.value),
+              ),
+            )
+            .toList()
+          ..sort((left, right) => left.key.compareTo(right.key));
     return <String, Object?>{
       for (final entry in entries) entry.key: entry.value,
     };
@@ -63,12 +64,10 @@ Map<String, Object?> _levelProjection(WordHuntLevelDefinition level) {
     'levelId': level.id,
     'type': level.type.name,
     'grid': List<String>.unmodifiable(level.grid),
-    'targetWords': level.targetWords
-        .map(normalizeCorpusWord)
-        .toList(growable: false),
-    'bonusWords': level.bonusWords
-        .map(normalizeCorpusWord)
-        .toList(growable: false),
+    'targetWords':
+        level.targetWords.map(normalizeCorpusWord).toList(growable: false),
+    'bonusWords':
+        level.bonusWords.map(normalizeCorpusWord).toList(growable: false),
     'starRules': _starRulesProjection(level.starRules),
     'timeLimitSeconds': level.timeLimitSeconds,
     'gridHash': _sha256Text(level.grid.join('\n')),
@@ -112,27 +111,31 @@ Map<String, Object?> _routeProjection(WordHuntRouteDefinition route) {
     'plannedLevelCount': route.plannedRouteLevelCount,
     'reservedWordCount': reservedWords.length,
     'reservedWords': reservedWords,
-    'wordOrigins': reservedWords
-        .map<Map<String, Object?>>((word) => originsByWord[word]!)
-        .toList(growable: false),
-    'levels': route.levels
-        .map<Map<String, Object?>>(_levelProjection)
-        .toList(growable: false),
+    'wordOrigins':
+        reservedWords
+            .map<Map<String, Object?>>((word) => originsByWord[word]!)
+            .toList(growable: false),
+    'levels':
+        route.levels
+            .map<Map<String, Object?>>(_levelProjection)
+            .toList(growable: false),
   };
 }
 
 Map<String, Object?> buildProductionCorpusLock() {
-  final routes = WordHuntRouteCatalog.entries
-      .map((entry) => entry.route)
-      .toList(growable: false);
+  final routes =
+      WordHuntRouteCatalog.entries
+          .map((entry) => entry.route)
+          .toList(growable: false);
   final result = <String, Object?>{
     'schemaVersion': wordHuntProductionCorpusSchemaVersion,
     'kind': wordHuntProductionCorpusKind,
     'generatedBy': wordHuntProductionCorpusGeneratedBy,
     'routeOrder': routes.map((route) => route.id).toList(growable: false),
-    'routes': routes
-        .map<Map<String, Object?>>(_routeProjection)
-        .toList(growable: false),
+    'routes':
+        routes
+            .map<Map<String, Object?>>(_routeProjection)
+            .toList(growable: false),
   };
   result['sourceDigest'] = _sha256Text(canonicalCorpusJson(result));
   return result;
