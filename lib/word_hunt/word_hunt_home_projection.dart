@@ -1,3 +1,4 @@
+import 'word_hunt_global_level_numbering.dart';
 import 'word_hunt_models.dart';
 import 'word_hunt_progress.dart';
 import 'word_hunt_route_catalog.dart';
@@ -21,7 +22,8 @@ class WordHuntContinueDestination {
   final int activeSegmentIndex;
 
   String get levelId => level.id;
-  String get displayName => level.displayNameOrFallback;
+  String get displayName =>
+      WordHuntGlobalLevelNumbering.displayNameForLevel(level);
 }
 
 class WordHuntRouteHomeSummary {
@@ -127,7 +129,7 @@ class WordHuntHomeProjection {
       var routeCompletedLevels = 0;
       var routeStars = 0;
 
-      totalLevels += route.levels.length;
+      totalLevels += route.plannedRouteLevelCount;
       if (complete) {
         completedRoutes++;
       }
@@ -159,10 +161,13 @@ class WordHuntHomeProjection {
         WordHuntRouteHomeSummary(
           route: route,
           completedLevelCount: routeCompletedLevels,
-          totalLevelCount: route.levels.length,
+          totalLevelCount: route.plannedRouteLevelCount,
           totalStars: routeStars,
           activeSegmentIndex: activeSegment,
-          totalSegmentCount: route.segments.isEmpty ? 1 : route.segments.length,
+          totalSegmentCount:
+              route.segments.isEmpty
+                  ? 1
+                  : (route.plannedRouteLevelCount ~/ 10),
           unlocked: unlocked,
           complete: complete,
         ),
