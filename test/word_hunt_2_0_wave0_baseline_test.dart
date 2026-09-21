@@ -129,7 +129,7 @@ void main() {
   const expectedContentFingerprints = <String, String>{
     'baslangic-limani': '39462daa',
     'gokyuzu-adalari': '2fd4e4af',
-    'orman-yolu': '7aae6da3',
+    'orman-yolu': 'de4fe1f9',
     'orman-2': '71084c8f',
     'kristal-vadisi': 'fcd1e9ce',
     'kayip-sehir': '5c9041c4',

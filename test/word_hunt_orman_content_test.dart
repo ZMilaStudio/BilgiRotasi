@@ -9,31 +9,31 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   const route = WordHuntOrmanContent.ormanYolu;
 
-  const originalL1ToL7Grids = <List<String>>[
+  const wave8L1ToL7Grids = <List<String>>[
     <String>['ŞDKÇLŞVU', 'UÖAASYIÜ', 'KŞDĞREİU', 'EBİASPĞR', 'AİHORMAN', 'ÖUMNHLVY', 'ŞEİGGDHÇ', 'IZVBLYİÇ'],
-    <String>['HÇEUHJÖO', 'İŞGKÖKNM', 'EÖUTVÜJL', 'İŞŞOÜUİN', 'JKERSARB', 'VNDMİİYU', 'NVAAZZRN', 'UÇKNİÖUS'],
-    <String>['COSTKİÜS', 'ÜÖĞOEÜOZ', 'OUİPÇFVİ', 'GYARÇISŞ', 'JÖĞAVUYM', 'HKLKĞLEP', 'ADUGUŞMF', 'VNÇCEŞTĞ'],
-    <String>['OZDERETR', 'ĞIGBAZOK', 'VİAÜTEPT', 'SGİUNGRU', 'SKOZALAK', 'ZÖKLMÖKÜ', 'ĞYDVIGĞĞ', 'RHJTOĞŞJ'],
-    <String>['SSMIOAOH', 'DEREPŞKE', 'LBAFYGOF', 'ZKLKÇÖZM', 'OLTAİKAL', 'ÖİOSÇTLO', 'LÖYMEUAC', 'VÖŞĞKPKP'],
-    <String>['ZSÜCNDHO', 'RAÖMNCTO', 'KOGKPLLZ', 'UKAYANEİ', 'JÜERCOÜI', 'TFDÇNETI', 'IGEYİKAD', 'DVHŞSÇJF'],
-    <String>['GEYİKENŞ', 'ÇPACNİST', 'VGPVSÜİS', 'TDRÇTOYL', 'AYADJMFP', 'CĞKLĞYYC', 'ATÜVEDÖM', 'ÇİHNNEĞD'],
+    <String>['HÇEUHJÖO', 'İŞGKÖKNM', 'EÖUTKÜJL', 'FŞŞOÜOİN', 'JİERSARB', 'VNDMİİYU', 'NVAAZZRN', 'UÇKNNÖUS'],
+    <String>['COSTKİÜS', 'ÜÖĞOEÜOZ', 'OUİPÇFVİ', 'GYARIISŞ', 'JÖĞAVUYM', 'HKLKAVAK', 'ADUGUŞMF', 'VNÇCEŞTĞ'],
+    <String>['OZDERETR', 'ĞIGBAZOK', 'VİAÜTEPT', 'SERİNGRU', 'STUMALAP', 'ZÖKUMSAL', 'ĞYDVIGĞĞ', 'RHJTOĞŞJ'],
+    <String>['SSÇIOAOH', 'DERAPŞKE', 'LBAFYGOF', 'ZKLKÇÖZM', 'OLTAİKAL', 'ÖİOSÇTLO', 'LÖYMEUAC', 'VÖŞĞKPKP'],
+    <String>['ZSÜLNDHO', 'RAÖMACTO', 'KOGKPLLZ', 'UKAYANEİ', 'JÜERCOPI', 'TFDÇNRTI', 'INEMİÇAD', 'DVHKSÇJF'],
+    <String>['GEYİKENŞ', 'ÇPACNAST', 'VGPVŞÜİS', 'TDRVRKYL', 'AYAGOFFP', 'CTÜLĞİYC', 'ANÜVEDÖM', 'ÇİHNNEĞD'],
   ];
-  const originalL1ToL7Targets = <List<String>>[
+  const wave8L1ToL7Targets = <List<String>>[
     <String>['AĞAÇ', 'YAPRAK', 'DAL', 'KÖK', 'ORMAN'],
-    <String>['KÖK', 'ORMAN', 'ÇAM', 'MEŞE', 'KUŞ'],
-    <String>['MEŞE', 'KUŞ', 'YUVA', 'TOPRAK'],
-    <String>['TOPRAK', 'GÖLGE', 'MANTAR', 'KOZALAK', 'DERE'],
-    <String>['KOZALAK', 'DERE', 'PATİKA', 'ÇİÇEK', 'OTLAR'],
-    <String>['ÇİÇEK', 'OTLAR', 'KAYA', 'SİNCAP'],
-    <String>['SİNCAP', 'GEYİK', 'AĞAÇ', 'YAPRAK', 'DAL'],
+    <String>['KORU', 'FİDAN', 'ÇAM', 'MEŞE', 'KUŞ'],
+    <String>['KAVAK', 'ARI', 'YUVA', 'TOPRAK'],
+    <String>['KUMSAL', 'SERİN', 'MANTAR', 'PALAMUT', 'DERE'],
+    <String>['KOZALAK', 'ÇAY', 'PATİKA', 'ÇİÇEK', 'OTLAR'],
+    <String>['LALE', 'ÇİMEN', 'KAYA', 'SİNCAP'],
+    <String>['TAVŞAN', 'GEYİK', 'FİDE', 'SÜRGÜN', 'KOL'],
   ];
-  const originalL1ToL7Bonus = <List<String>>[
+  const wave8L1ToL7Bonus = <List<String>>[
     <String>[],
     <String>[],
     <String>['GÖLGE'],
     <String>[],
     <String>[],
-    <String>['GEYİK'],
+    <String>['KİRPİ'],
     <String>[],
   ];
   const originalL1ToL7Types = <WordHuntLevelType>[
@@ -107,12 +107,12 @@ void main() {
     );
   });
 
-  test('L1-L7 gameplay payload remains unchanged except approved L5 balance', () {
+  test('L1-L7 gameplay payload matches approved Wave8 migration and balance', () {
     for (var index = 0; index < 7; index++) {
       final level = route.levels[index];
-      expect(level.grid, originalL1ToL7Grids[index], reason: level.id);
-      expect(level.targetWords, originalL1ToL7Targets[index], reason: level.id);
-      expect(level.bonusWords, originalL1ToL7Bonus[index], reason: level.id);
+      expect(level.grid, wave8L1ToL7Grids[index], reason: level.id);
+      expect(level.targetWords, wave8L1ToL7Targets[index], reason: level.id);
+      expect(level.bonusWords, wave8L1ToL7Bonus[index], reason: level.id);
       expect(level.type, originalL1ToL7Types[index], reason: level.id);
       expect(level.timeLimitSeconds, originalL1ToL7Times[index], reason: level.id);
       expect(level.starRules.threeStarMaxMistakes, 0, reason: level.id);
@@ -218,7 +218,7 @@ void main() {
   test('L8 L9 L10 use exact polished target and bonus contracts', () {
     expect(
       route.levels[7].targetWords,
-      <String>['YAĞMUR', 'ÇAMUR', 'DAMLA', 'DERE', 'PATİKA'],
+      <String>['YAĞMUR', 'ÇAMUR', 'DAMLA', 'PINAR', 'PARKUR'],
     );
     expect(route.levels[7].bonusWords, <String>['ISLAK']);
 
@@ -230,7 +230,7 @@ void main() {
 
     expect(
       route.levels[9].targetWords,
-      <String>['ORMAN', 'KEŞİF', 'YOLCULUK', 'CANLI', 'DOĞA', 'UYUM'],
+      <String>['BAHÇE', 'KEŞİF', 'YOLCULUK', 'CANLI', 'DOĞA', 'UYUM'],
     );
     expect(route.levels[9].bonusWords, <String>['MACERA']);
   });

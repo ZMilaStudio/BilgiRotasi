@@ -80,10 +80,10 @@ Grid edit scope is the number of changed cells in that level after all replaceme
 | Orman Yolu | orman-yolu-02 | TARGET | ORMAN | FİDAN | orman-yolu-01 TARGET; earliest/source-stable | 5 cells total in level | none |
 | Orman Yolu | orman-yolu-03 | TARGET | MEŞE | KAVAK | orman-yolu-02 TARGET preserved for MEŞE info card | 5 cells total in level | linked MEŞE occurrence preserved |
 | Orman Yolu | orman-yolu-03 | TARGET | KUŞ | ARI | orman-yolu-02 TARGET; earliest/source-stable | 5 cells total in level | none |
-| Orman Yolu | orman-yolu-04 | TARGET | TOPRAK | KUMSAL | orman-yolu-03 TARGET; earliest/source-stable | 7 cells total in level | none |
-| Orman Yolu | orman-yolu-04 | TARGET | GÖLGE | SERİN | orman-yolu-03 BONUS; earliest/source-stable | 7 cells total in level | none |
-| Orman Yolu | orman-yolu-05 | TARGET | KOZALAK | PALAMUT | orman-yolu-04 TARGET preserved for KOZALAK info card | 6 cells total in level | linked KOZALAK occurrence preserved |
-| Orman Yolu | orman-yolu-05 | TARGET | DERE | ÇAY | orman-yolu-04 TARGET; earliest/source-stable | 6 cells total in level | none |
+| Orman Yolu | orman-yolu-04 | TARGET | TOPRAK | KUMSAL | orman-yolu-03 TARGET; earliest/source-stable | 11 cells total in level | none |
+| Orman Yolu | orman-yolu-04 | TARGET | GÖLGE | SERİN | orman-yolu-03 BONUS; earliest/source-stable | 11 cells total in level | none |
+| Orman Yolu | orman-yolu-04 | TARGET | KOZALAK | PALAMUT | orman-yolu-05 TARGET preserved because KOZALAK card is linked there | 11 cells total in level | linked KOZALAK occurrence preserved; intentional later keep |
+| Orman Yolu | orman-yolu-05 | TARGET | DERE | ÇAY | orman-yolu-04 TARGET; earliest/source-stable | 2 cells total in level | none |
 | Orman Yolu | orman-yolu-06 | TARGET | ÇİÇEK | LALE | orman-yolu-05 TARGET; earliest/source-stable | 8 cells total in level | none |
 | Orman Yolu | orman-yolu-06 | TARGET | OTLAR | ÇİMEN | orman-yolu-05 TARGET; earliest/source-stable | 8 cells total in level | none |
 | Orman Yolu | orman-yolu-06 | BONUS | GEYİK | KİRPİ | orman-yolu-07 TARGET preserved because GEYİK card is linked there | 8 cells total in level | linked GEYİK occurrence preserved; intentional non-earliest keep |
@@ -108,7 +108,7 @@ Grid edit scope is the number of changed cells in that level after all replaceme
 |---|---|---|---:|---:|---:|
 | baslangic-limani | `31f8e6fa` | `39462daa` | 7 | 0 | 80 |
 | gokyuzu-adalari | `0466644f` | `2fd4e4af` | 14 | 0 | 80 |
-| orman-yolu | `c297be09` | `7aae6da3` | 18 | 0 | 54 |
+| orman-yolu | `c297be09` | `de4fe1f9` | 18 | 0 | 54 |
 | orman-2 | `de83535d` | `71084c8f` | 7 | 0 | 67 |
 | kristal-vadisi | `fcd1e9ce` | `fcd1e9ce` | 0 | 0 | 70 |
 | kayip-sehir | `5c9041c4` | `5c9041c4` | 0 | 0 | 70 |
@@ -153,7 +153,7 @@ The keep decision prioritized existing linked card words.
 
 Explicit linked-word preservation includes:
 - Gökyüzü: BULUT at `gokyuzu-2`, RÜZGAR at `gokyuzu-1`, GÜNEŞ at `gokyuzu-10`,
-- Orman: AĞAÇ at `orman-yolu-01`, MEŞE at `orman-yolu-02`, KOZALAK at `orman-yolu-04`, SİNCAP at `orman-yolu-06`, GEYİK at `orman-yolu-07`.
+- Orman: AĞAÇ at `orman-yolu-01`, MEŞE at `orman-yolu-02`, KOZALAK at `orman-yolu-05`, SİNCAP at `orman-yolu-06`, GEYİK at `orman-yolu-07`.
 
 The GEYİK decision intentionally preserves the later occurrence because that exact level owns the linked card; `orman-yolu-06` BONUS GEYİK is the occurrence replaced.
 
