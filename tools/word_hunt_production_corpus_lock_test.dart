@@ -15,9 +15,7 @@ void main() {
     expect(canonicalCorpusJson(checked), canonicalCorpusJson(generated));
     expect(
       checked['sourceDigest'],
-      productionCorpusSourceDigest(
-        Map<String, Object?>.from(checked as Map),
-      ),
+      productionCorpusSourceDigest(Map<String, Object?>.from(checked as Map)),
     );
   });
 
@@ -48,7 +46,10 @@ void main() {
     expect(starter['reservedWordCount'], 138);
 
     final levels = (starter['levels']! as List).cast<Map<String, Object?>>();
-    expect(levels.map((level) => level['localIndex']), containsAll(<int>[11, 20]));
+    expect(
+      levels.map((level) => level['localIndex']),
+      containsAll(<int>[11, 20]),
+    );
 
     final words = (starter['reservedWords']! as List).cast<String>();
     expect(words, containsAll(<String>['BARDAK', 'MANDAL', 'ŞEMSİYE']));

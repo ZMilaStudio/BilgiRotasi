@@ -760,6 +760,25 @@ class ContentCompilerV2Tests(unittest.TestCase):
         self.assertEqual(validated["routeId"], "baslangic-limani")
         self.assertEqual(len(validated["levels"]), 10)
 
+    def test_production_grid_runtime_diacritic_is_separate_from_candidate_alphabet(self) -> None:
+        self.assertNotIn("Â", compiler.ALPHABET)
+        self.assertIn("Â", compiler.PRODUCTION_GRID_ALPHABET)
+        self.assertEqual(
+            compiler.normalize_runtime_semantics("rüzgâr"),
+            "RÜZGÂR",
+        )
+
+        kayip = self.corpus.routes["kayip-sehir"]
+        level2 = next(
+            level
+            for level in kayip.levels
+            if level["levelId"] == "kayip-sehir-02"
+        )
+        self.assertIn("Â", "".join(level2["grid"]))
+
+        with self.assertRaises(compiler.FactoryError):
+            compiler.normalize_word("RÜZGÂR")
+
     def test_v2_turkish_normalization_parity(self) -> None:
         self.assertEqual(compiler.normalize_runtime_semantics("i"), "İ")
         self.assertEqual(compiler.normalize_runtime_semantics("ı"), "I")

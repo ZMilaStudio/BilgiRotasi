@@ -27,6 +27,7 @@ PRODUCTION_CORPUS_SCHEMA_VERSION = 1
 PRODUCTION_CORPUS_KIND = "WORD_HUNT_PRODUCTION_CORPUS_LOCK"
 GRID_SIZE = 8
 ALPHABET = "ABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVYZ"
+PRODUCTION_GRID_ALPHABET = ALPHABET + "Â"
 WORD_RE = re.compile(r"^[ABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVYZ]{3,8}$")
 DIRECTIONS = (
     (-1, -1), (-1, 0), (-1, 1),
@@ -427,9 +428,16 @@ def validate_production_corpus_lock(raw: dict[str, Any]) -> ProductionCorpusLock
                 raise FactoryError(f"{route_id}/{level_id}: production grid 8 row olmalı")
             if any(not isinstance(row, str) or len(row) != GRID_SIZE for row in grid):
                 raise FactoryError(f"{route_id}/{level_id}: production grid 8x8 olmalı")
-            if any(char not in ALPHABET for row in grid for char in row):
+            unsupported = sorted({
+                char
+                for row in grid
+                for char in row
+                if char not in PRODUCTION_GRID_ALPHABET
+            })
+            if unsupported:
                 raise FactoryError(
-                    f"{route_id}/{level_id}: production grid unsupported alphabet"
+                    f"{route_id}/{level_id}: production grid unsupported alphabet "
+                    f"chars={unsupported}"
                 )
 
             targets_raw = level.get("targetWords")
