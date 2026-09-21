@@ -113,9 +113,13 @@ void main() {
     );
   });
 
-  test('normal levels remain mistake-only across all production routes', () {
+  test('legacy normal levels remain mistake-only across Segment1 routes', () {
     for (final route in routes) {
-      for (final level in route.levels) {
+      final levels =
+          route.id == WordHuntStarterContent.baslangicLimani.id
+              ? route.levels.take(10)
+              : route.levels;
+      for (final level in levels) {
         if (level.type != WordHuntLevelType.normal) continue;
         expect(level.timeLimitSeconds, isNull, reason: level.id);
         expect(level.starRules.threeStarMaxMistakes, 0, reason: level.id);
