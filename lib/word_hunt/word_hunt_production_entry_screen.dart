@@ -345,10 +345,10 @@ class _WordHuntProductionEntryScreenState
     );
     final level = route.levels[levelIndex - 1];
     final parentOwnsCompletion = _catalogMode;
-    final explicitV2 = WordHuntSegmentProjection.isExplicitV2Route(route);
+    final segmentedRoute = WordHuntSegmentProjection.isSegmentedRoute(route);
     final deferCompletion =
         parentOwnsCompletion ||
-        (!explicitV2 &&
+        (!segmentedRoute &&
             level.type == WordHuntLevelType.routeFinal &&
             !beforeRouteComplete);
     final result = await Navigator.of(context).push<WordHuntLevelPlayResult>(
@@ -407,7 +407,7 @@ class _WordHuntProductionEntryScreenState
         return;
       }
 
-      if (!explicitV2 &&
+      if (!segmentedRoute &&
           level.type == WordHuntLevelType.routeFinal &&
           !beforeRouteComplete &&
           !transition.afterRouteComplete) {
@@ -436,7 +436,7 @@ class _WordHuntProductionEntryScreenState
     final destination = processed.destination;
 
     final isLegacyFinalIncomplete =
-        !WordHuntSegmentProjection.isExplicitV2Route(route) &&
+        !WordHuntSegmentProjection.isSegmentedRoute(route) &&
         level.type == WordHuntLevelType.routeFinal &&
         !beforeRouteComplete &&
         !transition.afterRouteComplete;
@@ -505,6 +505,7 @@ class _WordHuntProductionEntryScreenState
           );
         });
         return;
+      case WordHuntCompletionDestinationKind.contentFrontier:
       case WordHuntCompletionDestinationKind.returnToRoute:
         return;
       case WordHuntCompletionDestinationKind.terminalRouteComplete:
