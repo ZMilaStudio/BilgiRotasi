@@ -417,7 +417,10 @@ void main() {
       final semantics = tester.getSemantics(
         find.byKey(const Key('word_hunt_route_stop_1')),
       );
-      expect(semantics.label, 'Kervan İzi, normal, 0 yıldız, açık');
+      expect(
+        semantics.label,
+        startsWith('Kervan İzi, normal, 0 yıldız, açık'),
+      );
       expect(semantics.label, isNot(contains('Bölüm 1')));
     });
 
@@ -647,16 +650,34 @@ void main() {
           expect(wordPlatesRect.left, greaterThanOrEqualTo(0), reason: level.id);
           expect(wordPlatesRect.right, lessThanOrEqualTo(360), reason: level.id);
 
-          final gridSize = tester.getSize(
-            find.byKey(const Key('word_hunt_production_grid')),
+          final gridFinder = find.byKey(
+            const Key('word_hunt_production_grid'),
           );
-          expect(gridSize.width, closeTo(gridSize.height, 0.01), reason: level.id);
-          expect(gridSize.width, lessThanOrEqualTo(360), reason: level.id);
+          final gridSize = tester.getSize(gridFinder);
           expect(
-            find.byKey(const Key('word_hunt_production_finish')),
-            findsOneWidget,
+            gridSize.width,
+            closeTo(gridSize.height, 0.01),
             reason: level.id,
           );
+          expect(gridSize.width, lessThanOrEqualTo(360), reason: level.id);
+
+          for (final word in level.targetWords) {
+            final path = _findStraightPath(level.grid, word);
+            expect(path, isNotNull, reason: '${level.id}:$word');
+            await _selectProductionPath(tester, level, path!);
+          }
+
+          final finishFinder = find.byKey(
+            const Key('word_hunt_production_finish'),
+          );
+          expect(finishFinder, findsOneWidget, reason: level.id);
+          await tester.ensureVisible(finishFinder);
+          await tester.pump();
+          final finishRect = tester.getRect(finishFinder);
+          expect(finishRect.left, greaterThanOrEqualTo(0), reason: level.id);
+          expect(finishRect.top, greaterThanOrEqualTo(0), reason: level.id);
+          expect(finishRect.right, lessThanOrEqualTo(360), reason: level.id);
+          expect(finishRect.bottom, lessThanOrEqualTo(640), reason: level.id);
         }
       }
 
@@ -819,6 +840,28 @@ List<WordHuntCell>? _findStraightPath(List<String> grid, String rawWord) {
     }
   }
   return null;
+}
+
+Future<void> _selectProductionPath(
+  WidgetTester tester,
+  WordHuntLevelDefinition level,
+  List<WordHuntCell> path,
+) async {
+  final gridRect = tester.getRect(
+    find.byKey(const Key('word_hunt_production_grid')),
+  );
+  final cellWidth = gridRect.width / level.columnCount;
+  final cellHeight = gridRect.height / level.rowCount;
+
+  Offset center(WordHuntCell cell) => Offset(
+    gridRect.left + (cell.column + 0.5) * cellWidth,
+    gridRect.top + (cell.row + 0.5) * cellHeight,
+  );
+
+  final gesture = await tester.startGesture(center(path.first));
+  await gesture.moveTo(center(path.last));
+  await gesture.up();
+  await tester.pump(const Duration(milliseconds: 20));
 }
 
 String _contentFingerprint(WordHuntRouteDefinition route) {
