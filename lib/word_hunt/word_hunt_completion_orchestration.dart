@@ -12,6 +12,7 @@ enum WordHuntCompletionDestinationKind {
   nextLevel,
   nextSegment,
   nextRoute,
+  contentFrontier,
   returnToRoute,
   terminalRouteComplete,
 }
@@ -134,9 +135,10 @@ abstract final class WordHuntCompletionCoordinator {
 
     final absoluteLevel = completedIndex + 1;
     final level = route.levels[completedIndex];
-    final explicitV2 = WordHuntSegmentProjection.isExplicitV2Route(route);
+    final segmentedRoute = WordHuntSegmentProjection.isSegmentedRoute(route);
+    final completeV2 = WordHuntSegmentProjection.isCompleteV2Route(route);
     final projection =
-        explicitV2
+        segmentedRoute
             ? WordHuntSegmentProjection.forLevel(route, absoluteLevel)
             : null;
     final completedSegment = projection?.segmentIndex ?? 1;
@@ -147,7 +149,7 @@ abstract final class WordHuntCompletionCoordinator {
         !WordHuntRouteProgressEngine.isLevelCompleted(level, beforeProgress) &&
         WordHuntRouteProgressEngine.isLevelCompleted(level, afterProgress);
     final segmentCompletedNow =
-        explicitV2 && (projection?.isSegmentEnd ?? false) && levelCompletedNow;
+        segmentedRoute && (projection?.isSegmentEnd ?? false) && levelCompletedNow;
     final canonicalNextPlayableLevel =
         WordHuntRouteProgressEngine.nextPlayableLevelIndex(
           route,
@@ -182,7 +184,8 @@ abstract final class WordHuntCompletionCoordinator {
     final kind = _destinationKind(
       route: route,
       completedAbsoluteLevel: absoluteLevel,
-      explicitV2: explicitV2,
+      segmentedRoute: segmentedRoute,
+      completeV2: completeV2,
       segmentCompletedNow: segmentCompletedNow,
       isTrueRouteFinal: isTrueRouteFinal,
       afterRouteComplete: transition.afterRouteComplete,
@@ -213,7 +216,8 @@ abstract final class WordHuntCompletionCoordinator {
   static WordHuntCompletionDestinationKind _destinationKind({
     required WordHuntRouteDefinition route,
     required int completedAbsoluteLevel,
-    required bool explicitV2,
+    required bool segmentedRoute,
+    required bool completeV2,
     required bool segmentCompletedNow,
     required bool isTrueRouteFinal,
     required bool afterRouteComplete,
@@ -221,7 +225,7 @@ abstract final class WordHuntCompletionCoordinator {
     required WordHuntRouteCatalogEntry? nextUnlockedRoute,
     required bool terminal,
   }) {
-    if (explicitV2 && isTrueRouteFinal && afterRouteComplete) {
+    if (completeV2 && isTrueRouteFinal && afterRouteComplete) {
       if (nextUnlockedRoute != null) {
         return WordHuntCompletionDestinationKind.nextRoute;
       }
@@ -230,7 +234,7 @@ abstract final class WordHuntCompletionCoordinator {
           : WordHuntCompletionDestinationKind.returnToRoute;
     }
 
-    if (!explicitV2 &&
+    if (!segmentedRoute &&
         afterRouteComplete &&
         (routeCompletedNow || completedAbsoluteLevel == route.levels.length)) {
       if (nextUnlockedRoute != null) {
@@ -239,6 +243,15 @@ abstract final class WordHuntCompletionCoordinator {
       return terminal
           ? WordHuntCompletionDestinationKind.terminalRouteComplete
           : WordHuntCompletionDestinationKind.returnToRoute;
+    }
+
+    final stagedContentFrontier =
+        segmentedRoute &&
+        !completeV2 &&
+        completedAbsoluteLevel == route.levels.length &&
+        route.levels.length < route.plannedRouteLevelCount;
+    if (stagedContentFrontier) {
+      return WordHuntCompletionDestinationKind.contentFrontier;
     }
 
     if (segmentCompletedNow && !isTrueRouteFinal) {
