@@ -1,7 +1,9 @@
+import 'package:bilgi_rotasi/word_hunt/word_hunt_completion_orchestration.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_global_level_numbering.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_models.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_progress.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_route_catalog.dart';
+import 'package:bilgi_rotasi/word_hunt/word_hunt_route_rewards.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_route_segment_host.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_segment_projection.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -119,6 +121,85 @@ void main() {
       expect(
         WordHuntSegmentProjection.forLevel(route, 20).isTrueRouteFinal,
         isFalse,
+      );
+    });
+
+    test('L10 transitions to Segment2 while L20 stops at content frontier', () {
+      final throughNine = _progressThrough(route, 9);
+      final afterTen = throughNine.recordLevelResult(
+        levelId: route.levels[9].id,
+        stars: 1,
+      );
+      final tenTransition = WordHuntRouteRewardTransition(
+        progress: afterTen,
+        beforeRouteComplete: false,
+        afterRouteComplete: false,
+        rewardGranted: false,
+      );
+      final tenDestination = WordHuntCompletionCoordinator.resolve(
+        route: route,
+        completedLevelId: route.levels[9].id,
+        beforeProgress: throughNine,
+        afterProgress: afterTen,
+        transition: tenTransition,
+        catalogEntries: const <WordHuntRouteCatalogEntry>[],
+      );
+
+      expect(
+        tenDestination.kind,
+        WordHuntCompletionDestinationKind.nextSegment,
+      );
+      expect(tenDestination.completedSegment, 1);
+      expect(tenDestination.nextPlayableSegment, 2);
+      expect(tenDestination.canonicalNextPlayableLevel, 11);
+
+      final throughNineteen = _progressThrough(route, 19);
+      final afterTwenty = throughNineteen.recordLevelResult(
+        levelId: route.levels[19].id,
+        stars: 1,
+      );
+      final twentyTransition = WordHuntRouteRewardTransition(
+        progress: afterTwenty,
+        beforeRouteComplete: false,
+        afterRouteComplete: false,
+        rewardGranted: false,
+      );
+      final twentyDestination = WordHuntCompletionCoordinator.resolve(
+        route: route,
+        completedLevelId: route.levels[19].id,
+        beforeProgress: throughNineteen,
+        afterProgress: afterTwenty,
+        transition: twentyTransition,
+        catalogEntries: const <WordHuntRouteCatalogEntry>[],
+      );
+
+      expect(
+        twentyDestination.kind,
+        WordHuntCompletionDestinationKind.contentFrontier,
+      );
+      expect(twentyDestination.completedSegment, 2);
+      expect(twentyDestination.segmentCompletedNow, isTrue);
+      expect(twentyDestination.isTrueRouteFinal, isFalse);
+      expect(twentyDestination.routeCompletedNow, isFalse);
+      expect(twentyDestination.rewardGrantedNow, isFalse);
+    });
+
+    test('content frontier never grants route reward', () {
+      final before = _progressThrough(route, 19);
+      final transition = WordHuntRouteRewardEngine.recordLevelResult(
+        route: route,
+        progress: before,
+        levelId: route.levels[19].id,
+        stars: 3,
+        foundBonusCount: 0,
+      );
+
+      expect(transition.afterRouteComplete, isFalse);
+      expect(transition.routeCompletedNow, isFalse);
+      expect(transition.rewardGranted, isFalse);
+      expect(
+        transition.progress.unlockedRouteRewardIds,
+        isNot(contains(route.routeRewardId)),
       );
     });
 
