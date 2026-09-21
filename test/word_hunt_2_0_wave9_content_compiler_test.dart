@@ -73,10 +73,11 @@ void main() {
       for (var offset = 0; offset < WordHuntRouteCatalog.entries.length; offset++) {
         final route = WordHuntRouteCatalog.entries[offset].route;
         final locked = lockedRoutes[offset];
+        final segment1Levels = route.levels.take(10).toList(growable: false);
 
-        expect(route.levels, hasLength(10), reason: route.id);
+        expect(segment1Levels, hasLength(10), reason: route.id);
         expect(
-          route.levels.map((level) => level.index).toList(),
+          segment1Levels.map((level) => level.index).toList(),
           List<int>.generate(10, (index) => index + 1),
           reason: route.id,
         );
@@ -86,7 +87,7 @@ void main() {
         expect(locked['contentFingerprint'], fingerprint, reason: route.id);
 
         final origins = <String, Map<String, Object>>{};
-        for (final level in route.levels) {
+        for (final level in segment1Levels) {
           expect(level.routeId, route.id, reason: level.id);
           for (final word in level.targetWords) {
             _recordOrigin(origins, route, level, word, 'TARGET');
@@ -153,7 +154,7 @@ void _recordOrigin(
 
 String _contentFingerprint(WordHuntRouteDefinition route) {
   final lines = <String>[route.id];
-  for (final level in route.levels) {
+  for (final level in route.levels.take(10)) {
     lines
       ..add('${level.index}|${level.id}|${level.routeId}')
       ..add('G:${level.grid.join("/")}')

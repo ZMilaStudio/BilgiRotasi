@@ -36,11 +36,11 @@ void main() {
       final projection = WordHuntMilestoneInfoRewardEngine.project(
         route: route,
         routeInfoCards: WordHuntStarterContent.infoCards,
-        completedLevelId: route.levels.last.id,
+        completedLevelId: route.levels[9].id,
         beforeProgress: const WordHuntProgressSnapshot(),
       );
       final contentIds = <String>{
-        for (final level in route.levels) ...level.infoCardIds,
+        for (final level in route.levels.take(10)) ...level.infoCardIds,
       };
       final catalogIds = WordHuntStarterContent.infoCards
           .map((card) => card.id)
@@ -240,17 +240,19 @@ void main() {
       );
     });
 
-    test('production content remains 8 legacy routes x 10 levels', () {
+    test('production keeps staged Starter plus seven legacy routes', () {
       expect(WordHuntRouteCatalog.entries.length, 8);
+      final starter = WordHuntRouteCatalog.starter.route;
+      expect(starter.levels, hasLength(20));
+      expect(starter.plannedRouteLevelCount, 100);
+      expect(starter.segments, hasLength(2));
+      for (final entry in WordHuntRouteCatalog.entries.skip(1)) {
+        expect(entry.route.levels, hasLength(10), reason: entry.route.id);
+        expect(entry.route.segments, isEmpty, reason: entry.route.id);
+      }
       expect(
         WordHuntRouteCatalog.entries
-            .map((entry) => entry.route.levels.length)
-            .toSet(),
-        <int>{10},
-      );
-      expect(
-        WordHuntRouteCatalog.entries
-            .expand((entry) => entry.route.levels)
+            .expand((entry) => entry.route.levels.take(10))
             .map((level) => level.id)
             .toSet()
             .length,

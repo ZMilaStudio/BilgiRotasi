@@ -7,12 +7,15 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   const route = WordHuntStarterContent.baslangicLimani;
 
-  test('Başlangıç Limanı tam 10 bölüm ve 30 yıldız kapasitesi taşır', () {
-    expect(route.levels, hasLength(10));
-    expect(route.maximumStars, 30);
+  test('Başlangıç Limanı 20 available ve 100 planned bölüm taşır', () {
+    expect(route.levels, hasLength(20));
+    expect(route.availableLevelCount, 20);
+    expect(route.plannedRouteLevelCount, 100);
+    expect(route.segments, hasLength(2));
+    expect(route.maximumStars, 60);
     expect(route.unlockStarsRequired, 18);
     expect(route.levels.first.index, 1);
-    expect(route.levels.last.index, 10);
+    expect(route.levels.last.index, 20);
   });
 
   test('bölüm tipi dağılımı production sözleşmesiyle eşleşir', () {
@@ -20,13 +23,14 @@ void main() {
     for (final level in route.levels) {
       counts[level.type] = (counts[level.type] ?? 0) + 1;
     }
-    expect(counts[WordHuntLevelType.normal], 8);
-    expect(counts[WordHuntLevelType.challenge], 1);
+    expect(counts[WordHuntLevelType.normal], 17);
+    expect(counts[WordHuntLevelType.challenge], 2);
     expect(counts[WordHuntLevelType.bonus] ?? 0, 0);
     expect(counts[WordHuntLevelType.routeFinal], 1);
     expect(route.levels[4].type, WordHuntLevelType.challenge);
     expect(route.levels[7].type, WordHuntLevelType.normal);
-    expect(route.levels.last.type, WordHuntLevelType.routeFinal);
+    expect(route.levels[9].type, WordHuntLevelType.routeFinal);
+    expect(route.levels.last.type, WordHuntLevelType.challenge);
   });
 
   test('bütün Başlangıç Limanı gridleri 8 satır x 8 sütundur', () {
@@ -36,12 +40,12 @@ void main() {
     }
   });
 
-  test('kelime yoğunluğu 6 kelimeden 10 kelimeye kontrollü artar', () {
+  test('Segment1 kelime yoğunluğu 6 kelimeden 10 kelimeye kontrollü artar', () {
     const expectedTargetCounts = <int>[5, 5, 6, 6, 7, 7, 8, 7, 9, 9];
     const expectedBonusCounts = <int>[1, 1, 1, 1, 1, 1, 1, 2, 1, 1];
     const expectedTotals = <int>[6, 6, 7, 7, 8, 8, 9, 9, 10, 10];
     var totalWords = 0;
-    for (var index = 0; index < route.levels.length; index++) {
+    for (var index = 0; index < 10; index++) {
       final level = route.levels[index];
       expect(level.targetWords, hasLength(expectedTargetCounts[index]));
       expect(level.bonusWords, hasLength(expectedBonusCounts[index]));

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'word_hunt_models.dart';
 import 'word_hunt_progress.dart';
+import 'word_hunt_progress_migration.dart';
 import 'word_hunt_route_catalog.dart';
 
 @immutable
@@ -167,10 +168,13 @@ abstract final class WordHuntRouteRewardEngine {
     WordHuntProgressSnapshot progress,
   ) {
     var updated = progress;
-    for (final entry in WordHuntRouteCatalog.entries) {
-      if (WordHuntRouteProgressEngine.isRouteComplete(entry.route, updated) &&
-          !updated.unlockedRouteRewardIds.contains(entry.route.routeRewardId)) {
-        updated = updated.grantRouteReward(entry.route.routeRewardId);
+    for (final route in WordHuntLegacyProgressMigration.frozenLegacyRoutes) {
+      if (WordHuntLegacyProgressMigration.isFrozenLegacyRouteComplete(
+            route,
+            updated,
+          ) &&
+          !updated.unlockedRouteRewardIds.contains(route.routeRewardId)) {
+        updated = updated.grantRouteReward(route.routeRewardId);
       }
     }
     return updated;

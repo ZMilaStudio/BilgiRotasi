@@ -159,7 +159,7 @@ void main() {
         projection.totalLevelCount,
         WordHuntRouteCatalog.entries.fold<int>(
           0,
-          (total, entry) => total + entry.route.levels.length,
+          (total, entry) => total + entry.route.plannedRouteLevelCount,
         ),
       );
     });
@@ -212,18 +212,19 @@ void main() {
       }
     });
 
-    test('all complete falls back to the last unlocked catalog route', () {
+    test('legacy all-route progress resumes staged Starter Segment2', () {
       final progress = _completedProductionRoutes(
         WordHuntRouteCatalog.entries.length,
       );
       final projection = WordHuntHomeProjection.fromProgress(progress);
-      final lastRoute = WordHuntRouteCatalog.entries.last.route;
 
-      expect(projection.continueDestination.route.id, lastRoute.id);
       expect(
-        projection.continueDestination.absoluteLevelIndex,
-        lastRoute.levels.length,
+        projection.continueDestination.route.id,
+        WordHuntRouteCatalog.starter.route.id,
       );
+      expect(projection.continueDestination.absoluteLevelIndex, 11);
+      expect(projection.continueDestination.activeSegmentIndex, 2);
+      expect(projection.continueDestination.localLevelIndex, 1);
     });
 
     test(
@@ -404,13 +405,23 @@ WordHuntProgressSnapshot _completedProductionRoutes(
   String? lastActiveRouteId,
 }) {
   final stars = <String, int>{};
-  for (final entry in WordHuntRouteCatalog.entries.take(count)) {
-    for (final level in entry.route.levels) {
+  final entries = WordHuntRouteCatalog.entries;
+  for (final entry in entries.take(count)) {
+    final levels =
+        entry.route.id == 'baslangic-limani'
+            ? entry.route.levels.take(10)
+            : entry.route.levels;
+    for (final level in levels) {
       stars[level.id] = 3;
     }
   }
+  final grandfatheredCount =
+      count < entries.length ? count + 1 : entries.length;
   return WordHuntProgressSnapshot(
     bestStarsByLevelId: stars,
+    grandfatheredUnlockedRouteIds: <String>{
+      for (final entry in entries.take(grandfatheredCount)) entry.route.id,
+    },
     lastActiveRouteId: lastActiveRouteId,
   );
 }

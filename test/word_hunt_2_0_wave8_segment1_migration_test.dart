@@ -253,14 +253,15 @@ void main() {
       final allIds = <String>{};
       for (final entry in WordHuntRouteCatalog.entries) {
         final route = entry.route;
-        expect(route.levels, hasLength(10), reason: route.id);
+        final levels = route.levels.take(10).toList(growable: false);
+        expect(levels, hasLength(10), reason: route.id);
         expect(
-          route.levels.map((level) => level.id).toList(),
+          levels.map((level) => level.id).toList(),
           _expectedLevelIds[route.id],
           reason: route.id,
         );
-        for (var offset = 0; offset < route.levels.length; offset++) {
-          final level = route.levels[offset];
+        for (var offset = 0; offset < levels.length; offset++) {
+          final level = levels[offset];
           expect(level.index, offset + 1, reason: level.id);
           expect(level.routeId, route.id, reason: level.id);
           expect(allIds.add(level.id), isTrue, reason: level.id);
@@ -272,7 +273,16 @@ void main() {
     test('legacy adapter is canonical Segment 1 representation for all routes', () {
       for (final entry in WordHuntRouteCatalog.entries) {
         final route = entry.route;
-        expect(route.segments, isEmpty, reason: route.id);
+        if (route.id == 'baslangic-limani') {
+          expect(route.segments, hasLength(2), reason: route.id);
+          expect(
+            WordHuntSegmentProjection.isSegmentedRoute(route),
+            isTrue,
+            reason: route.id,
+          );
+        } else {
+          expect(route.segments, isEmpty, reason: route.id);
+        }
         expect(
           WordHuntSegmentProjection.isExplicitV2Route(route),
           isFalse,
@@ -282,7 +292,11 @@ void main() {
           route: route,
           progress: const WordHuntProgressSnapshot(),
         );
-        expect(host.isLegacySegmentOne, isTrue, reason: route.id);
+        expect(
+          host.isLegacySegmentOne,
+          route.id == 'baslangic-limani' ? isFalse : isTrue,
+          reason: route.id,
+        );
         expect(host.segmentIndex, 1, reason: route.id);
         expect(host.nodes, hasLength(10), reason: route.id);
         for (var offset = 0; offset < host.nodes.length; offset++) {
@@ -517,8 +531,9 @@ void main() {
     test('target/bonus counts and 8x8 dimensions remain migration-locked', () {
       for (final entry in WordHuntRouteCatalog.entries) {
         final expectedCounts = _expectedWordCounts[entry.route.id];
-        for (var offset = 0; offset < entry.route.levels.length; offset++) {
-          final level = entry.route.levels[offset];
+        final levels = entry.route.levels.take(10).toList(growable: false);
+        for (var offset = 0; offset < levels.length; offset++) {
+          final level = levels[offset];
           expect(level.rowCount, 8, reason: level.id);
           expect(level.columnCount, 8, reason: level.id);
           if (expectedCounts != null) {
@@ -547,7 +562,7 @@ void main() {
     test('corrected Segment 1 reserved sets are deterministic from content', () {
       for (final entry in WordHuntRouteCatalog.entries) {
         final words = <String>{
-          for (final level in entry.route.levels)
+          for (final level in entry.route.levels.take(10))
             ...<String>[
               ...level.targetWords,
               ...level.bonusWords,
@@ -556,7 +571,7 @@ void main() {
         expect(words.length, _reservedWordCounts[entry.route.id], reason: entry.route.id);
         expect(
           words.length,
-          entry.route.levels.fold<int>(
+          entry.route.levels.take(10).fold<int>(
             0,
             (total, level) =>
                 total + level.targetWords.length + level.bonusWords.length,
@@ -694,11 +709,12 @@ void main() {
         final projection = WordHuntMilestoneInfoRewardEngine.project(
           route: entry.route,
           routeInfoCards: entry.infoCards,
-          completedLevelId: entry.route.levels.last.id,
+          completedLevelId: entry.route.levels[9].id,
           beforeProgress: const WordHuntProgressSnapshot(),
         );
         final expectedCardIds = <String>{
-          for (final level in entry.route.levels) ...level.infoCardIds,
+          for (final level in entry.route.levels.take(10))
+            ...level.infoCardIds,
         };
         expect(projection.milestoneEligible, isTrue, reason: entry.route.id);
         expect(projection.completedSegmentIndex, 1, reason: entry.route.id);
@@ -706,20 +722,21 @@ void main() {
       }
     });
 
-    test('legacy L10 completion and downstream catalog unlock remain valid', () {
+    test('staged Starter L10 does not fake completion; legacy routes still do', () {
       for (var index = 0; index < WordHuntRouteCatalog.entries.length; index++) {
         final entry = WordHuntRouteCatalog.entries[index];
         final progress = WordHuntProgressSnapshot(
           bestStarsByLevelId: <String, int>{
-            for (final level in entry.route.levels) level.id: 3,
+            for (final level in entry.route.levels.take(10)) level.id: 3,
           },
         );
+        final isStarter = entry.route.id == 'baslangic-limani';
         expect(
           WordHuntRouteProgressEngine.isRouteComplete(entry.route, progress),
-          isTrue,
+          isStarter ? isFalse : isTrue,
           reason: entry.route.id,
         );
-        if (index + 1 < WordHuntRouteCatalog.entries.length) {
+        if (!isStarter && index + 1 < WordHuntRouteCatalog.entries.length) {
           expect(
             WordHuntRouteCatalog.entries[index + 1].isUnlocked(progress),
             isTrue,
@@ -790,7 +807,7 @@ List<String> _duplicateDebt(WordHuntRouteDefinition route) {
     }
   }
 
-  for (final level in route.levels) {
+  for (final level in route.levels.take(10)) {
     for (final word in level.targetWords) {
       record(level, 'TARGET', word);
     }
@@ -868,7 +885,7 @@ Future<void> _selectProductionPath(
 
 String _contentFingerprint(WordHuntRouteDefinition route) {
   final lines = <String>[route.id];
-  for (final level in route.levels) {
+  for (final level in route.levels.take(10)) {
     lines
       ..add('${level.index}|${level.id}|${level.routeId}')
       ..add('G:${level.grid.join("/")}')

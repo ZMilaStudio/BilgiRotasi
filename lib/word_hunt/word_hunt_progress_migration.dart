@@ -73,7 +73,7 @@ abstract final class WordHuntLegacyProgressMigration {
     }
 
     for (var index = 0; index + 1 < frozenLegacyRoutes.length; index++) {
-      if (_isFrozenLegacyRouteComplete(frozenLegacyRoutes[index], legacy)) {
+      if (isFrozenLegacyRouteComplete(frozenLegacyRoutes[index], legacy)) {
         final historicallyOpenedIndex = index + 1;
         furthestAccessibleIndex =
             historicallyOpenedIndex > furthestAccessibleIndex
@@ -109,7 +109,7 @@ abstract final class WordHuntLegacyProgressMigration {
     );
   }
 
-  static bool _isFrozenLegacyRouteComplete(
+  static bool isFrozenLegacyRouteComplete(
     WordHuntRouteDefinition route,
     WordHuntProgressSnapshot progress,
   ) {

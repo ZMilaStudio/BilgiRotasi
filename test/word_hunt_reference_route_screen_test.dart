@@ -101,7 +101,7 @@ void main() {
 
       expect(find.text('KELİME AVI'), findsOneWidget);
       expect(find.text('BAŞLANGIÇ LİMANI'), findsOneWidget);
-      expect(find.text('0 / 30'), findsOneWidget);
+      expect(find.text('0 / 60'), findsOneWidget);
       expect(find.text('Kapı: 18'), findsOneWidget);
     },
   );

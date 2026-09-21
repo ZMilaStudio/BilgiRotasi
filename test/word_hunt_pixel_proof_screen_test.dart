@@ -52,7 +52,7 @@ void main() {
         find.byKey(const Key('word_hunt_master_art_progress_counter_text')),
         findsOneWidget,
       );
-      expect(find.text('0 / 30'), findsOneWidget);
+      expect(find.text('0 / 60'), findsOneWidget);
       expect(
         find.byKey(const Key('word_hunt_master_art_level_1_locked')),
         findsNothing,
@@ -122,7 +122,7 @@ void main() {
     );
     await tester.pump();
 
-    expect(find.text('15 / 30'), findsOneWidget);
+    expect(find.text('15 / 60'), findsOneWidget);
     expect(
       find.byKey(const Key('word_hunt_master_art_level_8_locked')),
       findsNothing,

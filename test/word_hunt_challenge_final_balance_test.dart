@@ -115,10 +115,8 @@ void main() {
 
   test('normal levels remain mistake-only across all production routes', () {
     for (final route in routes) {
-      for (var index = 0; index < route.levels.length; index++) {
-        if (index == 4 || index == 9) continue;
-        final level = route.levels[index];
-        expect(level.type, WordHuntLevelType.normal, reason: level.id);
+      for (final level in route.levels) {
+        if (level.type != WordHuntLevelType.normal) continue;
         expect(level.timeLimitSeconds, isNull, reason: level.id);
         expect(level.starRules.threeStarMaxMistakes, 0, reason: level.id);
         expect(level.starRules.twoStarMaxMistakes, 2, reason: level.id);

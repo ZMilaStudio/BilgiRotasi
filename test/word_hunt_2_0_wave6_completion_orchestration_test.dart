@@ -20,8 +20,8 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('Wave 6 legacy compatibility', () {
-    test('current 10-level route completion and star wall stay unchanged', () {
-      final starter = WordHuntRouteCatalog.starter.route;
+    test('current legacy 10-level route completion and star wall stay unchanged', () {
+      final starter = WordHuntRouteCatalog.gokyuzu.route;
       var progress = const WordHuntProgressSnapshot();
 
       for (var i = 0; i < 9; i++) {
@@ -56,7 +56,7 @@ void main() {
         WordHuntRouteProgressEngine.isRouteComplete(starter, progress),
         isTrue,
       );
-      expect(WordHuntRouteCatalog.gokyuzu.isUnlocked(progress), isTrue);
+      expect(WordHuntRouteCatalog.orman.isUnlocked(progress), isTrue);
     });
 
     test('legacy routes derive only segment 1', () {

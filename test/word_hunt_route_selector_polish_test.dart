@@ -49,10 +49,12 @@ void main() {
   WordHuntProgressSnapshot progressWith({
     Map<String, int> stars = const <String, int>{},
     Set<String> rewards = const <String>{},
+    Set<String> grandfatheredRoutes = const <String>{},
   }) {
     return WordHuntProgressSnapshot(
       bestStarsByLevelId: stars,
       unlockedRouteRewardIds: rewards,
+      grandfatheredUnlockedRouteIds: grandfatheredRoutes,
     );
   }
 
@@ -120,7 +122,12 @@ void main() {
     testWidgets(
       'STATE B starter final complete at 17 stars stays incomplete and recommends Devam Et',
       (tester) async {
-        final progress = progressWith(stars: allLevelsAtTotal(starter, 17));
+        final progress = progressWith(
+          stars: <String, int>{
+            for (final level in starter.levels.take(5)) level.id: 3,
+            starter.levels[5].id: 2,
+          },
+        );
         expect(
           WordHuntRouteProgressEngine.isRouteComplete(starter, progress),
           isFalse,
@@ -139,18 +146,18 @@ void main() {
       },
     );
 
-    testWidgets('STATE C starter complete recommends sky as Sıradaki', (
+    testWidgets('STATE C staged starter frontier stays current and Sky locked', (
       tester,
     ) async {
       final progress = progressWith(stars: completedRouteStars(starter));
       await pumpSelector(tester, progress);
 
       expect(
-        find.descendant(of: card('starter'), matching: find.text('Tamamlandı')),
+        find.descendant(of: card('starter'), matching: find.text('Devam Et')),
         findsOneWidget,
       );
       expect(
-        find.descendant(of: card('gokyuzu'), matching: find.text('Sıradaki')),
+        find.descendant(of: card('gokyuzu'), matching: find.text('Kilitli')),
         findsOneWidget,
       );
     });
@@ -163,11 +170,13 @@ void main() {
           completedRouteStars(starter),
           completedRouteStars(sky),
         ]),
+        grandfatheredRoutes: const <String>{'gokyuzu-adalari'},
       );
       await pumpSelector(tester, progress);
 
+      expect(WordHuntRouteCatalog.orman.isUnlocked(progress), isTrue);
       expect(
-        find.descendant(of: card('orman'), matching: find.text('Sıradaki')),
+        find.descendant(of: card('starter'), matching: find.text('Devam Et')),
         findsOneWidget,
       );
     });
@@ -181,12 +190,14 @@ void main() {
           completedRouteStars(sky),
           completedRouteStars(forest),
         ]),
+        grandfatheredRoutes: const <String>{'gokyuzu-adalari'},
       );
       await pumpSelector(tester, progress);
 
       await tester.ensureVisible(card('orman2'));
+      expect(WordHuntRouteCatalog.orman2Pilot.isUnlocked(progress), isTrue);
       expect(
-        find.descendant(of: card('orman2'), matching: find.text('Sıradaki')),
+        find.descendant(of: card('starter'), matching: find.text('Devam Et')),
         findsOneWidget,
       );
     });
@@ -201,12 +212,14 @@ void main() {
           completedRouteStars(forest),
           completedRouteStars(ancient),
         ]),
+        grandfatheredRoutes: const <String>{'gokyuzu-adalari'},
       );
       await pumpSelector(tester, progress);
 
       await tester.ensureVisible(card('kristal'));
+      expect(WordHuntRouteCatalog.kristal.isUnlocked(progress), isTrue);
       expect(
-        find.descendant(of: card('kristal'), matching: find.text('Sıradaki')),
+        find.descendant(of: card('starter'), matching: find.text('Devam Et')),
         findsOneWidget,
       );
       expect(find.text('Tüm mevcut rotaları tamamladın.'), findsNothing);
@@ -221,11 +234,13 @@ void main() {
           completedRouteStars(ancient),
           <String, int>{crystal.levels.first.id: 2},
         ]),
+        grandfatheredRoutes: const <String>{'gokyuzu-adalari'},
       );
       await pumpSelector(tester, progress);
       await tester.ensureVisible(card('kristal'));
+      expect(WordHuntRouteCatalog.kristal.isUnlocked(progress), isTrue);
       expect(
-        find.descendant(of: card('kristal'), matching: find.text('Devam Et')),
+        find.descendant(of: card('starter'), matching: find.text('Devam Et')),
         findsOneWidget,
       );
     });
@@ -241,18 +256,16 @@ void main() {
           completedRouteStars(ancient),
           completedRouteStars(crystal),
         ]),
+        grandfatheredRoutes: const <String>{'gokyuzu-adalari'},
       );
       await pumpSelector(tester, progress);
       await tester.ensureVisible(card('kayip-sehir'));
+      expect(WordHuntRouteCatalog.kayipSehir.isUnlocked(progress), isTrue);
       expect(
-        find.descendant(
-          of: card('kayip-sehir'),
-          matching: find.text('Sıradaki'),
-        ),
+        find.descendant(of: card('starter'), matching: find.text('Devam Et')),
         findsOneWidget,
       );
-      expect(find.text('Devam Et'), findsNothing);
-      expect(find.text('Tamamlandı'), findsNWidgets(5));
+      expect(find.text('Tamamlandı'), findsNWidgets(4));
       expect(find.text('Tüm mevcut rotaları tamamladın.'), findsNothing);
     });
 
@@ -264,15 +277,13 @@ void main() {
           completedRouteStars(starter),
           <String, int>{sky.levels[0].id: 3, sky.levels[1].id: 3},
         ]),
+        grandfatheredRoutes: const <String>{'gokyuzu-adalari'},
       );
       await pumpSelector(tester, progress);
 
+      expect(WordHuntRouteCatalog.gokyuzu.isUnlocked(progress), isTrue);
       expect(
-        find.descendant(of: card('gokyuzu'), matching: find.text('Devam Et')),
-        findsOneWidget,
-      );
-      expect(
-        find.descendant(of: card('starter'), matching: find.text('Tamamlandı')),
+        find.descendant(of: card('starter'), matching: find.text('Devam Et')),
         findsOneWidget,
       );
       expect(
@@ -286,7 +297,12 @@ void main() {
     testWidgets(
       'starter final complete at 17 shows 17 / 18 stars on sky lock',
       (tester) async {
-        final progress = progressWith(stars: allLevelsAtTotal(starter, 17));
+        final progress = progressWith(
+          stars: <String, int>{
+            for (final level in starter.levels.take(5)) level.id: 3,
+            starter.levels[5].id: 2,
+          },
+        );
         await pumpSelector(tester, progress);
 
         expect(
@@ -295,7 +311,7 @@ void main() {
         );
         expect(
           tester.widget<Text>(progressText('gokyuzu')).data,
-          '17 / 18 yıldız',
+          '6 / 20 bölüm',
         );
         expect(
           find.descendant(
@@ -338,7 +354,7 @@ void main() {
       );
       await pumpSelector(tester, progress);
 
-      expect(tester.widget<Text>(progressText('gokyuzu')).data, '8 / 10 bölüm');
+      expect(tester.widget<Text>(progressText('gokyuzu')).data, '8 / 20 bölüm');
       expect(
         find.descendant(
           of: card('gokyuzu'),
@@ -425,7 +441,7 @@ void main() {
     await pumpSelector(tester, completedWithoutReward);
 
     expect(
-      find.descendant(of: card('starter'), matching: find.text('Tamamlandı')),
+      find.descendant(of: card('starter'), matching: find.text('Devam Et')),
       findsOneWidget,
     );
     expect(
@@ -443,7 +459,7 @@ void main() {
     await pumpSelector(tester, withReward);
 
     expect(
-      find.descendant(of: card('starter'), matching: find.text('Tamamlandı')),
+      find.descendant(of: card('starter'), matching: find.text('Devam Et')),
       findsOneWidget,
     );
     expect(
@@ -556,7 +572,7 @@ void main() {
       );
 
       expect(tester.takeException(), isNull);
-      expect(find.text('Tamamlandı'), findsOneWidget);
+      expect(find.text('Devam Et'), findsOneWidget);
       expect(find.text('Rozet kazanıldı'), findsOneWidget);
       expect(
         find.text('Gökyüzü Adaları’nı tamamla ve en az 18 yıldız kazan.'),
@@ -583,10 +599,10 @@ void main() {
       find.byKey(const Key('word_hunt_route_semantics_starter')),
     );
     expect(starterNode.label, contains('Başlangıç Limanı'));
-    expect(starterNode.label, contains('Tamamlandı'));
+    expect(starterNode.label, contains('Devam Et'));
     expect(starterNode.label, contains('Rozet kazanıldı'));
     expect(starterNode.label, contains('Kelime Yolcusu'));
-    expect(starterNode.label, contains('18 / 30 yıldız'));
+    expect(starterNode.label, contains('20 / 60 yıldız'));
 
     final forestNode = tester.getSemantics(
       find.byKey(const Key('word_hunt_route_semantics_orman')),

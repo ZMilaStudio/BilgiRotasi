@@ -17,7 +17,11 @@ void main() {
           progress: const WordHuntProgressSnapshot(),
         );
 
-        expect(host.isLegacySegmentOne, isTrue, reason: route.id);
+        expect(
+          host.isLegacySegmentOne,
+          route.id == 'baslangic-limani' ? isFalse : isTrue,
+          reason: route.id,
+        );
         expect(host.nodes, hasLength(10), reason: route.id);
         expect(
           host.nodes.map((node) => node.localNodeIndex).toList(),
@@ -31,13 +35,13 @@ void main() {
         );
         expect(
           host.nodes.map((node) => node.levelId).toList(),
-          route.levels.map((level) => level.id).toList(),
+          route.levels.take(10).map((level) => level.id).toList(),
           reason: route.id,
         );
       }
     });
 
-    test('legacy L10 keeps endpoint and route-final presentation identity', () {
+    test('staged Starter L10 keeps raw type without claiming true final', () {
       final route = WordHuntRouteCatalog.entries.first.route;
       final host = WordHuntRouteSegmentHost.forRoute(
         route: route,
@@ -49,7 +53,7 @@ void main() {
       expect(node10.absoluteLevelIndex, 10);
       expect(node10.isSegmentEndpoint, isTrue);
       expect(node10.gameplayType, WordHuntLevelType.routeFinal);
-      expect(node10.isTrueRouteFinal, isTrue);
+      expect(node10.isTrueRouteFinal, isFalse);
     });
   });
 
