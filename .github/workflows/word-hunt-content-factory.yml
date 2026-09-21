@@ -5,6 +5,7 @@ on:
     paths:
       - 'tools/word_hunt_batch_generator.py'
       - 'tools/word_hunt_content_factory.sample.json'
+      - 'tools/word_hunt_wave10a_baslangic_segment2.json'
       - 'tools/word_hunt_segment1_source_lock.json'
       - 'tools/tests/test_word_hunt_content_compiler.py'
       - 'tools/word_hunt_release_stock_manifest.py'
@@ -59,3 +60,39 @@ jobs:
           --validate /tmp/ka02-a.json
           --source-lock tools/word_hunt_segment1_source_lock.json
           --report /tmp/ka02-validation.txt
+
+
+      - name: Wave10A Başlangıç Segment2 iki kez derle
+        run: |
+          python3 tools/word_hunt_batch_generator.py \
+            --input tools/word_hunt_wave10a_baslangic_segment2.json \
+            --source-lock tools/word_hunt_segment1_source_lock.json \
+            --output /tmp/wave10a-baslangic-a.json \
+            --report /tmp/wave10a-baslangic-a.txt
+          python3 tools/word_hunt_batch_generator.py \
+            --input tools/word_hunt_wave10a_baslangic_segment2.json \
+            --source-lock tools/word_hunt_segment1_source_lock.json \
+            --output /tmp/wave10a-baslangic-b.json \
+            --report /tmp/wave10a-baslangic-b.txt
+          cmp /tmp/wave10a-baslangic-a.json /tmp/wave10a-baslangic-b.json
+          cmp /tmp/wave10a-baslangic-a.txt /tmp/wave10a-baslangic-b.txt
+          grep -Fq 'Status: COMPILE PASS' /tmp/wave10a-baslangic-a.txt
+          grep -Fq 'Candidate state: CANDIDATE READY FOR REVIEW' /tmp/wave10a-baslangic-a.txt
+
+      - name: Wave10A locked output validation
+        run: >-
+          python3 tools/word_hunt_batch_generator.py
+          --validate /tmp/wave10a-baslangic-a.json
+          --source-lock tools/word_hunt_segment1_source_lock.json
+          --report /tmp/wave10a-baslangic-validation.txt
+
+      - name: Wave10A candidate artifact yükle
+        uses: actions/upload-artifact@v4
+        with:
+          name: word-hunt-wave10a-baslangic-segment2-candidate
+          path: |
+            /tmp/wave10a-baslangic-a.json
+            /tmp/wave10a-baslangic-a.txt
+            /tmp/wave10a-baslangic-validation.txt
+          if-no-files-found: error
+          retention-days: 14
