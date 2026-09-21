@@ -6,17 +6,12 @@ import 'package:bilgi_rotasi/word_hunt/word_hunt_route_catalog.dart';
 import 'package:crypto/crypto.dart';
 
 const int wordHuntProductionCorpusSchemaVersion = 1;
-const String wordHuntProductionCorpusKind =
-    'WORD_HUNT_PRODUCTION_CORPUS_LOCK';
+const String wordHuntProductionCorpusKind = 'WORD_HUNT_PRODUCTION_CORPUS_LOCK';
 const String wordHuntProductionCorpusGeneratedBy =
     'tools/word_hunt_corpus_support.dart';
 
 String normalizeCorpusWord(String value) {
-  return value
-      .trim()
-      .replaceAll('i', 'İ')
-      .replaceAll('ı', 'I')
-      .toUpperCase();
+  return value.trim().replaceAll('i', 'İ').replaceAll('ı', 'I').toUpperCase();
 }
 
 String _sha256Text(String value) =>
@@ -64,10 +59,12 @@ Map<String, Object?> _levelProjection(WordHuntLevelDefinition level) {
     'levelId': level.id,
     'type': level.type.name,
     'grid': List<String>.unmodifiable(level.grid),
-    'targetWords':
-        level.targetWords.map(normalizeCorpusWord).toList(growable: false),
-    'bonusWords':
-        level.bonusWords.map(normalizeCorpusWord).toList(growable: false),
+    'targetWords': level.targetWords
+        .map(normalizeCorpusWord)
+        .toList(growable: false),
+    'bonusWords': level.bonusWords
+        .map(normalizeCorpusWord)
+        .toList(growable: false),
     'starRules': _starRulesProjection(level.starRules),
     'timeLimitSeconds': level.timeLimitSeconds,
     'gridHash': _sha256Text(level.grid.join('\n')),
@@ -111,31 +108,27 @@ Map<String, Object?> _routeProjection(WordHuntRouteDefinition route) {
     'plannedLevelCount': route.plannedRouteLevelCount,
     'reservedWordCount': reservedWords.length,
     'reservedWords': reservedWords,
-    'wordOrigins':
-        reservedWords
-            .map<Map<String, Object?>>((word) => originsByWord[word]!)
-            .toList(growable: false),
-    'levels':
-        route.levels
-            .map<Map<String, Object?>>(_levelProjection)
-            .toList(growable: false),
+    'wordOrigins': reservedWords
+        .map<Map<String, Object?>>((word) => originsByWord[word]!)
+        .toList(growable: false),
+    'levels': route.levels
+        .map<Map<String, Object?>>(_levelProjection)
+        .toList(growable: false),
   };
 }
 
 Map<String, Object?> buildProductionCorpusLock() {
-  final routes =
-      WordHuntRouteCatalog.entries
-          .map((entry) => entry.route)
-          .toList(growable: false);
+  final routes = WordHuntRouteCatalog.entries
+      .map((entry) => entry.route)
+      .toList(growable: false);
   final result = <String, Object?>{
     'schemaVersion': wordHuntProductionCorpusSchemaVersion,
     'kind': wordHuntProductionCorpusKind,
     'generatedBy': wordHuntProductionCorpusGeneratedBy,
     'routeOrder': routes.map((route) => route.id).toList(growable: false),
-    'routes':
-        routes
-            .map<Map<String, Object?>>(_routeProjection)
-            .toList(growable: false),
+    'routes': routes
+        .map<Map<String, Object?>>(_routeProjection)
+        .toList(growable: false),
   };
   result['sourceDigest'] = _sha256Text(canonicalCorpusJson(result));
   return result;
