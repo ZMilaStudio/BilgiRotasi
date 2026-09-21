@@ -143,9 +143,13 @@ class WordHuntRouteSelector extends StatelessWidget {
     final rewardEarned = progress.unlockedRouteRewardIds.contains(
       entry.route.routeRewardId,
     );
+    final route = entry.route;
+    final staged = route.availableLevelCount < route.plannedRouteLevelCount;
     final subtitle =
         unlocked
-            ? '${entry.route.levels.length} bölüm • ${entry.route.maximumStars} yıldız'
+            ? staged
+                ? '${route.availableLevelCount} / ${route.plannedRouteLevelCount} bölüm • ${route.maximumStars} mevcut yıldız'
+                : '${route.availableLevelCount} bölüm • ${route.maximumStars} yıldız'
             : _lockedSubtitle(entry);
     final progressText =
         unlocked
