@@ -7,15 +7,15 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   const route = WordHuntStarterContent.baslangicLimani;
 
-  test('Başlangıç Limanı 20 available ve 100 planned bölüm taşır', () {
-    expect(route.levels, hasLength(20));
-    expect(route.availableLevelCount, 20);
+  test('Başlangıç Limanı 30 available ve 100 planned bölüm taşır', () {
+    expect(route.levels, hasLength(30));
+    expect(route.availableLevelCount, 30);
     expect(route.plannedRouteLevelCount, 100);
-    expect(route.segments, hasLength(2));
-    expect(route.maximumStars, 60);
+    expect(route.segments, hasLength(3));
+    expect(route.maximumStars, 90);
     expect(route.unlockStarsRequired, 18);
     expect(route.levels.first.index, 1);
-    expect(route.levels.last.index, 20);
+    expect(route.levels.last.index, 30);
   });
 
   test('bölüm tipi dağılımı production sözleşmesiyle eşleşir', () {
@@ -23,8 +23,8 @@ void main() {
     for (final level in route.levels) {
       counts[level.type] = (counts[level.type] ?? 0) + 1;
     }
-    expect(counts[WordHuntLevelType.normal], 17);
-    expect(counts[WordHuntLevelType.challenge], 2);
+    expect(counts[WordHuntLevelType.normal], 26);
+    expect(counts[WordHuntLevelType.challenge], 3);
     expect(counts[WordHuntLevelType.bonus] ?? 0, 0);
     expect(counts[WordHuntLevelType.routeFinal], 1);
     expect(route.levels[4].type, WordHuntLevelType.challenge);
