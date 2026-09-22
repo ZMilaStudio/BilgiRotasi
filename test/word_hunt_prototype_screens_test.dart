@@ -70,7 +70,7 @@ void main() {
       ),
       findsNothing,
     );
-    expect(find.text('2 / 60'), findsOneWidget);
+    expect(find.text('2 / 90'), findsOneWidget);
   });
 
   testWidgets(
