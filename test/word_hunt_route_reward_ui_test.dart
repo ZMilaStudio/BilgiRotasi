@@ -66,7 +66,7 @@ void main() {
     expect(find.text('Başlangıç Limanı'), findsOneWidget);
     expect(find.text('Rozet Kazandın'), findsOneWidget);
     expect(find.text('Kelime Yolcusu'), findsOneWidget);
-    expect(find.text('18 / 60 yıldız'), findsOneWidget);
+    expect(find.text('18 / 90 yıldız'), findsOneWidget);
     expect(find.text('Gökyüzü Adaları açıldı.'), findsOneWidget);
     expect(find.text('Yeni Rotayı Gör'), findsOneWidget);
     expect(find.text('Rotaya Dön'), findsOneWidget);
