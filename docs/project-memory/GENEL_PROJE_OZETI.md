@@ -1,23 +1,114 @@
 # Bilgi Rotası — Genel Proje Özeti
 
-**Son güncelleme:** 21 Eylül 2026 — Kelime Avı 2.0 Wave10A Başlangıç Limanı L11–20 implementation + validation closure
+**Son güncelleme:** 23 Eylül 2026 — Kelime Avı 2.0 Wave10B definitive closure + canonical authority reconciliation
 
 ## YENİ SOHBETTE ÖNCE BUNLARI OKU
 
 1. `docs/project-memory/GENEL_PROJE_OZETI.md`
-2. `docs/project-memory/SOHBET_DEVIR_2026-09-21_WAVE10A_KAPANIS.md`
+2. `docs/project-memory/SOHBET_DEVIR_2026-09-23_WAVE10B_KAPANIS.md`
 3. `docs/project-memory/KELIME_AVI_2_0_IMPLEMENTATION_AUTHORITY.md`
 4. `docs/project-memory/KELIME_AVI_2_0_WAVE10_CONTENT_INTEGRATION_CONTRACT.md`
 5. `docs/project-memory/KARARLAR.md`
-6. Gerektiğinde önceki route/artwork kapanış notları
+6. Gerektiğinde historical `SOHBET_DEVIR_2026-09-21_WAVE10A_KAPANIS.md` ve önceki route/artwork kapanış notları
 
-Çelişki halinde öncelik: **canlı GitHub > son kapanış/devir notu > diğer project-memory / karar docs > eski sohbetler**.
+Çelişki halinde öncelik: **canlı GitHub > son Wave10B kapanış/devir notu > current implementation authority > diğer project-memory / karar docs > historical kayıtlar > eski sohbetler**.
 
-> Yeni sohbette exact integration/release HEAD canlı GitHub'dan yeniden doğrulanır. Docs memory hiçbir zaman canlı GitHub authority'nin yerine geçmez.
+> Exact integration/release HEAD yeni sohbette canlı GitHub'dan yeniden doğrulanır. Docs memory hiçbir zaman canlı GitHub authority'nin yerine geçmez.
 
 ---
 
-## 21 EYLÜL 2026 — KELİME AVI 2.0 WAVE10A CURRENT INTEGRATION AUTHORITY
+## 23 EYLÜL 2026 — KELİME AVI 2.0 WAVE10B CURRENT INTEGRATION AUTHORITY
+
+Wave10B:
+**DEFINITIVELY CLOSED / PASS**
+
+Wave state:
+- Wave0–9: **CLOSED / PASS**
+- Wave10A: **CLOSED / PASS**
+- Scale Safety Foundation A/B/C: **CLOSED / PASS**
+- Wave10B: **CLOSED / PASS**
+
+Implementation green HEAD:
+`e13b76dd100b86e29bbbd271c8b98965cd84f3d7`
+
+Closure docs HEAD:
+`7e7c5c4323b800ed50e0f667aec1dbc82bf3dd3f`
+
+Integration branch:
+`feat/kelime-avi-2-0-integration`
+
+PR #213:
+**OPEN / DRAFT / UNMERGED**
+
+Base:
+`release/final-closed-test-aab-1.68.8`
+
+Canonical closure/devir:
+`docs/project-memory/SOHBET_DEVIR_2026-09-23_WAVE10B_KAPANIS.md`
+
+Başlangıç Limanı CURRENT:
+- **30 available / 100 planned**
+- Segment1 L1–10
+- Segment2 L11–20
+- Segment3 L21–30
+- L10 historical Segment1 endpoint
+- L20 earlier staged frontier
+- L30 current production content frontier
+- L30 challenge level
+- L30 **NOT true route final**
+- L30 route reward / fake completion / false Gökyüzü unlock / nonexistent production L31 navigation üretmez
+- current maximum stars = **90**
+- unlockStarsRequired = **18**
+
+Internal progression:
+**route-local 1–100**
+
+Global display projection:
+- Başlangıç 1–100
+- Gökyüzü 101–200
+- Orman 201–300
+- Kadim 301–400
+- Kristal 401–500
+- Kayıp Şehir 501–600
+- Yeraltı 601–700
+- Güneş 701–800
+
+Persistence / progression / segment / milestone / route-final semantics local index authority kullanır.
+
+Persistence:
+- schema v3
+- prefix `bilgi_rotasi_word_hunt_progress_v1_`
+- old v3 progress korunur
+- frozen historical Segment1 access/reward semantics L1–10 authority üzerinden korunur
+
+Current production corpus:
+- **100 production levels / 8 routes**
+- Starter reserved words = **196**
+- digest: `9ef2adca73bcbfb56bf308d5fe8678ba4a69cdc583f0559d48a7aa007a8663b1`
+
+Wave10B accepted production:
+- Başlangıç Limanı **L21–30**
+- accepted evidence: `tools/word_hunt_wave10b_baslangic_segment3.accepted.json`
+- L26 `WORD_LENGTH_OUTLIER` owner-accepted / hard risk değil
+- generic L31–32 tooling/example production content değildir
+
+Closure exact-head validation:
+- Cumulative #193 / `35792477623` — **SUCCESS**
+- Content Factory #68 / `35792477627` — **SUCCESS**
+- Route Catalog #289 / `35792477664` — **SUCCESS**
+- Orman Content #79 / `35792477671` — **SUCCESS**
+- Orman/Kadim #249 / `35792477661` — **SUCCESS**
+- Android #673 / `35792477642` — **SUCCESS**
+- Trilogy #182 / `35792477624` — **SUCCESS**
+- AdMob #1050 / `35792477634` — **SUCCESS**
+
+**Current stop point:** Wave10B definitively closed/pass. PR #213 Draft / Unmerged kalır. Sonraki content batch ayrı live roadmap/authority checkpoint'iyle kurulacaktır; L31+ veya Wave10C otomatik aktif değildir.
+
+> Aşağıdaki production baseline / feature kayıtları tarihsel bağlam olarak korunur. Çelişki halinde yukarıdaki Wave10B CURRENT authority geçerlidir.
+
+---
+
+## HISTORICAL / SUPERSEDED — 21 EYLÜL 2026 — KELİME AVI 2.0 WAVE10A INTEGRATION AUTHORITY
 
 Wave10A **IMPLEMENTATION + VALIDATION COMPLETE** durumundadır.
 
@@ -65,7 +156,8 @@ Exact implementation validation:
 - Orman/Kadim #224 — Run ID `35646621268` — **SUCCESS**
 - AdMob #1025 — Run ID `35646621209` — **SUCCESS**
 
-**Şimdiki durma noktası:** Wave10A docs-only closure checkpoint + final docs-head validation. Wave10B ayrıca manager checkpoint'idir; bu kayıtla başlamaz.
+**Historical stop point at that checkpoint:** Wave10A docs-only closure + final docs-head validation bekleniyordu; Wave10B henüz o kaydın parçası değildi. Current stop point yukarıdaki Wave10B authority bloğudur.
+
 
 ---
 

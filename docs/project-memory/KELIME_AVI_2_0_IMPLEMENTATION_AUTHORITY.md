@@ -1,10 +1,127 @@
 # KELİME AVI 2.0 — IMPLEMENTATION AUTHORITY
 
-Durum: **WAVE 0 / IMPLEMENTATION AUTHORITY BASELINE**
+Durum: **WAVE10B — CLOSED / PASS**
 
-Tarih: 2026-09-20
+Tarih: 2026-09-23
 
-Bu dosya Kelime Avı 2.0 implementation wave'lerinin exact authority manifestidir. Owner açıkça authority değiştirmedikçe sonraki implementation çalışmaları bu manifestte kayıtlı source, migration ve immutable baseline sınırlarını korur.
+Bu dosyanın CURRENT / LATEST authority bölümü Wave10B closure reality'sini taşır. Aşağıdaki eski Wave 0–Wave10A kayıtları tarihsel per-wave evidence olarak korunur; current authority ile çelişirlerse bu üst blok ve latest closure/devir kaydı önceliklidir.
+
+## CURRENT / LATEST AUTHORITY — WAVE10B
+
+Wave state:
+- Wave0–9: **CLOSED / PASS**
+- Wave10A: **CLOSED / PASS**
+- Scale Safety Foundation A/B/C: **CLOSED / PASS**
+- Wave10B: **CLOSED / PASS**
+
+Integration branch:
+`feat/kelime-avi-2-0-integration`
+
+PR #213:
+**OPEN / DRAFT / UNMERGED**
+
+Base:
+`release/final-closed-test-aab-1.68.8`
+
+Implementation green HEAD:
+`e13b76dd100b86e29bbbd271c8b98965cd84f3d7`
+
+Closure docs HEAD:
+`7e7c5c4323b800ed50e0f667aec1dbc82bf3dd3f`
+
+Canonical latest closure/devir:
+`docs/project-memory/SOHBET_DEVIR_2026-09-23_WAVE10B_KAPANIS.md`
+
+### Current Başlangıç Limanı authority
+
+- planned levels = **100**
+- available levels = **30**
+- Segment1 = **L1–10**
+- Segment2 = **L11–20**
+- Segment3 = **L21–30**
+- L10 = historical Segment1 endpoint
+- L20 = earlier staged frontier
+- L30 = **current production content frontier**
+- L30 = **challenge**
+- L30 = **NOT true route final**
+- L30 route reward üretmez
+- L30 fake route completion üretmez
+- L30 Gökyüzü false unlock üretmez
+- L30 nonexistent production L31 navigation üretmez
+- current maximum stars = **90**
+- `unlockStarsRequired = 18`
+
+### Progression / persistence authority
+
+Internal progression identity:
+**route-local 1–100**
+
+Global numbering yalnız player-facing display projection'dır:
+- Başlangıç Limanı 1–100
+- Gökyüzü Adaları 101–200
+- Orman Yolu 201–300
+- Kadim Orman 301–400
+- Kristal Vadisi 401–500
+- Kayıp Şehir 501–600
+- Yeraltı Krallığı 601–700
+- Güneş İmparatorluğu 701–800
+
+Persistence / progression / segment / milestone / route-final semantics local index authority kullanır.
+
+Current persistence:
+- `WordHuntProgressCodec.schemaVersion = 3`
+- storage prefix: `bilgi_rotasi_word_hunt_progress_v1_`
+- old v3 progress korunur
+- historical frozen Segment1 access/reward semantics L1–10 authority üzerinden korunur
+
+### Current production corpus authority
+
+- **100 production levels**
+- **8 routes**
+- Starter reserved words = **196**
+- production corpus digest:
+  `9ef2adca73bcbfb56bf308d5fe8678ba4a69cdc583f0559d48a7aa007a8663b1`
+
+Accepted Wave10B production:
+**Başlangıç Limanı L21–30**
+
+Accepted evidence:
+`tools/word_hunt_wave10b_baslangic_segment3.accepted.json`
+
+L26:
+- `WORD_LENGTH_OUTLIER`
+- owner-accepted
+- hard risk değildir
+- regenerate edilmez
+
+Generic L31–32 tooling/example varsa production content değildir.
+Active candidate staging current production authority değildir.
+
+### Closure exact-head evidence
+
+Closure docs HEAD `7e7c5c4323b800ed50e0f667aec1dbc82bf3dd3f` üzerinde required set:
+
+- Cumulative #193 — Run ID `35792477623` — **SUCCESS**
+- Content Factory #68 — Run ID `35792477627` — **SUCCESS**
+- Route Catalog #289 — Run ID `35792477664` — **SUCCESS**
+- Orman Content #79 — Run ID `35792477671` — **SUCCESS**
+- Orman/Kadim #249 — Run ID `35792477661` — **SUCCESS**
+- Android #673 — Run ID `35792477642` — **SUCCESS**
+- Trilogy #182 — Run ID `35792477624` — **SUCCESS**
+- AdMob #1050 — Run ID `35792477634` — **SUCCESS**
+
+Wave10B **DEFINITIVELY CLOSED / PASS**.
+
+PR Ready yapılmadı.
+Merge yapılmadı.
+Release / Play Console işlemi yapılmadı.
+L31+ content veya Wave10C bu authority reconciliation ile başlamaz.
+
+---
+
+## HISTORICAL PER-WAVE MANIFEST
+
+Aşağıdaki kayıtlar kendi dönemlerindeki exact authority/evidence olarak korunur. "Current" kelimesi geçen eski Wave 0–Wave10A alt bölümleri kendi tarihsel checkpoint bağlamında okunur; latest/current product authority yukarıdaki Wave10B bloğudur.
 
 ## 1. LIVE SOURCE AUTHORITIES
 
@@ -50,9 +167,9 @@ Bu dosya Kelime Avı 2.0 implementation wave'lerinin exact authority manifestidi
 - Existing production release/tag/assets overwrite edilmez.
 - Wave 0 version bump, tag, release asset replacement, workflow release dispatch veya Play upload yapmaz.
 
-## 4. CURRENT PERSISTENCE AUTHORITY
+## 4. HISTORICAL WAVE 0 PERSISTENCE BASELINE
 
-Current production authority:
+Wave 0 historical production baseline:
 
 - `WordHuntProgressCodec.schemaVersion = 2`
 - owner scope: `guest` veya `user_<uid>`
@@ -1587,7 +1704,7 @@ Final closure rule:
 
 ---
 
-## WAVE 10A — BAŞLANGIÇ LİMANI L11–20 CLOSURE
+## HISTORICAL — WAVE 10A — BAŞLANGIÇ LİMANI L11–20 CLOSURE (SUPERSEDED BY WAVE10B CURRENT AUTHORITY)
 
 Durum: **IMPLEMENTATION + VALIDATION COMPLETE**
 
@@ -1598,7 +1715,7 @@ Integration authority:
 - Branch: `feat/kelime-avi-2-0-integration`
 - PR #213: **OPEN / DRAFT / UNMERGED**
 - Base: `release/final-closed-test-aab-1.68.8`
-- Wave 10B bu closure'ın parçası değildir.
+- Historical Wave10A boundary: Wave10B o closure'ın parçası değildi; current authority yukarıdaki Wave10B CLOSED / PASS kaydıdır.
 
 ### Final Wave10A production state
 
@@ -1649,7 +1766,7 @@ Persistence, progression, segment, milestone ve route-final semantics local inde
 - Wave 8 Başlangıç Segment1 fingerprint authority `39462daa` olarak korunur.
 - Wave 9 Segment1 source lock Segment1-only kalır.
 - Locked Wave10A Segment2 evidence repo içinde `tools/word_hunt_wave10a_baslangic_segment2.lock.json` ile korunur.
-- No L21+ content, no other-route L11+, no new artwork, no KA-04 scoring.
+- Historical Wave10A boundary at that checkpoint: L21+ content / other-route L11+ / new artwork / KA-04 scoring bu closure'a dahil değildi.
 
 ### Exact implementation validation evidence
 
