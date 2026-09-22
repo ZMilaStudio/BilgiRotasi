@@ -311,7 +311,7 @@ void main() {
         );
         expect(
           tester.widget<Text>(progressText('gokyuzu')).data,
-          '6 / 20 bölüm',
+          '6 / 30 bölüm',
         );
         expect(
           find.descendant(
@@ -354,7 +354,7 @@ void main() {
       );
       await pumpSelector(tester, progress);
 
-      expect(tester.widget<Text>(progressText('gokyuzu')).data, '8 / 20 bölüm');
+      expect(tester.widget<Text>(progressText('gokyuzu')).data, '8 / 30 bölüm');
       expect(
         find.descendant(
           of: card('gokyuzu'),
@@ -602,7 +602,7 @@ void main() {
     expect(starterNode.label, contains('Devam Et'));
     expect(starterNode.label, contains('Rozet kazanıldı'));
     expect(starterNode.label, contains('Kelime Yolcusu'));
-    expect(starterNode.label, contains('20 / 60 yıldız'));
+    expect(starterNode.label, contains('30 / 90 yıldız'));
 
     final forestNode = tester.getSemantics(
       find.byKey(const Key('word_hunt_route_semantics_orman')),
