@@ -20,6 +20,7 @@ on:
       - 'tools/word_hunt_corpus_qa.py'
       - 'tools/tests/test_word_hunt_corpus_qa.py'
       - 'tools/word_hunt_content_factory.sample.json'
+      - 'tools/word_hunt_candidate_batch.json'
       - 'tools/word_hunt_segment1_source_lock.json'
       - 'tools/word_hunt_wave10a_baslangic_segment2.lock.json'
       - 'tools/tests/test_word_hunt_content_compiler.py'
@@ -168,5 +169,97 @@ jobs:
           path: |
             /tmp/word-hunt-corpus-qa-candidate-a.json
             /tmp/word-hunt-corpus-qa-candidate-a.md
+          if-no-files-found: error
+          retention-days: 14
+
+
+      - name: Wave10B Başlangıç L21-30 candidate iki kez derle
+        run: |
+          python3 tools/word_hunt_batch_generator.py \
+            --input tools/word_hunt_candidate_batch.json \
+            --production-corpus-lock tools/word_hunt_production_corpus.lock.json \
+            --output /tmp/wave10b-a.json \
+            --report /tmp/wave10b-a.txt
+          python3 tools/word_hunt_batch_generator.py \
+            --input tools/word_hunt_candidate_batch.json \
+            --production-corpus-lock tools/word_hunt_production_corpus.lock.json \
+            --output /tmp/wave10b-b.json \
+            --report /tmp/wave10b-b.txt
+          cmp /tmp/wave10b-a.json /tmp/wave10b-b.json
+          cmp /tmp/wave10b-a.txt /tmp/wave10b-b.txt
+          grep -Fq 'Compiler version: ka02-v2' /tmp/wave10b-a.txt
+          grep -Fq 'Status: COMPILE PASS' /tmp/wave10b-a.txt
+          grep -Fq 'Candidate levels: 10' /tmp/wave10b-a.txt
+          grep -Fq 'Contiguous current-frontier append: PASS' /tmp/wave10b-a.txt
+
+      - name: Wave10B candidate locked validation
+        run: |
+          python3 tools/word_hunt_batch_generator.py \
+            --validate /tmp/wave10b-a.json \
+            --production-corpus-lock tools/word_hunt_production_corpus.lock.json \
+            --report /tmp/wave10b-validation.txt
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          manifest = json.loads(
+              Path("tools/word_hunt_candidate_batch.json").read_text(encoding="utf-8")
+          )
+          artifact = json.loads(Path("/tmp/wave10b-a.json").read_text(encoding="utf-8"))
+          expected = [
+              (route["routeId"], level["id"], level["index"])
+              for route in manifest["routes"]
+              for level in route["levels"]
+          ]
+          actual = [
+              (route["routeId"], level["id"], level["index"])
+              for route in artifact["routes"]
+              for level in route["levels"]
+          ]
+          assert actual == expected
+          assert len(actual) == 10
+          assert [index for _, _, index in actual] == list(range(21, 31))
+          assert all(level["type"] != "routeFinal" for route in artifact["routes"] for level in route["levels"])
+          assert artifact["productionCorpusLock"]["sourceDigest"] == "6dbabc0b5c3f35cdbf573b2dec49e0f0d346fc0146bb52aff6318ed43b7fd9e3"
+          PY
+
+      - name: Wave10B candidate corpus QA determinism ve hard-risk gate
+        run: |
+          python3 tools/word_hunt_corpus_qa.py \
+            --production-corpus-lock tools/word_hunt_production_corpus.lock.json \
+            --candidate /tmp/wave10b-a.json \
+            --json-report /tmp/wave10b-qa-a.json \
+            --markdown-report /tmp/wave10b-qa-a.md \
+            --fail-on-hard-risk
+          python3 tools/word_hunt_corpus_qa.py \
+            --production-corpus-lock tools/word_hunt_production_corpus.lock.json \
+            --candidate /tmp/wave10b-a.json \
+            --json-report /tmp/wave10b-qa-b.json \
+            --markdown-report /tmp/wave10b-qa-b.md \
+            --fail-on-hard-risk
+          cmp /tmp/wave10b-qa-a.json /tmp/wave10b-qa-b.json
+          cmp /tmp/wave10b-qa-a.md /tmp/wave10b-qa-b.md
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          report = json.loads(Path("/tmp/wave10b-qa-a.json").read_text(encoding="utf-8"))
+          assert report["productionLevelCount"] == 90
+          assert report["candidateLevelCount"] == 10
+          assert report["levelCount"] == 100
+          assert report["summary"]["hardRiskCount"] == 0
+          assert report["candidateDigest"]
+          PY
+
+      - name: Wave10B candidate owner-review evidence yükle
+        uses: actions/upload-artifact@v4
+        with:
+          name: word-hunt-wave10b-baslangic-l21-30-candidate-review
+          path: |
+            /tmp/wave10b-a.json
+            /tmp/wave10b-a.txt
+            /tmp/wave10b-validation.txt
+            /tmp/wave10b-qa-a.json
+            /tmp/wave10b-qa-a.md
           if-no-files-found: error
           retention-days: 14
