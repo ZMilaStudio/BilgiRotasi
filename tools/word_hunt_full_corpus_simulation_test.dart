@@ -17,44 +17,48 @@ void main() {
   const checkpointBRouteCount = 8;
   const checkpointBAvailableLevelCount = 90;
 
-  test('Checkpoint B discovers and validates the current production corpus', () {
-    final entries = WordHuntRouteCatalog.entries;
-    final discoveredLevelCount = entries.fold<int>(
-      0,
-      (total, entry) => total + entry.route.availableLevelCount,
-    );
+  test(
+    'Checkpoint B discovers and validates the current production corpus',
+    () {
+      final entries = WordHuntRouteCatalog.entries;
+      final discoveredLevelCount = entries.fold<int>(
+        0,
+        (total, entry) => total + entry.route.availableLevelCount,
+      );
 
-    expect(
-      entries,
-      hasLength(checkpointBRouteCount),
-      reason: 'Checkpoint B başlangıç authority route count değişti.',
-    );
-    expect(
-      discoveredLevelCount,
-      checkpointBAvailableLevelCount,
-      reason: 'Checkpoint B başlangıç authority available level count değişti.',
-    );
-    expect(
-      entries.map((entry) => entry.route.id).toList(growable: false),
-      WordHuntGlobalLevelNumbering.routeOrder,
-      reason: 'Production catalog ile global numbering route order ayrıştı.',
-    );
-
-    for (final entry in entries) {
-      final route = entry.route;
-      final errors = WordHuntContentValidator.validate(
-        route: route,
-        infoCards: entry.infoCards,
+      expect(
+        entries,
+        hasLength(checkpointBRouteCount),
+        reason: 'Checkpoint B başlangıç authority route count değişti.',
       );
       expect(
-        errors,
-        isEmpty,
+        discoveredLevelCount,
+        checkpointBAvailableLevelCount,
         reason:
-            '${route.id}: production definition/content validation failed: '
-            '${errors.join(' | ')}',
+            'Checkpoint B başlangıç authority available level count değişti.',
       );
-    }
-  });
+      expect(
+        entries.map((entry) => entry.route.id).toList(growable: false),
+        WordHuntGlobalLevelNumbering.routeOrder,
+        reason: 'Production catalog ile global numbering route order ayrıştı.',
+      );
+
+      for (final entry in entries) {
+        final route = entry.route;
+        final errors = WordHuntContentValidator.validate(
+          route: route,
+          infoCards: entry.infoCards,
+        );
+        expect(
+          errors,
+          isEmpty,
+          reason:
+              '${route.id}: production definition/content validation failed: '
+              '${errors.join(' | ')}',
+        );
+      }
+    },
+  );
 
   test('90/90 available levels are physically playable and scoreable', () {
     for (final entry in WordHuntRouteCatalog.entries) {
@@ -269,12 +273,14 @@ void main() {
               reason: '$context / route reward granted before true completion',
             );
 
-            final projection = segmented
-                ? WordHuntSegmentProjection.forLevel(route, localIndex)
-                : null;
-            final expectedKind = projection?.isSegmentEnd ?? false
-                ? WordHuntCompletionDestinationKind.nextSegment
-                : WordHuntCompletionDestinationKind.nextLevel;
+            final projection =
+                segmented
+                    ? WordHuntSegmentProjection.forLevel(route, localIndex)
+                    : null;
+            final expectedKind =
+                projection?.isSegmentEnd ?? false
+                    ? WordHuntCompletionDestinationKind.nextSegment
+                    : WordHuntCompletionDestinationKind.nextLevel;
             expect(
               destination.kind,
               expectedKind,
@@ -371,7 +377,8 @@ void main() {
               expect(
                 destination.kind,
                 WordHuntCompletionDestinationKind.nextRoute,
-                reason: '$context / completed route did not point to next route',
+                reason:
+                    '$context / completed route did not point to next route',
               );
               expect(
                 entries[entryIndex + 1].isUnlocked(progress),
@@ -416,9 +423,8 @@ List<WordHuntCell>? _resolvePhysicalPath(List<String> grid, String rawWord) {
 
   final rows = grid
       .map(
-        (row) => WordHuntPathEngine.normalizeWord(
-          row,
-        ).runes.toList(growable: false),
+        (row) =>
+            WordHuntPathEngine.normalizeWord(row).runes.toList(growable: false),
       )
       .toList(growable: false);
   final width = rows.first.length;
@@ -529,7 +535,11 @@ void _expectCodecRoundTrip(
   final raw = WordHuntProgressCodec.encode(progress, ownerScope: ownerScope);
   final payload = jsonDecode(raw) as Map<String, dynamic>;
 
-  expect(payload['schema'], WordHuntProgressCodec.schemaVersion, reason: context);
+  expect(
+    payload['schema'],
+    WordHuntProgressCodec.schemaVersion,
+    reason: context,
+  );
   expect(
     payload.containsKey('globalDisplayNumber'),
     isFalse,
@@ -553,7 +563,8 @@ void _expectCodecRoundTrip(
   expect(
     decoded.snapshot.bestStarsByLevelId,
     progress.bestStarsByLevelId,
-    reason: '$context / route-local level identity changed after codec roundtrip',
+    reason:
+        '$context / route-local level identity changed after codec roundtrip',
   );
   expect(
     decoded.snapshot.unlockedInfoCardIds,
