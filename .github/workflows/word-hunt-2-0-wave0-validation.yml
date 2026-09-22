@@ -61,6 +61,8 @@ on:
       - 'test/word_hunt_2_0_wave9_content_compiler_test.dart'
       - 'test/word_hunt_2_0_wave10a_baslangic_segment2_test.dart'
       - 'tools/word_hunt_batch_generator.py'
+      - 'tools/word_hunt_corpus_qa.py'
+      - 'tools/tests/test_word_hunt_corpus_qa.py'
       - 'tools/word_hunt_full_corpus_simulation_test.dart'
       - 'tools/word_hunt_content_factory.sample.json'
       - 'tools/word_hunt_wave10a_baslangic_segment2.json'
@@ -303,6 +305,9 @@ jobs:
       - name: Wave 9 compiler Python tests
         run: python3 -m unittest tools.tests.test_word_hunt_content_compiler -v
 
+      - name: Checkpoint C corpus QA Python tests
+        run: python3 -m unittest tools.tests.test_word_hunt_corpus_qa -v
+
       - name: Wave 9 deterministic compiler proof
         run: |
           python3 tools/word_hunt_batch_generator.py \
@@ -343,6 +348,14 @@ jobs:
           fi
           flutter analyze --no-pub tools/word_hunt_full_corpus_simulation_test.dart
           flutter test tools/word_hunt_full_corpus_simulation_test.dart --reporter expanded
+
+      - name: Checkpoint C accepted corpus QA hard-risk gate
+        run: |
+          python3 tools/word_hunt_corpus_qa.py \
+            --production-corpus-lock tools/word_hunt_production_corpus.lock.json \
+            --json-report /tmp/word-hunt-corpus-qa.json \
+            --markdown-report /tmp/word-hunt-corpus-qa.md \
+            --fail-on-hard-risk
 
       - name: Deferred completion wrapper regression
         run: flutter test test/word_hunt_deferred_completion_level_screen_test.dart --reporter expanded
