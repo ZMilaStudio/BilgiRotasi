@@ -62,7 +62,7 @@ void main() {
     await tester.tap(find.byKey(const Key('word_hunt_map_level_2')));
     await tester.pump();
     expect(tappedIndex, 2);
-    expect(find.text('2 / 60'), findsOneWidget);
+    expect(find.text('2 / 90'), findsOneWidget);
   });
 
   testWidgets('enriched harbor map remains stable on a narrow phone surface', (
