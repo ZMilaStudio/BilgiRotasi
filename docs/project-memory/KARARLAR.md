@@ -269,4 +269,18 @@ Bu bölüm, 31 Ağustos kayıtlarındaki `ERROR_STATE_VISUAL = DOĞRULANACAK` du
 - AdMob #1025 — Run ID `35646621209` — **SUCCESS**
 - Wave10B bu closure ile başlamaz. Başlangıç L21+ veya başka rota L11+ ayrı owner/manager checkpoint gerektirir.
 - No artwork/version/tag/release/Play/merge action bu karara dahil değildir.
+---
+
+## 18. 23 Eylül 2026 — Kelime Avı standalone ürün kararı
+
+- Kelime Avı, Bilgi Rotası uygulamasının içindeki oyun modu olarak **kalmaya devam eder**; mevcut entegrasyondan çıkarılmaz.
+- Aynı Kelime Avı deneyimi ayrıca ZMila Studio çatısı altında **bağımsız bir uygulama** olarak geliştirilecektir.
+- Bilgi Rotası içindeki sürüm ile standalone sürüm için iki ayrı 800-level içerik seti üretilmez. Mümkün olan en geniş ölçüde **ortak oyun çekirdeği, ortak content pipeline ve ortak production corpus** kullanılır.
+- Standalone uygulamanın kendi **uygulama kimliği/package ID'si, ikon/splash'i, ana uygulama shell'i, mağaza sayfası ve release hattı** olacaktır.
+- Standalone uygulama yalnız farklı package ID ile yayımlanmış birebir kopya olmayacak; Kelime Avı odaklı kendi giriş/ana menü ve ürün yüzeyine sahip olacaktır.
+- Standalone ilerleme ilk aşamada Bilgi Rotası içindeki ilerlemeden **bağımsız** tutulacaktır. Uygulamalar arası progress/account sync ileride ayrı bir ürün ve teknik karar olarak ele alınacaktır.
+- Standalone uygulama yayın hazırlığı yeterli stabil seviyeye geldiğinde, mevcut stabil Kelime Avı içeriğiyle **closed test mümkün olduğunca erken başlatılacak**; closed test süreci işlerken 800-level corpus üretimi ve içerik genişletme çalışması devam edecektir.
+- İlk standalone closed-test hedefi, mevcut stabil production içeriğini kullanarak gereksiz yere 800 bölümün tamamlanmasını beklememektir; ancak test build'i kırık veya yarım bir ürün olarak gönderilmez.
+- Standalone bootstrap, package/signing, repo/shared-core düzeni ve Play Console release uygulaması ayrı implementation checkpoint'lerinde kesinleştirilecektir; bu karar tek başına teknik repo ayrımı veya sync mimarisi seçmez.
+- Bilgi Rotası içindeki Kelime Avı geliştirmeleri bu standalone kararı nedeniyle durdurulmaz veya kaldırılmaz.
 
