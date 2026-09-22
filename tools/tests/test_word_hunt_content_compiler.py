@@ -557,15 +557,15 @@ class ContentCompilerV2Tests(unittest.TestCase):
     def candidate_levels(self) -> list[dict]:
         return [
             level(
-                21,
-                level_id="candidate-21",
+                31,
+                level_id="candidate-31",
                 targets=["LAVANTA", "YELPAZE"],
                 bonus=["CEYLAN"],
             ),
             level(
-                22,
-                level_id="candidate-22",
-                targets=["DÜDÜK", "KEMER"],
+                32,
+                level_id="candidate-32",
+                targets=["DÜDÜK", "ZAMBAK"],
                 bonus=["KAZMA"],
             ),
         ]
@@ -598,7 +598,7 @@ class ContentCompilerV2Tests(unittest.TestCase):
                 route.available_level_count
                 for route in self.corpus.routes.values()
             ),
-            90,
+            100,
         )
         self.assertEqual(
             self.corpus.source_digest,
@@ -606,9 +606,9 @@ class ContentCompilerV2Tests(unittest.TestCase):
         )
 
         starter = self.corpus.routes["baslangic-limani"]
-        self.assertEqual(starter.available_level_count, 20)
+        self.assertEqual(starter.available_level_count, 30)
         self.assertEqual(starter.planned_level_count, 100)
-        self.assertEqual(len(starter.reserved_words), 138)
+        self.assertEqual(len(starter.reserved_words), 196)
 
     def test_wave10a_l11_to_l20_is_current_reserved_corpus(self) -> None:
         starter = self.corpus.routes["baslangic-limani"]
@@ -639,7 +639,7 @@ class ContentCompilerV2Tests(unittest.TestCase):
             self.compile(
                 [
                     level(
-                        21,
+                        31,
                         level_id="duplicate-current",
                         targets=["BARDAK"],
                     )
@@ -649,18 +649,18 @@ class ContentCompilerV2Tests(unittest.TestCase):
     def test_same_candidate_batch_duplicate_fails(self) -> None:
         with self.assertRaisesRegex(
             compiler.FactoryError,
-            r"word=LAVANTA.*existing=candidate candidate-21 L21",
+            r"word=LAVANTA.*existing=candidate candidate-31 L31",
         ):
             self.compile(
                 [
                     level(
-                        21,
-                        level_id="candidate-21",
+                        31,
+                        level_id="candidate-31",
                         targets=["LAVANTA"],
                     ),
                     level(
-                        22,
-                        level_id="candidate-22",
+                        32,
+                        level_id="candidate-32",
                         targets=["LAVANTA"],
                     ),
                 ]
@@ -681,14 +681,14 @@ class ContentCompilerV2Tests(unittest.TestCase):
             "contiguous append",
         ):
             self.compile(
-                [level(22, level_id="gap-22", targets=["LAVANTA"])]
+                [level(32, level_id="gap-32", targets=["LAVANTA"])]
             )
 
     def test_contiguous_append_passes(self) -> None:
         artifact = self.compile()
         self.assertEqual(
             [level["index"] for level in artifact["routes"][0]["levels"]],
-            [21, 22],
+            [31, 32],
         )
         compiler.validate_artifact_v2(artifact, self.corpus)
 
@@ -699,7 +699,7 @@ class ContentCompilerV2Tests(unittest.TestCase):
             for route in raw["routes"]
             if route["routeId"] == "baslangic-limani"
         )
-        starter["plannedLevelCount"] = 20
+        starter["plannedLevelCount"] = 30
         raw["sourceDigest"] = compiler.production_corpus_payload_digest(raw)
         capped = compiler.validate_production_corpus_lock(raw)
 
@@ -708,7 +708,7 @@ class ContentCompilerV2Tests(unittest.TestCase):
             "plannedLevelCount aşar",
         ):
             self.compile(
-                [level(21, level_id="past-plan", targets=["LAVANTA"])],
+                [level(31, level_id="past-plan", targets=["LAVANTA"])],
                 corpus=capped,
             )
 
@@ -720,7 +720,7 @@ class ContentCompilerV2Tests(unittest.TestCase):
             self.compile(
                 [
                     level(
-                        21,
+                        31,
                         level_id="false-final",
                         level_type="routeFinal",
                         targets=["LAVANTA"],

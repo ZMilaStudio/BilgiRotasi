@@ -17,13 +17,15 @@ void main() {
         );
 
         if (route.id == 'baslangic-limani') {
-          expect(route.levels, hasLength(20), reason: route.id);
+          expect(route.levels, hasLength(30), reason: route.id);
           expect(route.plannedLevelCount, 100, reason: route.id);
-          expect(route.segments, hasLength(2), reason: route.id);
+          expect(route.segments, hasLength(3), reason: route.id);
           expect(route.segments[0].startLevelIndex, 1, reason: route.id);
           expect(route.segments[0].endLevelIndex, 10, reason: route.id);
           expect(route.segments[1].startLevelIndex, 11, reason: route.id);
           expect(route.segments[1].endLevelIndex, 20, reason: route.id);
+          expect(route.segments[2].startLevelIndex, 21, reason: route.id);
+          expect(route.segments[2].endLevelIndex, 30, reason: route.id);
         } else {
           expect(route.levels, hasLength(10), reason: route.id);
           expect(route.segments, isEmpty, reason: route.id);
