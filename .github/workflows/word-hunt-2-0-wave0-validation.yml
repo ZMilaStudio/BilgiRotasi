@@ -60,6 +60,7 @@ on:
       - 'test/word_hunt_2_0_wave8_segment1_migration_test.dart'
       - 'test/word_hunt_2_0_wave9_content_compiler_test.dart'
       - 'test/word_hunt_2_0_wave10a_baslangic_segment2_test.dart'
+      - 'test/word_hunt_2_0_wave10b_baslangic_segment3_test.dart'
       - 'tools/word_hunt_batch_generator.py'
       - 'tools/word_hunt_corpus_qa.py'
       - 'tools/tests/test_word_hunt_corpus_qa.py'
@@ -155,6 +156,7 @@ jobs:
           test/word_hunt_2_0_wave7_chrome_info_reward_test.dart
           test/word_hunt_2_0_wave8_segment1_migration_test.dart
           test/word_hunt_2_0_wave9_content_compiler_test.dart
+          test/word_hunt_2_0_wave10b_baslangic_segment3_test.dart
           test/word_hunt_pixel_proof_screen_test.dart
           test/word_hunt_gokyuzu_master_art_screen_test.dart
           test/word_hunt_reference_route_screen_test.dart
@@ -173,7 +175,9 @@ jobs:
           lib/word_hunt/word_hunt_route_stop.dart
           test/word_hunt_2_0_wave0_baseline_test.dart
           test/word_hunt_2_0_wave6_completion_orchestration_test.dart
-          test/word_hunt_2_0_wave6_completion_layout_test.dart;
+          test/word_hunt_2_0_wave6_completion_layout_test.dart
+          lib/word_hunt/word_hunt_starter_content.dart
+          test/word_hunt_2_0_wave10b_baslangic_segment3_test.dart;
           git diff --exit-code --
           lib/word_hunt/word_hunt_progress.dart
           lib/word_hunt/word_hunt_route_catalog.dart
@@ -258,6 +262,7 @@ jobs:
           test/word_hunt_2_0_wave8_segment1_migration_test.dart
           test/word_hunt_2_0_wave9_content_compiler_test.dart
           test/word_hunt_2_0_wave10a_baslangic_segment2_test.dart
+          test/word_hunt_2_0_wave10b_baslangic_segment3_test.dart
           test/word_hunt_pixel_proof_screen_test.dart
           test/word_hunt_gokyuzu_master_art_screen_test.dart
           test/word_hunt_reference_route_screen_test.dart
@@ -338,6 +343,9 @@ jobs:
 
       - name: Wave 10A staged starter Segment2 tests
         run: flutter test test/word_hunt_2_0_wave10a_baslangic_segment2_test.dart --reporter expanded
+
+      - name: Wave10B accepted starter Segment3 production tests
+        run: flutter test test/word_hunt_2_0_wave10b_baslangic_segment3_test.dart --reporter expanded
 
       - name: Checkpoint B full-corpus domain simulator
         run: |

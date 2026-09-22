@@ -6,22 +6,32 @@
       "routeId": "baslangic-limani",
       "levels": [
         {
-          "id": "sample-baslangic-21",
-          "index": 21,
+          "id": "sample-baslangic-31",
+          "index": 31,
           "type": "normal",
-          "targetWords": ["LAVANTA", "YELPAZE"],
-          "bonusWords": ["CEYLAN"],
+          "targetWords": [
+            "LAVANTA",
+            "YELPAZE"
+          ],
+          "bonusWords": [
+            "CEYLAN"
+          ],
           "starRules": {
             "twoStarMaxMistakes": 3,
             "threeStarMaxMistakes": 1
           }
         },
         {
-          "id": "sample-baslangic-22",
-          "index": 22,
+          "id": "sample-baslangic-32",
+          "index": 32,
           "type": "normal",
-          "targetWords": ["DÜDÜK", "KEMER"],
-          "bonusWords": ["KAZMA"],
+          "targetWords": [
+            "DÜDÜK",
+            "KEMER"
+          ],
+          "bonusWords": [
+            "KAZMA"
+          ],
           "starRules": {
             "twoStarMaxMistakes": 3,
             "threeStarMaxMistakes": 1

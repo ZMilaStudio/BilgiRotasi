@@ -1,0 +1,355 @@
+{
+  "schemaVersion": 1,
+  "kind": "WORD_HUNT_WAVE10B_ACCEPTED_PROVENANCE",
+  "ownerDecision": "ACCEPT",
+  "compilerVersion": "ka02-v2",
+  "seed": 2026092202,
+  "routeId": "baslangic-limani",
+  "productionBaseCorpusDigest": "6dbabc0b5c3f35cdbf573b2dec49e0f0d346fc0146bb52aff6318ed43b7fd9e3",
+  "acceptedCandidateDigest": "c20d2b9a56d6330f084faa3fe42f9691e515ad7c7cf774043302ea3955863072",
+  "acceptedWarning": {
+    "id": "WORD_LENGTH_OUTLIER",
+    "levelId": "baslangic-26",
+    "ownerAccepted": true
+  },
+  "levels": [
+    {
+      "localIndex": 21,
+      "levelId": "baslangic-21",
+      "type": "normal",
+      "grid": [
+        "ŞŞĞÇAKİU",
+        "RVCSAKTY",
+        "TNKEBPSY",
+        "HZAUZHEO",
+        "YIBFNİÇR",
+        "ILATAÇVG",
+        "KYTÇKUPA",
+        "TYUKRÇKN"
+      ],
+      "targetWords": [
+        "AVİZE",
+        "TABAK",
+        "ÇATAL",
+        "YORGAN"
+      ],
+      "bonusWords": [
+        "KUPA"
+      ],
+      "starRules": {
+        "twoStarMaxMistakes": 3,
+        "threeStarMaxMistakes": 1,
+        "twoStarMaxSeconds": null,
+        "threeStarMaxSeconds": null
+      },
+      "timeLimitSeconds": null,
+      "gridHash": "d8b8840574bc71a94aab710f840a72010323a91e97a569acc97c6883134bcad3",
+      "acceptedCandidateFingerprint": "d8390c9652992a0a7b6bc319cc3816122c898e0890d516cdc9f73f5b360dfff6"
+    },
+    {
+      "localIndex": 22,
+      "levelId": "baslangic-22",
+      "type": "normal",
+      "grid": [
+        "EVĞILÜUŞ",
+        "OSLTĞLEN",
+        "VÜOJVKDY",
+        "İNPALODC",
+        "SGHŞYLRK",
+        "TERNPTÜS",
+        "URAISUUY",
+        "KBTEYKÜR"
+      ],
+      "targetWords": [
+        "KOLTUK",
+        "DOLAP",
+        "HAVLU",
+        "BANYO"
+      ],
+      "bonusWords": [
+        "SÜNGER"
+      ],
+      "starRules": {
+        "twoStarMaxMistakes": 3,
+        "threeStarMaxMistakes": 1,
+        "twoStarMaxSeconds": null,
+        "threeStarMaxSeconds": null
+      },
+      "timeLimitSeconds": null,
+      "gridHash": "eb10644ff449063b8964c9f0ef5cb227674c51b9bcbbfbf81dcbeb16c06bc4e3",
+      "acceptedCandidateFingerprint": "dcfdbd4aa2e2e873e03949bbf46fcbcf7d71a520fd2cb25a836d0a0da3560923"
+    },
+    {
+      "localIndex": 23,
+      "levelId": "baslangic-23",
+      "type": "normal",
+      "grid": [
+        "OŞOFÖRZE",
+        "LLABSÇLL",
+        "KARUDÜPO",
+        "ÇNÇMFUTV",
+        "OİLJJOAJ",
+        "TELİBPKD",
+        "HEHÜUYSV",
+        "AJSRZKİÇ"
+      ],
+      "targetWords": [
+        "OTOBÜS",
+        "TAKSİ",
+        "DURAK",
+        "BİLET",
+        "ŞOFÖR"
+      ],
+      "bonusWords": [
+        "VAPUR"
+      ],
+      "starRules": {
+        "twoStarMaxMistakes": 2,
+        "threeStarMaxMistakes": 0,
+        "twoStarMaxSeconds": null,
+        "threeStarMaxSeconds": null
+      },
+      "timeLimitSeconds": null,
+      "gridHash": "380bb20864ee54eaf95613353abc2eda73cff921c5ef2386c0e5a60e143338a1",
+      "acceptedCandidateFingerprint": "9a6a3d70a4172c9c8a30dd382f72c0e8571786738e6d7072be48ca84187c6fff"
+    },
+    {
+      "localIndex": 24,
+      "levelId": "baslangic-24",
+      "type": "normal",
+      "grid": [
+        "CJCÖTDKR",
+        "TZNHFĞAE",
+        "RZTDŞİŞÇ",
+        "UİCKFEIE",
+        "ĞANVKKKL",
+        "OICYJMGE",
+        "YZHKERÖÇ",
+        "ODIKÖPÖM"
+      ],
+      "targetWords": [
+        "EKMEK",
+        "PEYNİR",
+        "YOĞURT",
+        "REÇEL",
+        "ÇÖREK"
+      ],
+      "bonusWords": [
+        "KAŞIK"
+      ],
+      "starRules": {
+        "twoStarMaxMistakes": 2,
+        "threeStarMaxMistakes": 0,
+        "twoStarMaxSeconds": null,
+        "threeStarMaxSeconds": null
+      },
+      "timeLimitSeconds": null,
+      "gridHash": "3481fde40f3104222947a28ba3d279a02754f5eb4503eba912fb59a1b0c2d6c7",
+      "acceptedCandidateFingerprint": "e574102e86df6bcd8d7cc6ffe487d7827f68407986e3dcdf022d0fd0762815ab"
+    },
+    {
+      "localIndex": 25,
+      "levelId": "baslangic-25",
+      "type": "normal",
+      "grid": [
+        "KKÜÜPYŞV",
+        "BUNVOÖFM",
+        "VSÇOEÜKT",
+        "IIŞSEPET",
+        "VİPÜOKIZ",
+        "FHÖAİAİK",
+        "HUYTRSSH",
+        "FTEKRAMP"
+      ],
+      "targetWords": [
+        "MARKET",
+        "SEPET",
+        "KASA",
+        "PARA",
+        "FİŞ"
+      ],
+      "bonusWords": [
+        "ETİKET"
+      ],
+      "starRules": {
+        "twoStarMaxMistakes": 2,
+        "threeStarMaxMistakes": 0,
+        "twoStarMaxSeconds": null,
+        "threeStarMaxSeconds": null
+      },
+      "timeLimitSeconds": null,
+      "gridHash": "124877d6a5331c1ca1163ac408ec57f41fe44100b3edf17973ea937b3af59315",
+      "acceptedCandidateFingerprint": "ddeb4d7950f174f909f0be0e937c6bde7a8dcbc2af89b5ba6174d2e149bfd3f5"
+    },
+    {
+      "localIndex": 26,
+      "levelId": "baslangic-26",
+      "type": "normal",
+      "grid": [
+        "CABKZSEH",
+        "SAĞANAKİ",
+        "SMYŞFÜIT",
+        "ŞAKUZĞRN",
+        "FSLKŞJAE",
+        "GOPKMKĞS",
+        "DPKÖGKIİ",
+        "AÜÇGUCAÇ"
+      ],
+      "targetWords": [
+        "GÖKKUŞAK",
+        "DOLU",
+        "KIRAĞI",
+        "ÇİSENTİ",
+        "SAĞANAK"
+      ],
+      "bonusWords": [
+        "AYAZ"
+      ],
+      "starRules": {
+        "twoStarMaxMistakes": 2,
+        "threeStarMaxMistakes": 0,
+        "twoStarMaxSeconds": null,
+        "threeStarMaxSeconds": null
+      },
+      "timeLimitSeconds": null,
+      "gridHash": "37ef830d4a84ad162e9a0054e7d81a9c5d82617365fc4322cddf04ddbc70e2cb",
+      "acceptedCandidateFingerprint": "114eee50cd8b3ca3e9f103dc8aa63b6ab5422bca4e8b215b5de659b246299848"
+    },
+    {
+      "localIndex": 27,
+      "levelId": "baslangic-27",
+      "type": "normal",
+      "grid": [
+        "SPFGYSKD",
+        "ZRAÇZÇKH",
+        "SBURUNAL",
+        "ŞEBZMFLS",
+        "FMLFOAUH",
+        "ŞŞŞOADKC",
+        "ÖBĞJGUİK",
+        "LAMULHEZ"
+      ],
+      "targetWords": [
+        "BURUN",
+        "KULAK",
+        "PARMAK",
+        "OMUZ",
+        "DİZ"
+      ],
+      "bonusWords": [
+        "SAÇ"
+      ],
+      "starRules": {
+        "twoStarMaxMistakes": 2,
+        "threeStarMaxMistakes": 0,
+        "twoStarMaxSeconds": null,
+        "threeStarMaxSeconds": null
+      },
+      "timeLimitSeconds": null,
+      "gridHash": "f766977b9bfcdd383ee931b2c22241707953b99df94e135657daa34516c40238",
+      "acceptedCandidateFingerprint": "7f80a640ae1876303bd15af244e055da9a75ccb280b810e7bccc6ec9abb70424"
+    },
+    {
+      "localIndex": 28,
+      "levelId": "baslangic-28",
+      "type": "normal",
+      "grid": [
+        "ĞÖHJŞKSF",
+        "ZOROHEÇÜ",
+        "UCEBALIK",
+        "İKHRSECÖ",
+        "SKBAMBJP",
+        "YEUMİEHE",
+        "ZFÖNTKJK",
+        "KZAKÇİCG"
+      ],
+      "targetWords": [
+        "KÖPEK",
+        "ZEBRA",
+        "BALIK",
+        "HOROZ",
+        "KELEBEK"
+      ],
+      "bonusWords": [
+        "TİMSAH"
+      ],
+      "starRules": {
+        "twoStarMaxMistakes": 2,
+        "threeStarMaxMistakes": 0,
+        "twoStarMaxSeconds": null,
+        "threeStarMaxSeconds": null
+      },
+      "timeLimitSeconds": null,
+      "gridHash": "b9b503a0a0ffcc74e2b7763610e73e6624d53938ee9d554e2e261be352a5118b",
+      "acceptedCandidateFingerprint": "527063c9edf04d510812bff4a46a05fd961dad6fca3be420b050e21346d1be23"
+    },
+    {
+      "localIndex": 29,
+      "levelId": "baslangic-29",
+      "type": "normal",
+      "grid": [
+        "VKHNZKIK",
+        "NROAÜLÇE",
+        "FOSRKAÇÜ",
+        "ÜBFKRVŞJ",
+        "ÇOIEÜYEE",
+        "UTMMLEKR",
+        "TAĞİEEZT",
+        "KJPÖPRTY"
+      ],
+      "targetWords": [
+        "ROBOT",
+        "EKRAN",
+        "KLAVYE",
+        "TELEFON",
+        "KAMERA"
+      ],
+      "bonusWords": [
+        "PİL"
+      ],
+      "starRules": {
+        "twoStarMaxMistakes": 2,
+        "threeStarMaxMistakes": 0,
+        "twoStarMaxSeconds": null,
+        "threeStarMaxSeconds": null
+      },
+      "timeLimitSeconds": null,
+      "gridHash": "06a4a191efb1dd3581726886d2f04eb5a32cb153f13636f2ff68a5eaf79f5fba",
+      "acceptedCandidateFingerprint": "bdacfbefb16332b18481723f5a59e11f802c7643b439f505ddaddfb8ea6d97a6"
+    },
+    {
+      "localIndex": 30,
+      "levelId": "baslangic-30",
+      "type": "challenge",
+      "grid": [
+        "UBĞPYZİK",
+        "UİKFCPGO",
+        "ECVPIATI",
+        "NSÜDBRNC",
+        "AODİAKIZ",
+        "ZKNFTKIN",
+        "CAİVKRUV",
+        "EKOLHKFO"
+      ],
+      "targetWords": [
+        "TRAFİK",
+        "SOKAK",
+        "BİNA",
+        "PARK",
+        "FIRIN"
+      ],
+      "bonusWords": [
+        "ECZANE"
+      ],
+      "starRules": {
+        "twoStarMaxMistakes": 2,
+        "threeStarMaxMistakes": 0,
+        "twoStarMaxSeconds": 100,
+        "threeStarMaxSeconds": 75
+      },
+      "timeLimitSeconds": 120,
+      "gridHash": "f1a9cba17cdc67b9dbbb2342b22e248469276b320c182fe8a529f2e12310c621",
+      "acceptedCandidateFingerprint": "67b7a5226fb02df1f133e1b02ca327188373760ffcabcb68ae0697d366a26055"
+    }
+  ]
+}

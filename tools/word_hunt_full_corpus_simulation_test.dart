@@ -15,7 +15,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   const checkpointBRouteCount = 8;
-  const checkpointBAvailableLevelCount = 90;
+  const checkpointBAvailableLevelCount = 100;
 
   test(
     'Checkpoint B discovers and validates the current production corpus',
@@ -60,7 +60,7 @@ void main() {
     },
   );
 
-  test('90/90 available levels are physically playable and scoreable', () {
+  test('100/100 available levels are physically playable and scoreable', () {
     for (final entry in WordHuntRouteCatalog.entries) {
       final route = entry.route;
 
