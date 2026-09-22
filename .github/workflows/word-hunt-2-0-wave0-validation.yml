@@ -61,6 +61,7 @@ on:
       - 'test/word_hunt_2_0_wave9_content_compiler_test.dart'
       - 'test/word_hunt_2_0_wave10a_baslangic_segment2_test.dart'
       - 'tools/word_hunt_batch_generator.py'
+      - 'tools/word_hunt_full_corpus_simulation_test.dart'
       - 'tools/word_hunt_content_factory.sample.json'
       - 'tools/word_hunt_wave10a_baslangic_segment2.json'
       - 'tools/word_hunt_segment1_source_lock.json'
@@ -332,6 +333,12 @@ jobs:
 
       - name: Wave 10A staged starter Segment2 tests
         run: flutter test test/word_hunt_2_0_wave10a_baslangic_segment2_test.dart --reporter expanded
+
+      - name: Checkpoint B full-corpus domain simulator
+        run: |
+          dart format --output=none --set-exit-if-changed tools/word_hunt_full_corpus_simulation_test.dart
+          flutter analyze --no-pub tools/word_hunt_full_corpus_simulation_test.dart
+          flutter test tools/word_hunt_full_corpus_simulation_test.dart --reporter expanded
 
       - name: Deferred completion wrapper regression
         run: flutter test test/word_hunt_deferred_completion_level_screen_test.dart --reporter expanded
