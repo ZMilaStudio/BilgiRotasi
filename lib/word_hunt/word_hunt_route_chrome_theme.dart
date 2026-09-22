@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'word_hunt_production_assets.dart';
-
 enum WordHuntChromeControlKind { icon, asset }
 
 enum WordHuntChromeMaterialFamily {
@@ -37,8 +35,6 @@ class WordHuntRouteChromeTheme {
     required this.materialFamily,
     required this.back,
     required this.info,
-    required this.compass,
-    required this.codex,
   });
 
   final String id;
@@ -47,8 +43,6 @@ class WordHuntRouteChromeTheme {
   final WordHuntChromeMaterialFamily materialFamily;
   final WordHuntChromeControlSpec back;
   final WordHuntChromeControlSpec info;
-  final WordHuntChromeControlSpec compass;
-  final WordHuntChromeControlSpec codex;
 
   /// Optional compatibility preset. Existing routes keep their current null
   /// config path, so adding this abstraction does not silently reskin them.
@@ -63,12 +57,6 @@ class WordHuntRouteChromeTheme {
         ),
         info: WordHuntChromeControlSpec.icon(
           icon: Icons.info_outline_rounded,
-        ),
-        compass: WordHuntChromeControlSpec.asset(
-          assetPath: WordHuntProductionAssets.compassButton,
-        ),
-        codex: WordHuntChromeControlSpec.asset(
-          assetPath: WordHuntProductionAssets.bookButton,
         ),
       );
 
@@ -85,12 +73,6 @@ class WordHuntRouteChromeTheme {
         ),
         info: WordHuntChromeControlSpec.icon(
           icon: Icons.info_outline_rounded,
-        ),
-        compass: WordHuntChromeControlSpec.icon(
-          icon: Icons.explore_rounded,
-        ),
-        codex: WordHuntChromeControlSpec.icon(
-          icon: Icons.menu_book_rounded,
         ),
       );
 }

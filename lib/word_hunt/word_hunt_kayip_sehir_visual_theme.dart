@@ -35,12 +35,6 @@ abstract final class WordHuntKayipSehirVisualTheme {
         info: WordHuntChromeControlSpec.icon(
           icon: Icons.info_outline_rounded,
         ),
-        compass: WordHuntChromeControlSpec.icon(
-          icon: Icons.explore_rounded,
-        ),
-        codex: WordHuntChromeControlSpec.icon(
-          icon: Icons.menu_book_rounded,
-        ),
       );
 
   static const WordHuntRouteVisualTheme production = WordHuntRouteVisualTheme(

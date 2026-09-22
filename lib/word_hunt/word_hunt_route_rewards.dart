@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'word_hunt_models.dart';
 import 'word_hunt_progress.dart';
+import 'word_hunt_progress_migration.dart';
 import 'word_hunt_route_catalog.dart';
 
 @immutable
@@ -104,7 +105,32 @@ abstract final class WordHuntRouteRewardEngine {
     required String levelId,
     required int stars,
     Iterable<String> unlockedInfoCards = const <String>[],
+    int? foundBonusCount,
   }) {
+    if (foundBonusCount != null) {
+      if (foundBonusCount < 0) {
+        throw ArgumentError.value(
+          foundBonusCount,
+          'foundBonusCount',
+          'negatif olamaz',
+        );
+      }
+      final levelIndex = route.levels.indexWhere(
+        (level) => level.id == levelId,
+      );
+      if (levelIndex < 0) {
+        throw ArgumentError.value(levelId, 'levelId', 'rotada bulunamadı');
+      }
+      final maximumBonusCount = route.levels[levelIndex].bonusWords.length;
+      if (foundBonusCount > maximumBonusCount) {
+        throw ArgumentError.value(
+          foundBonusCount,
+          'foundBonusCount',
+          'bölüm bonus kelime sayısını aşamaz',
+        );
+      }
+    }
+
     final beforeRouteComplete = WordHuntRouteProgressEngine.isRouteComplete(
       route,
       progress,
@@ -114,6 +140,7 @@ abstract final class WordHuntRouteRewardEngine {
       levelId: levelId,
       stars: stars,
       unlockedInfoCards: unlockedInfoCards,
+      foundBonusCount: foundBonusCount,
     );
     final afterRouteComplete = WordHuntRouteProgressEngine.isRouteComplete(
       route,
@@ -141,10 +168,13 @@ abstract final class WordHuntRouteRewardEngine {
     WordHuntProgressSnapshot progress,
   ) {
     var updated = progress;
-    for (final entry in WordHuntRouteCatalog.entries) {
-      if (WordHuntRouteProgressEngine.isRouteComplete(entry.route, updated) &&
-          !updated.unlockedRouteRewardIds.contains(entry.route.routeRewardId)) {
-        updated = updated.grantRouteReward(entry.route.routeRewardId);
+    for (final route in WordHuntLegacyProgressMigration.frozenLegacyRoutes) {
+      if (WordHuntLegacyProgressMigration.isFrozenLegacyRouteComplete(
+            route,
+            updated,
+          ) &&
+          !updated.unlockedRouteRewardIds.contains(route.routeRewardId)) {
+        updated = updated.grantRouteReward(route.routeRewardId);
       }
     }
     return updated;

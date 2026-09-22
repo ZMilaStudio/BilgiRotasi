@@ -10,8 +10,8 @@ import 'word_hunt_path_renderer.dart';
 import 'word_hunt_progress.dart';
 import 'word_hunt_reusable_route_map_screen.dart';
 import 'word_hunt_route_chrome_theme.dart';
+import 'word_hunt_route_segment_host.dart';
 import 'word_hunt_seal_renderer.dart';
-import 'word_hunt_route_ux_scope.dart';
 
 /// Raster artwork üstünde ortak 1→10 geometriyi ve gerçek progression hitbox'ını
 /// korur. Embedded dekoratif rota seçildiğinde path tekrar çizilmez.
@@ -27,6 +27,7 @@ class WordHuntArtworkRouteMapScreen extends StatelessWidget {
     this.pathSpec,
     this.chromeTheme,
     this.presentationOrder = WordHuntRoutePresentationOrder.forward,
+    this.segmentIndex = 1,
   });
 
   final WordHuntRouteDefinition route;
@@ -38,6 +39,7 @@ class WordHuntArtworkRouteMapScreen extends StatelessWidget {
   final WordHuntPathVisualSpec? pathSpec;
   final WordHuntRouteChromeTheme? chromeTheme;
   final WordHuntRoutePresentationOrder presentationOrder;
+  final int segmentIndex;
 
   // Orman reference canvas compact ekranlarda birlikte ölçeklendiği için
   // görünmeyen hitbox biraz daha geniş tutulur. Görsel node offsetleri aşağıda
@@ -58,15 +60,16 @@ class WordHuntArtworkRouteMapScreen extends StatelessWidget {
         pathSpec: pathSpec,
         chromeTheme: chromeTheme,
         presentationOrder: presentationOrder,
+        segmentIndex: segmentIndex,
       );
     }
 
-    final totalStars = WordHuntRouteProgressEngine.totalStars(route, progress);
-    final current = WordHuntRouteProgressEngine.nextPlayableLevelIndex(
-      route,
-      progress,
+    final host = WordHuntRouteSegmentHost.forRoute(
+      route: route,
+      progress: progress,
+      segmentIndex: segmentIndex,
     );
-    final ux = WordHuntRouteUxScope.maybeOf(context);
+    final totalStars = WordHuntRouteProgressEngine.totalStars(route, progress);
 
     return Scaffold(
       key: const Key('word_hunt_reusable_route_map'),
@@ -114,21 +117,8 @@ class WordHuntArtworkRouteMapScreen extends StatelessWidget {
                         _node(
                           point: points[i],
                           mapSize: size,
-                          level: route.levels[i],
-                          stars: progress.starsFor(route.levels[i].id),
-                          unlocked: WordHuntRouteProgressEngine.isLevelUnlocked(
-                            route,
-                            progress,
-                            i + 1,
-                          ),
-                          completed:
-                              WordHuntRouteProgressEngine.isLevelCompleted(
-                                route.levels[i],
-                                progress,
-                              ),
-                          current: current == i + 1,
-                          highlighted: ux?.highlightedLevelIndex == i + 1,
-                          highlightEpoch: ux?.highlightEpoch ?? 0,
+                          node: host.nodes[i],
+                          stars: progress.starsFor(host.nodes[i].levelId),
                         ),
                     ],
                   );
@@ -144,28 +134,27 @@ class WordHuntArtworkRouteMapScreen extends StatelessWidget {
   Widget _node({
     required Offset point,
     required Size mapSize,
-    required WordHuntLevelDefinition level,
+    required WordHuntRouteMapNodeProjection node,
     required int stars,
-    required bool unlocked,
-    required bool completed,
-    required bool current,
-    required bool highlighted,
-    required int highlightEpoch,
   }) {
-    final left = (point.dx - _hitW / 2)
-        .clamp(0.0, math.max(0.0, mapSize.width - _hitW))
-        .toDouble();
-    final top = (point.dy - _hitH / 2)
-        .clamp(0.0, math.max(0.0, mapSize.height - _hitH))
-        .toDouble();
-    final state = completed
-        ? 'completed'
-        : current && unlocked
-        ? 'current'
-        : unlocked
-        ? 'open'
-        : 'locked';
-    final isFinal = level.type == WordHuntLevelType.routeFinal;
+    final left =
+        (point.dx - _hitW / 2)
+            .clamp(0.0, math.max(0.0, mapSize.width - _hitW))
+            .toDouble();
+    final top =
+        (point.dy - _hitH / 2)
+            .clamp(0.0, math.max(0.0, mapSize.height - _hitH))
+            .toDouble();
+    final state =
+        node.completed
+            ? 'completed'
+            : node.current && node.unlocked
+            ? 'current'
+            : node.unlocked
+            ? 'open'
+            : 'locked';
+    final level = node.level;
+    final isFinal = node.isTrueRouteFinal;
 
     return Positioned(
       left: left,
@@ -173,9 +162,10 @@ class WordHuntArtworkRouteMapScreen extends StatelessWidget {
       width: _hitW,
       height: _hitH,
       child: Semantics(
-        button: unlocked,
-        enabled: unlocked,
-        label: 'Bölüm ${level.index}${unlocked ? ', açık' : ', kilitli'}',
+        button: node.unlocked,
+        enabled: node.unlocked,
+        label:
+            'Bölüm ${node.absoluteLevelIndex}${node.unlocked ? ', açık' : ', kilitli'}',
         child: Stack(
           clipBehavior: Clip.none,
           children: <Widget>[
@@ -191,10 +181,8 @@ class WordHuntArtworkRouteMapScreen extends StatelessWidget {
                   child: _ForestStop(
                     level: level,
                     stars: stars,
-                    unlocked: unlocked,
-                    current: current && unlocked && !completed,
-                    highlighted: highlighted,
-                    highlightEpoch: highlightEpoch,
+                    unlocked: node.unlocked,
+                    current: node.current,
                   ),
                 ),
               ),
@@ -205,13 +193,16 @@ class WordHuntArtworkRouteMapScreen extends StatelessWidget {
               const SizedBox.shrink(key: Key('word_hunt_route_stop_plaque_10')),
             Positioned.fill(
               child: GestureDetector(
-                key: Key('word_hunt_reusable_level_${level.index}'),
+                key: Key('word_hunt_reusable_level_${node.absoluteLevelIndex}'),
                 behavior: HitTestBehavior.opaque,
-                onTap: unlocked && onLevelTap != null
-                    ? () => onLevelTap!(level.index)
-                    : null,
+                onTap:
+                    node.unlocked && onLevelTap != null
+                        ? () => onLevelTap!(node.absoluteLevelIndex)
+                        : null,
                 child: SizedBox.expand(
-                  key: Key('word_hunt_reusable_node_${level.index}_$state'),
+                  key: Key(
+                    'word_hunt_reusable_node_${node.absoluteLevelIndex}_$state',
+                  ),
                 ),
               ),
             ),
@@ -228,30 +219,28 @@ class _ForestStop extends StatelessWidget {
     required this.stars,
     required this.unlocked,
     required this.current,
-    required this.highlighted,
-    required this.highlightEpoch,
   });
 
   final WordHuntLevelDefinition level;
   final int stars;
   final bool unlocked;
   final bool current;
-  final bool highlighted;
-  final int highlightEpoch;
 
   @override
   Widget build(BuildContext context) {
     final isFinal = level.type == WordHuntLevelType.routeFinal;
-    final asset = isFinal
-        ? 'assets/word_hunt/orman_node_final.b64'
-        : unlocked
-        ? 'assets/word_hunt/orman_node_open.b64'
-        : 'assets/word_hunt/orman_node_locked.b64';
-    final size = isFinal
-        ? 112.0
-        : unlocked
-        ? 84.0
-        : 88.0;
+    final asset =
+        isFinal
+            ? 'assets/word_hunt/orman_node_final.b64'
+            : unlocked
+            ? 'assets/word_hunt/orman_node_open.b64'
+            : 'assets/word_hunt/orman_node_locked.b64';
+    final size =
+        isFinal
+            ? 112.0
+            : unlocked
+            ? 84.0
+            : 88.0;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -274,14 +263,6 @@ class _ForestStop extends StatelessWidget {
                           spreadRadius: 1,
                         ),
                       ],
-                    ),
-                  ),
-                ),
-              if (highlighted)
-                Positioned.fill(
-                  child: _CompassPulse(
-                    key: ValueKey<String>(
-                      'word_hunt_route_stop_compass_highlight_${level.index}_$highlightEpoch',
                     ),
                   ),
                 ),
@@ -362,38 +343,6 @@ class _ForestStop extends StatelessWidget {
   }
 }
 
-class _CompassPulse extends StatelessWidget {
-  const _CompassPulse({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return TweenAnimationBuilder<double>(
-      tween: Tween<double>(begin: 0, end: 1),
-      duration: const Duration(milliseconds: 900),
-      curve: Curves.easeOutCubic,
-      builder: (context, value, child) {
-        return Opacity(
-          opacity: (1 - value).clamp(0, 1),
-          child: Transform.scale(scale: .86 + (.44 * value), child: child),
-        );
-      },
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          border: Border.all(color: const Color(0xFFFFDF77), width: 4),
-          boxShadow: const <BoxShadow>[
-            BoxShadow(
-              color: Color(0xB8FFD35A),
-              blurRadius: 22,
-              spreadRadius: 5,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
 class _Stars extends StatelessWidget {
   const _Stars({required this.stars, required this.muted, required this.size});
   final int stars;
@@ -412,11 +361,12 @@ class _Stars extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: List<Widget>.generate(3, (i) {
           final filled = i < stars;
-          final color = muted
-              ? const Color(0xFFA7ADA6)
-              : filled
-              ? const Color(0xFFFFC928)
-              : const Color(0xFF9DA39C);
+          final color =
+              muted
+                  ? const Color(0xFFA7ADA6)
+                  : filled
+                  ? const Color(0xFFFFC928)
+                  : const Color(0xFF9DA39C);
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 1),
             child: Stack(
@@ -431,11 +381,12 @@ class _Stars extends StatelessWidget {
                   Icons.star_rounded,
                   size: size,
                   color: color,
-                  shadows: filled
-                      ? const <Shadow>[
-                          Shadow(color: Color(0xCCF58D00), blurRadius: 5),
-                        ]
-                      : null,
+                  shadows:
+                      filled
+                          ? const <Shadow>[
+                            Shadow(color: Color(0xCCF58D00), blurRadius: 5),
+                          ]
+                          : null,
                 ),
               ],
             ),
@@ -594,13 +545,15 @@ class _Base64ImageState extends State<_Base64Image> {
   @override
   Widget build(BuildContext context) => FutureBuilder<Uint8List>(
     future: bytes,
-    builder: (context, snapshot) => snapshot.data == null
-        ? const SizedBox.expand()
-        : Image.memory(
-            snapshot.data!,
-            fit: BoxFit.contain,
-            filterQuality: FilterQuality.high,
-            gaplessPlayback: true,
-          ),
+    builder:
+        (context, snapshot) =>
+            snapshot.data == null
+                ? const SizedBox.expand()
+                : Image.memory(
+                  snapshot.data!,
+                  fit: BoxFit.contain,
+                  filterQuality: FilterQuality.high,
+                  gaplessPlayback: true,
+                ),
   );
 }

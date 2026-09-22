@@ -37,7 +37,7 @@ void main() {
     levels: <WordHuntLevelDefinition>[_level(1)],
   );
 
-  testWidgets('Gökyüzü route keeps edge controls inside safe viewport', (
+  testWidgets('Gökyüzü route keeps top controls inside safe viewport', (
     tester,
   ) async {
     tester.view.physicalSize = const Size(360, 800);
@@ -65,8 +65,6 @@ void main() {
     for (final key in <Key>[
       const Key('word_hunt_gokyuzu_master_art_back'),
       const Key('word_hunt_gokyuzu_master_art_info'),
-      const Key('word_hunt_gokyuzu_master_art_compass'),
-      const Key('word_hunt_gokyuzu_master_art_book'),
     ]) {
       final rect = tester.getRect(find.byKey(key));
       expect(rect.left, greaterThanOrEqualTo(0));
@@ -74,6 +72,14 @@ void main() {
       expect(rect.top, greaterThanOrEqualTo(28));
       expect(rect.bottom, lessThanOrEqualTo(776));
     }
+    expect(
+      find.byKey(const Key('word_hunt_gokyuzu_master_art_compass')),
+      findsNothing,
+    );
+    expect(
+      find.byKey(const Key('word_hunt_gokyuzu_master_art_book')),
+      findsNothing,
+    );
   });
 
   testWidgets('Gökyüzü gameplay uses route title and level scene', (

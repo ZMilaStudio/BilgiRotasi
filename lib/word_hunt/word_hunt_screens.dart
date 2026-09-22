@@ -3,6 +3,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
+import 'word_hunt_gameplay_presentation.dart';
 import 'word_hunt_input.dart';
 import 'word_hunt_models.dart';
 import 'word_hunt_path.dart';
@@ -10,9 +11,6 @@ import 'word_hunt_progress.dart';
 import 'word_hunt_scoring.dart';
 import 'word_hunt_starter_content.dart';
 
-const _harborNavy = Color(0xFF061425);
-const _harborGold = Color(0xFFFFCA62);
-const _harborCream = Color(0xFFFFF1D0);
 const _harborGridSpacing = 1.5;
 const _harborCellVisualScale = 1.12;
 const _harborInstructionDefault =
@@ -23,11 +21,13 @@ class WordHuntLevelPlayResult {
     required this.levelId,
     required this.stars,
     required this.unlockedInfoCardIds,
+    this.foundBonusCount,
   });
 
   final String levelId;
   final int stars;
   final Set<String> unlockedInfoCardIds;
+  final int? foundBonusCount;
 }
 
 /// Başlangıç Limanı Bölüm 1 için production oynanış ekranı.
@@ -41,6 +41,7 @@ class WordHuntLevelProductionScreen extends StatefulWidget {
     required this.level,
     required this.infoCards,
     this.backgroundAsset,
+    this.presentation,
     this.routeTitle = 'Başlangıç Limanı',
     this.deferCompletionDialog = false,
     this.now,
@@ -49,6 +50,7 @@ class WordHuntLevelProductionScreen extends StatefulWidget {
   final WordHuntLevelDefinition level;
   final List<WordHuntInfoCard> infoCards;
   final String? backgroundAsset;
+  final WordHuntGameplayPresentation? presentation;
   final String routeTitle;
   final bool deferCompletionDialog;
   final DateTime Function()? now;
@@ -99,6 +101,22 @@ class _WordHuntLevelProductionScreenState
       _completionElapsedSeconds ?? _elapsedSeconds;
 
   int get _scoredMistakes => _completionMistakes ?? _mistakes;
+
+  WordHuntGameplayPresentation get _effectivePresentation {
+    final configured = widget.presentation;
+    if (configured != null) return configured;
+    return WordHuntGameplayPresentation(
+      profileId: 'legacy-harbor-compatibility',
+      scene: WordHuntGameplaySceneDefinition(
+        id: 'legacy-harbor-scene',
+        assetPath:
+            widget.backgroundAsset ??
+            WordHuntRoutePresentationProfiles.harborBackground,
+        alignment: Alignment.topCenter,
+      ),
+      skin: WordHuntRoutePresentationProfiles.harborSkin,
+    );
+  }
 
   String get _displayedInstructionStatus {
     final status = _status;
@@ -365,6 +383,7 @@ class _WordHuntLevelProductionScreenState
       levelId: widget.level.id,
       stars: score.stars,
       unlockedInfoCardIds: Set<String>.unmodifiable(_unlockedInfoCards),
+      foundBonusCount: _foundBonus.length,
     );
 
     if (!mounted) return;
@@ -379,6 +398,7 @@ class _WordHuntLevelProductionScreenState
       barrierColor: const Color(0xD9000812),
       builder:
           (dialogContext) => _HarborCompletionDialog(
+            skin: _effectivePresentation.skin,
             routeTitle: widget.routeTitle,
             stars: score.stars,
             elapsedSeconds: elapsed,
@@ -443,6 +463,8 @@ class _WordHuntLevelProductionScreenState
 
   @override
   Widget build(BuildContext context) {
+    final presentation = _effectivePresentation;
+    final skin = presentation.skin;
     return PopScope<Object?>(
       canPop: _allowPop,
       onPopInvokedWithResult: (didPop, result) {
@@ -450,16 +472,13 @@ class _WordHuntLevelProductionScreenState
       },
       child: Scaffold(
         key: const Key('word_hunt_production_screen'),
-        backgroundColor: _harborNavy,
+        backgroundColor: skin.scaffoldColor,
         body: Stack(
           fit: StackFit.expand,
           children: [
-            Image.asset(
-              widget.backgroundAsset ??
-                  'assets/word_hunt/v5_reference_assets/harbor_background_1080x1920.png',
-              key: const Key('word_hunt_production_harbor_background'),
-              fit: BoxFit.cover,
-              alignment: Alignment.topCenter,
+            KeyedSubtree(
+              key: const Key('word_hunt_production_gameplay_background'),
+              child: WordHuntGameplaySceneBackground(scene: presentation.scene),
             ),
             SafeArea(
               child: LayoutBuilder(
@@ -470,7 +489,8 @@ class _WordHuntLevelProductionScreenState
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         _HarborGameplayHeader(
-                          levelIndex: widget.level.index,
+                          skin: skin,
+                          levelTitle: widget.level.displayNameOrFallback,
                           routeTitle: widget.routeTitle,
                           onBack: _requestExit,
                         ),
@@ -479,8 +499,12 @@ class _WordHuntLevelProductionScreenState
                           children: [
                             Expanded(
                               child: _HarborMetricPlate(
+                                skin: skin,
+                                icon: Icons.search_rounded,
                                 iconAsset:
-                                    'assets/word_hunt/v5_reference_assets/icon_search.png',
+                                    skin.metricPanelAsset == null
+                                        ? null
+                                        : 'assets/word_hunt/v5_reference_assets/icon_search.png',
                                 label:
                                     '${_foundTargets.length}/${widget.level.targetWords.length}',
                                 key: const Key('word_hunt_production_progress'),
@@ -489,8 +513,12 @@ class _WordHuntLevelProductionScreenState
                             const SizedBox(width: 6),
                             Expanded(
                               child: _HarborMetricPlate(
+                                skin: skin,
+                                icon: Icons.close_rounded,
                                 iconAsset:
-                                    'assets/word_hunt/v5_reference_assets/icon_mistake.png',
+                                    skin.metricPanelAsset == null
+                                        ? null
+                                        : 'assets/word_hunt/v5_reference_assets/icon_mistake.png',
                                 label: '$_scoredMistakes hata',
                                 key: const Key('word_hunt_production_mistakes'),
                               ),
@@ -498,8 +526,12 @@ class _WordHuntLevelProductionScreenState
                             const SizedBox(width: 6),
                             Expanded(
                               child: _HarborMetricPlate(
+                                skin: skin,
+                                icon: Icons.timer_outlined,
                                 iconAsset:
-                                    'assets/word_hunt/v5_reference_assets/icon_timer.png',
+                                    skin.metricPanelAsset == null
+                                        ? null
+                                        : 'assets/word_hunt/v5_reference_assets/icon_timer.png',
                                 label: '${_displayedElapsedSeconds}s',
                                 textKey: const Key(
                                   'word_hunt_production_elapsed_text',
@@ -528,6 +560,7 @@ class _WordHuntLevelProductionScreenState
                                       'word_hunt_production_target_${word}_${_foundTargets.contains(word) ? 'found' : 'pending'}',
                                     ),
                                     child: _HarborWordPlate(
+                                      skin: skin,
                                       word: word,
                                       found: _foundTargets.contains(word),
                                     ),
@@ -550,6 +583,7 @@ class _WordHuntLevelProductionScreenState
                                         'word_hunt_production_bonus_${word}_${_foundBonus.contains(word) ? 'found' : 'pending'}',
                                       ),
                                       child: _HarborWordPlate(
+                                        skin: skin,
                                         word: word,
                                         found: _foundBonus.contains(word),
                                         bonus: true,
@@ -607,6 +641,7 @@ class _WordHuntLevelProductionScreenState
                                             ),
                                             painter:
                                                 _HarborFoundPathConnectorPainter(
+                                                  skin: skin,
                                                   paths: _foundPaths.values
                                                       .map(
                                                         (path) => List<
@@ -652,6 +687,7 @@ class _WordHuntLevelProductionScreenState
                                                 .runes
                                                 .elementAt(column);
                                             return _HarborGridCell(
+                                              skin: skin,
                                               key: Key(
                                                 'word_hunt_production_cell_${row}_$column',
                                               ),
@@ -677,6 +713,7 @@ class _WordHuntLevelProductionScreenState
                         ),
                         const SizedBox(height: 7),
                         _HarborInstructionPlate(
+                          skin: skin,
                           status: _displayedInstructionStatus,
                         ),
                         if (_allTargetsFound) ...[
@@ -688,9 +725,9 @@ class _WordHuntLevelProductionScreenState
                                     ? null
                                     : _finishLevel,
                             style: FilledButton.styleFrom(
-                              backgroundColor: const Color(0xFF8A5A16),
-                              foregroundColor: _harborCream,
-                              side: const BorderSide(color: _harborGold),
+                              backgroundColor: skin.finishButtonColor,
+                              foregroundColor: skin.primaryTextColor,
+                              side: BorderSide(color: skin.accentColor),
                               textStyle: const TextStyle(
                                 fontFamily: 'serif',
                                 fontWeight: FontWeight.w800,
@@ -1313,6 +1350,7 @@ class _WordHuntLevelPrototypeScreenState
           levelId: widget.level.id,
           stars: score.stars,
           unlockedInfoCardIds: Set<String>.unmodifiable(_unlockedInfoCards),
+          foundBonusCount: _foundBonus.length,
         ),
       );
     }
@@ -1493,6 +1531,7 @@ class _WordHuntLevelPrototypeScreenState
 
 class _HarborCompletionDialog extends StatelessWidget {
   const _HarborCompletionDialog({
+    required this.skin,
     required this.routeTitle,
     required this.stars,
     required this.elapsedSeconds,
@@ -1501,6 +1540,7 @@ class _HarborCompletionDialog extends StatelessWidget {
     required this.onReturn,
   });
 
+  final WordHuntGameplaySkin skin;
   final String routeTitle;
   final int stars;
   final int elapsedSeconds;
@@ -1522,20 +1562,23 @@ class _HarborCompletionDialog extends StatelessWidget {
           key: const Key('word_hunt_production_result_panel'),
           padding: const EdgeInsets.fromLTRB(18, 15, 18, 15),
           decoration: BoxDecoration(
-            gradient: const LinearGradient(
+            gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
-              colors: <Color>[Color(0xFF0B2137), Color(0xFF061525)],
+              colors: <Color>[
+                skin.completionSurfaceTop,
+                skin.completionSurfaceBottom,
+              ],
             ),
             borderRadius: BorderRadius.circular(22),
-            border: Border.all(color: const Color(0xFFD29A43), width: 1.4),
-            boxShadow: const <BoxShadow>[
-              BoxShadow(
+            border: Border.all(color: skin.accentColor, width: 1.4),
+            boxShadow: <BoxShadow>[
+              const BoxShadow(
                 color: Color(0xCC000000),
                 blurRadius: 24,
                 offset: Offset(0, 11),
               ),
-              BoxShadow(color: Color(0x33FFCA62), blurRadius: 14),
+              BoxShadow(color: skin.connectorGlowColor, blurRadius: 14),
             ],
           ),
           child: Column(
@@ -1545,27 +1588,27 @@ class _HarborCompletionDialog extends StatelessWidget {
                 width: 46,
                 height: 3,
                 decoration: BoxDecoration(
-                  color: _harborGold,
+                  color: skin.accentColor,
                   borderRadius: BorderRadius.circular(999),
-                  boxShadow: const <BoxShadow>[
-                    BoxShadow(color: Color(0x66FFCA62), blurRadius: 8),
+                  boxShadow: <BoxShadow>[
+                    BoxShadow(color: skin.connectorGlowColor, blurRadius: 8),
                   ],
                 ),
               ),
               const SizedBox(height: 10),
-              const Icon(Icons.anchor_rounded, color: _harborGold, size: 28),
+              Icon(skin.completionIcon, color: skin.accentColor, size: 28),
               const SizedBox(height: 6),
-              const Text(
+              Text(
                 'Bölüm Tamamlandı',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  color: _harborCream,
+                  color: skin.primaryTextColor,
                   fontFamily: 'serif',
                   fontSize: 22,
                   height: 1.05,
                   fontWeight: FontWeight.w900,
                   letterSpacing: .2,
-                  shadows: <Shadow>[
+                  shadows: const <Shadow>[
                     Shadow(color: Color(0xE0000000), blurRadius: 7),
                   ],
                 ),
@@ -1573,8 +1616,8 @@ class _HarborCompletionDialog extends StatelessWidget {
               const SizedBox(height: 5),
               Text(
                 routeTitle,
-                style: const TextStyle(
-                  color: Color(0xFFD9A64F),
+                style: TextStyle(
+                  color: skin.accentColor,
                   fontFamily: 'serif',
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
@@ -1596,13 +1639,13 @@ class _HarborCompletionDialog extends StatelessWidget {
                       size: 34,
                       color:
                           index < stars
-                              ? const Color(0xFFFFCF5C)
-                              : const Color(0xFF6D6A62),
+                              ? skin.accentColor
+                              : skin.secondaryTextColor.withValues(alpha: .45),
                       shadows:
                           index < stars
-                              ? const <Shadow>[
+                              ? <Shadow>[
                                 Shadow(
-                                  color: Color(0x66FFB52A),
+                                  color: skin.connectorGlowColor,
                                   blurRadius: 10,
                                 ),
                               ]
@@ -1612,12 +1655,13 @@ class _HarborCompletionDialog extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 12),
-              Container(height: 1, color: const Color(0x557C5A2A)),
+              Container(height: 1, color: skin.surfaceBorderColor),
               const SizedBox(height: 10),
               Row(
                 children: <Widget>[
                   Expanded(
                     child: _HarborResultMetric(
+                      skin: skin,
                       icon: Icons.timer_outlined,
                       value: '$elapsedSeconds saniye',
                       valueKey: const Key(
@@ -1629,6 +1673,7 @@ class _HarborCompletionDialog extends StatelessWidget {
                   const SizedBox(width: 6),
                   Expanded(
                     child: _HarborResultMetric(
+                      skin: skin,
                       icon: Icons.close_rounded,
                       value: '$mistakes hata',
                       valueKey: const Key(
@@ -1640,6 +1685,7 @@ class _HarborCompletionDialog extends StatelessWidget {
                   const SizedBox(width: 6),
                   Expanded(
                     child: _HarborResultMetric(
+                      skin: skin,
                       icon: Icons.auto_awesome_rounded,
                       value: '${bonusWords.length}',
                       label: 'Bonus',
@@ -1656,15 +1702,15 @@ class _HarborCompletionDialog extends StatelessWidget {
                     vertical: 7,
                   ),
                   decoration: BoxDecoration(
-                    color: const Color(0x99261307),
+                    color: skin.bonusSurfaceColor,
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: const Color(0xFF8F642A)),
+                    border: Border.all(color: skin.surfaceBorderColor),
                   ),
                   child: Text(
                     '✦ Bonus: ${bonusWords.join(' • ')}',
                     textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      color: Color(0xFFFFD47B),
+                    style: TextStyle(
+                      color: skin.accentColor,
                       fontFamily: 'serif',
                       fontSize: 12,
                       fontWeight: FontWeight.w800,
@@ -1680,9 +1726,9 @@ class _HarborCompletionDialog extends StatelessWidget {
                   key: const Key('word_hunt_production_return_route'),
                   onPressed: onReturn,
                   style: FilledButton.styleFrom(
-                    backgroundColor: const Color(0xFF8A5A16),
-                    foregroundColor: _harborCream,
-                    side: const BorderSide(color: _harborGold, width: 1.2),
+                    backgroundColor: skin.finishButtonColor,
+                    foregroundColor: skin.primaryTextColor,
+                    side: BorderSide(color: skin.accentColor, width: 1.2),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(14),
                     ),
@@ -1706,12 +1752,14 @@ class _HarborCompletionDialog extends StatelessWidget {
 
 class _HarborResultMetric extends StatelessWidget {
   const _HarborResultMetric({
+    required this.skin,
     required this.icon,
     required this.value,
     required this.label,
     this.valueKey,
   });
 
+  final WordHuntGameplaySkin skin;
   final IconData icon;
   final String value;
   final String label;
@@ -1722,14 +1770,14 @@ class _HarborResultMetric extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 7),
       decoration: BoxDecoration(
-        color: const Color(0xB3091827),
+        color: skin.surfaceColor,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0x557C5A2A)),
+        border: Border.all(color: skin.surfaceBorderColor),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          Icon(icon, color: const Color(0xFFD9A64F), size: 16),
+          Icon(icon, color: skin.accentColor, size: 16),
           const SizedBox(height: 3),
           Text(
             value,
@@ -1737,8 +1785,8 @@ class _HarborResultMetric extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.center,
-            style: const TextStyle(
-              color: _harborCream,
+            style: TextStyle(
+              color: skin.primaryTextColor,
               fontFamily: 'serif',
               fontSize: 11,
               fontWeight: FontWeight.w900,
@@ -1747,8 +1795,8 @@ class _HarborResultMetric extends StatelessWidget {
           const SizedBox(height: 2),
           Text(
             label,
-            style: const TextStyle(
-              color: Color(0xFF9AA8B8),
+            style: TextStyle(
+              color: skin.secondaryTextColor,
               fontSize: 9,
               fontWeight: FontWeight.w700,
             ),
@@ -1761,17 +1809,20 @@ class _HarborResultMetric extends StatelessWidget {
 
 class _HarborGameplayHeader extends StatelessWidget {
   const _HarborGameplayHeader({
-    required this.levelIndex,
+    required this.skin,
+    required this.levelTitle,
     required this.routeTitle,
     required this.onBack,
   });
 
-  final int levelIndex;
+  final WordHuntGameplaySkin skin;
+  final String levelTitle;
   final String routeTitle;
   final VoidCallback onBack;
 
   @override
   Widget build(BuildContext context) {
+    final backAsset = skin.backIconAsset;
     return SizedBox(
       height: 62,
       child: Row(
@@ -1782,14 +1833,18 @@ class _HarborGameplayHeader extends StatelessWidget {
             style: IconButton.styleFrom(
               minimumSize: const Size(42, 42),
               padding: EdgeInsets.zero,
+              foregroundColor: skin.primaryTextColor,
             ),
-            icon: Image.asset(
-              'assets/word_hunt/v5_reference_assets/icon_back.png',
-              width: 34,
-              height: 34,
-              fit: BoxFit.contain,
-              filterQuality: FilterQuality.high,
-            ),
+            icon:
+                backAsset == null
+                    ? const Icon(Icons.arrow_back_rounded)
+                    : Image.asset(
+                      backAsset,
+                      width: 34,
+                      height: 34,
+                      fit: BoxFit.contain,
+                      filterQuality: FilterQuality.high,
+                    ),
           ),
           const SizedBox(width: 9),
           Expanded(
@@ -1798,29 +1853,34 @@ class _HarborGameplayHeader extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Bölüm $levelIndex',
-                  style: const TextStyle(
-                    color: _harborCream,
+                  levelTitle,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: skin.primaryTextColor,
                     fontFamily: 'serif',
-                    fontSize: 30,
+                    fontSize: 28,
                     height: 1,
                     fontWeight: FontWeight.w900,
                     letterSpacing: .2,
-                    shadows: [
+                    shadows: const [
                       Shadow(color: Color(0xE0000000), blurRadius: 8),
-                      Shadow(color: Color(0x44FFCA62), blurRadius: 4),
                     ],
                   ),
                 ),
                 const SizedBox(height: 5),
                 Text(
                   routeTitle,
-                  style: const TextStyle(
-                    color: Color(0xFF98A9B8),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: skin.secondaryTextColor,
                     fontFamily: 'serif',
                     fontSize: 13.5,
                     letterSpacing: .25,
-                    shadows: [Shadow(color: Color(0xCC000000), blurRadius: 6)],
+                    shadows: const [
+                      Shadow(color: Color(0xCC000000), blurRadius: 6),
+                    ],
                   ),
                 ),
               ],
@@ -1835,58 +1895,70 @@ class _HarborGameplayHeader extends StatelessWidget {
 class _HarborMetricPlate extends StatelessWidget {
   const _HarborMetricPlate({
     super.key,
-    required this.iconAsset,
+    required this.skin,
+    required this.icon,
     required this.label,
+    this.iconAsset,
     this.textKey,
   });
 
-  final String iconAsset;
+  final WordHuntGameplaySkin skin;
+  final IconData icon;
+  final String? iconAsset;
   final String label;
   final Key? textKey;
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
+    final panelAsset = skin.metricPanelAsset;
+    return Container(
       height: 45,
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          Image.asset(
-            'assets/word_hunt/v5_reference_assets/status_panel_empty.png',
-            fit: BoxFit.fill,
-            filterQuality: FilterQuality.high,
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Image.asset(
-                  iconAsset,
-                  width: 18,
-                  height: 18,
-                  fit: BoxFit.contain,
+      decoration: BoxDecoration(
+        color: panelAsset == null ? skin.surfaceColor : null,
+        image:
+            panelAsset == null
+                ? null
+                : DecorationImage(
+                  image: AssetImage(panelAsset),
+                  fit: BoxFit.fill,
                   filterQuality: FilterQuality.high,
                 ),
-                const SizedBox(width: 6),
-                Flexible(
-                  child: Text(
-                    label,
-                    key: textKey,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      color: _harborCream,
-                      fontFamily: 'serif',
-                      fontSize: 13,
-                      fontWeight: FontWeight.w900,
-                      shadows: <Shadow>[
-                        Shadow(color: Color(0xCC000000), blurRadius: 3),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
+        borderRadius: BorderRadius.circular(12),
+        border:
+            panelAsset == null
+                ? Border.all(color: skin.surfaceBorderColor)
+                : null,
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          if (iconAsset == null)
+            Icon(icon, size: 18, color: skin.accentColor)
+          else
+            Image.asset(
+              iconAsset!,
+              width: 18,
+              height: 18,
+              fit: BoxFit.contain,
+              filterQuality: FilterQuality.high,
+            ),
+          const SizedBox(width: 6),
+          Flexible(
+            child: Text(
+              label,
+              key: textKey,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: skin.primaryTextColor,
+                fontFamily: 'serif',
+                fontSize: 13,
+                fontWeight: FontWeight.w900,
+                shadows: const <Shadow>[
+                  Shadow(color: Color(0xCC000000), blurRadius: 3),
+                ],
+              ),
             ),
           ),
         ],
@@ -1897,35 +1969,50 @@ class _HarborMetricPlate extends StatelessWidget {
 
 class _HarborWordPlate extends StatelessWidget {
   const _HarborWordPlate({
+    required this.skin,
     required this.word,
     required this.found,
     this.bonus = false,
   });
 
+  final WordHuntGameplaySkin skin;
   final String word;
   final bool found;
   final bool bonus;
 
   @override
   Widget build(BuildContext context) {
-    final asset =
-        bonus
-            ? 'assets/word_hunt/v5_reference_assets/bonus_plaque_empty.png'
-            : 'assets/word_hunt/v5_reference_assets/word_plaque_empty.png';
+    final asset = bonus ? skin.bonusPlateAsset : skin.targetPlateAsset;
+    final surface = bonus ? skin.bonusSurfaceColor : skin.targetSurfaceColor;
     return AnimatedContainer(
       duration: const Duration(milliseconds: 160),
       constraints: const BoxConstraints(minHeight: 34),
-      padding: EdgeInsets.fromLTRB(bonus ? 30 : 12, 6, 12, 6),
+      padding: EdgeInsets.fromLTRB(bonus && asset != null ? 30 : 12, 6, 12, 6),
       decoration: BoxDecoration(
-        image: DecorationImage(
-          image: AssetImage(asset),
-          fit: BoxFit.fill,
-          filterQuality: FilterQuality.high,
-          colorFilter:
-              found
-                  ? const ColorFilter.mode(Color(0xFFC06B16), BlendMode.color)
-                  : null,
-        ),
+        color:
+            asset == null ? (found ? skin.foundSurfaceColor : surface) : null,
+        image:
+            asset == null
+                ? null
+                : DecorationImage(
+                  image: AssetImage(asset),
+                  fit: BoxFit.fill,
+                  filterQuality: FilterQuality.high,
+                  colorFilter:
+                      found
+                          ? ColorFilter.mode(
+                            skin.foundSurfaceColor,
+                            BlendMode.color,
+                          )
+                          : null,
+                ),
+        borderRadius: BorderRadius.circular(16),
+        border:
+            asset == null
+                ? Border.all(
+                  color: found ? skin.accentColor : skin.surfaceBorderColor,
+                )
+                : null,
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -1933,13 +2020,22 @@ class _HarborWordPlate extends StatelessWidget {
           if (bonus)
             SizedBox(
               key: Key('word_hunt_production_bonus_icon_$word'),
-              width: 0,
-              height: 0,
+              width: asset == null ? 12 : 0,
+              height: asset == null ? 12 : 0,
+              child:
+                  asset == null
+                      ? Icon(
+                        Icons.auto_awesome_rounded,
+                        size: 12,
+                        color: skin.accentColor,
+                      )
+                      : null,
             ),
+          if (bonus && asset == null) const SizedBox(width: 4),
           Text(
             word,
             style: TextStyle(
-              color: found ? const Color(0xFFFFE7AE) : _harborCream,
+              color: found ? skin.accentColor : skin.primaryTextColor,
               fontFamily: 'serif',
               fontSize: 12.5,
               height: 1,
@@ -1958,11 +2054,13 @@ class _HarborWordPlate extends StatelessWidget {
 
 class _HarborFoundPathConnectorPainter extends CustomPainter {
   const _HarborFoundPathConnectorPainter({
+    required this.skin,
     required this.paths,
     required this.cellExtent,
     required this.spacing,
   });
 
+  final WordHuntGameplaySkin skin;
   final List<List<WordHuntCell>> paths;
   final double cellExtent;
   final double spacing;
@@ -1978,16 +2076,15 @@ class _HarborFoundPathConnectorPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     if (paths.isEmpty) return;
-
     final glowPaint =
         Paint()
-          ..color = const Color(0x66FFB52A)
+          ..color = skin.connectorGlowColor
           ..style = PaintingStyle.stroke
           ..strokeWidth = math.max(10, cellExtent * .70)
           ..strokeCap = StrokeCap.butt;
     final bridgePaint =
         Paint()
-          ..color = const Color(0xF2C06A12)
+          ..color = skin.connectorColor
           ..style = PaintingStyle.stroke
           ..strokeWidth = math.max(8, cellExtent * .58)
           ..strokeCap = StrokeCap.butt;
@@ -2002,10 +2099,16 @@ class _HarborFoundPathConnectorPainter extends CustomPainter {
         if (distance <= 0) continue;
         final direction = delta / distance;
         final overlap = cellExtent * .40;
-        final start = startCenter + direction * overlap;
-        final end = endCenter - direction * overlap;
-        canvas.drawLine(start, end, glowPaint);
-        canvas.drawLine(start, end, bridgePaint);
+        canvas.drawLine(
+          startCenter + direction * overlap,
+          endCenter - direction * overlap,
+          glowPaint,
+        );
+        canvas.drawLine(
+          startCenter + direction * overlap,
+          endCenter - direction * overlap,
+          bridgePaint,
+        );
       }
     }
   }
@@ -2014,13 +2117,15 @@ class _HarborFoundPathConnectorPainter extends CustomPainter {
   bool shouldRepaint(covariant _HarborFoundPathConnectorPainter oldDelegate) {
     return oldDelegate.paths != paths ||
         oldDelegate.cellExtent != cellExtent ||
-        oldDelegate.spacing != spacing;
+        oldDelegate.spacing != spacing ||
+        oldDelegate.skin.id != skin.id;
   }
 }
 
 class _HarborGridCell extends StatelessWidget {
   const _HarborGridCell({
     super.key,
+    required this.skin,
     required this.row,
     required this.column,
     required this.letter,
@@ -2030,6 +2135,7 @@ class _HarborGridCell extends StatelessWidget {
     required this.error,
   });
 
+  final WordHuntGameplaySkin skin;
   final int row;
   final int column;
   final String letter;
@@ -2041,19 +2147,31 @@ class _HarborGridCell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final active = selected || found;
-    final asset =
-        active
-            ? 'assets/word_hunt/v5_reference_assets/cell_selected_found.png'
-            : 'assets/word_hunt/v5_reference_assets/cell_idle.png';
+    final asset = active ? skin.gridSelectedAsset : skin.gridIdleAsset;
+    final fill =
+        error
+            ? skin.gridErrorColor
+            : found
+            ? skin.gridFoundColor
+            : selected
+            ? skin.gridSelectedColor
+            : skin.gridIdleColor;
 
     return DecoratedBox(
       decoration: BoxDecoration(
+        color: asset == null ? fill : null,
         borderRadius: BorderRadius.circular(math.max(6, extent * .14)),
+        border:
+            asset == null
+                ? Border.all(
+                  color: active ? skin.accentColor : skin.surfaceBorderColor,
+                )
+                : null,
         boxShadow:
             active
-                ? const <BoxShadow>[
+                ? <BoxShadow>[
                   BoxShadow(
-                    color: Color(0x66FFB52A),
+                    color: skin.connectorGlowColor,
                     blurRadius: 3,
                     spreadRadius: .2,
                   ),
@@ -2064,29 +2182,30 @@ class _HarborGridCell extends StatelessWidget {
         fit: StackFit.expand,
         alignment: Alignment.center,
         children: [
-          ClipRect(
-            child: Transform.scale(
-              scale: _harborCellVisualScale,
-              child: Image.asset(
-                asset,
-                fit: BoxFit.fill,
-                filterQuality: FilterQuality.high,
+          if (asset != null)
+            ClipRect(
+              child: Transform.scale(
+                scale: _harborCellVisualScale,
+                child: Image.asset(
+                  asset,
+                  fit: BoxFit.fill,
+                  filterQuality: FilterQuality.high,
+                ),
               ),
             ),
-          ),
           if (error)
             DecoratedBox(
               decoration: BoxDecoration(
-                color: const Color(0xB35A1F2B),
+                color: skin.gridErrorColor.withValues(alpha: .70),
                 borderRadius: BorderRadius.circular(math.max(6, extent * .14)),
-                border: Border.all(color: const Color(0xFFFF6B57), width: 1.2),
+                border: Border.all(color: skin.accentColor, width: 1.2),
               ),
             ),
           Center(
             child: Text(
               letter,
               style: TextStyle(
-                color: _harborCream,
+                color: skin.gridTextColor,
                 fontFamily: 'serif',
                 fontSize: (extent * .46).clamp(17, 24),
                 fontWeight: FontWeight.w900,
@@ -2110,46 +2229,53 @@ class _HarborGridCell extends StatelessWidget {
 }
 
 class _HarborInstructionPlate extends StatelessWidget {
-  const _HarborInstructionPlate({required this.status});
+  const _HarborInstructionPlate({required this.skin, required this.status});
 
+  final WordHuntGameplaySkin skin;
   final String status;
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
+    final asset = skin.instructionPanelAsset;
+    return Container(
       key: const Key('word_hunt_production_instruction_plate'),
       height: 50,
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          Image.asset(
-            'assets/word_hunt/v5_reference_assets/instruction_panel_empty.png',
-            fit: BoxFit.fill,
-            filterQuality: FilterQuality.high,
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 7),
-            child: Center(
-              child: Text(
-                status,
-                key: const Key('word_hunt_production_status'),
-                textAlign: TextAlign.center,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  color: _harborCream,
-                  fontFamily: 'serif',
-                  fontSize: 12,
-                  height: 1.2,
-                  fontWeight: FontWeight.w800,
-                  shadows: <Shadow>[
-                    Shadow(color: Color(0xD0000000), blurRadius: 3),
-                  ],
+      decoration: BoxDecoration(
+        color: asset == null ? skin.instructionSurfaceColor : null,
+        image:
+            asset == null
+                ? null
+                : DecorationImage(
+                  image: AssetImage(asset),
+                  fit: BoxFit.fill,
+                  filterQuality: FilterQuality.high,
                 ),
-              ),
-            ),
+        borderRadius: BorderRadius.circular(14),
+        border:
+            asset == null ? Border.all(color: skin.surfaceBorderColor) : null,
+      ),
+      padding: EdgeInsets.symmetric(
+        horizontal: asset == null ? 14 : 48,
+        vertical: 7,
+      ),
+      child: Center(
+        child: Text(
+          status,
+          key: const Key('word_hunt_production_status'),
+          textAlign: TextAlign.center,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
+            color: skin.primaryTextColor,
+            fontFamily: 'serif',
+            fontSize: 12,
+            height: 1.2,
+            fontWeight: FontWeight.w800,
+            shadows: const <Shadow>[
+              Shadow(color: Color(0xD0000000), blurRadius: 3),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

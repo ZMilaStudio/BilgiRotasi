@@ -1,26 +1,42 @@
 {
-  "schemaVersion": 1,
-  "seed": 20260906,
-  "minimumReleaseLevels": 200,
+  "schemaVersion": 2,
+  "seed": 20260922,
   "routes": [
     {
-      "id": "fabrika-ornek",
-      "title": "Fabrika Örnek Rotası",
-      "theme": "Yalnız content factory doğrulama örneği; production içeriği değildir.",
-      "unlockStarsRequired": 0,
-      "routeRewardId": "reward-fabrika-ornek",
+      "routeId": "baslangic-limani",
       "levels": [
         {
-          "index": 1,
+          "id": "sample-baslangic-31",
+          "index": 31,
           "type": "normal",
-          "targetWords": ["BULUT", "GÜNEŞ", "RÜZGAR", "YILDIZ", "KANAT"],
-          "bonusWords": ["AYNA"]
+          "targetWords": [
+            "LAVANTA",
+            "YELPAZE"
+          ],
+          "bonusWords": [
+            "CEYLAN"
+          ],
+          "starRules": {
+            "twoStarMaxMistakes": 3,
+            "threeStarMaxMistakes": 1
+          }
         },
         {
-          "index": 2,
-          "type": "routeFinal",
-          "targetWords": ["DENİZ", "FENER", "LİMAN", "MARTI", "YELKEN"],
-          "bonusWords": ["PUSULA"]
+          "id": "sample-baslangic-32",
+          "index": 32,
+          "type": "normal",
+          "targetWords": [
+            "DÜDÜK",
+            "KEMER"
+          ],
+          "bonusWords": [
+            "KAZMA"
+          ],
+          "starRules": {
+            "twoStarMaxMistakes": 3,
+            "threeStarMaxMistakes": 1
+          },
+          "seed": 424242
         }
       ]
     }

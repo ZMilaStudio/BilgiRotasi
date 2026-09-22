@@ -573,9 +573,14 @@ class PlayerCommunityAgreementService {
 }
 
 class PlayerUsernameGate extends StatefulWidget {
-  const PlayerUsernameGate({required this.questionBank, super.key});
+  const PlayerUsernameGate({
+    required this.questionBank,
+    this.ownerUid,
+    super.key,
+  });
 
   final QuestionBank questionBank;
+  final String? ownerUid;
 
   @override
   State<PlayerUsernameGate> createState() => _PlayerUsernameGateState();
@@ -606,7 +611,10 @@ class _PlayerUsernameGateState extends State<PlayerUsernameGate> {
         }
 
         if (snapshot.data != null) {
-          return HomeScreen(questionBank: widget.questionBank);
+          return ProductModeEntryScreen(
+            questionBank: widget.questionBank,
+            ownerUid: widget.ownerUid,
+          );
         }
 
         return PlayerUsernameSetupScreen(

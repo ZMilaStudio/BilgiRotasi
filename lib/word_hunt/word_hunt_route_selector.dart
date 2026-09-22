@@ -13,10 +13,12 @@ class WordHuntRouteSelector extends StatelessWidget {
     super.key,
     required this.progress,
     required this.onRouteTap,
+    this.onBack,
   });
 
   final WordHuntProgressSnapshot progress;
   final ValueChanged<WordHuntRouteCatalogEntry> onRouteTap;
+  final VoidCallback? onBack;
 
   @override
   Widget build(BuildContext context) {
@@ -37,6 +39,14 @@ class WordHuntRouteSelector extends StatelessWidget {
         backgroundColor: const Color(0xFF071426),
         foregroundColor: Colors.white,
         elevation: 0,
+        leading:
+            onBack == null
+                ? null
+                : IconButton(
+                  key: const Key('word_hunt_route_selector_back'),
+                  onPressed: onBack,
+                  icon: const Icon(Icons.arrow_back_rounded),
+                ),
         title: const Text(
           'Kelime Avı',
           style: TextStyle(fontWeight: FontWeight.w900),
@@ -104,10 +114,7 @@ class WordHuntRouteSelector extends StatelessWidget {
   WordHuntRouteCatalogEntry? _recommendedEntry() {
     for (final entry in WordHuntRouteCatalog.entries) {
       if (entry.isUnlocked(progress) &&
-          !WordHuntRouteProgressEngine.isRouteComplete(
-            entry.route,
-            progress,
-          )) {
+          !WordHuntRouteProgressEngine.isRouteComplete(entry.route, progress)) {
         return entry;
       }
     }
@@ -136,19 +143,26 @@ class WordHuntRouteSelector extends StatelessWidget {
     final rewardEarned = progress.unlockedRouteRewardIds.contains(
       entry.route.routeRewardId,
     );
-    final subtitle = unlocked
-        ? '${entry.route.levels.length} bölüm • ${entry.route.maximumStars} yıldız'
-        : _lockedSubtitle(entry);
-    final progressText = unlocked
-        ? '$totalStars / ${entry.route.maximumStars} yıldız'
-        : _lockedProgressText(unlockRule);
-    final stateLabel = !unlocked
-        ? 'Kilitli'
-        : routeComplete
-        ? 'Tamamlandı'
-        : recommended
-        ? (hasProgress ? 'Devam Et' : 'Sıradaki')
-        : null;
+    final route = entry.route;
+    final staged = route.availableLevelCount < route.plannedRouteLevelCount;
+    final subtitle =
+        unlocked
+            ? staged
+                ? '${route.availableLevelCount} / ${route.plannedRouteLevelCount} bölüm • ${route.maximumStars} mevcut yıldız'
+                : '${route.availableLevelCount} bölüm • ${route.maximumStars} yıldız'
+            : _lockedSubtitle(entry);
+    final progressText =
+        unlocked
+            ? '$totalStars / ${entry.route.maximumStars} yıldız'
+            : _lockedProgressText(unlockRule);
+    final stateLabel =
+        !unlocked
+            ? 'Kilitli'
+            : routeComplete
+            ? 'Tamamlandı'
+            : recommended
+            ? (hasProgress ? 'Devam Et' : 'Sıradaki')
+            : null;
 
     void showLockedFeedback() {
       final message = entry.lockedMessage ?? _lockedSubtitle(entry);
@@ -203,10 +217,9 @@ class WordHuntRouteSelector extends StatelessWidget {
       case WordHuntRouteUnlockKind.always:
         return 'Kilitli';
       case WordHuntRouteUnlockKind.routeStars:
-        final current = rule.currentStars(progress).clamp(
-          0,
-          rule.requiredStars,
-        );
+        final current = rule
+            .currentStars(progress)
+            .clamp(0, rule.requiredStars);
         return '$current / ${rule.requiredStars} yıldız';
       case WordHuntRouteUnlockKind.routeComplete:
         if (prerequisite == null || prerequisite.levels.isEmpty) {
@@ -214,10 +227,9 @@ class WordHuntRouteSelector extends StatelessWidget {
         }
 
         final totalLevels = prerequisite.levels.length;
-        final completedLevels = rule.currentCompletedLevels(progress).clamp(
-          0,
-          totalLevels,
-        );
+        final completedLevels = rule
+            .currentCompletedLevels(progress)
+            .clamp(0, totalLevels);
         final finalCompleted = WordHuntRouteProgressEngine.isLevelCompleted(
           prerequisite.levels.last,
           progress,
@@ -294,50 +306,52 @@ class _WordHuntRouteCard extends StatelessWidget {
           (color) => Color.alphaBlend(
             unlocked
                 ? routeComplete
-                      ? const Color(0x44071426)
-                      : const Color(0x00000000)
+                    ? const Color(0x44071426)
+                    : const Color(0x00000000)
                 : const Color(0x88071426),
             color,
           ),
         )
         .toList(growable: false);
 
-    final borderColor = recommended
-        ? const Color(0xCCFFE082)
-        : unlocked
-        ? routeComplete
-              ? const Color(0x557A8CA5)
-              : const Color(0x66FFFFFF)
-        : const Color(0x557A8CA5);
+    final borderColor =
+        recommended
+            ? const Color(0xCCFFE082)
+            : unlocked
+            ? routeComplete
+                ? const Color(0x557A8CA5)
+                : const Color(0x66FFFFFF)
+            : const Color(0x557A8CA5);
 
-    final shadows = recommended
-        ? const <BoxShadow>[
-            BoxShadow(
-              color: Color(0x44000000),
-              blurRadius: 18,
-              offset: Offset(0, 8),
-            ),
-            BoxShadow(
-              color: Color(0x33FFE082),
-              blurRadius: 20,
-              spreadRadius: 1,
-            ),
-          ]
-        : unlocked && !routeComplete
-        ? const <BoxShadow>[
-            BoxShadow(
-              color: Color(0x33000000),
-              blurRadius: 14,
-              offset: Offset(0, 7),
-            ),
-          ]
-        : const <BoxShadow>[
-            BoxShadow(
-              color: Color(0x22000000),
-              blurRadius: 8,
-              offset: Offset(0, 4),
-            ),
-          ];
+    final shadows =
+        recommended
+            ? const <BoxShadow>[
+              BoxShadow(
+                color: Color(0x44000000),
+                blurRadius: 18,
+                offset: Offset(0, 8),
+              ),
+              BoxShadow(
+                color: Color(0x33FFE082),
+                blurRadius: 20,
+                spreadRadius: 1,
+              ),
+            ]
+            : unlocked && !routeComplete
+            ? const <BoxShadow>[
+              BoxShadow(
+                color: Color(0x33000000),
+                blurRadius: 14,
+                offset: Offset(0, 7),
+              ),
+            ]
+            : const <BoxShadow>[
+              BoxShadow(
+                color: Color(0x22000000),
+                blurRadius: 8,
+                offset: Offset(0, 4),
+              ),
+            ];
 
     return Semantics(
       key: Key('word_hunt_route_semantics_$cardKey'),
@@ -378,9 +392,10 @@ class _WordHuntRouteCard extends StatelessWidget {
                       shape: BoxShape.circle,
                       color: const Color(0x33000000),
                       border: Border.all(
-                        color: recommended
-                            ? const Color(0x99FFE082)
-                            : const Color(0x55FFFFFF),
+                        color:
+                            recommended
+                                ? const Color(0x99FFE082)
+                                : const Color(0x55FFFFFF),
                       ),
                     ),
                     child: Icon(
@@ -411,19 +426,21 @@ class _WordHuntRouteCard extends StatelessWidget {
                               if (stateLabel != null)
                                 _RouteStatusChip(
                                   key: Key('word_hunt_route_state_$cardKey'),
-                                  icon: !unlocked
-                                      ? Icons.lock_outline_rounded
-                                      : routeComplete
-                                      ? Icons.check_circle_rounded
-                                      : recommended
-                                      ? Icons.play_arrow_rounded
-                                      : Icons.circle_outlined,
+                                  icon:
+                                      !unlocked
+                                          ? Icons.lock_outline_rounded
+                                          : routeComplete
+                                          ? Icons.check_circle_rounded
+                                          : recommended
+                                          ? Icons.play_arrow_rounded
+                                          : Icons.circle_outlined,
                                   label: stateLabel!,
-                                  accent: recommended
-                                      ? const Color(0xFFFFE082)
-                                      : routeComplete
-                                      ? const Color(0xFFC9E6D2)
-                                      : const Color(0xFFD5E0EC),
+                                  accent:
+                                      recommended
+                                          ? const Color(0xFFFFE082)
+                                          : routeComplete
+                                          ? const Color(0xFFC9E6D2)
+                                          : const Color(0xFFD5E0EC),
                                   compact: compact,
                                 ),
                               if (reward != null)
@@ -465,13 +482,13 @@ class _WordHuntRouteCard extends StatelessWidget {
                           progressText,
                           key: Key('word_hunt_route_progress_$cardKey'),
                           style: TextStyle(
-                            color: recommended
-                                ? const Color(0xFFFFE082)
-                                : const Color(0xFFD8E3EF),
+                            color:
+                                recommended
+                                    ? const Color(0xFFFFE082)
+                                    : const Color(0xFFD8E3EF),
                             fontSize: 13,
-                            fontWeight: recommended
-                                ? FontWeight.w900
-                                : FontWeight.w700,
+                            fontWeight:
+                                recommended ? FontWeight.w900 : FontWeight.w700,
                           ),
                         ),
                       ],
@@ -482,9 +499,7 @@ class _WordHuntRouteCard extends StatelessWidget {
                     unlocked
                         ? Icons.chevron_right_rounded
                         : Icons.lock_outline_rounded,
-                    color: unlocked
-                        ? Colors.white
-                        : const Color(0xFFD5E0EC),
+                    color: unlocked ? Colors.white : const Color(0xFFD5E0EC),
                     size: compact ? 24 : 28,
                   ),
                 ],

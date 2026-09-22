@@ -3,10 +3,29 @@ name: Kelime Avı Content Factory
 on:
   pull_request:
     paths:
+      - 'lib/word_hunt/word_hunt_models.dart'
+      - 'lib/word_hunt/word_hunt_route_catalog.dart'
+      - 'lib/word_hunt/word_hunt_starter_content.dart'
+      - 'lib/word_hunt/word_hunt_gokyuzu_content.dart'
+      - 'lib/word_hunt/word_hunt_orman_content.dart'
+      - 'lib/word_hunt/word_hunt_orman2_content.dart'
+      - 'lib/word_hunt/word_hunt_kristal_content.dart'
+      - 'lib/word_hunt/word_hunt_kayip_sehir_content.dart'
+      - 'lib/word_hunt/word_hunt_yeralti_kralligi_content.dart'
+      - 'lib/word_hunt/word_hunt_gunes_imparatorlugu_content.dart'
+      - 'tools/word_hunt_corpus_support.dart'
+      - 'tools/word_hunt_production_corpus_lock_test.dart'
+      - 'tools/word_hunt_production_corpus.lock.json'
       - 'tools/word_hunt_batch_generator.py'
+      - 'tools/word_hunt_corpus_qa.py'
+      - 'tools/tests/test_word_hunt_corpus_qa.py'
+      - 'tools/word_hunt_content_factory.sample.json'
+      - 'tools/word_hunt_wave10b_baslangic_segment3.accepted.json'
+      - 'tools/word_hunt_segment1_source_lock.json'
+      - 'tools/word_hunt_wave10a_baslangic_segment2.lock.json'
+      - 'tools/tests/test_word_hunt_content_compiler.py'
       - 'tools/word_hunt_release_stock_manifest.py'
       - 'tools/word_hunt_release_stock_check.py'
-      - 'tools/word_hunt_content_factory*.json'
       - '.github/workflows/word-hunt-content-factory.yml'
   workflow_dispatch:
 
@@ -21,84 +40,183 @@ jobs:
       - name: Kaynağı indir
         uses: actions/checkout@v4
 
-      - name: Python kur
+      - name: Flutter 3.44.6 kur
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.6'
+          channel: stable
+          cache: true
+
+      - name: Python 3.12 kur
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
 
-      - name: Python syntax doğrula
+      - name: Flutter bağımlılıklarını kur
+        run: flutter pub get
+
+      - name: Corpus Dart format gate
+        run: |
+          dart format \
+            tools/word_hunt_corpus_support.dart \
+            tools/word_hunt_production_corpus_lock_test.dart
+          if ! git diff --quiet -- \
+            tools/word_hunt_corpus_support.dart \
+            tools/word_hunt_production_corpus_lock_test.dart; then
+            echo "::error::Dart formatter changed checked-in corpus tooling source."
+            git --no-pager diff -- \
+              tools/word_hunt_corpus_support.dart \
+              tools/word_hunt_production_corpus_lock_test.dart
+            exit 1
+          fi
+
+      - name: Production Dart corpus lock parity
+        run: >-
+          flutter test
+          tools/word_hunt_production_corpus_lock_test.dart
+          --reporter expanded
+
+      - name: Canonical ve legacy tooling syntax doğrula
         run: |
           python3 -m py_compile tools/word_hunt_batch_generator.py
+          python3 -m py_compile tools/tests/test_word_hunt_content_compiler.py
+          python3 -m py_compile tools/word_hunt_corpus_qa.py
+          python3 -m py_compile tools/tests/test_word_hunt_corpus_qa.py
           python3 -m py_compile tools/word_hunt_release_stock_manifest.py
           python3 -m py_compile tools/word_hunt_release_stock_check.py
 
-      - name: Örnek manifestten 8x8 grid üret ve doğrula
-        run: |
-          python3 tools/word_hunt_batch_generator.py \
-            --input tools/word_hunt_content_factory.sample.json \
-            --output /tmp/word_hunt_factory_sample.generated.json \
-            --report /tmp/word_hunt_factory_sample.report.txt
-          grep -Fq 'exact-one occurrence: PASS' /tmp/word_hunt_factory_sample.report.txt
-          grep -Fq 'Toplam bölüm: 2' /tmp/word_hunt_factory_sample.report.txt
-          grep -Fq 'Yayın stoğu hazır: HAYIR' /tmp/word_hunt_factory_sample.report.txt
+      - name: Historical Segment1 source lock doğrula
+        run: >-
+          python3 tools/word_hunt_batch_generator.py
+          --verify-source-lock-only
+          --source-lock tools/word_hunt_segment1_source_lock.json
 
-      - name: 200 bölüm altı release gate negatif testi
-        run: |
-          set +e
-          python3 tools/word_hunt_batch_generator.py \
-            --input tools/word_hunt_content_factory.sample.json \
-            --output /tmp/should_fail.json \
-            --require-release-stock
-          code=$?
-          set -e
-          test "$code" -eq 2
+      - name: Current production corpus lock doğrula
+        run: >-
+          python3 tools/word_hunt_batch_generator.py
+          --verify-production-corpus-lock-only
+          --production-corpus-lock tools/word_hunt_production_corpus.lock.json
 
-      - name: 180 yeni bölüm manifestini üret
-        run: |
-          python3 tools/word_hunt_release_stock_manifest.py \
-            --output /tmp/word_hunt_release_stock.manifest.json
+      - name: KA-02 Python contract tests
+        run: python3 -m unittest tools.tests.test_word_hunt_content_compiler -v
 
-      - name: Canonical 5-8-9-10 bölüm tiplerini doğrula
+      - name: Checkpoint C corpus QA Python tests
+        run: python3 -m unittest tools.tests.test_word_hunt_corpus_qa -v
+
+      - name: KA-02 v2 sample iki kez derle
+        run: |
+          python3 tools/word_hunt_batch_generator.py             --input tools/word_hunt_content_factory.sample.json             --production-corpus-lock tools/word_hunt_production_corpus.lock.json             --output /tmp/ka02-v2-a.json             --report /tmp/ka02-v2-a.txt
+          python3 tools/word_hunt_batch_generator.py             --input tools/word_hunt_content_factory.sample.json             --production-corpus-lock tools/word_hunt_production_corpus.lock.json             --output /tmp/ka02-v2-b.json             --report /tmp/ka02-v2-b.txt
+          cmp /tmp/ka02-v2-a.json /tmp/ka02-v2-b.json
+          cmp /tmp/ka02-v2-a.txt /tmp/ka02-v2-b.txt
+          grep -Fq 'Compiler version: ka02-v2' /tmp/ka02-v2-a.txt
+          grep -Fq 'Status: COMPILE PASS' /tmp/ka02-v2-a.txt
+          grep -Fq 'Contiguous current-frontier append: PASS' /tmp/ka02-v2-a.txt
+
+      - name: KA-02 v2 locked output validation
+        run: >-
+          python3 tools/word_hunt_batch_generator.py
+          --validate /tmp/ka02-v2-a.json
+          --production-corpus-lock tools/word_hunt_production_corpus.lock.json
+          --report /tmp/ka02-v2-validation.txt
+
+      - name: Checkpoint C deterministic corpus QA evidence
+        run: |
+          python3 tools/word_hunt_corpus_qa.py \
+            --production-corpus-lock tools/word_hunt_production_corpus.lock.json \
+            --json-report /tmp/word-hunt-corpus-qa-production-a.json \
+            --markdown-report /tmp/word-hunt-corpus-qa-production-a.md
+          python3 tools/word_hunt_corpus_qa.py \
+            --production-corpus-lock tools/word_hunt_production_corpus.lock.json \
+            --json-report /tmp/word-hunt-corpus-qa-production-b.json \
+            --markdown-report /tmp/word-hunt-corpus-qa-production-b.md
+          cmp /tmp/word-hunt-corpus-qa-production-a.json /tmp/word-hunt-corpus-qa-production-b.json
+          cmp /tmp/word-hunt-corpus-qa-production-a.md /tmp/word-hunt-corpus-qa-production-b.md
+          python3 tools/word_hunt_corpus_qa.py \
+            --production-corpus-lock tools/word_hunt_production_corpus.lock.json \
+            --candidate /tmp/ka02-v2-a.json \
+            --json-report /tmp/word-hunt-corpus-qa-candidate-a.json \
+            --markdown-report /tmp/word-hunt-corpus-qa-candidate-a.md
+          python3 tools/word_hunt_corpus_qa.py \
+            --production-corpus-lock tools/word_hunt_production_corpus.lock.json \
+            --candidate /tmp/ka02-v2-a.json \
+            --json-report /tmp/word-hunt-corpus-qa-candidate-b.json \
+            --markdown-report /tmp/word-hunt-corpus-qa-candidate-b.md
+          cmp /tmp/word-hunt-corpus-qa-candidate-a.json /tmp/word-hunt-corpus-qa-candidate-b.json
+          cmp /tmp/word-hunt-corpus-qa-candidate-a.md /tmp/word-hunt-corpus-qa-candidate-b.md
+
+      - name: Immutable Wave10A ka02-v1 evidence doğrula
+        run: >-
+          python3 tools/word_hunt_batch_generator.py
+          --validate-legacy-v1-evidence tools/word_hunt_wave10a_baslangic_segment2.lock.json
+          --source-lock tools/word_hunt_segment1_source_lock.json
+
+      - name: KA-02 v2 sample artifact yükle
+        uses: actions/upload-artifact@v4
+        with:
+          name: word-hunt-ka02-v2-sample
+          path: |
+            /tmp/ka02-v2-a.json
+            /tmp/ka02-v2-a.txt
+            /tmp/ka02-v2-validation.txt
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Checkpoint C candidate review evidence yükle
+        uses: actions/upload-artifact@v4
+        with:
+          name: word-hunt-ka02-v2-corpus-qa-review
+          path: |
+            /tmp/word-hunt-corpus-qa-candidate-a.json
+            /tmp/word-hunt-corpus-qa-candidate-a.md
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Immutable Wave10B accepted provenance doğrula
         run: |
           python3 - <<'PY'
           import json
           from pathlib import Path
 
-          data = json.loads(
-              Path('/tmp/word_hunt_release_stock.manifest.json').read_text(encoding='utf-8')
+          evidence = json.loads(
+              Path("tools/word_hunt_wave10b_baslangic_segment3.accepted.json").read_text(
+                  encoding="utf-8"
+              )
           )
-          expected = {
-              5: 'challenge',
-              8: 'normal',
-              9: 'normal',
-              10: 'routeFinal',
+          lock = json.loads(
+              Path("tools/word_hunt_production_corpus.lock.json").read_text(
+                  encoding="utf-8"
+              )
+          )
+          assert evidence["kind"] == "WORD_HUNT_WAVE10B_ACCEPTED_PROVENANCE"
+          assert evidence["ownerDecision"] == "ACCEPT"
+          assert evidence["compilerVersion"] == "ka02-v2"
+          assert evidence["acceptedCandidateDigest"] == "c20d2b9a56d6330f084faa3fe42f9691e515ad7c7cf774043302ea3955863072"
+          assert evidence["productionBaseCorpusDigest"] == "6dbabc0b5c3f35cdbf573b2dec49e0f0d346fc0146bb52aff6318ed43b7fd9e3"
+          assert evidence["acceptedWarning"] == {
+              "id": "WORD_LENGTH_OUTLIER",
+              "levelId": "baslangic-26",
+              "ownerAccepted": True,
           }
-          for route in data['routes']:
-              levels = {level['index']: level for level in route['levels']}
-              assert len(levels) == 10, route['id']
-              for index, level_type in expected.items():
-                  actual = levels[index]['type']
-                  assert actual == level_type, (
-                      route['id'], index, actual, level_type
-                  )
-              assert levels[5].get('timeLimitSeconds') == 60, route['id']
-              assert levels[10].get('timeLimitSeconds') == 120, route['id']
-          print('CANONICAL_LEVEL_TYPES: PASS')
+          starter = next(
+              route for route in lock["routes"]
+              if route["routeId"] == "baslangic-limani"
+          )
+          assert starter["availableLevelCount"] == 30
+          production = {
+              level["localIndex"]: level
+              for level in starter["levels"]
+              if 21 <= level["localIndex"] <= 30
+          }
+          assert sorted(production) == list(range(21, 31))
+          for accepted in evidence["levels"]:
+              current = production[accepted["localIndex"]]
+              assert current["levelId"] == accepted["levelId"]
+              assert current["type"] == accepted["type"]
+              assert current["grid"] == accepted["grid"]
+              assert current["targetWords"] == accepted["targetWords"]
+              assert current["bonusWords"] == accepted["bonusWords"]
+              assert current["starRules"] == accepted["starRules"]
+              assert current["timeLimitSeconds"] == accepted["timeLimitSeconds"]
+              assert current["gridHash"] == accepted["gridHash"]
           PY
-
-      - name: 180 yeni bölümü üret ve exact-one doğrula
-        run: |
-          python3 tools/word_hunt_batch_generator.py \
-            --input /tmp/word_hunt_release_stock.manifest.json \
-            --output /tmp/word_hunt_release_stock.generated.json \
-            --report /tmp/word_hunt_release_stock.report.txt
-          grep -Fq 'Toplam rota: 18' /tmp/word_hunt_release_stock.report.txt
-          grep -Fq 'Toplam bölüm: 180' /tmp/word_hunt_release_stock.report.txt
-          grep -Fq 'exact-one occurrence: PASS' /tmp/word_hunt_release_stock.report.txt
-
-      - name: Mevcut 20 + yeni 180 = minimum 200 yayın stoğu kapısı
-        run: |
-          python3 tools/word_hunt_release_stock_check.py \
-            --generated /tmp/word_hunt_release_stock.generated.json \
-            --approved-existing 20 \
-            --required-total 200

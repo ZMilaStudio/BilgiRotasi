@@ -1,3 +1,4 @@
+import 'package:bilgi_rotasi/word_hunt/word_hunt_gameplay_presentation.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_models.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_screens.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_starter_content.dart';
@@ -101,15 +102,20 @@ void main() {
         findsOneWidget,
       );
       expect(
-        find.byKey(const Key('word_hunt_production_harbor_background')),
+        find.byKey(const Key('word_hunt_production_gameplay_background')),
         findsOneWidget,
       );
-      final background = tester.widget<Image>(
-        find.byKey(const Key('word_hunt_production_harbor_background')),
+      final background = tester.widget<WordHuntGameplaySceneBackground>(
+        find.byType(WordHuntGameplaySceneBackground),
       );
       expect(
-        (background.image as AssetImage).assetName,
-        'assets/word_hunt/v5_reference_assets/harbor_background_1080x1920.png',
+        background.scene.assetPath,
+        WordHuntRoutePresentationProfiles.harborBackground,
+      );
+      final scaffold = tester.widget<Scaffold>(find.byType(Scaffold));
+      expect(
+        scaffold.backgroundColor,
+        WordHuntRoutePresentationProfiles.harborSkin.scaffoldColor,
       );
       expect(
         find.byKey(const Key('word_hunt_production_instruction_plate')),

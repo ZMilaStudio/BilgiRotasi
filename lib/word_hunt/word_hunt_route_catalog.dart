@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'word_hunt_gameplay_presentation.dart';
 import 'word_hunt_gokyuzu_content.dart';
 import 'word_hunt_gunes_imparatorlugu_content.dart';
 import 'word_hunt_gunes_imparatorlugu_visual_theme.dart';
@@ -104,6 +105,7 @@ class WordHuntRouteCatalogEntry {
     required this.colors,
     required this.unlockRule,
     required this.presentationKind,
+    required this.presentationProfile,
     this.lockedMessage,
     this.visualTheme,
   }) : assert(
@@ -120,6 +122,7 @@ class WordHuntRouteCatalogEntry {
   final List<Color> colors;
   final WordHuntRouteUnlockRule unlockRule;
   final WordHuntRoutePresentationKind presentationKind;
+  final WordHuntRoutePresentationProfile presentationProfile;
 
   /// Kilitli selector kartında gösterilecek ürün metni. Null olduğunda selector
   /// unlock rule'dan mevcut generic açıklamayı üretir.
@@ -130,12 +133,13 @@ class WordHuntRouteCatalogEntry {
   final WordHuntRouteVisualTheme? visualTheme;
 
   bool isUnlocked(WordHuntProgressSnapshot progress) =>
-      unlockRule.isUnlocked(progress);
+      unlockRule.isUnlocked(progress) ||
+      progress.grandfatheredUnlockedRouteIds.contains(route.id);
 }
 
 /// Kullanıcıya şu anda gerçekten sunulan production Kelime Avı rotaları.
 abstract final class WordHuntRouteCatalog {
-  static const WordHuntRouteCatalogEntry starter = WordHuntRouteCatalogEntry(
+  static final WordHuntRouteCatalogEntry starter = WordHuntRouteCatalogEntry(
     cardKey: 'starter',
     route: WordHuntStarterContent.baslangicLimani,
     infoCards: WordHuntStarterContent.infoCards,
@@ -144,9 +148,10 @@ abstract final class WordHuntRouteCatalog {
     colors: <Color>[Color(0xFF0E7490), Color(0xFF1E3A8A)],
     unlockRule: WordHuntRouteUnlockRule.always(),
     presentationKind: WordHuntRoutePresentationKind.referenceRoute,
+    presentationProfile: WordHuntRoutePresentationProfiles.starter,
   );
 
-  static const WordHuntRouteCatalogEntry gokyuzu = WordHuntRouteCatalogEntry(
+  static final WordHuntRouteCatalogEntry gokyuzu = WordHuntRouteCatalogEntry(
     cardKey: 'gokyuzu',
     route: WordHuntGokyuzuContent.gokyuzuAdalari,
     infoCards: WordHuntGokyuzuContent.infoCards,
@@ -158,11 +163,12 @@ abstract final class WordHuntRouteCatalog {
     ),
     lockedMessage: 'Başlangıç Limanı’nı tamamla ve en az 18 yıldız kazan.',
     presentationKind: WordHuntRoutePresentationKind.gokyuzuMasterArt,
+    presentationProfile: WordHuntRoutePresentationProfiles.gokyuzu,
   );
 
   /// Orman Yolu yalnız Gökyüzü Adaları route-complete olduğunda açılır.
   /// Gökyüzü'nün kendi completion contract'ı final + en az 18 yıldızdır.
-  static const WordHuntRouteCatalogEntry orman = WordHuntRouteCatalogEntry(
+  static final WordHuntRouteCatalogEntry orman = WordHuntRouteCatalogEntry(
     cardKey: 'orman',
     route: WordHuntOrmanContent.ormanYolu,
     infoCards: WordHuntOrmanContent.infoCards,
@@ -174,6 +180,7 @@ abstract final class WordHuntRouteCatalog {
     ),
     lockedMessage: 'Gökyüzü Adaları’nı tamamla ve en az 18 yıldız kazan.',
     presentationKind: WordHuntRoutePresentationKind.themedReusable,
+    presentationProfile: WordHuntRoutePresentationProfiles.ormanYolu,
     visualTheme: WordHuntRouteVisualThemes.ormanYolu,
   );
 
@@ -193,6 +200,7 @@ abstract final class WordHuntRouteCatalog {
         ),
         lockedMessage: 'Orman Yolu’nu tamamlayarak aç.',
         presentationKind: WordHuntRoutePresentationKind.themedReusable,
+        presentationProfile: WordHuntRoutePresentationProfiles.orman2,
         visualTheme: WordHuntOrman2VisualTheme.production,
       );
 
@@ -210,27 +218,28 @@ abstract final class WordHuntRouteCatalog {
     ),
     lockedMessage: 'Kadim Orman’ı tamamlayarak aç.',
     presentationKind: WordHuntRoutePresentationKind.themedReusable,
+    presentationProfile: WordHuntRoutePresentationProfiles.kristal,
     visualTheme: WordHuntKristalVisualTheme.production,
   );
 
-  static final WordHuntRouteCatalogEntry kayipSehir =
-      WordHuntRouteCatalogEntry(
-        cardKey: 'kayip-sehir',
-        route: WordHuntKayipSehirContent.kayipSehir,
-        infoCards: WordHuntKayipSehirContent.infoCards,
-        ordinalLabel: 'Altıncı rota',
-        icon: Icons.account_balance_rounded,
-        colors: <Color>[
-          WordHuntKayipSehirVisualTheme.production.mapTheme.surfaceColor,
-          WordHuntKayipSehirVisualTheme.production.mapTheme.pathColor,
-        ],
-        unlockRule: const WordHuntRouteUnlockRule.routeComplete(
-          prerequisiteRoute: WordHuntKristalContent.kristalVadisi,
-        ),
-        lockedMessage: 'Kristal Vadisi’ni tamamlayarak aç.',
-        presentationKind: WordHuntRoutePresentationKind.themedReusable,
-        visualTheme: WordHuntKayipSehirVisualTheme.production,
-      );
+  static final WordHuntRouteCatalogEntry kayipSehir = WordHuntRouteCatalogEntry(
+    cardKey: 'kayip-sehir',
+    route: WordHuntKayipSehirContent.kayipSehir,
+    infoCards: WordHuntKayipSehirContent.infoCards,
+    ordinalLabel: 'Altıncı rota',
+    icon: Icons.account_balance_rounded,
+    colors: <Color>[
+      WordHuntKayipSehirVisualTheme.production.mapTheme.surfaceColor,
+      WordHuntKayipSehirVisualTheme.production.mapTheme.pathColor,
+    ],
+    unlockRule: const WordHuntRouteUnlockRule.routeComplete(
+      prerequisiteRoute: WordHuntKristalContent.kristalVadisi,
+    ),
+    lockedMessage: 'Kristal Vadisi’ni tamamlayarak aç.',
+    presentationKind: WordHuntRoutePresentationKind.themedReusable,
+    presentationProfile: WordHuntRoutePresentationProfiles.kayipSehir,
+    visualTheme: WordHuntKayipSehirVisualTheme.production,
+  );
 
   static final WordHuntRouteCatalogEntry yeraltiKralligi =
       WordHuntRouteCatalogEntry(
@@ -248,27 +257,29 @@ abstract final class WordHuntRouteCatalog {
         ),
         lockedMessage: 'Kayıp Şehir’i tamamlayarak aç.',
         presentationKind: WordHuntRoutePresentationKind.themedReusable,
+        presentationProfile: WordHuntRoutePresentationProfiles.yeraltiKralligi,
         visualTheme: WordHuntYeraltiKralligiVisualTheme.production,
       );
 
-  static final WordHuntRouteCatalogEntry gunesImparatorlugu =
-      WordHuntRouteCatalogEntry(
-        cardKey: 'gunes-imparatorlugu',
-        route: WordHuntGunesImparatorluguContent.gunesImparatorlugu,
-        infoCards: WordHuntGunesImparatorluguContent.infoCards,
-        ordinalLabel: 'Sekizinci rota',
-        icon: Icons.wb_sunny_rounded,
-        colors: <Color>[
-          WordHuntGunesImparatorluguVisualTheme.production.mapTheme.surfaceColor,
-          WordHuntGunesImparatorluguVisualTheme.production.mapTheme.pathColor,
-        ],
-        unlockRule: const WordHuntRouteUnlockRule.routeComplete(
-          prerequisiteRoute: WordHuntYeraltiKralligiContent.yeraltiKralligi,
-        ),
-        lockedMessage: 'Yeraltı Krallığı’nı tamamlayarak aç.',
-        presentationKind: WordHuntRoutePresentationKind.themedReusable,
-        visualTheme: WordHuntGunesImparatorluguVisualTheme.production,
-      );
+  static final WordHuntRouteCatalogEntry
+  gunesImparatorlugu = WordHuntRouteCatalogEntry(
+    cardKey: 'gunes-imparatorlugu',
+    route: WordHuntGunesImparatorluguContent.gunesImparatorlugu,
+    infoCards: WordHuntGunesImparatorluguContent.infoCards,
+    ordinalLabel: 'Sekizinci rota',
+    icon: Icons.wb_sunny_rounded,
+    colors: <Color>[
+      WordHuntGunesImparatorluguVisualTheme.production.mapTheme.surfaceColor,
+      WordHuntGunesImparatorluguVisualTheme.production.mapTheme.pathColor,
+    ],
+    unlockRule: const WordHuntRouteUnlockRule.routeComplete(
+      prerequisiteRoute: WordHuntYeraltiKralligiContent.yeraltiKralligi,
+    ),
+    lockedMessage: 'Yeraltı Krallığı’nı tamamlayarak aç.',
+    presentationKind: WordHuntRoutePresentationKind.themedReusable,
+    presentationProfile: WordHuntRoutePresentationProfiles.gunesImparatorlugu,
+    visualTheme: WordHuntGunesImparatorluguVisualTheme.production,
+  );
 
   static final List<WordHuntRouteCatalogEntry> entries =
       <WordHuntRouteCatalogEntry>[

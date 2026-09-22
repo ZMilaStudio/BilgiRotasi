@@ -52,7 +52,7 @@ void main() {
         find.byKey(const Key('word_hunt_master_art_progress_counter_text')),
         findsOneWidget,
       );
-      expect(find.text('0 / 30'), findsOneWidget);
+      expect(find.text('0 / 90'), findsOneWidget);
       expect(
         find.byKey(const Key('word_hunt_master_art_level_1_locked')),
         findsNothing,
@@ -122,7 +122,7 @@ void main() {
     );
     await tester.pump();
 
-    expect(find.text('15 / 30'), findsOneWidget);
+    expect(find.text('15 / 90'), findsOneWidget);
     expect(
       find.byKey(const Key('word_hunt_master_art_level_8_locked')),
       findsNothing,
@@ -176,13 +176,11 @@ void main() {
     ], reason: 'Progression kilitli final hitbox callback üretmemeli.');
   });
 
-  testWidgets('pixel proof controls preserve existing callbacks', (
+  testWidgets('pixel proof removes bottom chrome and preserves top callbacks', (
     tester,
   ) async {
     await tester.binding.setSurfaceSize(const Size(540, 960));
     addTearDown(() => tester.binding.setSurfaceSize(null));
-    var compassTaps = 0;
-    var bookTaps = 0;
     var backTaps = 0;
     var infoTaps = 0;
 
@@ -190,8 +188,6 @@ void main() {
       MaterialApp(
         home: WordHuntPixelProofScreen(
           progress: const WordHuntProgressSnapshot(),
-          onCompass: () => compassTaps++,
-          onBook: () => bookTaps++,
           onBack: () => backTaps++,
           onInfo: () => infoTaps++,
         ),
@@ -199,13 +195,14 @@ void main() {
     );
     await tester.pump();
 
-    await tester.tap(find.byKey(const Key('word_hunt_pixel_proof_compass')));
-    await tester.tap(find.byKey(const Key('word_hunt_pixel_proof_book')));
+    expect(
+      find.byKey(const Key('word_hunt_pixel_proof_compass')),
+      findsNothing,
+    );
+    expect(find.byKey(const Key('word_hunt_pixel_proof_book')), findsNothing);
     await tester.tap(find.byKey(const Key('word_hunt_pixel_proof_back')));
     await tester.tap(find.byKey(const Key('word_hunt_pixel_proof_info')));
     await tester.pump();
-    expect(compassTaps, 1);
-    expect(bookTaps, 1);
     expect(backTaps, 1);
     expect(infoTaps, 1);
   });

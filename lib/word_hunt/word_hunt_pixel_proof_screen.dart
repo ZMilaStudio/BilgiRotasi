@@ -4,6 +4,7 @@ import 'word_hunt_master_art_progress_overlay.dart';
 import 'word_hunt_production_assets.dart';
 import 'word_hunt_models.dart';
 import 'word_hunt_progress.dart';
+import 'word_hunt_route_segment_host.dart';
 import 'word_hunt_starter_content.dart';
 
 /// Issue #109 piksel kanıtına ait tek görünür raster kaynak.
@@ -48,9 +49,6 @@ abstract final class WordHuntPixelProofLayout {
     104,
   ];
 
-  static const Offset compassCenter = Offset(90.72, 1176);
-  static const Offset bookCenter = Offset(630, 1176);
-  static const double controlHitboxDiameter = 120;
   static const Offset backCenter = Offset(60, 50);
   static const Offset infoCenter = Offset(660, 50);
   static const double topControlHitboxDiameter = 72;
@@ -74,8 +72,7 @@ class WordHuntPixelProofScreen extends StatelessWidget {
     this.onBack,
     this.onInfo,
     this.onLevelTap,
-    this.onCompass,
-    this.onBook,
+    this.segmentIndex = 1,
   });
 
   final WordHuntRouteDefinition route;
@@ -84,11 +81,15 @@ class WordHuntPixelProofScreen extends StatelessWidget {
   final VoidCallback? onBack;
   final VoidCallback? onInfo;
   final ValueChanged<int>? onLevelTap;
-  final VoidCallback? onCompass;
-  final VoidCallback? onBook;
+  final int segmentIndex;
 
   @override
   Widget build(BuildContext context) {
+    final host = WordHuntRouteSegmentHost.forRoute(
+      route: route,
+      progress: progress,
+      segmentIndex: segmentIndex,
+    );
     return Scaffold(
       backgroundColor: Colors.black,
       body: ClipRect(
@@ -116,7 +117,8 @@ class WordHuntPixelProofScreen extends StatelessWidget {
                   if (nodeNineOpenOverride) const _NodeNineOpenOverride(),
                   for (
                     var index = 0;
-                    index < WordHuntPixelProofLayout.levelCenters.length;
+                    index < host.nodes.length &&
+                        index < WordHuntPixelProofLayout.levelCenters.length;
                     index++
                   )
                     _TransparentHitbox(
@@ -125,27 +127,12 @@ class WordHuntPixelProofScreen extends StatelessWidget {
                       diameter:
                           WordHuntPixelProofLayout.levelHitboxDiameters[index],
                       onTap:
-                          WordHuntRouteProgressEngine.isLevelUnlocked(
-                                    route,
-                                    progress,
-                                    index + 1,
-                                  ) &&
-                                  onLevelTap != null
-                              ? () => onLevelTap!(index + 1)
+                          host.nodes[index].unlocked && onLevelTap != null
+                              ? () => onLevelTap!(
+                                host.nodes[index].absoluteLevelIndex,
+                              )
                               : null,
                     ),
-                  _TransparentHitbox(
-                    key: const Key('word_hunt_pixel_proof_compass'),
-                    center: WordHuntPixelProofLayout.compassCenter,
-                    diameter: WordHuntPixelProofLayout.controlHitboxDiameter,
-                    onTap: onCompass,
-                  ),
-                  _TransparentHitbox(
-                    key: const Key('word_hunt_pixel_proof_book'),
-                    center: WordHuntPixelProofLayout.bookCenter,
-                    diameter: WordHuntPixelProofLayout.controlHitboxDiameter,
-                    onTap: onBook,
-                  ),
                   _TransparentHitbox(
                     key: const Key('word_hunt_pixel_proof_back'),
                     center: WordHuntPixelProofLayout.backCenter,

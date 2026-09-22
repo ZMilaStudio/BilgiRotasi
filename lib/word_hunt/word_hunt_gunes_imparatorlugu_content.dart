@@ -73,6 +73,7 @@ abstract final class WordHuntGunesImparatorluguContent {
         id: 'gunes-imparatorlugu-01',
         routeId: 'gunes-imparatorlugu',
         index: 1,
+        displayName: 'Işık Yolu',
         type: WordHuntLevelType.normal,
         grid: <String>[
           'DHMKHÖNK',
@@ -97,6 +98,7 @@ abstract final class WordHuntGunesImparatorluguContent {
         id: 'gunes-imparatorlugu-02',
         routeId: 'gunes-imparatorlugu',
         index: 2,
+        displayName: 'Güneş Sütunları',
         type: WordHuntLevelType.normal,
         grid: <String>[
           'ABOMGSCJ',
@@ -121,6 +123,7 @@ abstract final class WordHuntGunesImparatorluguContent {
         id: 'gunes-imparatorlugu-03',
         routeId: 'gunes-imparatorlugu',
         index: 3,
+        displayName: 'Gökyüzü Avlusu',
         type: WordHuntLevelType.normal,
         grid: <String>[
           'HŞZGJDÜU',
@@ -145,6 +148,7 @@ abstract final class WordHuntGunesImparatorluguContent {
         id: 'gunes-imparatorlugu-04',
         routeId: 'gunes-imparatorlugu',
         index: 4,
+        displayName: 'Yıldız Haritası',
         type: WordHuntLevelType.normal,
         grid: <String>[
           'ÖPUTUKLH',
@@ -168,6 +172,7 @@ abstract final class WordHuntGunesImparatorluguContent {
         id: 'gunes-imparatorlugu-05',
         routeId: 'gunes-imparatorlugu',
         index: 5,
+        displayName: 'Ekinoks Kapısı',
         type: WordHuntLevelType.challenge,
         grid: <String>[
           'INÇNYTDE',
@@ -195,6 +200,7 @@ abstract final class WordHuntGunesImparatorluguContent {
         id: 'gunes-imparatorlugu-06',
         routeId: 'gunes-imparatorlugu',
         index: 6,
+        displayName: 'Tören Yolu',
         type: WordHuntLevelType.normal,
         grid: <String>[
           'ŞLYZAÜJÜ',
@@ -218,6 +224,7 @@ abstract final class WordHuntGunesImparatorluguContent {
         id: 'gunes-imparatorlugu-07',
         routeId: 'gunes-imparatorlugu',
         index: 7,
+        displayName: 'Büyük Tapınak',
         type: WordHuntLevelType.normal,
         grid: <String>[
           'TULRŞSBP',
@@ -242,6 +249,7 @@ abstract final class WordHuntGunesImparatorluguContent {
         id: 'gunes-imparatorlugu-08',
         routeId: 'gunes-imparatorlugu',
         index: 8,
+        displayName: 'Altın Çarklar',
         type: WordHuntLevelType.normal,
         grid: <String>[
           'VBİHIİPJ',
@@ -266,6 +274,7 @@ abstract final class WordHuntGunesImparatorluguContent {
         id: 'gunes-imparatorlugu-09',
         routeId: 'gunes-imparatorlugu',
         index: 9,
+        displayName: 'Kraliyet Salonu',
         type: WordHuntLevelType.normal,
         grid: <String>[
           'TBNHZNTS',
@@ -289,6 +298,7 @@ abstract final class WordHuntGunesImparatorluguContent {
         id: 'gunes-imparatorlugu-10',
         routeId: 'gunes-imparatorlugu',
         index: 10,
+        displayName: 'Güneş Tahtı',
         type: WordHuntLevelType.routeFinal,
         grid: <String>[
           'HFTAHTÇU',

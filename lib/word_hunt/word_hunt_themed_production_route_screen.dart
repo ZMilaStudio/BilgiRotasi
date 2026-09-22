@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:convert';
 import 'dart:math' as math;
 import 'dart:ui' as ui;
@@ -8,11 +7,9 @@ import 'package:flutter/services.dart';
 
 import 'word_hunt_edge_ambient.dart';
 import 'word_hunt_models.dart';
-import 'word_hunt_production_assets.dart';
 import 'word_hunt_progress.dart';
 import 'word_hunt_reusable_route_map_screen.dart';
 import 'word_hunt_route_chrome_theme.dart';
-import 'word_hunt_route_ux_scope.dart';
 import 'word_hunt_route_visual_theme.dart';
 
 class WordHuntThemedProductionRouteScreen extends StatefulWidget {
@@ -23,9 +20,8 @@ class WordHuntThemedProductionRouteScreen extends StatefulWidget {
     required this.progress,
     required this.onBack,
     required this.onInfo,
-    required this.onCompass,
-    required this.onBook,
     required this.onLevelTap,
+    this.segmentIndex = 1,
   });
 
   final WordHuntRouteDefinition route;
@@ -33,9 +29,8 @@ class WordHuntThemedProductionRouteScreen extends StatefulWidget {
   final WordHuntProgressSnapshot progress;
   final VoidCallback onBack;
   final VoidCallback onInfo;
-  final VoidCallback onCompass;
-  final VoidCallback onBook;
   final ValueChanged<int> onLevelTap;
+  final int segmentIndex;
 
   @override
   State<WordHuntThemedProductionRouteScreen> createState() =>
@@ -51,41 +46,8 @@ class _WordHuntThemedProductionRouteScreenState
   static const double _compactTopControlExtent = 48;
   static const double _compactTopControlVisualExtent = 40;
 
-  int? _highlightedLevelIndex;
-  int _highlightEpoch = 0;
-  Timer? _highlightTimer;
-
   bool get _usesOrmanReferenceCanvas =>
       widget.visualTheme.referenceCanvasSize != null;
-
-  @override
-  void dispose() {
-    _highlightTimer?.cancel();
-    super.dispose();
-  }
-
-  void _handleCompass() {
-    _highlightTimer?.cancel();
-    if (!WordHuntRouteProgressEngine.isRouteComplete(
-      widget.route,
-      widget.progress,
-    )) {
-      final level = WordHuntRouteProgressEngine.nextPlayableLevelIndex(
-        widget.route,
-        widget.progress,
-      );
-      final epoch = _highlightEpoch + 1;
-      setState(() {
-        _highlightedLevelIndex = level;
-        _highlightEpoch = epoch;
-      });
-      _highlightTimer = Timer(const Duration(milliseconds: 1050), () {
-        if (!mounted || epoch != _highlightEpoch) return;
-        setState(() => _highlightedLevelIndex = null);
-      });
-    }
-    widget.onCompass();
-  }
 
   Widget _withOpeningTransition(Widget child) {
     return TweenAnimationBuilder<double>(
@@ -94,14 +56,15 @@ class _WordHuntThemedProductionRouteScreenState
       duration: const Duration(milliseconds: 650),
       curve: Curves.easeOutCubic,
       child: child,
-      builder: (context, value, animatedChild) => Opacity(
-        opacity: value,
-        child: Transform.scale(
-          scale: 0.992 + (0.008 * value),
-          alignment: Alignment.center,
-          child: animatedChild,
-        ),
-      ),
+      builder:
+          (context, value, animatedChild) => Opacity(
+            opacity: value,
+            child: Transform.scale(
+              scale: 0.992 + (0.008 * value),
+              alignment: Alignment.center,
+              child: animatedChild,
+            ),
+          ),
     );
   }
 
@@ -128,16 +91,12 @@ class _WordHuntThemedProductionRouteScreenState
     );
   }
 
-  WordHuntChromeControlSpec? _controlSpec(
-    _WordHuntChromeSlot slot,
-  ) {
+  WordHuntChromeControlSpec? _controlSpec(_WordHuntChromeSlot slot) {
     final chrome = widget.visualTheme.chromeTheme;
     if (chrome == null) return null;
     return switch (slot) {
       _WordHuntChromeSlot.back => chrome.back,
       _WordHuntChromeSlot.info => chrome.info,
-      _WordHuntChromeSlot.compass => chrome.compass,
-      _WordHuntChromeSlot.codex => chrome.codex,
     };
   }
 
@@ -269,30 +228,6 @@ class _WordHuntThemedProductionRouteScreenState
                     onPressed: widget.onInfo,
                   ),
                 ),
-                Align(
-                  alignment: Alignment.bottomLeft,
-                  child: _artworkControl(
-                    key: const Key('word_hunt_themed_chrome_compass'),
-                    slot: _WordHuntChromeSlot.compass,
-                    label: 'Pusula',
-                    legacyIcon: Icons.explore_outlined,
-                    legacyAssetPath: WordHuntProductionAssets.compassButton,
-                    theme: theme,
-                    onPressed: _handleCompass,
-                  ),
-                ),
-                Align(
-                  alignment: Alignment.bottomRight,
-                  child: _artworkControl(
-                    key: const Key('word_hunt_themed_chrome_book'),
-                    slot: _WordHuntChromeSlot.codex,
-                    label: 'Kitap',
-                    legacyIcon: Icons.menu_book_rounded,
-                    legacyAssetPath: WordHuntProductionAssets.bookButton,
-                    theme: theme,
-                    onPressed: widget.onBook,
-                  ),
-                ),
               ],
             ),
           ),
@@ -354,9 +289,10 @@ class _WordHuntThemedProductionRouteScreenState
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
-                    colors: isTop
-                        ? <Color>[ambientEdge, ambientMid, ambientClear]
-                        : <Color>[ambientClear, ambientMid, ambientEdge],
+                    colors:
+                        isTop
+                            ? <Color>[ambientEdge, ambientMid, ambientClear]
+                            : <Color>[ambientClear, ambientMid, ambientEdge],
                     stops: const <double>[0, 0.68, 1],
                   ),
                 ),
@@ -395,12 +331,12 @@ class _WordHuntThemedProductionRouteScreenState
       );
     }
 
-    final stops = isTop
-        ? <double>[0, 1 - featherRatio, 1]
-        : <double>[0, featherRatio, 1];
-    final colors = isTop
-        ? const <Color>[Colors.white, Colors.white, Colors.transparent]
-        : const <Color>[Colors.transparent, Colors.white, Colors.white];
+    final stops =
+        isTop ? <double>[0, 1 - featherRatio, 1] : <double>[0, featherRatio, 1];
+    final colors =
+        isTop
+            ? const <Color>[Colors.white, Colors.white, Colors.transparent]
+            : const <Color>[Colors.transparent, Colors.white, Colors.white];
 
     return RepaintBoundary(
       key: Key(
@@ -410,12 +346,13 @@ class _WordHuntThemedProductionRouteScreenState
       ),
       child: ShaderMask(
         blendMode: BlendMode.dstIn,
-        shaderCallback: (bounds) => LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: colors,
-          stops: stops,
-        ).createShader(bounds),
+        shaderCallback:
+            (bounds) => LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: colors,
+              stops: stops,
+            ).createShader(bounds),
         child: _ormanAmbientBackground(theme, isTop: isTop),
       ),
     );
@@ -430,11 +367,12 @@ class _WordHuntThemedProductionRouteScreenState
       child: LayoutBuilder(
         builder: (context, constraints) {
           final available = constraints.biggest;
-          final fitted = applyBoxFit(
-            BoxFit.contain,
-            referenceCanvasSize,
-            available,
-          ).destination;
+          final fitted =
+              applyBoxFit(
+                BoxFit.contain,
+                referenceCanvasSize,
+                available,
+              ).destination;
           final left = math.max(0.0, (available.width - fitted.width) / 2);
           final top = math.max(0.0, (available.height - fitted.height) / 2);
           final right = math.max(0.0, available.width - left - fitted.width);
@@ -442,15 +380,14 @@ class _WordHuntThemedProductionRouteScreenState
           final referenceScale = fitted.width / referenceCanvasSize.width;
           final compactTopChrome =
               referenceScale < _compactReferenceScaleThreshold;
-          final topControlExtent = compactTopChrome
-              ? _compactTopControlExtent
-              : 52.0;
+          final topControlExtent =
+              compactTopChrome ? _compactTopControlExtent : 52.0;
           final topControlInset = compactTopChrome ? 0.0 : 6.0;
           final edgeAmbientFeatherOverlap =
               widget.visualTheme.tallAmbientMode ==
-                  WordHuntTallAmbientMode.edgeDerivedLowFrequency
-              ? _edgeAmbientFeatherOverlap
-              : _ormanAmbientFeatherOverlap;
+                      WordHuntTallAmbientMode.edgeDerivedLowFrequency
+                  ? _edgeAmbientFeatherOverlap
+                  : _ormanAmbientFeatherOverlap;
           final boardMediaQuery = MediaQuery.of(context).copyWith(
             size: referenceCanvasSize,
             padding: EdgeInsets.zero,
@@ -544,32 +481,6 @@ class _WordHuntThemedProductionRouteScreenState
                   compact: compactTopChrome,
                 ),
               ),
-              Positioned(
-                left: left + 8,
-                bottom: bottom + 8,
-                child: _artworkControl(
-                  key: const Key('word_hunt_themed_chrome_compass'),
-                  slot: _WordHuntChromeSlot.compass,
-                  label: 'Pusula',
-                  legacyIcon: Icons.explore_outlined,
-                  legacyAssetPath: WordHuntProductionAssets.compassButton,
-                  theme: theme,
-                  onPressed: _handleCompass,
-                ),
-              ),
-              Positioned(
-                right: right + 8,
-                bottom: bottom + 8,
-                child: _artworkControl(
-                  key: const Key('word_hunt_themed_chrome_book'),
-                  slot: _WordHuntChromeSlot.codex,
-                  label: 'Kitap',
-                  legacyIcon: Icons.menu_book_rounded,
-                  legacyAssetPath: WordHuntProductionAssets.bookButton,
-                  theme: theme,
-                  onPressed: widget.onBook,
-                ),
-              ),
             ],
           );
         },
@@ -580,24 +491,22 @@ class _WordHuntThemedProductionRouteScreenState
   @override
   Widget build(BuildContext context) {
     final theme = widget.visualTheme.mapTheme;
-    final map = WordHuntRouteUxScope(
-      highlightedLevelIndex: _highlightedLevelIndex,
-      highlightEpoch: _highlightEpoch,
-      child: WordHuntThemedRouteMapScreen(
-        route: widget.route,
-        visualTheme: widget.visualTheme,
-        progress: widget.progress,
-        onLevelTap: widget.onLevelTap,
-      ),
+    final map = WordHuntThemedRouteMapScreen(
+      route: widget.route,
+      visualTheme: widget.visualTheme,
+      progress: widget.progress,
+      onLevelTap: widget.onLevelTap,
+      segmentIndex: widget.segmentIndex,
     );
 
     if (widget.visualTheme.hasArtwork) {
       return Scaffold(
         key: const Key('word_hunt_themed_production_route'),
         backgroundColor: theme.backgroundColor,
-        body: _usesOrmanReferenceCanvas
-            ? _ormanReferenceChrome(theme: theme, map: map)
-            : _fixedArtworkChrome(theme: theme, map: map),
+        body:
+            _usesOrmanReferenceCanvas
+                ? _ormanReferenceChrome(theme: theme, map: map)
+                : _fixedArtworkChrome(theme: theme, map: map),
       );
     }
 
@@ -625,20 +534,6 @@ class _WordHuntThemedProductionRouteScreenState
                     tooltip: 'Bilgi',
                     color: theme.textColor,
                     onPressed: widget.onInfo,
-                  ),
-                  _ChromeButton(
-                    key: const Key('word_hunt_themed_chrome_compass'),
-                    icon: Icons.explore_outlined,
-                    tooltip: 'Pusula',
-                    color: theme.accentColor,
-                    onPressed: _handleCompass,
-                  ),
-                  _ChromeButton(
-                    key: const Key('word_hunt_themed_chrome_book'),
-                    icon: Icons.menu_book_rounded,
-                    tooltip: 'Kitap',
-                    color: theme.textColor,
-                    onPressed: widget.onBook,
                   ),
                 ],
               ),
@@ -701,9 +596,8 @@ class _AmbientBase64ArtworkState extends State<_AmbientBase64Artwork> {
           return ColoredBox(color: widget.fallbackColor);
         }
 
-        final alignment = widget.isTop
-            ? Alignment.topCenter
-            : Alignment.bottomCenter;
+        final alignment =
+            widget.isTop ? Alignment.topCenter : Alignment.bottomCenter;
         return Transform(
           alignment: Alignment.center,
           transform: Matrix4.diagonal3Values(1, -1, 1),
@@ -727,7 +621,7 @@ class _AmbientBase64ArtworkState extends State<_AmbientBase64Artwork> {
   }
 }
 
-enum _WordHuntChromeSlot { back, info, compass, codex }
+enum _WordHuntChromeSlot { back, info }
 
 class _ArtworkChromeButton extends StatelessWidget {
   const _ArtworkChromeButton({
@@ -792,8 +686,9 @@ class _ArtworkChromeButton extends StatelessWidget {
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                           colors: <Color>[
-                            (surfaceTint ?? const Color(0xFF1C2E20))
-                                .withValues(alpha: 0.85),
+                            (surfaceTint ?? const Color(0xFF1C2E20)).withValues(
+                              alpha: 0.85,
+                            ),
                             Color.alphaBlend(
                               Colors.black.withValues(alpha: 0.55),
                               surfaceTint ?? const Color(0xFF08120C),

@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import 'word_hunt_models.dart';
 import 'word_hunt_pixel_proof_screen.dart';
 import 'word_hunt_progress.dart';
-import 'word_hunt_production_assets.dart';
 import 'word_hunt_route_stop.dart';
+import 'word_hunt_route_segment_host.dart';
 import 'word_hunt_starter_content.dart';
 
 /// Kullanıcının onayladığı Başlangıç Limanı referansının kod tarafındaki
@@ -34,11 +34,6 @@ class WordHuntReferenceRouteLayout {
   ];
 
   static const Rect topPanel = Rect.fromLTRB(87.48, 134.40, 997.92, 303.36);
-
-  static const List<Offset> bottomControlCenters = <Offset>[
-    Offset(136.08, 1764.00),
-    Offset(945.00, 1764.00),
-  ];
 
   static const Map<int, Rect> specialPlaques = <int, Rect>{
     5: Rect.fromLTWH(426, 825, 324, 88),
@@ -143,9 +138,8 @@ class WordHuntReferenceRouteScreen extends StatelessWidget {
     this.sceneAssetPath,
     this.onBack,
     this.onInfo,
-    this.onCompass,
-    this.onBook,
     this.onLevelTap,
+    this.segmentIndex = 1,
   });
 
   final WordHuntRouteDefinition route;
@@ -153,17 +147,22 @@ class WordHuntReferenceRouteScreen extends StatelessWidget {
   final String? sceneAssetPath;
   final VoidCallback? onBack;
   final VoidCallback? onInfo;
-  final VoidCallback? onCompass;
-  final VoidCallback? onBook;
   final ValueChanged<int>? onLevelTap;
+  final int segmentIndex;
 
   static const WordHuntRouteStopMetrics _metrics =
       WordHuntRouteStopMetrics.referenceBaseline;
 
   @override
   Widget build(BuildContext context) {
+    final host = WordHuntRouteSegmentHost.forRoute(
+      route: route,
+      progress: progress,
+      segmentIndex: segmentIndex,
+    );
     if (route.id == WordHuntStarterContent.baslangicLimani.id &&
-        sceneAssetPath == null) {
+        sceneAssetPath == null &&
+        segmentIndex == 1) {
       final nodeNineOpen = WordHuntRouteProgressEngine.isLevelUnlocked(
         route,
         progress,
@@ -176,14 +175,15 @@ class WordHuntReferenceRouteScreen extends StatelessWidget {
         nodeNineOpenOverride: nodeNineOpen,
         onBack: onBack,
         onInfo: onInfo,
-        onCompass: onCompass,
-        onBook: onBook,
         onLevelTap: onLevelTap,
+        segmentIndex: segmentIndex,
       );
     }
 
     final totalStars = WordHuntRouteProgressEngine.totalStars(route, progress);
-    final lastUnlocked = _lastUnlockedIndex();
+    final lastUnlocked = host.nodes
+        .where((node) => node.unlocked)
+        .fold<int>(0, (last, node) => node.localNodeIndex);
 
     return Scaffold(
       backgroundColor: const Color(0xFF020611),
@@ -198,11 +198,11 @@ class WordHuntReferenceRouteScreen extends StatelessWidget {
           );
           const routeSize = WordHuntReferenceRouteLayout.canonicalSize;
           final points = WordHuntReferenceRouteLayout.stops
-              .take(route.levels.length)
+              .take(host.nodes.length)
               .toList(growable: false);
-          final levelTypes = route.levels
+          final levelTypes = host.nodes
               .take(points.length)
-              .map((level) => level.type)
+              .map((node) => node.gameplayType)
               .toList(growable: false);
 
           return ClipRect(
@@ -257,48 +257,15 @@ class WordHuntReferenceRouteScreen extends StatelessWidget {
                                 )
                                   _positionStop(
                                     point: points[index],
-                                    level: route.levels[index],
+                                    node: host.nodes[index],
                                     stars: progress.starsFor(
-                                      route.levels[index].id,
+                                      host.nodes[index].levelId,
                                     ),
-                                    unlocked:
-                                        WordHuntRouteProgressEngine.isLevelUnlocked(
-                                          route,
-                                          progress,
-                                          index + 1,
-                                        ),
                                     routeSize: routeSize,
                                   ),
                               ],
                             ),
                           ),
-                          for (var index = 0; index < 2; index++)
-                            Positioned(
-                              left:
-                                  WordHuntReferenceRouteLayout
-                                      .bottomControlCenters[index]
-                                      .dx -
-                                  85,
-                              top:
-                                  WordHuntReferenceRouteLayout
-                                      .bottomControlCenters[index]
-                                      .dy -
-                                  85,
-                              child: _ReferenceBottomControl(
-                                key: Key(
-                                  index == 0
-                                      ? 'word_hunt_reference_compass'
-                                      : 'word_hunt_reference_book',
-                                ),
-                                assetPath:
-                                    index == 0
-                                        ? WordHuntProductionAssets.compassButton
-                                        : WordHuntProductionAssets.bookButton,
-                                semanticLabel:
-                                    index == 0 ? 'Pusula' : 'Bilgi Kitabı',
-                                onTap: index == 0 ? onCompass : onBook,
-                              ),
-                            ),
                         ],
                       ),
                     ),
@@ -312,23 +279,13 @@ class WordHuntReferenceRouteScreen extends StatelessWidget {
     );
   }
 
-  int _lastUnlockedIndex() {
-    var last = 0;
-    for (var index = 1; index <= route.levels.length; index++) {
-      if (WordHuntRouteProgressEngine.isLevelUnlocked(route, progress, index)) {
-        last = index;
-      }
-    }
-    return last;
-  }
-
   Widget _positionStop({
     required Offset point,
-    required WordHuntLevelDefinition level,
+    required WordHuntRouteMapNodeProjection node,
     required int stars,
-    required bool unlocked,
     required Size routeSize,
   }) {
+    final level = node.level;
     final special = level.type != WordHuntLevelType.normal;
     final width = _metrics.containerWidthFor(level.type);
     final height = _metrics.containerHeightFor(level.type);
@@ -355,13 +312,13 @@ class WordHuntReferenceRouteScreen extends StatelessWidget {
         child: WordHuntRouteStop(
           level: level,
           stars: stars,
-          unlocked: unlocked,
+          unlocked: node.unlocked,
           theme: WordHuntRouteStopTheme.harbor,
           metrics: _metrics,
           labelOnLeft: false,
           onTap:
-              unlocked && onLevelTap != null
-                  ? () => onLevelTap!(level.index)
+              node.unlocked && onLevelTap != null
+                  ? () => onLevelTap!(node.absoluteLevelIndex)
                   : null,
         ),
       ),
@@ -740,48 +697,6 @@ class _ReferenceRoundButton extends StatelessWidget {
               border: Border.all(color: const Color(0xBBA57A3D)),
             ),
             child: Icon(icon, color: const Color(0xFFE8C678), size: 44),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _ReferenceBottomControl extends StatelessWidget {
-  const _ReferenceBottomControl({
-    super.key,
-    required this.assetPath,
-    required this.semanticLabel,
-    this.onTap,
-  });
-
-  final String assetPath;
-  final String semanticLabel;
-  final VoidCallback? onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return Semantics(
-      button: true,
-      label: semanticLabel,
-      child: Material(
-        color: Colors.transparent,
-        shape: const CircleBorder(),
-        child: InkWell(
-          onTap: onTap,
-          customBorder: const CircleBorder(),
-          child: SizedBox.square(
-            dimension: 170,
-            child: Image.asset(
-              assetPath,
-              key: Key(
-                semanticLabel == 'Pusula'
-                    ? 'word_hunt_reference_compass_asset'
-                    : 'word_hunt_reference_book_asset',
-              ),
-              fit: BoxFit.contain,
-              filterQuality: FilterQuality.high,
-            ),
           ),
         ),
       ),

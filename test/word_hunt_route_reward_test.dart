@@ -287,7 +287,7 @@ void main() {
     });
 
     test(
-      'Starter later non-final replay to 18 grants reward and unlocks Sky',
+      'staged Starter replay at 18 grants no reward and keeps Sky locked',
       () {
         final ids = starter.levels.map((level) => level.id).toList();
         final before = seventeenStarsWithFinal(ids);
@@ -307,15 +307,15 @@ void main() {
           WordHuntRouteProgressEngine.totalStars(starter, transition.progress),
           18,
         );
-        expect(transition.routeCompletedNow, isTrue);
-        expect(transition.rewardGranted, isTrue);
+        expect(transition.routeCompletedNow, isFalse);
+        expect(transition.rewardGranted, isFalse);
         expect(
           transition.progress.unlockedRouteRewardIds,
-          contains('badge-kelime-yolcusu'),
+          isNot(contains('badge-kelime-yolcusu')),
         );
         expect(
           WordHuntRouteCatalog.gokyuzu.isUnlocked(transition.progress),
-          isTrue,
+          isFalse,
         );
         expect(
           WordHuntRouteRewardEngine.nextCatalogEntry(starter)?.route.title,
@@ -331,7 +331,7 @@ void main() {
         var before = seventeenStarsWithFinal(ids);
         before = completedRouteProgress(
           before,
-          starter.levels.map((level) => level.id).toList(),
+          starter.levels.take(10).map((level) => level.id).toList(),
           requiredStars: starter.unlockStarsRequired,
         );
         expect(
@@ -396,7 +396,7 @@ void main() {
     test('starter historical completion backfills only starter badge', () {
       final loaded = completedRouteProgress(
         const WordHuntProgressSnapshot(),
-        starter.levels.map((level) => level.id).toList(),
+        starter.levels.take(10).map((level) => level.id).toList(),
         requiredStars: starter.unlockStarsRequired,
       );
 
@@ -441,7 +441,7 @@ void main() {
       var loaded = const WordHuntProgressSnapshot();
       loaded = completedRouteProgress(
         loaded,
-        starter.levels.map((level) => level.id).toList(),
+        starter.levels.take(10).map((level) => level.id).toList(),
         requiredStars: starter.unlockStarsRequired,
       );
       loaded = completedRouteProgress(

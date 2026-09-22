@@ -1,0 +1,124 @@
+{
+  "schemaVersion": 2,
+  "seed": 2026092101,
+  "routes": [
+    {
+      "routeId": "baslangic-limani",
+      "levels": [
+        {
+          "id": "baslangic-11",
+          "index": 11,
+          "type": "normal",
+          "targetWords": ["BARDAK", "KÖPRÜ", "BULUT", "RENK"],
+          "bonusWords": ["FİDAN"],
+          "starRules": {
+            "twoStarMaxMistakes": 3,
+            "threeStarMaxMistakes": 1
+          }
+        },
+        {
+          "id": "baslangic-12",
+          "index": 12,
+          "type": "normal",
+          "targetWords": ["ÇANTA", "MÜZİK", "KUMRU", "DEFTER"],
+          "bonusWords": ["DÜĞME"],
+          "starRules": {
+            "twoStarMaxMistakes": 3,
+            "threeStarMaxMistakes": 1
+          }
+        },
+        {
+          "id": "baslangic-13",
+          "index": 13,
+          "type": "normal",
+          "targetWords": ["BAHÇE", "KEDİ", "PERDE", "SABUN", "YASTIK"],
+          "bonusWords": ["KİRAZ"],
+          "starRules": {
+            "twoStarMaxMistakes": 3,
+            "threeStarMaxMistakes": 1
+          }
+        },
+        {
+          "id": "baslangic-14",
+          "index": 14,
+          "type": "normal",
+          "targetWords": ["VAGON", "BAMBU", "İNCİR", "TARAK", "PENCERE"],
+          "bonusWords": ["ÇORAP"],
+          "starRules": {
+            "twoStarMaxMistakes": 2,
+            "threeStarMaxMistakes": 0
+          }
+        },
+        {
+          "id": "baslangic-15",
+          "index": 15,
+          "type": "normal",
+          "targetWords": ["KUMSAL", "TURNA", "BAVUL", "KAVUN", "MERDİVEN"],
+          "bonusWords": ["DÜRBÜN"],
+          "starRules": {
+            "twoStarMaxMistakes": 2,
+            "threeStarMaxMistakes": 0
+          }
+        },
+        {
+          "id": "baslangic-16",
+          "index": 16,
+          "type": "normal",
+          "targetWords": ["MERCAN", "ŞAPKA", "MAKAS", "KEMAN", "KUMANDA"],
+          "bonusWords": ["FIRÇA"],
+          "starRules": {
+            "twoStarMaxMistakes": 2,
+            "threeStarMaxMistakes": 0
+          }
+        },
+        {
+          "id": "baslangic-17",
+          "index": 17,
+          "type": "normal",
+          "targetWords": ["ZEYTİN", "ARMUT", "ÇEKMECE", "PİYANO", "ŞİŞE"],
+          "bonusWords": ["YELKEN"],
+          "starRules": {
+            "twoStarMaxMistakes": 2,
+            "threeStarMaxMistakes": 0
+          }
+        },
+        {
+          "id": "baslangic-18",
+          "index": 18,
+          "type": "normal",
+          "targetWords": ["KARPUZ", "TENCERE", "ÖRDEK", "BİSİKLET", "CEVİZ"],
+          "bonusWords": ["KAZAK"],
+          "starRules": {
+            "twoStarMaxMistakes": 2,
+            "threeStarMaxMistakes": 0
+          }
+        },
+        {
+          "id": "baslangic-19",
+          "index": 19,
+          "type": "normal",
+          "targetWords": ["FENER", "SAKSI", "KAYAK", "HALI", "SANDALYE"],
+          "bonusWords": ["KÖMÜR"],
+          "starRules": {
+            "twoStarMaxMistakes": 2,
+            "threeStarMaxMistakes": 0
+          }
+        },
+        {
+          "id": "baslangic-20",
+          "index": 20,
+          "type": "challenge",
+          "targetWords": ["PANTOLON", "PORTAKAL", "ŞEMSİYE", "KASABA", "ÇEKİRDEK"],
+          "bonusWords": ["MANDAL"],
+          "starRules": {
+            "twoStarMaxSeconds": 100,
+            "threeStarMaxSeconds": 75,
+            "twoStarMaxMistakes": 2,
+            "threeStarMaxMistakes": 0
+          },
+          "timeLimitSeconds": 120
+        }
+      ]
+    }
+  ]
+}

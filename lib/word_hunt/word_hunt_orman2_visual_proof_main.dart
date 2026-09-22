@@ -37,8 +37,6 @@ class _Orman2VisualProofApp extends StatelessWidget {
           progress: _proofProgress,
           onBack: _noop,
           onInfo: _noop,
-          onCompass: _noop,
-          onBook: _noop,
           onLevelTap: _noopLevel,
         ),
       ),

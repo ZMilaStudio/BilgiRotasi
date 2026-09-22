@@ -1,26 +1,53 @@
 import 'word_hunt_models.dart';
+import 'word_hunt_segment_projection.dart';
 
 class WordHuntProgressSnapshot {
   const WordHuntProgressSnapshot({
     this.bestStarsByLevelId = const <String, int>{},
     this.unlockedInfoCardIds = const <String>{},
     this.unlockedRouteRewardIds = const <String>{},
+    this.bestBonusFoundCountByLevelId = const <String, int>{},
+    this.grandfatheredUnlockedRouteIds = const <String>{},
+    this.lastActiveRouteId,
   });
 
   final Map<String, int> bestStarsByLevelId;
   final Set<String> unlockedInfoCardIds;
   final Set<String> unlockedRouteRewardIds;
+  final Map<String, int> bestBonusFoundCountByLevelId;
+  final Set<String> grandfatheredUnlockedRouteIds;
+  final String? lastActiveRouteId;
 
   int starsFor(String levelId) => bestStarsByLevelId[levelId] ?? 0;
+
+  int? bestBonusFoundCountFor(String levelId) =>
+      bestBonusFoundCountByLevelId[levelId];
 
   WordHuntProgressSnapshot recordLevelResult({
     required String levelId,
     required int stars,
     Iterable<String> unlockedInfoCards = const <String>[],
+    int? foundBonusCount,
   }) {
+    if (foundBonusCount != null && foundBonusCount < 0) {
+      throw ArgumentError.value(
+        foundBonusCount,
+        'foundBonusCount',
+        'negatif olamaz',
+      );
+    }
+
     final safeStars = stars.clamp(0, 3).toInt();
     final current = starsFor(levelId);
     final nextBest = safeStars > current ? safeStars : current;
+
+    final nextBonusCounts = <String, int>{...bestBonusFoundCountByLevelId};
+    if (foundBonusCount != null) {
+      final currentBonus = bestBonusFoundCountByLevelId[levelId];
+      if (currentBonus == null || foundBonusCount > currentBonus) {
+        nextBonusCounts[levelId] = foundBonusCount;
+      }
+    }
 
     return WordHuntProgressSnapshot(
       bestStarsByLevelId: <String, int>{
@@ -32,6 +59,9 @@ class WordHuntProgressSnapshot {
         ...unlockedInfoCards.where((id) => id.trim().isNotEmpty),
       },
       unlockedRouteRewardIds: unlockedRouteRewardIds,
+      bestBonusFoundCountByLevelId: nextBonusCounts,
+      grandfatheredUnlockedRouteIds: grandfatheredUnlockedRouteIds,
+      lastActiveRouteId: lastActiveRouteId,
     );
   }
 
@@ -45,10 +75,47 @@ class WordHuntProgressSnapshot {
     return WordHuntProgressSnapshot(
       bestStarsByLevelId: bestStarsByLevelId,
       unlockedInfoCardIds: unlockedInfoCardIds,
-      unlockedRouteRewardIds: <String>{
-        ...unlockedRouteRewardIds,
+      unlockedRouteRewardIds: <String>{...unlockedRouteRewardIds, normalized},
+      bestBonusFoundCountByLevelId: bestBonusFoundCountByLevelId,
+      grandfatheredUnlockedRouteIds: grandfatheredUnlockedRouteIds,
+      lastActiveRouteId: lastActiveRouteId,
+    );
+  }
+
+  WordHuntProgressSnapshot grantGrandfatheredRouteAccess(String routeId) {
+    final normalized = routeId.trim();
+    if (normalized.isEmpty) {
+      throw ArgumentError.value(routeId, 'routeId', 'boş olamaz');
+    }
+    if (grandfatheredUnlockedRouteIds.contains(normalized)) return this;
+
+    return WordHuntProgressSnapshot(
+      bestStarsByLevelId: bestStarsByLevelId,
+      unlockedInfoCardIds: unlockedInfoCardIds,
+      unlockedRouteRewardIds: unlockedRouteRewardIds,
+      bestBonusFoundCountByLevelId: bestBonusFoundCountByLevelId,
+      grandfatheredUnlockedRouteIds: <String>{
+        ...grandfatheredUnlockedRouteIds,
         normalized,
       },
+      lastActiveRouteId: lastActiveRouteId,
+    );
+  }
+
+  WordHuntProgressSnapshot markLastActiveRoute(String routeId) {
+    final normalized = routeId.trim();
+    if (normalized.isEmpty) {
+      throw ArgumentError.value(routeId, 'routeId', 'boş olamaz');
+    }
+    if (lastActiveRouteId == normalized) return this;
+
+    return WordHuntProgressSnapshot(
+      bestStarsByLevelId: bestStarsByLevelId,
+      unlockedInfoCardIds: unlockedInfoCardIds,
+      unlockedRouteRewardIds: unlockedRouteRewardIds,
+      bestBonusFoundCountByLevelId: bestBonusFoundCountByLevelId,
+      grandfatheredUnlockedRouteIds: grandfatheredUnlockedRouteIds,
+      lastActiveRouteId: normalized,
     );
   }
 }
@@ -98,6 +165,14 @@ class WordHuntRouteProgressEngine {
   ) {
     if (route.levels.isEmpty) {
       return false;
+    }
+
+    if (WordHuntSegmentProjection.isSegmentedRoute(route)) {
+      if (!WordHuntSegmentProjection.isCompleteV2Route(route)) {
+        return false;
+      }
+      final trueFinalLevel = route.levels[99];
+      return isLevelCompleted(trueFinalLevel, progress);
     }
 
     final finalLevel = route.levels.last;

@@ -284,17 +284,10 @@ class _MainNavigationCard extends StatelessWidget {
 class PlayCenterEntryCatalog {
   PlayCenterEntryCatalog._();
 
-  static const String wordHuntTitle = 'Kelime Avı';
-  static const String wordHuntDescription =
-      'Başlangıç Limanı rotasında 10 bölümlük kelime avına çık.';
   static const String liveDuelTitle = 'Canlı Düello';
   static const String liveDuelDescription =
       'Yakın BR puanındaki gerçek bir rakiple 10, 20 veya 30 '
       'soruluk canlı maç yap.';
-
-  static Widget buildWordHuntScreen({String? ownerUid}) {
-    return WordHuntProductionEntryScreen(ownerUid: ownerUid);
-  }
 
   static Widget buildLiveDuelScreen() {
     return const LiveDuelScreen();
@@ -369,20 +362,6 @@ class PlayCenterScreen extends StatelessWidget {
                 context,
                 'challenge',
                 ShortChallengeModeScreen(questionBank: questionBank),
-              ),
-        ),
-        _HubActionCard(
-          emoji: '🔎',
-          title: PlayCenterEntryCatalog.wordHuntTitle,
-          description: PlayCenterEntryCatalog.wordHuntDescription,
-          accent: const Color(0xFFB7791F),
-          onTap:
-              () => _open(
-                context,
-                'word_hunt',
-                PlayCenterEntryCatalog.buildWordHuntScreen(
-                  ownerUid: FirebaseAuth.instance.currentUser?.uid,
-                ),
               ),
         ),
         _HubActionCard(

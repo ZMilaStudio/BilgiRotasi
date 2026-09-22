@@ -2,10 +2,23 @@ import 'dart:convert';
 
 import 'word_hunt_progress.dart';
 
+class WordHuntProgressDecodeResult {
+  const WordHuntProgressDecodeResult({
+    required this.snapshot,
+    required this.sourceSchemaVersion,
+  });
+
+  final WordHuntProgressSnapshot snapshot;
+  final int sourceSchemaVersion;
+
+  bool get requiresMigrationWriteback =>
+      sourceSchemaVersion < WordHuntProgressCodec.schemaVersion;
+}
+
 class WordHuntProgressCodec {
   WordHuntProgressCodec._();
 
-  static const int schemaVersion = 2;
+  static const int schemaVersion = 3;
   static const String _storagePrefix = 'bilgi_rotasi_word_hunt_progress_v1_';
 
   static String scopeForUid(String? uid) {
@@ -26,10 +39,43 @@ class WordHuntProgressCodec {
       throw const FormatException('ownerScope boş olamaz');
     }
 
-    final sortedStars = snapshot.bestStarsByLevelId.entries.toList()
-      ..sort((a, b) => a.key.compareTo(b.key));
+    final sortedStars =
+        snapshot.bestStarsByLevelId.entries.toList()
+          ..sort((a, b) => a.key.compareTo(b.key));
+    for (final entry in sortedStars) {
+      if (entry.key.trim().isEmpty || entry.value < 0 || entry.value > 3) {
+        throw FormatException('yıldız değeri geçersiz: ${entry.key}');
+      }
+    }
+
+    final sortedBonusCounts =
+        snapshot.bestBonusFoundCountByLevelId.entries.toList()
+          ..sort((a, b) => a.key.compareTo(b.key));
+    for (final entry in sortedBonusCounts) {
+      if (entry.key.trim().isEmpty || entry.value < 0) {
+        throw FormatException('bonus sayısı geçersiz: ${entry.key}');
+      }
+    }
+
     final sortedCards = snapshot.unlockedInfoCardIds.toList()..sort();
     final sortedRewards = snapshot.unlockedRouteRewardIds.toList()..sort();
+    final sortedGrandfatheredRoutes =
+        snapshot.grandfatheredUnlockedRouteIds.toList()..sort();
+
+    for (final id in <String>[
+      ...sortedCards,
+      ...sortedRewards,
+      ...sortedGrandfatheredRoutes,
+    ]) {
+      if (id.trim().isEmpty) {
+        throw const FormatException('persisted kimlik boş olamaz');
+      }
+    }
+
+    final lastActiveRouteId = snapshot.lastActiveRouteId?.trim();
+    if (lastActiveRouteId != null && lastActiveRouteId.isEmpty) {
+      throw const FormatException('lastActiveRouteId geçersiz');
+    }
 
     return jsonEncode(<String, dynamic>{
       'schema': schemaVersion,
@@ -39,10 +85,25 @@ class WordHuntProgressCodec {
       },
       'unlockedInfoCardIds': sortedCards,
       'unlockedRouteRewardIds': sortedRewards,
+      'bestBonusFoundCountByLevelId': <String, int>{
+        for (final entry in sortedBonusCounts) entry.key: entry.value,
+      },
+      'grandfatheredUnlockedRouteIds': sortedGrandfatheredRoutes,
+      'lastActiveRouteId': lastActiveRouteId,
     });
   }
 
   static WordHuntProgressSnapshot decode(
+    String raw, {
+    required String expectedOwnerScope,
+  }) {
+    return decodeWithMetadata(
+      raw,
+      expectedOwnerScope: expectedOwnerScope,
+    ).snapshot;
+  }
+
+  static WordHuntProgressDecodeResult decodeWithMetadata(
     String raw, {
     required String expectedOwnerScope,
   }) {
@@ -66,7 +127,7 @@ class WordHuntProgressCodec {
 
     final payload = Map<String, dynamic>.from(decoded);
     final schema = payload['schema'];
-    if (schema != 1 && schema != schemaVersion) {
+    if (schema is! int || schema < 1 || schema > schemaVersion) {
       throw FormatException('Desteklenmeyen Kelime Avı şeması: $schema');
     }
 
@@ -100,33 +161,80 @@ class WordHuntProgressCodec {
     if (cardsRaw is! List) {
       throw const FormatException('unlockedInfoCardIds geçersiz');
     }
-
-    final cards = <String>{};
-    for (final item in cardsRaw) {
-      if (item is! String || item.trim().isEmpty) {
-        throw const FormatException('bilgi kartı kimliği geçersiz');
-      }
-      cards.add(item.trim());
-    }
+    final cards = _decodeIdSet(cardsRaw, 'bilgi kartı kimliği');
 
     final rewards = <String>{};
-    if (schema == schemaVersion) {
+    if (schema >= 2) {
       final rewardsRaw = payload['unlockedRouteRewardIds'];
       if (rewardsRaw is! List) {
         throw const FormatException('unlockedRouteRewardIds geçersiz');
       }
-      for (final item in rewardsRaw) {
-        if (item is! String || item.trim().isEmpty) {
-          throw const FormatException('rota ödülü kimliği geçersiz');
+      rewards.addAll(_decodeIdSet(rewardsRaw, 'rota ödülü kimliği'));
+    }
+
+    final bonusCounts = <String, int>{};
+    final grandfatheredRoutes = <String>{};
+    String? lastActiveRouteId;
+
+    if (schema >= 3) {
+      final bonusRaw = payload['bestBonusFoundCountByLevelId'];
+      if (bonusRaw is! Map) {
+        throw const FormatException('bestBonusFoundCountByLevelId geçersiz');
+      }
+      for (final entry in bonusRaw.entries) {
+        final levelId = entry.key;
+        final count = entry.value;
+        if (levelId is! String || levelId.trim().isEmpty) {
+          throw const FormatException('bonus bölüm kimliği geçersiz');
         }
-        rewards.add(item.trim());
+        if (count is! int || count < 0) {
+          throw FormatException('bonus sayısı geçersiz: $levelId');
+        }
+        bonusCounts[levelId.trim()] = count;
+      }
+
+      final routesRaw = payload['grandfatheredUnlockedRouteIds'];
+      if (routesRaw is! List) {
+        throw const FormatException('grandfatheredUnlockedRouteIds geçersiz');
+      }
+      grandfatheredRoutes.addAll(
+        _decodeIdSet(routesRaw, 'legacy rota erişim kimliği'),
+      );
+
+      final lastActiveRaw = payload['lastActiveRouteId'];
+      if (lastActiveRaw != null) {
+        if (lastActiveRaw is! String || lastActiveRaw.trim().isEmpty) {
+          throw const FormatException('lastActiveRouteId geçersiz');
+        }
+        lastActiveRouteId = lastActiveRaw.trim();
       }
     }
 
-    return WordHuntProgressSnapshot(
-      bestStarsByLevelId: Map<String, int>.unmodifiable(stars),
-      unlockedInfoCardIds: Set<String>.unmodifiable(cards),
-      unlockedRouteRewardIds: Set<String>.unmodifiable(rewards),
+    return WordHuntProgressDecodeResult(
+      snapshot: WordHuntProgressSnapshot(
+        bestStarsByLevelId: Map<String, int>.unmodifiable(stars),
+        unlockedInfoCardIds: Set<String>.unmodifiable(cards),
+        unlockedRouteRewardIds: Set<String>.unmodifiable(rewards),
+        bestBonusFoundCountByLevelId: Map<String, int>.unmodifiable(
+          bonusCounts,
+        ),
+        grandfatheredUnlockedRouteIds: Set<String>.unmodifiable(
+          grandfatheredRoutes,
+        ),
+        lastActiveRouteId: lastActiveRouteId,
+      ),
+      sourceSchemaVersion: schema,
     );
+  }
+
+  static Set<String> _decodeIdSet(List<dynamic> raw, String label) {
+    final values = <String>{};
+    for (final item in raw) {
+      if (item is! String || item.trim().isEmpty) {
+        throw FormatException('$label geçersiz');
+      }
+      values.add(item.trim());
+    }
+    return values;
   }
 }

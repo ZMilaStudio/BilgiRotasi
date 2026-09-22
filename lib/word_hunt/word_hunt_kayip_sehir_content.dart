@@ -73,6 +73,7 @@ abstract final class WordHuntKayipSehirContent {
         id: 'kayip-sehir-01',
         routeId: 'kayip-sehir',
         index: 1,
+        displayName: 'Kervan İzi',
         type: WordHuntLevelType.normal,
         grid: <String>[
           'YÜKSRKSS',
@@ -97,6 +98,7 @@ abstract final class WordHuntKayipSehirContent {
         id: 'kayip-sehir-02',
         routeId: 'kayip-sehir',
         index: 2,
+        displayName: 'Sessiz Kumlar',
         type: WordHuntLevelType.normal,
         grid: <String>[
           'TŞÖYEZÜY',
@@ -120,6 +122,7 @@ abstract final class WordHuntKayipSehirContent {
         id: 'kayip-sehir-03',
         routeId: 'kayip-sehir',
         index: 3,
+        displayName: 'Gömülü Cephe',
         type: WordHuntLevelType.normal,
         grid: <String>[
           'EHPECÜLJ',
@@ -144,6 +147,7 @@ abstract final class WordHuntKayipSehirContent {
         id: 'kayip-sehir-04',
         routeId: 'kayip-sehir',
         index: 4,
+        displayName: 'Eski Kapı',
         type: WordHuntLevelType.normal,
         grid: <String>[
           'KTİÇEGOS',
@@ -167,6 +171,7 @@ abstract final class WordHuntKayipSehirContent {
         id: 'kayip-sehir-05',
         routeId: 'kayip-sehir',
         index: 5,
+        displayName: 'Fırtına Geçidi',
         type: WordHuntLevelType.challenge,
         grid: <String>[
           'HÜŞFLISD',
@@ -193,6 +198,7 @@ abstract final class WordHuntKayipSehirContent {
         id: 'kayip-sehir-06',
         routeId: 'kayip-sehir',
         index: 6,
+        displayName: 'Unutulmuş Çarşı',
         type: WordHuntLevelType.normal,
         grid: <String>[
           'MZŞĞÜPMD',
@@ -216,6 +222,7 @@ abstract final class WordHuntKayipSehirContent {
         id: 'kayip-sehir-07',
         routeId: 'kayip-sehir',
         index: 7,
+        displayName: 'Sütunlu Avlu',
         type: WordHuntLevelType.normal,
         grid: <String>[
           'İJAUNSTO',
@@ -240,6 +247,7 @@ abstract final class WordHuntKayipSehirContent {
         id: 'kayip-sehir-08',
         routeId: 'kayip-sehir',
         index: 8,
+        displayName: 'Kurumuş Sarnıç',
         type: WordHuntLevelType.normal,
         grid: <String>[
           'ÜVMBZRAE',
@@ -264,6 +272,7 @@ abstract final class WordHuntKayipSehirContent {
         id: 'kayip-sehir-09',
         routeId: 'kayip-sehir',
         index: 9,
+        displayName: 'Kırık Saray',
         type: WordHuntLevelType.normal,
         grid: <String>[
           'JRFRESKG',
@@ -288,6 +297,7 @@ abstract final class WordHuntKayipSehirContent {
         id: 'kayip-sehir-10',
         routeId: 'kayip-sehir',
         index: 10,
+        displayName: 'Yeraltı Mührü',
         type: WordHuntLevelType.routeFinal,
         grid: <String>[
           'ÇŞDCNJTY',

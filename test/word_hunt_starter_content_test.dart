@@ -7,12 +7,15 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   const route = WordHuntStarterContent.baslangicLimani;
 
-  test('Başlangıç Limanı tam 10 bölüm ve 30 yıldız kapasitesi taşır', () {
-    expect(route.levels, hasLength(10));
-    expect(route.maximumStars, 30);
+  test('Başlangıç Limanı 30 available ve 100 planned bölüm taşır', () {
+    expect(route.levels, hasLength(30));
+    expect(route.availableLevelCount, 30);
+    expect(route.plannedRouteLevelCount, 100);
+    expect(route.segments, hasLength(3));
+    expect(route.maximumStars, 90);
     expect(route.unlockStarsRequired, 18);
     expect(route.levels.first.index, 1);
-    expect(route.levels.last.index, 10);
+    expect(route.levels.last.index, 30);
   });
 
   test('bölüm tipi dağılımı production sözleşmesiyle eşleşir', () {
@@ -20,13 +23,14 @@ void main() {
     for (final level in route.levels) {
       counts[level.type] = (counts[level.type] ?? 0) + 1;
     }
-    expect(counts[WordHuntLevelType.normal], 8);
-    expect(counts[WordHuntLevelType.challenge], 1);
+    expect(counts[WordHuntLevelType.normal], 26);
+    expect(counts[WordHuntLevelType.challenge], 3);
     expect(counts[WordHuntLevelType.bonus] ?? 0, 0);
     expect(counts[WordHuntLevelType.routeFinal], 1);
     expect(route.levels[4].type, WordHuntLevelType.challenge);
     expect(route.levels[7].type, WordHuntLevelType.normal);
-    expect(route.levels.last.type, WordHuntLevelType.routeFinal);
+    expect(route.levels[9].type, WordHuntLevelType.routeFinal);
+    expect(route.levels.last.type, WordHuntLevelType.challenge);
   });
 
   test('bütün Başlangıç Limanı gridleri 8 satır x 8 sütundur', () {
@@ -36,12 +40,12 @@ void main() {
     }
   });
 
-  test('kelime yoğunluğu 6 kelimeden 10 kelimeye kontrollü artar', () {
+  test('Segment1 kelime yoğunluğu 6 kelimeden 10 kelimeye kontrollü artar', () {
     const expectedTargetCounts = <int>[5, 5, 6, 6, 7, 7, 8, 7, 9, 9];
     const expectedBonusCounts = <int>[1, 1, 1, 1, 1, 1, 1, 2, 1, 1];
     const expectedTotals = <int>[6, 6, 7, 7, 8, 8, 9, 9, 10, 10];
     var totalWords = 0;
-    for (var index = 0; index < route.levels.length; index++) {
+    for (var index = 0; index < 10; index++) {
       final level = route.levels[index];
       expect(level.targetWords, hasLength(expectedTargetCounts[index]));
       expect(level.bonusWords, hasLength(expectedBonusCounts[index]));
@@ -145,9 +149,9 @@ void main() {
     expect(level.targetWords, const <String>[
       'PUSULA',
       'YOL',
-      'BİLGİ',
-      'YILDIZ',
-      'HEDEF',
+      'İPUCU',
+      'PARKUR',
+      'NİŞAN',
       'KEŞİF',
       'HARİTA',
       'MACERA',
@@ -360,21 +364,21 @@ const _productionCases = <_ProductionCase>[
     levelIndex: 3,
     grid: <String>[
       'ŞĞEÖÜNAG',
-      'RMDSAUÖĞ',
-      'DERSISTS',
-      'VLKHONOA',
+      'RMDSAUKĞ',
+      'DERSISAS',
+      'VLKHONĞA',
       'PATİKSIY',
-      'OKULNROF',
+      'OKULNRTF',
       'TÜSKÜMFA',
       'ŞNPHHLĞG',
     ],
-    targets: <String>['KİTAP', 'OKUL', 'SINIF', 'KALEM', 'DERS', 'ÖDEV'],
+    targets: <String>['KİTAP', 'OKUL', 'SINIF', 'KAĞIT', 'DERS', 'ÖDEV'],
     bonus: <String>['SAYFA'],
     paths: <_ExpectedPath>[
       _ExpectedPath('KİTAP', 4, 4, 0, -1, 5),
       _ExpectedPath('OKUL', 5, 0, 0, 1, 4),
       _ExpectedPath('SINIF', 1, 3, 1, 1, 5),
-      _ExpectedPath('KALEM', 5, 1, -1, 0, 5),
+      _ExpectedPath('KAĞIT', 1, 6, 1, 0, 5),
       _ExpectedPath('DERS', 2, 0, 0, 1, 4),
       _ExpectedPath('ÖDEV', 0, 3, 1, -1, 4),
       _ExpectedPath('SAYFA', 2, 7, 1, 0, 5, isBonus: true),
@@ -473,18 +477,18 @@ const _productionCases = <_ProductionCase>[
   _ProductionCase(
     levelIndex: 7,
     grid: <String>[
-      'IŞKZNTED',
-      'MRBKRİĞO',
-      'GHAEAĞOD',
-      'RĞLTİNNO',
-      'ÇİÇEKAAY',
-      'ÇKNPVEŞT',
-      'BDPOLENÖ',
+      'IŞKZNTEM',
+      'MRBKRİEO',
+      'GHAEAYOD',
+      'RĞLTVNNO',
+      'IİÇEKAAY',
+      'YKNPVEŞT',
+      'ADPOLENÖ',
       'ÇUKÖSÇNP',
     ],
     targets: <String>[
       'ARI',
-      'ÇİÇEK',
+      'MEYVE',
       'BAL',
       'KOVAN',
       'KANAT',
@@ -492,23 +496,23 @@ const _productionCases = <_ProductionCase>[
       'PETEK',
       'NEKTAR',
     ],
-    bonus: <String>['DOĞA'],
+    bonus: <String>['ÇAYIR'],
     paths: <_ExpectedPath>[
       _ExpectedPath('ARI', 2, 2, -1, -1, 3),
-      _ExpectedPath('ÇİÇEK', 4, 0, 0, 1, 5),
+      _ExpectedPath('MEYVE', 0, 7, 1, -1, 5),
       _ExpectedPath('BAL', 1, 2, 1, 0, 3),
       _ExpectedPath('KOVAN', 7, 2, -1, 1, 5),
       _ExpectedPath('KANAT', 1, 3, 1, 1, 5),
       _ExpectedPath('POLEN', 6, 2, 0, 1, 5),
       _ExpectedPath('PETEK', 5, 3, -1, 0, 5),
       _ExpectedPath('NEKTAR', 6, 6, -1, -1, 6),
-      _ExpectedPath('DOĞA', 2, 7, 0, -1, 4, isBonus: true),
+      _ExpectedPath('ÇAYIR', 7, 0, -1, 0, 5, isBonus: true),
     ],
   ),
   _ProductionCase(
     levelIndex: 8,
     grid: <String>[
-      'ILFEÜCİU',
+      'ILFAULİU',
       'ĞMAÇSDCŞ',
       'ÇHIZSNLO',
       'AGMKUVÇK',
@@ -517,12 +521,12 @@ const _productionCases = <_ProductionCase>[
       'İÇPTHVÖL',
       'PÇSPÖVÜP',
     ],
-    targets: <String>['SPOR', 'TOP', 'KOŞU', 'OYUNCU', 'TAKIM', 'GOL', 'MAÇ'],
+    targets: <String>['SPOR', 'TOP', 'FAUL', 'OYUNCU', 'TAKIM', 'GOL', 'MAÇ'],
     bonus: <String>['HIZ', 'SKOR'],
     paths: <_ExpectedPath>[
       _ExpectedPath('SPOR', 7, 2, -1, 0, 4),
       _ExpectedPath('TOP', 6, 3, -1, -1, 3),
-      _ExpectedPath('KOŞU', 3, 7, -1, 0, 4),
+      _ExpectedPath('FAUL', 0, 2, 0, 1, 4),
       _ExpectedPath('OYUNCU', 5, 2, -1, 1, 6),
       _ExpectedPath('TAKIM', 5, 5, -1, -1, 5),
       _ExpectedPath('GOL', 4, 7, 1, 0, 3),
@@ -571,21 +575,21 @@ const _productionCases = <_ProductionCase>[
   _ProductionCase(
     levelIndex: 10,
     grid: <String>[
-      'MHEDEFYC',
+      'MHEDEFYP',
       'NATPAKAA',
-      'FZCYOLTZ',
-      'FİLEUİIİ',
-      'İNRSRDUG',
-      'ŞEUALADL',
-      'EPHIFFİİ',
-      'KGYDTNIB',
+      'FZCYOLTR',
+      'FİLEUİIK',
+      'İNRSRDUU',
+      'ŞEUALADR',
+      'EPHUCUPİ',
+      'KNİŞANIB',
     ],
     targets: <String>[
       'PUSULA',
       'YOL',
-      'BİLGİ',
-      'YILDIZ',
-      'HEDEF',
+      'İPUCU',
+      'PARKUR',
+      'NİŞAN',
       'KEŞİF',
       'HARİTA',
       'MACERA',
@@ -595,9 +599,9 @@ const _productionCases = <_ProductionCase>[
     paths: <_ExpectedPath>[
       _ExpectedPath('PUSULA', 6, 1, -1, 1, 6),
       _ExpectedPath('YOL', 2, 3, 0, 1, 3),
-      _ExpectedPath('BİLGİ', 7, 7, -1, 0, 5),
-      _ExpectedPath('YILDIZ', 7, 2, -1, 1, 6),
-      _ExpectedPath('HEDEF', 0, 1, 0, 1, 5),
+      _ExpectedPath('İPUCU', 6, 7, 0, -1, 5),
+      _ExpectedPath('PARKUR', 0, 7, 1, 0, 6),
+      _ExpectedPath('NİŞAN', 7, 1, 0, 1, 5),
       _ExpectedPath('KEŞİF', 7, 0, -1, 0, 5),
       _ExpectedPath('HARİTA', 6, 2, -1, 1, 6),
       _ExpectedPath('MACERA', 0, 0, 1, 1, 6),

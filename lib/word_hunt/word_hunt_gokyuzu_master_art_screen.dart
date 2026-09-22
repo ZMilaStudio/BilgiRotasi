@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'word_hunt_models.dart';
 import 'word_hunt_progress.dart';
+import 'word_hunt_route_segment_host.dart';
 
 /// Gökyüzü Adaları için telefon ekranına göre üretilmiş MASTER ART rota ekranı.
 ///
@@ -46,10 +47,6 @@ abstract final class WordHuntGokyuzuMasterArtLayout {
     146,
   ];
 
-  static const Offset compassCenter = Offset(96, 1485);
-  static const Offset bookCenter = Offset(837, 1486);
-  static const double bottomControlHitboxDiameter = 145;
-
   // Telefon MASTER ART'ında geri/bilgi sanatı bake edilmedi. Bunlar yalnız
   // gerekli navigation kontrolü olarak minimum görünür Flutter overlay'idir.
   static const Offset backCenter = Offset(58, 101);
@@ -67,9 +64,8 @@ class WordHuntGokyuzuMasterArtScreen extends StatelessWidget {
     this.progress = const WordHuntProgressSnapshot(),
     this.onBack,
     this.onInfo,
-    this.onCompass,
-    this.onBook,
     this.onLevelTap,
+    this.segmentIndex = 1,
   });
 
   static const String routeId = 'gokyuzu-adalari';
@@ -78,12 +74,16 @@ class WordHuntGokyuzuMasterArtScreen extends StatelessWidget {
   final WordHuntProgressSnapshot progress;
   final VoidCallback? onBack;
   final VoidCallback? onInfo;
-  final VoidCallback? onCompass;
-  final VoidCallback? onBook;
   final ValueChanged<int>? onLevelTap;
+  final int segmentIndex;
 
   @override
   Widget build(BuildContext context) {
+    final host = WordHuntRouteSegmentHost.forRoute(
+      route: route,
+      progress: progress,
+      segmentIndex: segmentIndex,
+    );
     return Scaffold(
       key: const Key('word_hunt_gokyuzu_master_art_route'),
       backgroundColor: const Color(0xFF072B58),
@@ -124,10 +124,11 @@ class WordHuntGokyuzuMasterArtScreen extends StatelessWidget {
                         _GokyuzuRuntimeOverlay(
                           route: route,
                           progress: progress,
+                          host: host,
                         ),
                         for (
                           var index = 0;
-                          index < route.levels.length &&
+                          index < host.nodes.length &&
                               index <
                                   WordHuntGokyuzuMasterArtLayout
                                       .levelCenters
@@ -144,37 +145,15 @@ class WordHuntGokyuzuMasterArtScreen extends StatelessWidget {
                             diameter:
                                 WordHuntGokyuzuMasterArtLayout
                                     .levelHitboxDiameters[index],
-                            semanticLabel: 'Bölüm ${index + 1}',
+                            semanticLabel:
+                                'Bölüm ${host.nodes[index].absoluteLevelIndex}',
                             onTap:
-                                WordHuntRouteProgressEngine.isLevelUnlocked(
-                                          route,
-                                          progress,
-                                          index + 1,
-                                        ) &&
-                                        onLevelTap != null
-                                    ? () => onLevelTap!(index + 1)
+                                host.nodes[index].unlocked && onLevelTap != null
+                                    ? () => onLevelTap!(
+                                      host.nodes[index].absoluteLevelIndex,
+                                    )
                                     : null,
                           ),
-                        _TransparentHitbox(
-                          key: const Key(
-                            'word_hunt_gokyuzu_master_art_compass',
-                          ),
-                          center: WordHuntGokyuzuMasterArtLayout.compassCenter,
-                          diameter:
-                              WordHuntGokyuzuMasterArtLayout
-                                  .bottomControlHitboxDiameter,
-                          semanticLabel: 'Pusula',
-                          onTap: onCompass,
-                        ),
-                        _TransparentHitbox(
-                          key: const Key('word_hunt_gokyuzu_master_art_book'),
-                          center: WordHuntGokyuzuMasterArtLayout.bookCenter,
-                          diameter:
-                              WordHuntGokyuzuMasterArtLayout
-                                  .bottomControlHitboxDiameter,
-                          semanticLabel: 'Bilgi Kitabı',
-                          onTap: onBook,
-                        ),
                         _VisibleTopControl(
                           key: const Key('word_hunt_gokyuzu_master_art_back'),
                           center: WordHuntGokyuzuMasterArtLayout.backCenter,
@@ -209,10 +188,15 @@ class WordHuntGokyuzuMasterArtScreen extends StatelessWidget {
 }
 
 class _GokyuzuRuntimeOverlay extends StatelessWidget {
-  const _GokyuzuRuntimeOverlay({required this.route, required this.progress});
+  const _GokyuzuRuntimeOverlay({
+    required this.route,
+    required this.progress,
+    required this.host,
+  });
 
   final WordHuntRouteDefinition route;
   final WordHuntProgressSnapshot progress;
+  final WordHuntRouteSegmentHost host;
 
   @override
   Widget build(BuildContext context) {
@@ -235,15 +219,11 @@ class _GokyuzuRuntimeOverlay extends StatelessWidget {
             ),
           for (
             var index = 0;
-            index < route.levels.length &&
+            index < host.nodes.length &&
                 index < WordHuntGokyuzuMasterArtLayout.levelCenters.length;
             index++
           )
-            if (!WordHuntRouteProgressEngine.isLevelUnlocked(
-              route,
-              progress,
-              index + 1,
-            ))
+            if (!host.nodes[index].unlocked)
               _LockBadge(
                 key: Key(
                   'word_hunt_gokyuzu_master_art_level_${index + 1}_locked',

@@ -254,8 +254,8 @@ class WordHuntRouteStop extends StatelessWidget {
       enabled: unlocked,
       label:
           unlocked
-              ? 'Bölüm ${level.index}, ${_typeLabel.isEmpty ? 'normal' : _typeLabel}, $clampedStars yıldız, açık'
-              : 'Bölüm ${level.index}, kilitli',
+              ? '${level.displayNameOrFallback}, ${_typeLabel.isEmpty ? 'normal' : _typeLabel}, $clampedStars yıldız, açık'
+              : '${level.displayNameOrFallback}, kilitli',
       child: SizedBox(
         key: Key('word_hunt_route_stop_${level.index}'),
         width: metrics.containerWidthFor(level.type),
