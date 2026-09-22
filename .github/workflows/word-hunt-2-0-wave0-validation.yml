@@ -336,7 +336,11 @@ jobs:
 
       - name: Checkpoint B full-corpus domain simulator
         run: |
-          dart format --output=none --set-exit-if-changed tools/word_hunt_full_corpus_simulation_test.dart
+          dart format tools/word_hunt_full_corpus_simulation_test.dart
+          if ! git diff --quiet -- tools/word_hunt_full_corpus_simulation_test.dart; then
+            git --no-pager diff -- tools/word_hunt_full_corpus_simulation_test.dart
+            exit 1
+          fi
           flutter analyze --no-pub tools/word_hunt_full_corpus_simulation_test.dart
           flutter test tools/word_hunt_full_corpus_simulation_test.dart --reporter expanded
 
