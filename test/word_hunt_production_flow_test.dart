@@ -69,7 +69,7 @@ void main() {
     await tester.tap(find.byKey(const Key('fake_result')));
     await tester.pumpAndSettle();
 
-    expect(find.text('3 / 60'), findsOneWidget);
+    expect(find.text('3 / 90'), findsOneWidget);
     expect(
       find.byKey(const Key('word_hunt_master_art_level_2_locked')),
       findsNothing,
@@ -101,7 +101,7 @@ void main() {
     await tester.tap(find.byKey(const Key('fake_one_star_result')));
     await tester.pumpAndSettle();
 
-    expect(find.text('1 / 60'), findsOneWidget);
+    expect(find.text('1 / 90'), findsOneWidget);
     expect(
       find.byKey(const Key('word_hunt_master_art_level_2_locked')),
       findsNothing,
@@ -142,10 +142,10 @@ void main() {
     }
 
     await play();
-    expect(find.text('2 / 60'), findsOneWidget);
+    expect(find.text('2 / 90'), findsOneWidget);
     nextStars = 3;
     await play();
-    expect(find.text('3 / 60'), findsOneWidget);
+    expect(find.text('3 / 90'), findsOneWidget);
   });
 
   testWidgets('null dönüş route progressini değiştirmez', (tester) async {
@@ -166,7 +166,7 @@ void main() {
     await tester.tap(find.byKey(const Key('fake_exit')));
     await tester.pumpAndSettle();
 
-    expect(find.text('0 / 60'), findsOneWidget);
+    expect(find.text('0 / 90'), findsOneWidget);
     expect(
       find.byKey(const Key('word_hunt_master_art_level_2_locked')),
       findsOneWidget,
@@ -206,7 +206,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('0 / 60'), findsOneWidget);
+    expect(find.text('0 / 90'), findsOneWidget);
     expect(
       find.byKey(const Key('word_hunt_master_art_level_2_locked')),
       findsOneWidget,
