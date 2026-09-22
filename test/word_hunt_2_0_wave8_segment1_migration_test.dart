@@ -274,7 +274,7 @@ void main() {
       for (final entry in WordHuntRouteCatalog.entries) {
         final route = entry.route;
         if (route.id == 'baslangic-limani') {
-          expect(route.segments, hasLength(2), reason: route.id);
+          expect(route.segments, hasLength(3), reason: route.id);
           expect(
             WordHuntSegmentProjection.isSegmentedRoute(route),
             isTrue,
