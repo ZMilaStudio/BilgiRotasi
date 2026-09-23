@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:word_hunt_flutter_feature/word_hunt_feature_entry_screen.dart';
 import 'package:word_hunt_flutter_feature/word_hunt_feature_host.dart';
+import 'package:word_hunt_domain/word_hunt_progress_codec.dart';
 
 import 'word_hunt_models.dart';
 import 'word_hunt_starter_content.dart';
@@ -29,6 +30,25 @@ class WordHuntBilgiRotasiProgressStore implements WordHuntProgressStore {
       _preferences.setBool(key, value);
 }
 
+/// Preserves the existing Bilgi Rotasi persistence-key contract for the host.
+class WordHuntBilgiRotasiProgressStorageIdentity
+    implements WordHuntProgressStorageIdentity {
+  const WordHuntBilgiRotasiProgressStorageIdentity();
+
+  @override
+  String ownerScopeForUid(String? ownerUid) =>
+      WordHuntProgressCodec.scopeForUid(ownerUid);
+
+  @override
+  String progressStorageKeyForUid(String? ownerUid) =>
+      WordHuntProgressCodec.storageKeyForUid(ownerUid);
+
+  @override
+  String kristalRevealSeenKeyForUid(String? ownerUid) =>
+      'bilgi_rotasi_word_hunt_seen_kristal_vadisi_reveal_v1_'
+      '${ownerScopeForUid(ownerUid)}';
+}
+
 /// Bilgi Rotası app-shell bridge for the reusable Word Hunt Flutter feature.
 class WordHuntProductionEntryScreen extends StatelessWidget {
   const WordHuntProductionEntryScreen({
@@ -51,5 +71,6 @@ class WordHuntProductionEntryScreen extends StatelessWidget {
     infoCards: infoCards,
     routeSelectionEnabled: routeSelectionEnabled,
     progressStore: WordHuntBilgiRotasiProgressStore(),
+    progressStorageIdentity: const WordHuntBilgiRotasiProgressStorageIdentity(),
   );
 }
