@@ -1,3 +1,5 @@
+import 'package:word_hunt_domain/word_hunt_progress_migration.dart' as domain;
+
 import 'word_hunt_gokyuzu_content.dart';
 import 'word_hunt_gunes_imparatorlugu_content.dart';
 import 'word_hunt_kayip_sehir_content.dart';
@@ -39,73 +41,28 @@ abstract final class WordHuntLegacyProgressMigration {
   static WordHuntProgressSnapshot migrate(
     WordHuntProgressDecodeResult decoded,
   ) {
-    if (!decoded.requiresMigrationWriteback) {
-      return decoded.snapshot;
-    }
-
-    final legacy = decoded.snapshot;
-    return WordHuntProgressSnapshot(
-      bestStarsByLevelId: legacy.bestStarsByLevelId,
-      unlockedInfoCardIds: legacy.unlockedInfoCardIds,
-      unlockedRouteRewardIds: legacy.unlockedRouteRewardIds,
-      bestBonusFoundCountByLevelId: legacy.bestBonusFoundCountByLevelId,
-      grandfatheredUnlockedRouteIds: <String>{
-        ...legacy.grandfatheredUnlockedRouteIds,
-        ...deriveLegacyAccessEntitlements(legacy),
-      },
-      lastActiveRouteId:
-          legacy.lastActiveRouteId ?? deriveLastActiveRouteFallback(legacy),
+    return domain.WordHuntLegacyProgressMigration.migrate(
+      decoded,
+      frozenLegacyRoutes: frozenLegacyRoutes,
     );
   }
 
   static Set<String> deriveLegacyAccessEntitlements(
     WordHuntProgressSnapshot legacy,
   ) {
-    if (frozenLegacyRoutes.isEmpty) return const <String>{};
-
-    var furthestAccessibleIndex = 0;
-
-    for (var index = 0; index < frozenLegacyRoutes.length; index++) {
-      if (_hasPersistedProgress(frozenLegacyRoutes[index], legacy)) {
-        furthestAccessibleIndex =
-            index > furthestAccessibleIndex ? index : furthestAccessibleIndex;
-      }
-    }
-
-    for (var index = 0; index + 1 < frozenLegacyRoutes.length; index++) {
-      if (isFrozenLegacyRouteComplete(frozenLegacyRoutes[index], legacy)) {
-        final historicallyOpenedIndex = index + 1;
-        furthestAccessibleIndex =
-            historicallyOpenedIndex > furthestAccessibleIndex
-                ? historicallyOpenedIndex
-                : furthestAccessibleIndex;
-      }
-    }
-
-    return <String>{
-      for (var index = 0; index <= furthestAccessibleIndex; index++)
-        frozenLegacyRoutes[index].id,
-    };
+    return domain
+        .WordHuntLegacyProgressMigration.deriveLegacyAccessEntitlements(
+      legacy,
+      frozenLegacyRoutes: frozenLegacyRoutes,
+    );
   }
 
   static String? deriveLastActiveRouteFallback(
     WordHuntProgressSnapshot legacy,
   ) {
-    for (var index = frozenLegacyRoutes.length - 1; index >= 0; index--) {
-      final route = frozenLegacyRoutes[index];
-      if (_hasPersistedProgress(route, legacy)) {
-        return route.id;
-      }
-    }
-    return null;
-  }
-
-  static bool _hasPersistedProgress(
-    WordHuntRouteDefinition route,
-    WordHuntProgressSnapshot progress,
-  ) {
-    return route.levels.any(
-      (level) => progress.bestStarsByLevelId.containsKey(level.id),
+    return domain.WordHuntLegacyProgressMigration.deriveLastActiveRouteFallback(
+      legacy,
+      frozenLegacyRoutes: frozenLegacyRoutes,
     );
   }
 
@@ -113,16 +70,9 @@ abstract final class WordHuntLegacyProgressMigration {
     WordHuntRouteDefinition route,
     WordHuntProgressSnapshot progress,
   ) {
-    if (route.levels.isEmpty) return false;
-
-    final legacyFinal = route.levels.last;
-    if (legacyFinal.type != WordHuntLevelType.routeFinal) return false;
-    if (progress.starsFor(legacyFinal.id) < 1) return false;
-
-    var totalStars = 0;
-    for (final level in route.levels) {
-      totalStars += progress.starsFor(level.id);
-    }
-    return totalStars >= route.unlockStarsRequired;
+    return domain.WordHuntLegacyProgressMigration.isFrozenLegacyRouteComplete(
+      route,
+      progress,
+    );
   }
 }

@@ -668,7 +668,7 @@ void main() {
     test('schema/navigation state remains derived and unpersisted', () {
       final codec =
           File(
-            'lib/word_hunt/word_hunt_progress_codec.dart',
+            'packages/word_hunt_domain/lib/word_hunt_progress_codec.dart',
           ).readAsStringSync();
       expect(codec, contains('static const int schemaVersion = 3;'));
       expect(codec, contains("bilgi_rotasi_word_hunt_progress_v1_"));

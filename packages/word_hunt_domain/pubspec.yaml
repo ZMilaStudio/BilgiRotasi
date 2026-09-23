@@ -1,0 +1,10 @@
+name: word_hunt_domain
+description: Shared pure-Dart domain contracts for Bilgi Rotasi Kelime Avi.
+publish_to: "none"
+version: 0.1.0
+
+environment:
+  sdk: ">=3.7.0 <4.0.0"
+
+dev_dependencies:
+  test: ^1.25.15
