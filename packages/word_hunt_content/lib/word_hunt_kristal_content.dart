@@ -1,0 +1,348 @@
+import 'word_hunt_models.dart';
+
+/// Kristal Vadisi production gameplay içeriği.
+abstract final class WordHuntKristalContent {
+  static const List<WordHuntInfoCard> infoCards = <WordHuntInfoCard>[
+    WordHuntInfoCard(
+      id: 'kristal-info-mineral',
+      word: 'MİNERAL',
+      title: 'Mineral',
+      category: 'Jeoloji',
+      shortFact:
+          'Birçok kayaç, bir veya birden fazla mineralin bir araya gelmesiyle oluşur.',
+    ),
+    WordHuntInfoCard(
+      id: 'kristal-info-kuvars',
+      word: 'KUVARS',
+      title: 'Kuvars',
+      category: 'Mineraloji',
+      shortFact:
+          'Kuvars, yerkabuğunda yaygın bulunan bir mineraldir. Birçok farklı kayaçta görülebilir.',
+    ),
+    WordHuntInfoCard(
+      id: 'kristal-info-kristal',
+      word: 'KRİSTAL',
+      title: 'Kristal',
+      category: 'Mineraloji',
+      shortFact:
+          'Kristallerde atomlar veya moleküller düzenli bir iç yapıda dizilir. Bu düzen kristalin biçimini etkileyebilir.',
+    ),
+    WordHuntInfoCard(
+      id: 'kristal-info-obsidyen',
+      word: 'OBSİDYEN',
+      title: 'Obsidyen',
+      category: 'Jeoloji',
+      shortFact:
+          'Obsidyen, lavın çok hızlı soğumasıyla oluşabilen doğal volkanik camdır.',
+    ),
+    WordHuntInfoCard(
+      id: 'kristal-info-fay',
+      word: 'FAY',
+      title: 'Fay',
+      category: 'Jeoloji',
+      shortFact:
+          'Faylar, yer kabuğundaki kaya bloklarının kırılıp birbirine göre hareket edebildiği yapılardır.',
+    ),
+    WordHuntInfoCard(
+      id: 'kristal-info-ametist',
+      word: 'AMETİST',
+      title: 'Ametist',
+      category: 'Mineraloji',
+      shortFact: 'Ametist, mor renkli bir kuvars çeşididir.',
+    ),
+  ];
+
+  static const WordHuntRouteDefinition kristalVadisi = WordHuntRouteDefinition(
+    id: 'kristal-vadisi',
+    title: 'Kristal Vadisi',
+    theme: 'kristal',
+    unlockStarsRequired: 0,
+    routeRewardId: 'badge-kristal-kasifi',
+    levels: <WordHuntLevelDefinition>[
+      // 1. Vadinin Eşiği
+      WordHuntLevelDefinition(
+        id: 'kristal-vadisi-01',
+        routeId: 'kristal-vadisi',
+        index: 1,
+        type: WordHuntLevelType.normal,
+        grid: <String>[
+          'ŞZÇLMHSŞ',
+          'KGŞYİOŞG',
+          'ÇALLNÇNE',
+          'MFTDEDEA',
+          'DTAMRTDD',
+          'LJCKAYAÇ',
+          'SÇDLLNMC',
+          'NLIKAÇHF',
+        ],
+        targetWords: <String>['KAYAÇ', 'MİNERAL', 'KATMAN', 'ÇAKIL', 'MADEN'],
+        bonusWords: <String>['SONDAJ'],
+        infoCardIds: <String>['kristal-info-mineral'],
+        starRules: WordHuntStarRules(
+          twoStarMaxMistakes: 2,
+          threeStarMaxMistakes: 0,
+        ),
+      ),
+      // 2. Kuvars Ocağı
+      WordHuntLevelDefinition(
+        id: 'kristal-vadisi-02',
+        routeId: 'kristal-vadisi',
+        index: 2,
+        type: WordHuntLevelType.normal,
+        grid: <String>[
+          'KMRTİRİP',
+          'PLKALSİT',
+          'RGUPMRBC',
+          'FAVSAİEŞ',
+          'İFADPVKİ',
+          'IÜRLHDOA',
+          'ARSEMGVB',
+          'ÖERFÖLYD',
+        ],
+        targetWords: <String>['KUVARS', 'KALSİT', 'MİKA', 'PİRİT', 'FELDSPAT'],
+        bonusWords: <String>['CEVHER'],
+        infoCardIds: <String>['kristal-info-kuvars'],
+        starRules: WordHuntStarRules(
+          twoStarMaxMistakes: 2,
+          threeStarMaxMistakes: 0,
+        ),
+      ),
+      // 3. Yeraltı Galerisi
+      WordHuntLevelDefinition(
+        id: 'kristal-vadisi-03',
+        routeId: 'kristal-vadisi',
+        index: 3,
+        type: WordHuntLevelType.normal,
+        grid: <String>[
+          'HCÜSHEEH',
+          'ÇIHVTVHI',
+          'ÜLSLENÜT',
+          'DMAĞARAK',
+          'ZİRSÇÇUU',
+          'SOKVĞVĞY',
+          'ŞÜIİOLTO',
+          'UVTKTIEİ',
+        ],
+        targetWords: <String>['MAĞARA', 'SARKIT', 'DİKİT', 'TÜNEL', 'OYUK'],
+        bonusWords: <String>['KOVUK'],
+        starRules: WordHuntStarRules(
+          twoStarMaxMistakes: 2,
+          threeStarMaxMistakes: 0,
+        ),
+      ),
+      // 4. Prizma Salonu
+      WordHuntLevelDefinition(
+        id: 'kristal-vadisi-04',
+        routeId: 'kristal-vadisi',
+        index: 4,
+        type: WordHuntLevelType.normal,
+        grid: <String>[
+          'YBOAYVVY',
+          'AMLIRIKI',
+          'NPAAIOTF',
+          'SKRNKLBH',
+          'INVİIİIM',
+          'MEÖRZŞGT',
+          'ARAABMIÖ',
+          'PPSAYDAM',
+        ],
+        targetWords: <String>[
+          'PRİZMA',
+          'KIRILMA',
+          'YANSIMA',
+          'PARILTI',
+          'SAYDAM',
+        ],
+        bonusWords: <String>['IŞIN', 'RENK'],
+        starRules: WordHuntStarRules(
+          twoStarMaxMistakes: 2,
+          threeStarMaxMistakes: 0,
+        ),
+      ),
+      // 5. Kristal Labirent
+      WordHuntLevelDefinition(
+        id: 'kristal-vadisi-05',
+        routeId: 'kristal-vadisi',
+        index: 5,
+        type: WordHuntLevelType.challenge,
+        grid: <String>[
+          'KNESKETS',
+          'YRKÖŞEİA',
+          'ÜSİPSMUD',
+          'ZMÜSEGNY',
+          'EKGTTNSC',
+          'YGRFLAĞF',
+          'HİÖŞNSLİ',
+          'ÇFĞFÇATM',
+        ],
+        targetWords: <String>[
+          'KRİSTAL',
+          'ÖRGÜ',
+          'EKSEN',
+          'SİMETRİ',
+          'KÖŞE',
+          'YÜZEY',
+        ],
+        bonusWords: <String>['KÜP', 'İĞNE'],
+        infoCardIds: <String>['kristal-info-kristal'],
+        timeLimitSeconds: 60,
+        starRules: WordHuntStarRules(
+          twoStarMaxSeconds: 44,
+          threeStarMaxSeconds: 30,
+          twoStarMaxMistakes: 1,
+          threeStarMaxMistakes: 0,
+        ),
+      ),
+      // 6. Taşların Dili
+      WordHuntLevelDefinition(
+        id: 'kristal-vadisi-06',
+        routeId: 'kristal-vadisi',
+        index: 6,
+        type: WordHuntLevelType.normal,
+        grid: <String>[
+          'VÖMKVFFV',
+          'OPARLAKŞ',
+          'GATKAGPİ',
+          'KİLTRESK',
+          'BGIDOMIB',
+          'KZKDORID',
+          'YİBKIKİP',
+          'RÇGKRŞUC',
+        ],
+        targetWords: <String>['SERTLİK', 'DOKU', 'ÇİZGİ', 'PARLAK', 'KIRIK'],
+        bonusWords: <String>['MATLIK'],
+        starRules: WordHuntStarRules(
+          twoStarMaxMistakes: 2,
+          threeStarMaxMistakes: 0,
+        ),
+      ),
+      // 7. Obsidyen Geçidi
+      WordHuntLevelDefinition(
+        id: 'kristal-vadisi-07',
+        routeId: 'kristal-vadisi',
+        index: 7,
+        type: WordHuntLevelType.normal,
+        grid: <String>[
+          'PLUTROTT',
+          'OBSİDYEN',
+          'MTMHŞFÇB',
+          'ZİCEÜIAV',
+          'ANDTRZŞN',
+          'HAÇİAMSİ',
+          'ERNLUGEÇ',
+          'ÜGTİÜKDR',
+        ],
+        targetWords: <String>[
+          'OBSİDYEN',
+          'GRANİT',
+          'BAZALT',
+          'MERMER',
+          'TORTUL',
+          'POMZA',
+        ],
+        bonusWords: <String>['TÜF'],
+        infoCardIds: <String>['kristal-info-obsidyen'],
+        starRules: WordHuntStarRules(
+          twoStarMaxMistakes: 2,
+          threeStarMaxMistakes: 0,
+        ),
+      ),
+      // 8. Fay Yarığı
+      WordHuntLevelDefinition(
+        id: 'kristal-vadisi-08',
+        routeId: 'kristal-vadisi',
+        index: 8,
+        type: WordHuntLevelType.normal,
+        grid: <String>[
+          'FÇIYOLİF',
+          'MHADMEFH',
+          'EFATKVRM',
+          'RKBZLHPT',
+          'PÇNISABÖ',
+          'EMANTOKZ',
+          'DIÖYPKMR',
+          'OZIZOHİN',
+        ],
+        targetWords: <String>[
+          'FAY',
+          'LEVHA',
+          'BASINÇ',
+          'ÇATLAK',
+          'DEPREM',
+          'ODAK',
+        ],
+        bonusWords: <String>['MANTO'],
+        infoCardIds: <String>['kristal-info-fay'],
+        starRules: WordHuntStarRules(
+          twoStarMaxMistakes: 2,
+          threeStarMaxMistakes: 0,
+        ),
+      ),
+      // 9. Volkan Odası
+      WordHuntLevelDefinition(
+        id: 'kristal-vadisi-09',
+        routeId: 'kristal-vadisi',
+        index: 9,
+        type: WordHuntLevelType.normal,
+        grid: <String>[
+          'DÇSEDZZD',
+          'LYKMCMDY',
+          'EMRÜKSÜP',
+          'AOEMKAÇM',
+          'KCTEÜÜAU',
+          'ELAVLGRM',
+          'TSRBMHCT',
+          'ĞMKAĞYZÖ',
+        ],
+        targetWords: <String>[
+          'MAGMA',
+          'LAV',
+          'KRATER',
+          'KÜKÜRT',
+          'PÜSKÜRME',
+          'KÜL',
+        ],
+        bonusWords: <String>['BACA', 'KOR'],
+        starRules: WordHuntStarRules(
+          twoStarMaxMistakes: 2,
+          threeStarMaxMistakes: 0,
+        ),
+      ),
+      // 10. Kristal Tahtı
+      WordHuntLevelDefinition(
+        id: 'kristal-vadisi-10',
+        routeId: 'kristal-vadisi',
+        index: 10,
+        type: WordHuntLevelType.routeFinal,
+        grid: <String>[
+          'ARSRİFAS',
+          'IMİKİKAE',
+          'ATEVİMOY',
+          'ÖÜOTLNAD',
+          'PRPEİKOP',
+          'VMACUSKC',
+          'FÜLTRYTO',
+          'GZTOPAZU',
+        ],
+        targetWords: <String>[
+          'AMETİST',
+          'ZÜMRÜT',
+          'SAFİR',
+          'YAKUT',
+          'TOPAZ',
+          'OPAL',
+          'ONİKS',
+        ],
+        bonusWords: <String>['ELMAS', 'AKİK'],
+        infoCardIds: <String>['kristal-info-ametist'],
+        timeLimitSeconds: 120,
+        starRules: WordHuntStarRules(
+          twoStarMaxSeconds: 78,
+          threeStarMaxSeconds: 58,
+          twoStarMaxMistakes: 2,
+          threeStarMaxMistakes: 0,
+        ),
+      ),
+    ],
+  );
+}

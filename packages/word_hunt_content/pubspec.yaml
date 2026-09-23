@@ -1,0 +1,14 @@
+name: word_hunt_content
+description: Shared production content authority for Bilgi Rotasi Word Hunt.
+publish_to: "none"
+version: 0.1.0
+
+environment:
+  sdk: ">=3.7.0 <4.0.0"
+
+dependencies:
+  word_hunt_domain:
+    path: ../word_hunt_domain
+
+dev_dependencies:
+  test: ^1.25.15

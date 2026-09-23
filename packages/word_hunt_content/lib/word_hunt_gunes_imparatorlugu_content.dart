@@ -1,0 +1,373 @@
+import 'word_hunt_models.dart';
+
+/// Owner-approved locked production content for Güneş İmparatorluğu.
+abstract final class WordHuntGunesImparatorluguContent {
+  static const List<String> levelNames = <String>[
+    'Işık Yolu',
+    'Güneş Sütunları',
+    'Gökyüzü Avlusu',
+    'Yıldız Haritası',
+    'Ekinoks Kapısı',
+    'Tören Yolu',
+    'Büyük Tapınak',
+    'Altın Çarklar',
+    'Kraliyet Salonu',
+    'Güneş Tahtı',
+  ];
+
+  static const List<WordHuntInfoCard> infoCards = <WordHuntInfoCard>[
+    WordHuntInfoCard(
+      id: 'gunes-info-safak',
+      word: 'ŞAFAK',
+      title: 'Şafak',
+      category: 'Atmosfer / Astronomi',
+      shortFact:
+          'Şafak, Güneş henüz doğmadan önce gökyüzünün aydınlanmaya başladığı dönemdir. Güneş ufkun altında olsa bile ışığı atmosferde saçılarak gözümüze ulaşabilir.',
+    ),
+    WordHuntInfoCard(
+      id: 'gunes-info-golge',
+      word: 'GÖLGE',
+      title: 'Gölgeyle Zaman',
+      category: 'Astronomi / Zaman Ölçümü',
+      shortFact:
+          'Güneş saatleri, Güneş’in gökyüzündeki görünür hareketi nedeniyle bir göstergenin gölgesinin gün boyunca yer değiştirmesinden yararlanır. Böylece yerel güneş zamanı ölçülebilir.',
+    ),
+    WordHuntInfoCard(
+      id: 'gunes-info-yorunge',
+      word: 'YÖRÜNGE',
+      title: 'Yörünge',
+      category: 'Astronomi',
+      shortFact:
+          'Yörünge, bir gökcisminin başka bir cisim çevresinde izlediği düzenli yoldur. Gezegenlerin Güneş çevresindeki yörüngeleri elipstir; çoğunda bu elips daireye oldukça yakındır.',
+    ),
+    WordHuntInfoCard(
+      id: 'gunes-info-ekinoks',
+      word: 'EKİNOKS',
+      title: 'Ekinoks',
+      category: 'Astronomi',
+      shortFact:
+          'Ekinoks, Güneş’in gökyüzündeki görünür hareketinde gök ekvatorunu geçtiği ve yılda iki kez gerçekleşen andır. Bu tarihlerde gece ve gündüz süreleri birbirine çok yaklaşır; atmosferik kırılma ve Güneş diskinin görünür boyutu nedeniyle tam olarak eşit olmayabilir.',
+    ),
+    WordHuntInfoCard(
+      id: 'gunes-info-portik',
+      word: 'PORTİK',
+      title: 'Portik',
+      category: 'Mimari',
+      shortFact:
+          'Portik, bir yapının girişinde sütunların taşıdığı üst örtüyle oluşturulan mimari giriş bölümüdür. Antik Yunan ve Roma tapınaklarında cepheyi vurgulayan önemli bir unsur olarak kullanılmıştır.',
+    ),
+    WordHuntInfoCard(
+      id: 'gunes-info-takvim',
+      word: 'TAKVİM',
+      title: 'Gökyüzünden Takvime',
+      category: 'Astronomi / Zaman',
+      shortFact:
+          'Takvim, zamanı gün, ay ve yıl gibi birimlere düzenleyen sistemdir. Birçok takvim Dünya’nın dönüşü, Dünya’nın Güneş çevresindeki dolanımı veya Ay’ın döngüleri gibi astronomik hareketlerden yararlanır.',
+    ),
+  ];
+
+  static const WordHuntRouteDefinition gunesImparatorlugu =
+      WordHuntRouteDefinition(
+        id: 'gunes-imparatorlugu',
+        title: 'Güneş İmparatorluğu',
+        theme: 'solarSeal',
+        unlockStarsRequired: 0,
+        routeRewardId: 'badge-gunes-kasifi',
+        levels: <WordHuntLevelDefinition>[
+          // 1. Işık Yolu
+          WordHuntLevelDefinition(
+            id: 'gunes-imparatorlugu-01',
+            routeId: 'gunes-imparatorlugu',
+            index: 1,
+            displayName: 'Işık Yolu',
+            type: WordHuntLevelType.normal,
+            grid: <String>[
+              'DHMKHÖNK',
+              'LKEYDMEU',
+              'IÖUGFÖUL',
+              'ŞATSĞKGF',
+              'AUJUBJZY',
+              'FUFĞİÖIO',
+              'AURZLKGL',
+              'KIŞINUGF',
+            ],
+            targetWords: <String>['IŞIK', 'YOL', 'ŞAFAK', 'UFUK', 'TAŞ'],
+            bonusWords: <String>['IŞIN'],
+            infoCardIds: <String>['gunes-info-safak'],
+            starRules: WordHuntStarRules(
+              twoStarMaxMistakes: 2,
+              threeStarMaxMistakes: 0,
+            ),
+          ),
+          // 2. Güneş Sütunları
+          WordHuntLevelDefinition(
+            id: 'gunes-imparatorlugu-02',
+            routeId: 'gunes-imparatorlugu',
+            index: 2,
+            displayName: 'Güneş Sütunları',
+            type: WordHuntLevelType.normal,
+            grid: <String>[
+              'ABOMGSCJ',
+              'RJBZVÜZI',
+              'YGSAATTH',
+              'FÖSZDUÖC',
+              'TLNMONAR',
+              'DGMÜAZKE',
+              'KERBİHMH',
+              'ÜLYHÇÇCF',
+            ],
+            targetWords: <String>['SÜTUN', 'GÖLGE', 'YÖN', 'HİZA', 'SAAT'],
+            bonusWords: <String>['İBRE'],
+            infoCardIds: <String>['gunes-info-golge'],
+            starRules: WordHuntStarRules(
+              twoStarMaxMistakes: 2,
+              threeStarMaxMistakes: 0,
+            ),
+          ),
+          // 3. Gökyüzü Avlusu
+          WordHuntLevelDefinition(
+            id: 'gunes-imparatorlugu-03',
+            routeId: 'gunes-imparatorlugu',
+            index: 3,
+            displayName: 'Gökyüzü Avlusu',
+            type: WordHuntLevelType.normal,
+            grid: <String>[
+              'HŞZGJDÜU',
+              'İHYEOOÜZ',
+              'İNHZYHZI',
+              'KASENUÜD',
+              'ÖDİGMIYL',
+              'PYMEUPKI',
+              'ŞEGNÜRÖY',
+              'GMEJZGGB',
+            ],
+            targetWords: <String>[
+              'GÖKYÜZÜ',
+              'YILDIZ',
+              'GEZEGEN',
+              'MEYDAN',
+              'YÖRÜNGE',
+            ],
+            bonusWords: <String>['SİMGE'],
+            infoCardIds: <String>['gunes-info-yorunge'],
+            starRules: WordHuntStarRules(
+              twoStarMaxMistakes: 2,
+              threeStarMaxMistakes: 0,
+            ),
+          ),
+          // 4. Yıldız Haritası
+          WordHuntLevelDefinition(
+            id: 'gunes-imparatorlugu-04',
+            routeId: 'gunes-imparatorlugu',
+            index: 4,
+            displayName: 'Yıldız Haritası',
+            type: WordHuntLevelType.normal,
+            grid: <String>[
+              'ÖPUTUKLH',
+              'RNRGİÜAM',
+              'TRGKJRZŞ',
+              'AÖNÖİEFI',
+              'KVKTZMİT',
+              'ILATFLÇU',
+              'MERİDYEN',
+              'GGAFHIÇM',
+            ],
+            targetWords: <String>['HARİTA', 'TAKIM', 'KUTUP', 'GÖZLEM', 'GÖK'],
+            bonusWords: <String>['KÜRE', 'MERİDYEN'],
+            starRules: WordHuntStarRules(
+              twoStarMaxMistakes: 2,
+              threeStarMaxMistakes: 0,
+            ),
+          ),
+          // 5. Ekinoks Kapısı
+          WordHuntLevelDefinition(
+            id: 'gunes-imparatorlugu-05',
+            routeId: 'gunes-imparatorlugu',
+            index: 5,
+            displayName: 'Ekinoks Kapısı',
+            type: WordHuntLevelType.challenge,
+            grid: <String>[
+              'INÇNYTDE',
+              'TAYNAEEK',
+              'ODAKNFIİ',
+              'JÖAGSRİN',
+              'ŞLEIIRIO',
+              'PZNLMÇCK',
+              'NJMGAZLS',
+              'TARGTKUA',
+            ],
+            targetWords: <String>[
+              'EKİNOKS',
+              'AYNA',
+              'YANSIMA',
+              'AÇI',
+              'DENGE',
+              'ODAK',
+            ],
+            bonusWords: <String>['PLAKA', 'KIRILMA'],
+            infoCardIds: <String>['gunes-info-ekinoks'],
+            timeLimitSeconds: 60,
+            starRules: WordHuntStarRules(
+              twoStarMaxSeconds: 45,
+              threeStarMaxSeconds: 30,
+              twoStarMaxMistakes: 1,
+              threeStarMaxMistakes: 0,
+            ),
+          ),
+          // 6. Tören Yolu
+          WordHuntLevelDefinition(
+            id: 'gunes-imparatorlugu-06',
+            routeId: 'gunes-imparatorlugu',
+            index: 6,
+            displayName: 'Tören Yolu',
+            type: WordHuntLevelType.normal,
+            grid: <String>[
+              'ŞLYZAÜJÜ',
+              'ÇBVLEOVÖ',
+              'MKACNASÜ',
+              'SYOEAHSJ',
+              'OÇRÜŞDTZ',
+              'TÖBTİÇIT',
+              'TLIÜNHBM',
+              'ĞYKIZILB',
+            ],
+            targetWords: <String>['TÖREN', 'ALAY', 'KIZIL', 'SANCAK', 'ADIM'],
+            bonusWords: <String>['NİŞAN'],
+            starRules: WordHuntStarRules(
+              twoStarMaxMistakes: 2,
+              threeStarMaxMistakes: 0,
+            ),
+          ),
+          // 7. Büyük Tapınak
+          WordHuntLevelDefinition(
+            id: 'gunes-imparatorlugu-07',
+            routeId: 'gunes-imparatorlugu',
+            index: 7,
+            displayName: 'Büyük Tapınak',
+            type: WordHuntLevelType.normal,
+            grid: <String>[
+              'TULRŞSBP',
+              'AGVAAAPO',
+              'PEMKSZMR',
+              'IDVAETKT',
+              'NİMNİRUİ',
+              'AAKUKBBK',
+              'KKRSMMBÖ',
+              'NIYAİVEV',
+            ],
+            targetWords: <String>[
+              'TAPINAK',
+              'SUNAK',
+              'BASAMAK',
+              'KUBBE',
+              'KUTSAL',
+              'PORTİK',
+            ],
+            bonusWords: <String>['KAİDE'],
+            infoCardIds: <String>['gunes-info-portik'],
+            starRules: WordHuntStarRules(
+              twoStarMaxMistakes: 2,
+              threeStarMaxMistakes: 0,
+            ),
+          ),
+          // 8. Altın Çarklar
+          WordHuntLevelDefinition(
+            id: 'gunes-imparatorlugu-08',
+            routeId: 'gunes-imparatorlugu',
+            index: 8,
+            displayName: 'Altın Çarklar',
+            type: WordHuntLevelType.normal,
+            grid: <String>[
+              'VBİHIİPJ',
+              'YÜKRFÜYM',
+              'ÇGPRRLIİ',
+              'ÇNAMAZİS',
+              'IÖEEİÇLV',
+              'YDJSKYŞE',
+              'ĞBTAKVİM',
+              'PŞJEIEDĞ',
+            ],
+            targetWords: <String>[
+              'ÇARK',
+              'TAKVİM',
+              'DİŞLİ',
+              'EKSEN',
+              'DÖNGÜ',
+              'MEVSİM',
+            ],
+            bonusWords: <String>['ZAMAN'],
+            infoCardIds: <String>['gunes-info-takvim'],
+            starRules: WordHuntStarRules(
+              twoStarMaxMistakes: 2,
+              threeStarMaxMistakes: 0,
+            ),
+          ),
+          // 9. Kraliyet Salonu
+          WordHuntLevelDefinition(
+            id: 'gunes-imparatorlugu-09',
+            routeId: 'gunes-imparatorlugu',
+            index: 9,
+            displayName: 'Kraliyet Salonu',
+            type: WordHuntLevelType.normal,
+            grid: <String>[
+              'TBNHZNTS',
+              'EGAÜLTAÇ',
+              'YÖDKLRNÜ',
+              'İKEÜİNAL',
+              'LTNMPOTS',
+              'AİADÜLLP',
+              'RLHAZAAÜ',
+              'KAMRASSA',
+            ],
+            targetWords: <String>[
+              'KRALİYET',
+              'ARMA',
+              'SALTANAT',
+              'MİRAS',
+              'HÜKÜMDAR',
+              'SALON',
+            ],
+            bonusWords: <String>['HANEDAN', 'TAÇ'],
+            starRules: WordHuntStarRules(
+              twoStarMaxMistakes: 2,
+              threeStarMaxMistakes: 0,
+            ),
+          ),
+          // 10. Güneş Tahtı
+          WordHuntLevelDefinition(
+            id: 'gunes-imparatorlugu-10',
+            routeId: 'gunes-imparatorlugu',
+            index: 10,
+            displayName: 'Güneş Tahtı',
+            type: WordHuntLevelType.routeFinal,
+            grid: <String>[
+              'HFTAHTÇU',
+              'MLÇFÜGYI',
+              'KEŞĞÜGÇT',
+              'ÖLKNAÖUL',
+              'KMERKEZI',
+              'EŞLYÖSMŞ',
+              'NITLAGDI',
+              'KİLRİBIF',
+            ],
+            targetWords: <String>[
+              'GÜNEŞ',
+              'TAHT',
+              'UYGARLIK',
+              'BİRLİK',
+              'MERKEZ',
+              'GÖRKEM',
+              'KÖKEN',
+            ],
+            bonusWords: <String>['IŞILTI', 'ALTIN'],
+            timeLimitSeconds: 120,
+            starRules: WordHuntStarRules(
+              twoStarMaxSeconds: 85,
+              threeStarMaxSeconds: 65,
+              twoStarMaxMistakes: 2,
+              threeStarMaxMistakes: 0,
+            ),
+          ),
+        ],
+      );
+}

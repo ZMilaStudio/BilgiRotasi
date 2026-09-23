@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:bilgi_rotasi/word_hunt/word_hunt_models.dart';
-import 'package:bilgi_rotasi/word_hunt/word_hunt_route_catalog.dart';
 import 'package:crypto/crypto.dart';
+import 'package:word_hunt_content/word_hunt_production_content_catalog.dart';
+import 'package:word_hunt_domain/word_hunt_models.dart';
 
 const int wordHuntProductionCorpusSchemaVersion = 1;
 const String wordHuntProductionCorpusKind = 'WORD_HUNT_PRODUCTION_CORPUS_LOCK';
@@ -118,7 +118,7 @@ Map<String, Object?> _routeProjection(WordHuntRouteDefinition route) {
 }
 
 Map<String, Object?> buildProductionCorpusLock() {
-  final routes = WordHuntRouteCatalog.entries
+  final routes = WordHuntProductionContentCatalog.entries
       .map((entry) => entry.route)
       .toList(growable: false);
   final result = <String, Object?>{

@@ -1181,6 +1181,13 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.15.0"
+  word_hunt_content:
+    dependency: "direct main"
+    description:
+      path: "packages/word_hunt_content"
+      relative: true
+    source: path
+    version: "0.1.0"
   word_hunt_domain:
     dependency: "direct main"
     description:
