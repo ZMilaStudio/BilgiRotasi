@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:word_hunt_domain/word_hunt_progress_codec.dart';
 import 'word_hunt_feature_host.dart';
 import 'word_hunt_completion_orchestration.dart';
 import 'word_hunt_completion_presentations.dart';
@@ -10,7 +11,6 @@ import 'word_hunt_home_screen.dart';
 import 'word_hunt_models.dart';
 import 'word_hunt_milestone_info_rewards.dart';
 import 'word_hunt_progress.dart';
-import 'word_hunt_progress_codec.dart';
 import 'word_hunt_progress_migration.dart';
 import 'word_hunt_reference_route_screen.dart';
 import 'word_hunt_route_catalog.dart';
@@ -49,6 +49,7 @@ class WordHuntFeatureEntryScreen extends StatefulWidget {
     this.infoCards = WordHuntStarterContent.infoCards,
     this.routeSelectionEnabled = true,
     required this.progressStore,
+    required this.progressStorageIdentity,
   });
 
   final String? ownerUid;
@@ -56,6 +57,7 @@ class WordHuntFeatureEntryScreen extends StatefulWidget {
   final List<WordHuntInfoCard> infoCards;
   final bool routeSelectionEnabled;
   final WordHuntProgressStore progressStore;
+  final WordHuntProgressStorageIdentity progressStorageIdentity;
 
   @override
   State<WordHuntFeatureEntryScreen> createState() =>
@@ -87,13 +89,14 @@ class _WordHuntFeatureEntryScreenState
       _activeCatalogEntry?.presentationKind ??
       WordHuntRoutePresentationKind.referenceRoute;
 
-  String get _ownerScope => WordHuntProgressCodec.scopeForUid(widget.ownerUid);
+  String get _ownerScope =>
+      widget.progressStorageIdentity.ownerScopeForUid(widget.ownerUid);
 
   String get _storageKey =>
-      WordHuntProgressCodec.storageKeyForUid(widget.ownerUid);
+      widget.progressStorageIdentity.progressStorageKeyForUid(widget.ownerUid);
 
-  String get _kristalRevealSeenKey =>
-      'bilgi_rotasi_word_hunt_seen_kristal_vadisi_reveal_v1_$_ownerScope';
+  String get _kristalRevealSeenKey => widget.progressStorageIdentity
+      .kristalRevealSeenKeyForUid(widget.ownerUid);
 
   int _deriveActiveSegmentIndex(
     WordHuntRouteDefinition route,
