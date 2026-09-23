@@ -44,3 +44,8 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Standalone upload-signing material is local/temporary only.
+/android/key.properties
+/android/app/*.jks
+/android/app/*.keystore
