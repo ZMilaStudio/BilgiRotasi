@@ -402,7 +402,7 @@ void main() {
     test('CTA handler source has no second record or persistence write', () {
       final source =
           File(
-            'lib/word_hunt/word_hunt_production_entry_screen.dart',
+            'packages/word_hunt_flutter_feature/lib/word_hunt_feature_entry_screen.dart',
           ).readAsStringSync();
       final start = source.indexOf('Future<void> _showParentCompletion');
       final end = source.indexOf(
@@ -419,7 +419,7 @@ void main() {
     test('navigation handler opens only canonical next level gameplay', () {
       final source =
           File(
-            'lib/word_hunt/word_hunt_production_entry_screen.dart',
+            'packages/word_hunt_flutter_feature/lib/word_hunt_feature_entry_screen.dart',
           ).readAsStringSync();
       final start = source.indexOf('Future<void> _showParentCompletion');
       final end = source.indexOf(
@@ -644,7 +644,9 @@ void main() {
 
     test('WordHuntLevelPlayResult remains facts-only', () {
       final source =
-          File('lib/word_hunt/word_hunt_screens.dart').readAsStringSync();
+          File(
+            'packages/word_hunt_flutter_feature/lib/word_hunt_screens.dart',
+          ).readAsStringSync();
       final start = source.indexOf('class WordHuntLevelPlayResult');
       final end = source.indexOf('class WordHuntLevelProductionScreen', start);
       final contract = source.substring(start, end);

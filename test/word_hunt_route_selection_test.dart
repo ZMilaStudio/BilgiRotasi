@@ -21,15 +21,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  final entrySource = File(
-    'lib/word_hunt/word_hunt_production_entry_screen.dart',
-  ).readAsStringSync();
-  final selectorSource = File(
-    'lib/word_hunt/word_hunt_route_selector.dart',
-  ).readAsStringSync();
-  final catalogSource = File(
-    'lib/word_hunt/word_hunt_route_catalog.dart',
-  ).readAsStringSync();
+  final entrySource =
+      File(
+        'packages/word_hunt_flutter_feature/lib/word_hunt_feature_entry_screen.dart',
+      ).readAsStringSync();
+  final selectorSource =
+      File(
+        'packages/word_hunt_flutter_feature/lib/word_hunt_route_selector.dart',
+      ).readAsStringSync();
+  final catalogSource =
+      File(
+        'packages/word_hunt_flutter_feature/lib/word_hunt_route_catalog.dart',
+      ).readAsStringSync();
 
   Map<String, int> starterCompleteStars() => <String, int>{
     for (final level in WordHuntStarterContent.baslangicLimani.levels.take(6))
@@ -252,7 +255,10 @@ void main() {
       same(WordHuntKayipSehirContent.kayipSehir),
     );
     expect(yeraltiRule.requiredStars, 0);
-    expect(WordHuntYeraltiKralligiContent.yeraltiKralligi.unlockStarsRequired, 0);
+    expect(
+      WordHuntYeraltiKralligiContent.yeraltiKralligi.unlockStarsRequired,
+      0,
+    );
     expect(
       WordHuntRouteCatalog.yeraltiKralligi.lockedMessage,
       'Kayıp Şehir’i tamamlayarak aç.',
@@ -463,10 +469,7 @@ void main() {
       Future<void> pump() async {
         await tester.pumpWidget(
           MaterialApp(
-            home: WordHuntRouteSelector(
-              progress: progress,
-              onRouteTap: (_) {},
-            ),
+            home: WordHuntRouteSelector(progress: progress, onRouteTap: (_) {}),
           ),
         );
         await tester.pumpAndSettle();
@@ -477,7 +480,10 @@ void main() {
         find.byKey(const Key('word_hunt_route_card_kayip-sehir')),
       );
       expect(WordHuntRouteCatalog.kayipSehir.isUnlocked(progress), isTrue);
-      expect(WordHuntRouteCatalog.yeraltiKralligi.isUnlocked(progress), isFalse);
+      expect(
+        WordHuntRouteCatalog.yeraltiKralligi.isUnlocked(progress),
+        isFalse,
+      );
 
       progress = progress.recordLevelResult(
         levelId: WordHuntKayipSehirContent.kayipSehir.levels.last.id,
@@ -710,7 +716,10 @@ void main() {
     'kilitli rota mesajı unlock türünü generic olarak desteklemeyi sürdürür',
     () {
       expect(entrySource, contains('String _lockedRouteMessage('));
-      expect(entrySource, contains('final lockedMessage = entry.lockedMessage;'));
+      expect(
+        entrySource,
+        contains('final lockedMessage = entry.lockedMessage;'),
+      );
       expect(entrySource, contains('return lockedMessage;'));
       expect(entrySource, contains('case WordHuntRouteUnlockKind.routeStars:'));
       expect(

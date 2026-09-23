@@ -1,4 +1,1 @@
-/// Compatibility surface for existing Bilgi Rotasi consumers.
-///
-/// The implementation authority lives in the local pure-Dart domain package.
-export 'package:word_hunt_domain/word_hunt_models.dart';
+export 'package:word_hunt_flutter_feature/word_hunt_models.dart';

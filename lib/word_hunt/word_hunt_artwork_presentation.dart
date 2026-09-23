@@ -1,4 +1,1 @@
-enum WordHuntArtworkOverlayMode {
-  reusable,
-  embeddedRouteLiveNodes,
-}
+export 'package:word_hunt_flutter_feature/word_hunt_artwork_presentation.dart';

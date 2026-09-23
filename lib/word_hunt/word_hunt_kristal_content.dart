@@ -1,1 +1,1 @@
-export 'package:word_hunt_content/word_hunt_kristal_content.dart';
+export 'package:word_hunt_flutter_feature/word_hunt_kristal_content.dart';

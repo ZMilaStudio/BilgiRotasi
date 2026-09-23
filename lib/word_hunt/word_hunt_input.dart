@@ -1,2 +1,1 @@
-/// Compatibility surface for existing Bilgi Rotasi consumers.
-export 'package:word_hunt_domain/word_hunt_input.dart';
+export 'package:word_hunt_flutter_feature/word_hunt_input.dart';

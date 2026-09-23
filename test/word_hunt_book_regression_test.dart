@@ -22,27 +22,30 @@ void main() {
     );
   });
 
-  test('schema v3 roundtrip preserves historical unlocked cards without book UI', () {
-    const before = WordHuntProgressSnapshot(
-      unlockedInfoCardIds: <String>{
-        'info-deniz',
-        'gok-info-ruzgar',
-        'historical-card-id',
-      },
-    );
-    final encoded = WordHuntProgressCodec.encode(before, ownerScope: 'wave7');
-    final decoded = WordHuntProgressCodec.decode(
-      encoded,
-      expectedOwnerScope: 'wave7',
-    );
+  test(
+    'schema v3 roundtrip preserves historical unlocked cards without book UI',
+    () {
+      const before = WordHuntProgressSnapshot(
+        unlockedInfoCardIds: <String>{
+          'info-deniz',
+          'gok-info-ruzgar',
+          'historical-card-id',
+        },
+      );
+      final encoded = WordHuntProgressCodec.encode(before, ownerScope: 'wave7');
+      final decoded = WordHuntProgressCodec.decode(
+        encoded,
+        expectedOwnerScope: 'wave7',
+      );
 
-    expect(WordHuntProgressCodec.schemaVersion, 3);
-    expect(
-      WordHuntProgressCodec.storageKeyForUid('owner'),
-      startsWith('bilgi_rotasi_word_hunt_progress_v1_'),
-    );
-    expect(decoded.unlockedInfoCardIds, before.unlockedInfoCardIds);
-  });
+      expect(WordHuntProgressCodec.schemaVersion, 3);
+      expect(
+        WordHuntProgressCodec.storageKeyForUid('owner'),
+        startsWith('bilgi_rotasi_word_hunt_progress_v1_'),
+      );
+      expect(decoded.unlockedInfoCardIds, before.unlockedInfoCardIds);
+    },
+  );
 
   test('existing level info-card metadata remains canonical', () {
     final starterIds = <String>{
@@ -71,9 +74,10 @@ void main() {
   });
 
   test('production entry has no book or compass callback dependency', () {
-    final source = File(
-      'lib/word_hunt/word_hunt_production_entry_screen.dart',
-    ).readAsStringSync();
+    final source =
+        File(
+          'packages/word_hunt_flutter_feature/lib/word_hunt_feature_entry_screen.dart',
+        ).readAsStringSync();
 
     expect(source, isNot(contains('_showBook')));
     expect(source, isNot(contains('_showCompassHint')));

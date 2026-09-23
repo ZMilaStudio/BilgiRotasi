@@ -1,0 +1,19 @@
+name: word_hunt_flutter_feature
+description: Reusable Flutter runtime feature for Bilgi Rotasi Word Hunt.
+publish_to: "none"
+version: 0.1.0
+
+environment:
+  sdk: ">=3.7.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  word_hunt_domain:
+    path: ../word_hunt_domain
+  word_hunt_content:
+    path: ../word_hunt_content
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
