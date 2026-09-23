@@ -6,6 +6,8 @@ environment:
   sdk: ">=3.7.0 <4.0.0"
 
 dependencies:
+  word_hunt_domain:
+    path: packages/word_hunt_domain
   flutter_native_splash: ^2.4.8
   shared_preferences: ^2.5.5
   audioplayers: ^6.8.1
