@@ -1,3 +1,5 @@
 analyzer:
   exclude:
     - build/**
+    # Independent Flutter app package; analyzed from its own package root.
+    - apps/kelime_avi_standalone/**
