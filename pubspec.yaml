@@ -10,6 +10,8 @@ dependencies:
     path: packages/word_hunt_domain
   word_hunt_content:
     path: packages/word_hunt_content
+  word_hunt_flutter_feature:
+    path: packages/word_hunt_flutter_feature
   flutter_native_splash: ^2.4.8
   shared_preferences: ^2.5.5
   audioplayers: ^6.8.1

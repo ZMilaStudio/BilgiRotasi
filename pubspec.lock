@@ -1195,6 +1195,13 @@ packages:
       relative: true
     source: path
     version: "0.1.0"
+  word_hunt_flutter_feature:
+    dependency: "direct main"
+    description:
+      path: "packages/word_hunt_flutter_feature"
+      relative: true
+    source: path
+    version: "0.1.0"
   xdg_directories:
     dependency: transitive
     description:

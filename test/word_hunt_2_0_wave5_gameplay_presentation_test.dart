@@ -229,7 +229,9 @@ void main() {
 
     test('result contract and Wave 6 navigation remain absent', () {
       final screens =
-          File('lib/word_hunt/word_hunt_screens.dart').readAsStringSync();
+          File(
+            'packages/word_hunt_flutter_feature/lib/word_hunt_screens.dart',
+          ).readAsStringSync();
       expect(screens, contains('class WordHuntLevelPlayResult'));
       expect(screens, contains('final String levelId;'));
       expect(screens, contains('final int stars;'));
@@ -245,7 +247,7 @@ void main() {
     test('deferred final forwards typed presentation unchanged', () {
       final source =
           File(
-            'lib/word_hunt/word_hunt_deferred_completion_level_screen.dart',
+            'packages/word_hunt_flutter_feature/lib/word_hunt_deferred_completion_level_screen.dart',
           ).readAsStringSync();
       expect(source, contains('WordHuntGameplayPresentation? presentation'));
       expect(source, contains('presentation: widget.presentation'));
@@ -254,26 +256,23 @@ void main() {
   });
 
   group('Wave 5 architecture and persistence safety', () {
-    test(
-      'production entry no longer owns route-special gameplay background',
-      () {
-        final source =
-            File(
-              'lib/word_hunt/word_hunt_production_entry_screen.dart',
-            ).readAsStringSync();
-        expect(source, isNot(contains('_gameplayBackgroundForLevel')));
-        expect(source, contains('_gameplayPresentationForLevel'));
-        expect(source, contains('.presentationProfile'));
-        expect(source, contains('.gameplayForLevel('));
-      },
-    );
+    test('production entry no longer owns route-special gameplay background', () {
+      final source =
+          File(
+            'packages/word_hunt_flutter_feature/lib/word_hunt_feature_entry_screen.dart',
+          ).readAsStringSync();
+      expect(source, isNot(contains('_gameplayBackgroundForLevel')));
+      expect(source, contains('_gameplayPresentationForLevel'));
+      expect(source, contains('.presentationProfile'));
+      expect(source, contains('.gameplayForLevel('));
+    });
 
     test(
       'gameplay presentation files contain no route-id/title switch chain',
       () {
         for (final path in <String>[
-          'lib/word_hunt/word_hunt_gameplay_presentation.dart',
-          'lib/word_hunt/word_hunt_screens.dart',
+          'packages/word_hunt_flutter_feature/lib/word_hunt_gameplay_presentation.dart',
+          'packages/word_hunt_flutter_feature/lib/word_hunt_screens.dart',
         ]) {
           final source = File(path).readAsStringSync();
           expect(source, isNot(contains('switch (route.id')));
@@ -292,7 +291,7 @@ void main() {
       );
       final source =
           File(
-            'lib/word_hunt/word_hunt_gameplay_presentation.dart',
+            'packages/word_hunt_flutter_feature/lib/word_hunt_gameplay_presentation.dart',
           ).readAsStringSync();
       expect(source, isNot(contains('SharedPreferences')));
       expect(source, isNot(contains('WordHuntProgressCodec')));

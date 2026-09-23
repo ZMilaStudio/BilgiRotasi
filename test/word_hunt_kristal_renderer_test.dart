@@ -12,12 +12,14 @@ void main() {
   final route = WordHuntKristalContent.kristalVadisi;
   final theme = WordHuntKristalVisualTheme.production.mapTheme;
   final visualTheme = WordHuntKristalVisualTheme.production;
-  final rendererSource = File(
-    'lib/word_hunt/word_hunt_reusable_route_map_screen.dart',
-  ).readAsStringSync();
-  final themedSource = File(
-    'lib/word_hunt/word_hunt_themed_production_route_screen.dart',
-  ).readAsStringSync();
+  final rendererSource =
+      File(
+        'packages/word_hunt_flutter_feature/lib/word_hunt_reusable_route_map_screen.dart',
+      ).readAsStringSync();
+  final themedSource =
+      File(
+        'packages/word_hunt_flutter_feature/lib/word_hunt_themed_production_route_screen.dart',
+      ).readAsStringSync();
 
   test('facetedCrystal is generic theme data and owner hierarchy is exact', () {
     expect(theme.nodeVisualStyle, WordHuntRouteNodeVisualStyle.facetedCrystal);
