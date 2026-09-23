@@ -1,0 +1,90 @@
+name: Kelime Avı Standalone Validation
+
+on:
+  pull_request:
+    branches:
+      - release/final-closed-test-aab-1.68.8
+    paths:
+      - 'apps/kelime_avi_standalone/**'
+      - 'packages/word_hunt_flutter_feature/**'
+      - 'packages/word_hunt_content/**'
+      - 'packages/word_hunt_domain/**'
+      - '.github/workflows/kelime_avi_standalone_validation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  standalone-validation:
+    name: Standalone analyze, test ve Android debug build
+    runs-on: ubuntu-22.04
+    timeout-minutes: 40
+    env:
+      VALIDATION_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      STANDALONE_DIR: apps/kelime_avi_standalone
+
+    steps:
+      - name: Exact feature HEAD'i indir
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.VALIDATION_SHA }}
+
+      - name: Java 17 kur
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Flutter 3.44.6 kur
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.6'
+          channel: stable
+          cache: true
+
+      - name: Shared asset link'ini doğrula
+        shell: bash
+        run: |
+          set -euo pipefail
+          link="$STANDALONE_DIR/assets/word_hunt"
+          test -L "$link"
+          test "$(readlink "$link")" = "../../../assets/word_hunt"
+          resolved="$(readlink -f "$link")"
+          expected="$(readlink -f assets/word_hunt)"
+          test "$resolved" = "$expected"
+          test -d "$resolved"
+          test -n "$(find "$resolved" -mindepth 1 -maxdepth 1 -print -quit)"
+
+      - name: Standalone Android identity'yi doğrula
+        shell: bash
+        run: |
+          set -euo pipefail
+          gradle="$STANDALONE_DIR/android/app/build.gradle.kts"
+          grep -Fq 'namespace = "com.zmilastudio.kelimeavi"' "$gradle"
+          grep -Fq 'applicationId = "com.zmilastudio.kelimeavi"' "$gradle"
+
+      - name: Standalone bağımlılıklarını çöz
+        working-directory: apps/kelime_avi_standalone
+        run: flutter pub get
+
+      - name: Standalone analyze
+        working-directory: apps/kelime_avi_standalone
+        run: flutter analyze
+
+      - name: Standalone tests
+        working-directory: apps/kelime_avi_standalone
+        run: flutter test --reporter expanded
+
+      - name: Android debug APK üret
+        working-directory: apps/kelime_avi_standalone
+        run: flutter build apk --debug
+
+      - name: Debug APK existence proof
+        working-directory: apps/kelime_avi_standalone
+        shell: bash
+        run: |
+          set -euo pipefail
+          apk="build/app/outputs/flutter-apk/app-debug.apk"
+          test -s "$apk"
+          sha256sum "$apk"
