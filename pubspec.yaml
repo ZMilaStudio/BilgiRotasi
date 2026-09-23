@@ -8,6 +8,8 @@ environment:
 dependencies:
   word_hunt_domain:
     path: packages/word_hunt_domain
+  word_hunt_content:
+    path: packages/word_hunt_content
   flutter_native_splash: ^2.4.8
   shared_preferences: ^2.5.5
   audioplayers: ^6.8.1
