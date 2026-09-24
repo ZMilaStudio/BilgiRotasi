@@ -53,9 +53,9 @@ void main() {
       expect(workflow, isNot(contains('push:')));
       expect(workflow, contains('KELIME_AVI_UPLOAD_KEYSTORE_BASE64'));
       expect(workflow, contains('flutter build appbundle --release'));
-      expect(workflow, contains('jarsigner -verify "$aab"'));
+      expect(workflow, contains('jarsigner -verify "\$aab"'));
       expect(workflow, isNot(contains('jarsigner -verify -strict')));
-      expect(workflow, contains('keytool -printcert -jarfile "$aab"'));
+      expect(workflow, contains('keytool -printcert -jarfile "\$aab"'));
       expect(
         workflow,
         contains(
@@ -64,7 +64,7 @@ void main() {
       );
       expect(
         workflow,
-        contains('sha256sum "$aab" | tee app-release.aab.sha256'),
+        contains('sha256sum "\$aab" | tee app-release.aab.sha256'),
       );
       expect(workflow, contains('actions/upload-artifact@v4'));
       expect(workflow, contains('JARSIGNER_VERIFY.txt'));
