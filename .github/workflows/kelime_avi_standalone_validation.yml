@@ -88,3 +88,10 @@ jobs:
           apk="build/app/outputs/flutter-apk/app-debug.apk"
           test -s "$apk"
           sha256sum "$apk"
+
+      - name: Screenshot debug APK artifact yükle
+        uses: actions/upload-artifact@v4
+        with:
+          name: KelimeAvi-screenshot-debug-apk
+          path: apps/kelime_avi_standalone/build/app/outputs/flutter-apk/app-debug.apk
+          if-no-files-found: error
