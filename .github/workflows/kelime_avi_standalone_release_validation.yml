@@ -92,12 +92,31 @@ jobs:
         working-directory: apps/kelime_avi_standalone
         run: |
           set -euo pipefail
+          export LC_ALL=C
           aab="build/app/outputs/bundle/release/app-release.aab"
+          expected_fingerprint="66:32:75:3D:43:3F:2A:E9:96:A5:CB:6B:AB:25:98:A9:22:A8:4D:03:40:CF:0F:15:DC:E3:69:0D:21:A9:4B:7F"
           test -s "$aab"
-          jarsigner -verify -strict "$aab"
+          jarsigner -verify "$aab" 2>&1 | tee JARSIGNER_VERIFY.txt
+          grep -Fq 'jar verified' JARSIGNER_VERIFY.txt
           keytool -printcert -jarfile "$aab" > AAB_CERTIFICATE.txt
-          grep -Fq 'SHA1:' AAB_CERTIFICATE.txt
+          aab_fingerprint="$(
+            sed -nE 's/^[[:space:]]*SHA256:[[:space:]]*//p' AAB_CERTIFICATE.txt | head -n1
+          )"
+          test -n "$aab_fingerprint"
+          test "$aab_fingerprint" = "$expected_fingerprint"
+          keystore_fingerprint="$(
+            keytool -list -v \
+              -keystore android/app/kelime_avi_upload.jks \
+              -storepass:env KELIME_AVI_UPLOAD_STORE_PASSWORD \
+              -alias "$KELIME_AVI_UPLOAD_KEY_ALIAS" \
+              | sed -nE 's/^[[:space:]]*SHA256:[[:space:]]*//p' \
+              | head -n1
+          )"
+          test -n "$keystore_fingerprint"
+          test "$keystore_fingerprint" = "$expected_fingerprint"
+          test "$keystore_fingerprint" = "$aab_fingerprint"
           sha256sum "$aab" | tee app-release.aab.sha256
+          test -s app-release.aab.sha256
 
       - name: Signed AAB artifact'ını yükle
         uses: actions/upload-artifact@v4
@@ -107,6 +126,7 @@ jobs:
             apps/kelime_avi_standalone/build/app/outputs/bundle/release/app-release.aab
             apps/kelime_avi_standalone/app-release.aab.sha256
             apps/kelime_avi_standalone/AAB_CERTIFICATE.txt
+            apps/kelime_avi_standalone/JARSIGNER_VERIFY.txt
           if-no-files-found: error
           retention-days: 7
 

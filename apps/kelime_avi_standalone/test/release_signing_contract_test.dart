@@ -53,7 +53,21 @@ void main() {
       expect(workflow, isNot(contains('push:')));
       expect(workflow, contains('KELIME_AVI_UPLOAD_KEYSTORE_BASE64'));
       expect(workflow, contains('flutter build appbundle --release'));
-      expect(workflow, contains('jarsigner -verify -strict'));
+      expect(workflow, contains('jarsigner -verify "$aab"'));
+      expect(workflow, isNot(contains('jarsigner -verify -strict')));
+      expect(workflow, contains('keytool -printcert -jarfile "$aab"'));
+      expect(
+        workflow,
+        contains(
+          '66:32:75:3D:43:3F:2A:E9:96:A5:CB:6B:AB:25:98:A9:22:A8:4D:03:40:CF:0F:15:DC:E3:69:0D:21:A9:4B:7F',
+        ),
+      );
+      expect(
+        workflow,
+        contains('sha256sum "$aab" | tee app-release.aab.sha256'),
+      );
+      expect(workflow, contains('actions/upload-artifact@v4'));
+      expect(workflow, contains('JARSIGNER_VERIFY.txt'));
       expect(workflow, contains('retention-days: 7'));
       expect(workflow, contains('rm -f android/key.properties'));
       expect(workflow, contains('test ! -e android/app/kelime_avi_upload.jks'));
