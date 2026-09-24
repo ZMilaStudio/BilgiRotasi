@@ -1,0 +1,141 @@
+name: Kelime Avı Standalone Release Validation
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  signed-release-aab:
+    name: Signed standalone closed-test AAB
+    runs-on: ubuntu-22.04
+    timeout-minutes: 40
+    env:
+      STANDALONE_DIR: apps/kelime_avi_standalone
+      KELIME_AVI_UPLOAD_KEYSTORE_BASE64: ${{ secrets.KELIME_AVI_UPLOAD_KEYSTORE_BASE64 }}
+      KELIME_AVI_UPLOAD_STORE_PASSWORD: ${{ secrets.KELIME_AVI_UPLOAD_STORE_PASSWORD }}
+      KELIME_AVI_UPLOAD_KEY_ALIAS: ${{ secrets.KELIME_AVI_UPLOAD_KEY_ALIAS }}
+      KELIME_AVI_UPLOAD_KEY_PASSWORD: ${{ secrets.KELIME_AVI_UPLOAD_KEY_PASSWORD }}
+
+    steps:
+      - name: Kaynağı indir
+        uses: actions/checkout@v4
+
+      - name: Java 17 kur
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Flutter 3.44.6 kur
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.6'
+          channel: stable
+          cache: true
+
+      - name: Upload signing secret'larını doğrula
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$KELIME_AVI_UPLOAD_KEYSTORE_BASE64"
+          test -n "$KELIME_AVI_UPLOAD_STORE_PASSWORD"
+          test -n "$KELIME_AVI_UPLOAD_KEY_ALIAS"
+          test -n "$KELIME_AVI_UPLOAD_KEY_PASSWORD"
+
+      - name: Geçici upload keystore'u hazırla
+        shell: bash
+        working-directory: apps/kelime_avi_standalone
+        run: |
+          set -euo pipefail
+          umask 077
+          printf '%s' "$KELIME_AVI_UPLOAD_KEYSTORE_BASE64" | base64 --decode > android/app/kelime_avi_upload.jks
+          printf '%s\n' \
+            "storeFile=app/kelime_avi_upload.jks" \
+            "storePassword=$KELIME_AVI_UPLOAD_STORE_PASSWORD" \
+            "keyAlias=$KELIME_AVI_UPLOAD_KEY_ALIAS" \
+            "keyPassword=$KELIME_AVI_UPLOAD_KEY_PASSWORD" \
+            > android/key.properties
+          chmod 600 android/app/kelime_avi_upload.jks android/key.properties
+
+      - name: Release identity'yi doğrula
+        shell: bash
+        run: |
+          set -euo pipefail
+          gradle="$STANDALONE_DIR/android/app/build.gradle.kts"
+          manifest="$STANDALONE_DIR/android/app/src/main/AndroidManifest.xml"
+          pubspec="$STANDALONE_DIR/pubspec.yaml"
+          grep -Fq 'namespace = "com.zmilastudio.kelimeavi"' "$gradle"
+          grep -Fq 'applicationId = "com.zmilastudio.kelimeavi"' "$gradle"
+          grep -Fq 'android:label="Kelime Avı"' "$manifest"
+          grep -Fq 'version: 1.0.0+1' "$pubspec"
+
+      - name: Standalone bağımlılıklarını çöz
+        working-directory: apps/kelime_avi_standalone
+        run: flutter pub get
+
+      - name: Standalone analyze
+        working-directory: apps/kelime_avi_standalone
+        run: flutter analyze
+
+      - name: Standalone tests
+        working-directory: apps/kelime_avi_standalone
+        run: flutter test --reporter expanded
+
+      - name: Signed release AAB üret
+        working-directory: apps/kelime_avi_standalone
+        run: flutter build appbundle --release
+
+      - name: AAB, signing ve SHA-256 doğrula
+        shell: bash
+        working-directory: apps/kelime_avi_standalone
+        run: |
+          set -euo pipefail
+          export LC_ALL=C
+          aab="build/app/outputs/bundle/release/app-release.aab"
+          expected_fingerprint="66:32:75:3D:43:3F:2A:E9:96:A5:CB:6B:AB:25:98:A9:22:A8:4D:03:40:CF:0F:15:DC:E3:69:0D:21:A9:4B:7F"
+          test -s "$aab"
+          jarsigner -verify "$aab" 2>&1 | tee JARSIGNER_VERIFY.txt
+          grep -Fq 'jar verified' JARSIGNER_VERIFY.txt
+          keytool -printcert -jarfile "$aab" > AAB_CERTIFICATE.txt
+          aab_fingerprint="$(
+            sed -nE 's/^[[:space:]]*SHA256:[[:space:]]*//p' AAB_CERTIFICATE.txt | head -n1
+          )"
+          test -n "$aab_fingerprint"
+          test "$aab_fingerprint" = "$expected_fingerprint"
+          keystore_fingerprint="$(
+            keytool -list -v \
+              -keystore android/app/kelime_avi_upload.jks \
+              -storepass:env KELIME_AVI_UPLOAD_STORE_PASSWORD \
+              -alias "$KELIME_AVI_UPLOAD_KEY_ALIAS" \
+              | sed -nE 's/^[[:space:]]*SHA256:[[:space:]]*//p' \
+              | head -n1
+          )"
+          test -n "$keystore_fingerprint"
+          test "$keystore_fingerprint" = "$expected_fingerprint"
+          test "$keystore_fingerprint" = "$aab_fingerprint"
+          sha256sum "$aab" | tee app-release.aab.sha256
+          test -s app-release.aab.sha256
+
+      - name: Signed AAB artifact'ını yükle
+        uses: actions/upload-artifact@v4
+        with:
+          name: KelimeAvi-standalone-1.0.0-1-signed-aab
+          path: |
+            apps/kelime_avi_standalone/build/app/outputs/bundle/release/app-release.aab
+            apps/kelime_avi_standalone/app-release.aab.sha256
+            apps/kelime_avi_standalone/AAB_CERTIFICATE.txt
+            apps/kelime_avi_standalone/JARSIGNER_VERIFY.txt
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Geçici signing dosyalarını temizle
+        if: always()
+        shell: bash
+        working-directory: apps/kelime_avi_standalone
+        run: |
+          set -euo pipefail
+          rm -f android/key.properties android/app/kelime_avi_upload.jks
+          test ! -e android/key.properties
+          test ! -e android/app/kelime_avi_upload.jks
