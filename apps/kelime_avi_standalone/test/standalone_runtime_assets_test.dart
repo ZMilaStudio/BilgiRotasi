@@ -52,6 +52,7 @@ void main() {
         ),
       ),
     );
+    expect(find.byType(Banner), findsNothing);
     expect(tester.takeException(), isNull);
 
     await tester.tap(find.byKey(const Key('kelime_avi_standalone_play_button')));
