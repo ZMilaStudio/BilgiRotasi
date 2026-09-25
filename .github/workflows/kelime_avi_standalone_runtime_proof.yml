@@ -1,0 +1,85 @@
+name: Kelime Avı Standalone Android Runtime Proof
+
+on:
+  pull_request:
+    branches:
+      - release/final-closed-test-aab-1.68.8
+    paths:
+      - 'apps/kelime_avi_standalone/**'
+      - 'tools/kelime_avi_android_runtime_probe.py'
+      - '.github/workflows/kelime_avi_standalone_runtime_proof.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  android-runtime:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.6'
+          channel: stable
+          cache: true
+
+      - name: Verify standalone asset bundle and narrow layout
+        working-directory: apps/kelime_avi_standalone
+        run: |
+          flutter pub get
+          flutter test test/standalone_runtime_assets_test.dart --reporter expanded
+          flutter build apk --debug
+
+      - name: Verify nested assets in the built APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          apk=apps/kelime_avi_standalone/build/app/outputs/flutter-apk/app-debug.apk
+          test -s "$apk"
+          unzip -Z1 "$apk" | grep -Fx 'assets/flutter_assets/assets/word_hunt/v5_reference_assets/harbor_background_1080x1920.png'
+          unzip -Z1 "$apk" | grep -Fx 'assets/flutter_assets/assets/word_hunt/v5_reference_assets/cell_idle.png'
+          unzip -Z1 "$apk" | grep -Fx 'assets/flutter_assets/assets/word_hunt/baslangic_limani/node_normal.webp'
+          sha256sum "$apk"
+
+      - name: Prepare Android emulator acceleration
+        run: |
+          test -e /dev/kvm
+          sudo chmod 666 /dev/kvm
+
+      - name: Run installed APK through start, route and gameplay
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 36
+          target: aosp_atd
+          arch: x86_64
+          profile: pixel_2
+          cores: 2
+          ram-size: 2048M
+          heap-size: 512M
+          emulator-boot-timeout: 1200
+          script: python3 tools/kelime_avi_android_runtime_probe.py
+
+      - name: Upload Android runtime evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: KelimeAvi-android-runtime-proof
+          path: reports/kelime_avi_runtime/
+          if-no-files-found: warn
+
+      - name: Upload screenshot debug APK
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: KelimeAvi-screenshot-debug-apk
+          path: apps/kelime_avi_standalone/build/app/outputs/flutter-apk/app-debug.apk
+          if-no-files-found: error
