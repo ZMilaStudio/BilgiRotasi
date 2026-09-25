@@ -62,6 +62,9 @@ flutter:
   uses-material-design: true
   assets:
     - assets/word_hunt/
+    - assets/word_hunt/baslangic_limani/
+    - assets/word_hunt/v5_reference_assets/
+    - assets/word_hunt/gokyuzu_adalari/
 
   # To add assets to your application, add an assets section, like this:
   # assets:
