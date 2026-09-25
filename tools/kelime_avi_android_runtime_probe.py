@@ -17,15 +17,27 @@ def adb(*args: str, binary: bool = False):
     return subprocess.check_output(["adb", *args], text=not binary)
 
 
-def capture(name: str) -> ET.Element:
-    time.sleep(2)
+def capture(name: str, expected: str | None = None) -> ET.Element:
+    for _ in range(10):
+        adb("shell", "uiautomator", "dump", "/sdcard/window.xml")
+        xml = adb("exec-out", "cat", "/sdcard/window.xml")
+        root = ET.fromstring(xml)
+        if expected is None or any(
+            expected.casefold() in (node.attrib.get("text", "") + " " +
+                                    node.attrib.get("content-desc", "")).casefold()
+            for node in root.iter("node")
+        ):
+            break
+        time.sleep(1)
+    else:
+        (REPORTS / f"{name}.xml").write_text(xml)
+        raise AssertionError(f"Expected {expected!r} on {name} screen")
+    (REPORTS / f"{name}.xml").write_text(xml)
+    time.sleep(1)
     (REPORTS / f"{name}.png").write_bytes(
         adb("exec-out", "screencap", "-p", binary=True)
     )
-    adb("shell", "uiautomator", "dump", "/sdcard/window.xml")
-    xml = adb("exec-out", "cat", "/sdcard/window.xml")
-    (REPORTS / f"{name}.xml").write_text(xml)
-    return ET.fromstring(xml)
+    return root
 
 
 def tap_label(root: ET.Element, label: str) -> None:
@@ -33,7 +45,7 @@ def tap_label(root: ET.Element, label: str) -> None:
         value = " ".join(
             (node.attrib.get("text", ""), node.attrib.get("content-desc", ""))
         )
-        if label.casefold() not in value.casefold():
+        if label.casefold() not in value.casefold() or node.attrib.get("clickable") != "true":
             continue
         bounds = re.match(
             r"\[(\d+),(\d+)\]\[(\d+),(\d+)\]",
@@ -70,21 +82,22 @@ def main() -> None:
     adb("shell", "monkey", "-p", PACKAGE, "-c", "android.intent.category.LAUNCHER", "1")
     time.sleep(6)
 
-    home = capture("01_standalone_start")
+    home = capture("01_standalone_start", "Oyna")
     tap_label(home, "Oyna")
-    hub = capture("02_home_hub")
+    hub = capture("02_home_hub", "Rotalar")
     tap_label(hub, "Rotalar")
-    routes = capture("03_route_selector")
+    routes = capture("03_route_selector", "Rotanı seç")
     tap_label(routes, "Başlangıç Limanı")
+    time.sleep(3)
     capture("04_starter_route")
 
     # The accepted 720x1280 master art has a transparent level-1 hitbox at
     # (136, 305). It is fitted by width into the 360 px Android viewport.
     # On this emulator the status/nav bars leave 752 px for the 640 px scene.
     adb("shell", "input", "tap", "68", "232")
-    gameplay = capture("05_first_level_gameplay")
+    gameplay = capture("05_first_level_gameplay", "KALEM")
     assert any(
-        "KALEM" in node.attrib.get("text", "")
+        "KALEM" in node.attrib.get("content-desc", "")
         for node in gameplay.iter("node")
     ), "First gameplay screen did not open"
     assert_no_flutter_errors()
