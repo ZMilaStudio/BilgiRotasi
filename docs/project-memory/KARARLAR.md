@@ -20,6 +20,26 @@
 
 ---
 
+## 0B. 26 Eylül 2026 — KELIME AVI — STAR VISIBILITY / FILLED VS EMPTY STAR AUTHORITY
+
+**Durum: OWNER KARARI / BAĞLAYICI GÖRSEL AUTHORITY.** Harbor Repair ve sonraki route visual repair çalışmalarında varsayılan girdi olarak uygulanır. Bu kayıt tek başına production entegrasyonu veya mevcut görseller için Android görsel kabulü değildir.
+
+- Kelime Avı haritalarındaki rota/bölüm düğümleri ile ilgili bölüm ve rota ilerleme yüzeylerinde **dolu yıldız ile boş yıldız ilk bakışta açıkça ayrışır**.
+- **Dolu yıldız** canlı, belirgin, premium sıcak altın veya parlak sarı tonundadır; koyu lacivert/gece arka planında hemen fark edilir.
+- **Boş yıldız** pasif ve sönüktür; gri, koyu taş veya düşük parlaklık kullanılabilir. Dolu yıldız gibi görünmez.
+- Premium estetik korunur; estetik uğruna dolu ve boş durumlar birbirine yakın, çok mat veya belirsiz yapılamaz.
+- Kapsam **yalnız Başlangıç Limanı değildir**: Segment 1 (L1–10), Segment 2 (L11–20), Segment 3 (L21–30) ve gelecekte eklenecek **tüm Kelime Avı rotaları, segmentleri, bölümleri ve harita düğümleri** için geçerlidir. Bu yüzeylerde yıldız gösteren bölüm/rota ilerleme UI'ı da aynı ayrımı taşır.
+- Karar **yalnız görsel okunabilirlik/UI state ayrımıdır**; yıldız kazanma, puanlama, kilit, route completion, kayıt veya gameplay/progression kurallarını değiştirmez. Segment 1'in kabul edilmiş MASTER ART kaynağı/golden'ı bu kararla değiştirilmez; gerektiğinde gerçek state sunumu ayrı implementation ve görsel kabul kapsamında değerlendirilir.
+
+**Kabul ölçütleri:**
+
+1. Küçük telefonda kullanıcı düğüme zoom yapmadan boş ve dolu yıldızı ayırt edebilir.
+2. `0 / 1 / 2 / 3` yıldız durumları tek bakışta okunabilir; dolu yıldız adedi karışmaz.
+3. Koyu lacivert/gece temalı arka planda dolu yıldızlar kaybolmaz; boş yıldızlar dolu gibi görünmez.
+4. Gelecekteki her rota/segment tasarımı bu kararı varsayılan görsel authority kabul eder.
+
+---
+
 ## 1. Çalışma ve Git düzeni
 
 - `main` otomatik güncel kabul edilmez; canlı hedef branch ve `pubspec.yaml` işe başlamadan doğrulanır.

@@ -1,6 +1,15 @@
 # Bilgi Rotası - Güncel Proje Durumu
 
-> Teknik gerçek her zaman canlı GitHub ve ilgili canlı servislerdir. Bu üst bölüm CURRENT / LATEST Wave10B authority'dir. Aşağıdaki Wave10A ve daha eski kayıtlar tarihsel bağlamdır.
+> Teknik gerçek her zaman canlı GitHub ve ilgili canlı servislerdir. En üstteki yeni owner kararı görsel authority'dir; aşağıdaki Wave10B bölümü kendi tarihindeki teknik kapanış kaydıdır. Wave10A ve daha eski kayıtlar tarihsel bağlamdır.
+
+## 26 Eylül 2026 — Kelime Avı yıldız görünürlüğü owner kararı
+
+- **STAR VISIBILITY OWNER DECISION RECORDED:** bağlayıcı karar `docs/project-memory/KARARLAR.md` bölüm 0B'dedir; Kelime Avı 2.0 master contract bu karara yönlendirir.
+- Dolu yıldız sıcak, canlı altın/parlak sarı; boş yıldız belirgin biçimde pasif/sönük olmalıdır. Küçük telefonda koyu sahneler üzerinde 0/1/2/3 yıldız durumu bakışta ayırt edilir.
+- Kapsam Başlangıç Limanı Segment 1–3, gelecekteki **tüm rota/segment haritaları** ve ilgili bölüm/rota ilerleme yüzeyleridir. Harbor Repair ve sonraki route visual repair çalışmaları bu kararı authority girdisi alır.
+- Bu checkpoint yalnız karar kaydıdır: mevcut mockup görsel kabulü, production code/asset entegrasyonu, progression değişikliği veya release onayı değildir.
+
+---
 
 ## 23 Eylül 2026 — Kelime Avı 2.0 Wave10B definitive closure authority
 
