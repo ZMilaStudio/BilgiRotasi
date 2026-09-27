@@ -299,12 +299,19 @@ abstract final class WordHuntHarborNodeGeometry {
   static const double challengeWidth = 132;
   static const double challengeHeight = 22;
 
-  /// Run the water-light trail between ring *edges* and above star rows,
-  /// rather than drawing a bright center-to-center line through the UI.
-  static Path connection(Offset from, Offset to) {
+  /// Exact mathematical connection endpoints, shared with the painter.
+  /// Keep these independent of PathMetric's approximate tangent sampling.
+  static (Offset, Offset) connectionEndpoints(Offset from, Offset to) {
     final direction = to.dx >= from.dx ? 1.0 : -1.0;
     final start = from + Offset(direction * 31, -6);
     final finish = to + Offset(-direction * 31, -6);
+    return (start, finish);
+  }
+
+  /// Run the water-light trail between ring *edges* and above star rows,
+  /// rather than drawing a bright center-to-center line through the UI.
+  static Path connection(Offset from, Offset to) {
+    final (start, finish) = connectionEndpoints(from, to);
     final delta = finish - start;
     return Path()
       ..moveTo(start.dx, start.dy)

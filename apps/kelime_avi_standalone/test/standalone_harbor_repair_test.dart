@@ -216,12 +216,13 @@ void main() {
           }
         }
 
-        // PathMetric's tangent positions round-trip through the engine's
-        // finite-precision path representation. Previous exact-HEAD CI found
-        // up to 0.000005679 logical px at the endpoint (both Android sizes).
-        // Only the re-read endpoint position gets this 0.00001px tolerance;
-        // scene/node/anchor checks retain the tighter epsilon above.
-        const pathMetricEndpointTolerance = 1e-5;
+        // Test the exact construction endpoints against the node projection,
+        // *not* against PathMetric's approximate tangent interpolation. The
+        // production path uses connectionEndpoints for moveTo/cubicTo.
+        // Separately, ensure raster-space sampling remains subpixel-accurate.
+        // 1/256 logical px is a fixed visual precision bound, not a retry of
+        // the previous 1e-6/1e-5 double-equality tolerances.
+        const pathMetricSamplingSubpixelBound = 1 / 256;
         // The painted cubic is shared with production. Sample every
         // connection against every ring, star backplate and challenge badge.
         // This prevents a future layout change from routing through labels.
@@ -229,16 +230,27 @@ void main() {
           final a = rings[first]!.center;
           final b = rings[first + 1]!.center;
           final direction = b.dx >= a.dx ? 1.0 : -1.0;
+          final expectedStart = a + Offset(direction * 31, -6);
+          final expectedEnd = b + Offset(-direction * 31, -6);
+          final (definedStart, definedEnd) =
+              WordHuntHarborNodeGeometry.connectionEndpoints(a, b);
+          expect(definedStart, expectedStart,
+              reason: 'L$first exact construction start');
+          expect(definedEnd, expectedEnd,
+              reason: 'L$first exact construction end');
+
           final metric = WordHuntHarborNodeGeometry.connection(a, b)
               .computeMetrics().single;
-          final begin = metric.getTangentForOffset(0)!.position;
-          final finish = metric.getTangentForOffset(metric.length)!.position;
-          expect((begin - (a + Offset(direction * 31, -6))).distance,
-              lessThan(pathMetricEndpointTolerance),
-              reason: 'L$first PathMetric start round-trip');
-          expect((finish - (b + Offset(-direction * 31, -6))).distance,
-              lessThan(pathMetricEndpointTolerance),
-              reason: 'L$first PathMetric end round-trip');
+          expect(metric.isClosed, isFalse,
+              reason: 'L$first connection is not a loop');
+          final sampledStart = metric.getTangentForOffset(0)!.position;
+          final sampledEnd = metric.getTangentForOffset(metric.length)!.position;
+          expect((sampledStart - definedStart).distance,
+              lessThan(pathMetricSamplingSubpixelBound),
+              reason: 'L$first approximate PathMetric start, subpixel bound');
+          expect((sampledEnd - definedEnd).distance,
+              lessThan(pathMetricSamplingSubpixelBound),
+              reason: 'L$first approximate PathMetric end, subpixel bound');
           for (var sample = 0; sample <= 40; sample++) {
             final point = metric.getTangentForOffset(
                 metric.length * sample / 40)!.position;
