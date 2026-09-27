@@ -216,6 +216,12 @@ void main() {
           }
         }
 
+        // PathMetric's tangent positions round-trip through the engine's
+        // finite-precision path representation. Previous exact-HEAD CI found
+        // up to 0.000005679 logical px at the endpoint (both Android sizes).
+        // Only the re-read endpoint position gets this 0.00001px tolerance;
+        // scene/node/anchor checks retain the tighter epsilon above.
+        const pathMetricEndpointTolerance = 1e-5;
         // The painted cubic is shared with production. Sample every
         // connection against every ring, star backplate and challenge badge.
         // This prevents a future layout change from routing through labels.
@@ -228,9 +234,11 @@ void main() {
           final begin = metric.getTangentForOffset(0)!.position;
           final finish = metric.getTangentForOffset(metric.length)!.position;
           expect((begin - (a + Offset(direction * 31, -6))).distance,
-              lessThan(epsilon));
+              lessThan(pathMetricEndpointTolerance),
+              reason: 'L$first PathMetric start round-trip');
           expect((finish - (b + Offset(-direction * 31, -6))).distance,
-              lessThan(epsilon));
+              lessThan(pathMetricEndpointTolerance),
+              reason: 'L$first PathMetric end round-trip');
           for (var sample = 0; sample <= 40; sample++) {
             final point = metric.getTangentForOffset(
                 metric.length * sample / 40)!.position;
