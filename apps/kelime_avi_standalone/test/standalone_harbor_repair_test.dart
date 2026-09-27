@@ -127,13 +127,33 @@ void main() {
         Rect stars(int level) => tester.getRect(
             find.byKey(Key('word_hunt_harbor_star_backplate_$level')));
 
+        const roundoffTolerance = 1e-9;
         for (final level in <int>[first, second]) {
           final hit = hitbox(level);
           final ring = medallion(level);
           final starPlate = stars(level);
           expect(hit.width, greaterThanOrEqualTo(48), reason: 'L$level hitbox');
           expect(hit.height, greaterThanOrEqualTo(48), reason: 'L$level hitbox');
-          expect(ring.size, const Size(54, 54));
+          // getRect reconstructs edges from global points. Subtracting those
+          // edges can introduce floating-point roundoff even when the laid-out
+          // DecoratedBox has the exact intended 54x54 size.
+          final laidOutRing = tester.getSize(
+              find.byKey(Key('word_hunt_harbor_medallion_$level')));
+          final ringWidthDelta = (ring.width - 54).abs();
+          final ringHeightDelta = (ring.height - 54).abs();
+          debugPrint('Harbor S$segment L$level ${width}x$height: '
+              'laidOut=${laidOutRing.width.toStringAsPrecision(17)}x'
+              '${laidOutRing.height.toStringAsPrecision(17)}, '
+              'globalRect=${ring.width.toStringAsPrecision(17)}x'
+              '${ring.height.toStringAsPrecision(17)}, '
+              'delta=${ringWidthDelta.toStringAsExponential(12)}x'
+              '${ringHeightDelta.toStringAsExponential(12)}');
+          expect(laidOutRing, const Size(54, 54),
+              reason: 'L$level laid-out medallion must remain exactly 54x54');
+          expect(ringWidthDelta, lessThanOrEqualTo(roundoffTolerance),
+              reason: 'L$level global ring width: $ring');
+          expect(ringHeightDelta, lessThanOrEqualTo(roundoffTolerance),
+              reason: 'L$level global ring height: $ring');
           expect(starPlate.width, greaterThanOrEqualTo(45));
           expect(starPlate.height, greaterThanOrEqualTo(15));
           expect(hit.contains(ring.center), isTrue);
@@ -179,14 +199,41 @@ void main() {
         final viewport = Rect.fromLTWH(
           0, 0, width.toDouble(), height.toDouble(),
         );
+        // The Scaffold contains a SafeArea. Check every control against its
+        // inset-adjusted bounds, including the valid right and bottom edges.
+        final safePadding = MediaQuery.paddingOf(tester.element(
+          find.byKey(Key('word_hunt_harbor_segment_screen_$segment')),
+        ));
+        final safeViewport = Rect.fromLTRB(
+          viewport.left + safePadding.left,
+          viewport.top + safePadding.top,
+          viewport.right - safePadding.right,
+          viewport.bottom - safePadding.bottom,
+        );
+        String preciseRect(Rect rect) =>
+            '(${rect.left.toStringAsPrecision(17)}, '
+            '${rect.top.toStringAsPrecision(17)}, '
+            '${rect.right.toStringAsPrecision(17)}, '
+            '${rect.bottom.toStringAsPrecision(17)})';
         for (final key in <String>[
           'word_hunt_harbor_back',
           'word_hunt_harbor_info',
           'word_hunt_harbor_segment_navigation',
         ]) {
           final rect = tester.getRect(find.byKey(Key(key)));
-          expect(viewport.contains(rect.topLeft), isTrue, reason: key);
-          expect(viewport.contains(rect.bottomRight), isTrue, reason: key);
+          final evidence = '$key: rect=${preciseRect(rect)}, '
+              'viewport=${preciseRect(viewport)}, '
+              'safeViewport=${preciseRect(safeViewport)}, '
+              'safePadding=$safePadding';
+          debugPrint('Harbor S$segment ${width}x$height: $evidence');
+          expect(rect.left, greaterThanOrEqualTo(
+              safeViewport.left - roundoffTolerance), reason: evidence);
+          expect(rect.top, greaterThanOrEqualTo(
+              safeViewport.top - roundoffTolerance), reason: evidence);
+          expect(rect.right, lessThanOrEqualTo(
+              safeViewport.right + roundoffTolerance), reason: evidence);
+          expect(rect.bottom, lessThanOrEqualTo(
+              safeViewport.bottom + roundoffTolerance), reason: evidence);
         }
         await tester.tap(find.byKey(Key('word_hunt_harbor_level_$first')));
         await tester.tap(find.byKey(Key('word_hunt_harbor_level_$second')));
