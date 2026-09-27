@@ -153,6 +153,8 @@ Amaç:
 
 Mevcut owner-approved rota görsel kimlikleri korunacaktır. Önceden kilitlenmiş artwork dosyaları, ayrıca açık karar verilmeden değiştirilmez.
 
+**Tüm rota/segment haritalarındaki ve ilgili ilerleme yüzeylerindeki yıldızların dolu/boş görsel ayrımı**, `docs/project-memory/KARARLAR.md` bölüm **0B — KELIME AVI — STAR VISIBILITY / FILLED VS EMPTY STAR AUTHORITY** kararına tabidir. Bu kural mevcut Segment 1–3 ve gelecekteki tüm rotalar/segmentler için varsayılan authority'dir; gameplay/progression kuralı değildir.
+
 ---
 
 ## 6. KELİME TEKRAR KURALI
