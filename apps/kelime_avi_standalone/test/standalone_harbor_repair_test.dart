@@ -75,17 +75,17 @@ void main() {
   }
 
 
-  // Check the actual painted ring and star backplate separately from hitbox
-  // geometry. The two target pairs may not overlap at either Android size.
-  for (final (segment, first, second, completed) in <(int, int, int, int)>[
-    (2, 13, 14, 19),
-    (3, 23, 24, 29),
+  // Same four physical-size contracts, extended to *every* node and neighbor
+  // pair. No skipping/compressing stars or touch targets to obtain a PASS.
+  for (final (segment, start, end, completed) in <(int, int, int, int)>[
+    (2, 11, 20, 19),
+    (3, 21, 30, 29),
   ]) {
     for (final (width, height) in <(int, int)>[
       (360, 800),
       (412, 915),
     ]) {
-      testWidgets('Segment $segment: L$first/L$second separate at ${width}x$height',
+      testWidgets('Segment $segment: full composition at ${width}x$height',
           (tester) async {
         tester.view.physicalSize = Size(width.toDouble(), height.toDouble());
         tester.view.devicePixelRatio = 1;
@@ -104,6 +104,7 @@ void main() {
         ));
         await tester.pumpAndSettle();
 
+        const epsilon = 1e-6;
         final scene = tester.getRect(
           find.byKey(Key('word_hunt_harbor_scene_$segment')),
         );
@@ -113,6 +114,7 @@ void main() {
         final source = WordHuntHarborSegmentArt.sourceSize;
         final scale = sourceImage.width / source.width;
         final centers = WordHuntHarborSegmentArt.centersFor(segment);
+        expect(centers, hasLength(10));
         expect(
           tester.getRect(find.byKey(Key('word_hunt_harbor_path_$segment'))),
           scene,
@@ -120,87 +122,132 @@ void main() {
         expect(find.byKey(const Key('word_hunt_harbor_missing_asset')),
             findsNothing);
 
-        Rect hitbox(int level) =>
-            tester.getRect(find.byKey(Key('word_hunt_harbor_level_$level')));
-        Rect medallion(int level) =>
-            tester.getRect(find.byKey(Key('word_hunt_harbor_medallion_$level')));
-        Rect stars(int level) => tester.getRect(
-            find.byKey(Key('word_hunt_harbor_star_backplate_$level')));
-
-        const roundoffTolerance = 1e-9;
-        for (final level in <int>[first, second]) {
-          final hit = hitbox(level);
-          final ring = medallion(level);
-          final starPlate = stars(level);
-          expect(hit.width, greaterThanOrEqualTo(48), reason: 'L$level hitbox');
-          expect(hit.height, greaterThanOrEqualTo(48), reason: 'L$level hitbox');
-          // getRect reconstructs edges from global points. Subtracting those
-          // edges can introduce floating-point roundoff even when the laid-out
-          // DecoratedBox has the exact intended 54x54 size.
-          final laidOutRing = tester.getSize(
-              find.byKey(Key('word_hunt_harbor_medallion_$level')));
-          final ringWidthDelta = (ring.width - 54).abs();
-          final ringHeightDelta = (ring.height - 54).abs();
-          debugPrint('Harbor S$segment L$level ${width}x$height: '
-              'laidOut=${laidOutRing.width.toStringAsPrecision(17)}x'
-              '${laidOutRing.height.toStringAsPrecision(17)}, '
-              'globalRect=${ring.width.toStringAsPrecision(17)}x'
-              '${ring.height.toStringAsPrecision(17)}, '
-              'delta=${ringWidthDelta.toStringAsExponential(12)}x'
-              '${ringHeightDelta.toStringAsExponential(12)}');
-          expect(laidOutRing, const Size(54, 54),
-              reason: 'L$level laid-out medallion must remain exactly 54x54');
-          expect(ringWidthDelta, lessThanOrEqualTo(roundoffTolerance),
-              reason: 'L$level global ring width: $ring');
-          expect(ringHeightDelta, lessThanOrEqualTo(roundoffTolerance),
-              reason: 'L$level global ring height: $ring');
-          expect(starPlate.width, greaterThanOrEqualTo(45));
-          expect(starPlate.height, greaterThanOrEqualTo(15));
-          expect(hit.contains(ring.center), isTrue);
-          expect(hit.contains(starPlate.center), isTrue);
-          expect(scene.contains(hit.topLeft), isTrue);
-          expect(scene.contains(hit.bottomRight), isTrue);
-          expect(
-            tester.widget<Text>(
-              find.byKey(Key('word_hunt_harbor_number_$level')),
-            ).data,
-            '$level',
-          );
+        final hitboxes = <int, Rect>{};
+        final rings = <int, Rect>{};
+        final starPlates = <int, Rect>{};
+        for (var level = start; level <= end; level++) {
+          final hitFinder = find.byKey(Key('word_hunt_harbor_level_$level'));
+          final ringFinder = find.byKey(Key('word_hunt_harbor_medallion_$level'));
+          final starFinder =
+              find.byKey(Key('word_hunt_harbor_star_backplate_$level'));
+          final hit = tester.getRect(hitFinder);
+          final ring = tester.getRect(ringFinder);
+          final plate = tester.getRect(starFinder);
+          hitboxes[level] = hit;
+          rings[level] = ring;
+          starPlates[level] = plate;
+          expect(tester.getSize(hitFinder),
+              const Size(WordHuntHarborNodeGeometry.hitboxSize,
+                  WordHuntHarborNodeGeometry.hitboxSize));
+          expect(hit.width, greaterThanOrEqualTo(48));
+          expect(hit.height, greaterThanOrEqualTo(48));
+          expect(tester.getSize(ringFinder), const Size(54, 54));
+          expect((ring.width - 54).abs(), lessThan(epsilon));
+          expect((ring.height - 54).abs(), lessThan(epsilon));
+          expect(plate.width, greaterThanOrEqualTo(45));
+          expect(plate.height, greaterThanOrEqualTo(15));
+          expect((ring.center - hit.center).distance, lessThan(epsilon),
+              reason: 'L$level visual and touch centers');
+          expect((plate.center.dx - ring.center.dx).abs(), lessThan(epsilon),
+              reason: 'L$level centered star anchor');
+          expect((plate.top - ring.bottom - 7).abs(), lessThan(epsilon),
+              reason: 'L$level constant ring-to-stars gap');
+          for (final rect in <Rect>[hit, ring, plate]) {
+            expect(rect.left, greaterThanOrEqualTo(scene.left - epsilon),
+                reason: 'L$level left scene edge');
+            expect(rect.top, greaterThanOrEqualTo(scene.top - epsilon),
+                reason: 'L$level top scene edge');
+            expect(rect.right, lessThanOrEqualTo(scene.right + epsilon),
+                reason: 'L$level right scene edge');
+            expect(rect.bottom, lessThanOrEqualTo(scene.bottom + epsilon),
+                reason: 'L$level bottom scene edge');
+          }
+          expect(tester.widget<Text>(
+            find.byKey(Key('word_hunt_harbor_number_$level')),
+          ).data, '$level');
           for (var i = 0; i < 3; i++) {
             expect(find.byKey(Key('word_hunt_harbor_star_${level}_$i')),
                 findsOneWidget);
           }
-          // Both the path painter and node overlay use these same projected
-          // centers; also check the medallion is centered on its hitbox.
-          final original = centers[level - (segment - 1) * 10 - 1];
-          final pathPoint = Offset(
+          final original = centers[level - start];
+          final routeCenter = Offset(
             sourceImage.left + original.dx * scale,
             sourceImage.top + original.dy * scale,
           );
-          expect((ring.center - pathPoint).distance, lessThan(0.5),
-              reason: 'L$level path endpoint');
-          expect((ring.center - hit.center).distance, lessThan(0.5),
-              reason: 'L$level touch/visual center');
+          expect((ring.center - routeCenter).distance, lessThan(0.5),
+              reason: 'L$level scene/path projection');
+          debugPrint('Harbor S$segment ${width}x$height L$level '
+              'hit=$hit ring=$ring stars=$plate');
         }
 
-        final firstRects = <Rect>[
-          hitbox(first), medallion(first), stars(first),
-        ];
-        final secondRects = <Rect>[
-          hitbox(second), medallion(second), stars(second),
-        ];
-        for (final a in firstRects) {
-          for (final b in secondRects) {
-            expect(a.overlaps(b), isFalse,
-                reason: 'L$first/L$second collision at ${width}x$height');
+        final tagFinder = find.byKey(Key('word_hunt_harbor_challenge_$end'));
+        expect(tagFinder, findsOneWidget);
+        final tag = tester.getRect(tagFinder);
+        expect(find.text('MEYDAN OKUMA'), findsOneWidget);
+        expect(find.text('ROTA FİNALİ'), findsNothing);
+        expect((tag.center.dx - rings[end]!.center.dx).abs(),
+            lessThan(epsilon), reason: 'L$end badge uses node center');
+        expect((tag.top - starPlates[end]!.bottom - 9).abs(),
+            lessThan(epsilon), reason: 'L$end badge clear of stars');
+        expect(tester.getSize(tagFinder), const Size(132, 22));
+        expect(tag.left, greaterThanOrEqualTo(scene.left - epsilon));
+        expect(tag.right, lessThanOrEqualTo(scene.right + epsilon));
+        expect(tag.bottom, lessThanOrEqualTo(scene.bottom + epsilon));
+
+        // Check all 45 distinct node pairs, not only the originally reported
+        // L13/14 and L23/24 pairs. No cross-node touch/visual envelope overlap.
+        for (var first = start; first <= end; first++) {
+          for (var second = first + 1; second <= end; second++) {
+            final firstRects = <Rect>[
+              hitboxes[first]!, rings[first]!, starPlates[first]!,
+              if (first == end) tag,
+            ];
+            final secondRects = <Rect>[
+              hitboxes[second]!, rings[second]!, starPlates[second]!,
+              if (second == end) tag,
+            ];
+            for (final a in firstRects) {
+              for (final b in secondRects) {
+                expect(a.overlaps(b), isFalse,
+                    reason: 'L$first/L$second collision at ${width}x$height '
+                        '($a vs $b)');
+              }
+            }
+          }
+        }
+
+        // The painted cubic is shared with production. Sample every
+        // connection against every ring, star backplate and challenge badge.
+        // This prevents a future layout change from routing through labels.
+        for (var first = start; first < end; first++) {
+          final a = rings[first]!.center;
+          final b = rings[first + 1]!.center;
+          final direction = b.dx >= a.dx ? 1.0 : -1.0;
+          final metric = WordHuntHarborNodeGeometry.connection(a, b)
+              .computeMetrics().single;
+          final begin = metric.getTangentForOffset(0)!.position;
+          final finish = metric.getTangentForOffset(metric.length)!.position;
+          expect((begin - (a + Offset(direction * 31, -6))).distance,
+              lessThan(epsilon));
+          expect((finish - (b + Offset(-direction * 31, -6))).distance,
+              lessThan(epsilon));
+          for (var sample = 0; sample <= 40; sample++) {
+            final point = metric.getTangentForOffset(
+                metric.length * sample / 40)!.position;
+            for (var level = start; level <= end; level++) {
+              expect(rings[level]!.inflate(1).contains(point), isFalse,
+                  reason: 'L$first path crosses L$level ring');
+              expect(starPlates[level]!.inflate(1).contains(point), isFalse,
+                  reason: 'L$first path crosses L$level stars');
+            }
+            expect(tag.inflate(1).contains(point), isFalse,
+                reason: 'L$first path crosses challenge badge');
           }
         }
 
         final viewport = Rect.fromLTWH(
           0, 0, width.toDouble(), height.toDouble(),
         );
-        // The Scaffold contains a SafeArea. Check every control against its
-        // inset-adjusted bounds, including the valid right and bottom edges.
         final safePadding = MediaQuery.paddingOf(tester.element(
           find.byKey(Key('word_hunt_harbor_segment_screen_$segment')),
         ));
@@ -210,35 +257,26 @@ void main() {
           viewport.right - safePadding.right,
           viewport.bottom - safePadding.bottom,
         );
-        String preciseRect(Rect rect) =>
-            '(${rect.left.toStringAsPrecision(17)}, '
-            '${rect.top.toStringAsPrecision(17)}, '
-            '${rect.right.toStringAsPrecision(17)}, '
-            '${rect.bottom.toStringAsPrecision(17)})';
         for (final key in <String>[
           'word_hunt_harbor_back',
           'word_hunt_harbor_info',
           'word_hunt_harbor_segment_navigation',
         ]) {
           final rect = tester.getRect(find.byKey(Key(key)));
-          final evidence = '$key: rect=${preciseRect(rect)}, '
-              'viewport=${preciseRect(viewport)}, '
-              'safeViewport=${preciseRect(safeViewport)}, '
-              'safePadding=$safePadding';
-          debugPrint('Harbor S$segment ${width}x$height: $evidence');
           expect(rect.left, greaterThanOrEqualTo(
-              safeViewport.left - roundoffTolerance), reason: evidence);
+              safeViewport.left - epsilon), reason: key);
           expect(rect.top, greaterThanOrEqualTo(
-              safeViewport.top - roundoffTolerance), reason: evidence);
+              safeViewport.top - epsilon), reason: key);
           expect(rect.right, lessThanOrEqualTo(
-              safeViewport.right + roundoffTolerance), reason: evidence);
+              safeViewport.right + epsilon), reason: key);
           expect(rect.bottom, lessThanOrEqualTo(
-              safeViewport.bottom + roundoffTolerance), reason: evidence);
+              safeViewport.bottom + epsilon), reason: key);
         }
-        await tester.tap(find.byKey(Key('word_hunt_harbor_level_$first')));
-        await tester.tap(find.byKey(Key('word_hunt_harbor_level_$second')));
-        expect(tapped, <int>[first, second],
-            reason: 'L$first and L$second keep separate target IDs');
+        for (var level = start; level <= end; level++) {
+          await tester.tap(find.byKey(Key('word_hunt_harbor_level_$level')));
+        }
+        expect(tapped, List<int>.generate(10, (index) => start + index),
+            reason: 'Every level retains its own independent touch callback');
         expect(tester.takeException(), isNull);
       });
     }

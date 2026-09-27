@@ -18,17 +18,20 @@ abstract final class WordHuntHarborSegmentArt {
 
   // Measured from the separately approved map samples (941x1672), not reused
   // Segment 1 coordinates. These are medallion centers in scene pixel space.
+  // Same scene coordinate space as the approved 941x1672 raster.
+  // Composition envelopes (68dp touch, 54dp ring, centered 49dp stars,
+  // 132dp final challenge badge) were checked at both target viewports.
   static const List<Offset> segment2Centers = <Offset>[
-    Offset(185, 362), Offset(405, 411), Offset(600, 485),
-    Offset(800, 624), Offset(534, 741), Offset(289, 862),
-    Offset(188, 985), Offset(428, 1107), Offset(676, 1232),
-    Offset(452, 1417),
+    Offset(180, 350), Offset(405, 465), Offset(625, 565),
+    Offset(816, 697), Offset(535, 824), Offset(316, 951),
+    Offset(125, 1085), Offset(410, 1194), Offset(724, 1322),
+    Offset(390, 1420),
   ];
   static const List<Offset> segment3Centers = <Offset>[
-    Offset(173, 398), Offset(393, 470), Offset(600, 550),
-    Offset(800, 690), Offset(510, 820), Offset(226, 941),
-    Offset(427, 1049), Offset(672, 1161), Offset(326, 1279),
-    Offset(539, 1419),
+    Offset(174, 385), Offset(409, 488), Offset(625, 588),
+    Offset(814, 715), Offset(550, 839), Offset(325, 970),
+    Offset(130, 1085), Offset(415, 1200), Offset(735, 1330),
+    Offset(390, 1425),
   ];
 
   static String assetFor(int index) => switch (index) {
@@ -247,40 +250,22 @@ class WordHuntHarborSegmentScreen extends StatelessWidget {
                             ),
                           ),
                         ),
+                        // The painted ring and the 68dp touch target have
+                        // the very same projected center. Stars/badges are
+                        // overflow-visible decorations anchored to that center,
+                        // never extra independent map coordinates.
                         for (var i = 0; i < host.nodes.length; i++)
                           Positioned(
-                            left: points[i].dx - 34,
-                            top: points[i].dy - 42.5,
-                            width: 68,
-                            height: 85,
+                            left: points[i].dx - WordHuntHarborNodeGeometry.hitboxSize / 2,
+                            top: points[i].dy - WordHuntHarborNodeGeometry.hitboxSize / 2,
+                            width: WordHuntHarborNodeGeometry.hitboxSize,
+                            height: WordHuntHarborNodeGeometry.hitboxSize,
                             child: _HarborNode(
                               node: host.nodes[i],
                               earned: progress.starsFor(host.nodes[i].levelId),
                               onTap: host.nodes[i].unlocked && onLevelTap != null
                                   ? () => onLevelTap!(host.nodes[i].absoluteLevelIndex)
                                   : null,
-                            ),
-                          ),
-                        if (host.nodes.last.gameplayType == WordHuntLevelType.challenge)
-                          Positioned(
-                            left: points.last.dx > viewport.width * 0.55
-                                ? math.max(2.0, points.last.dx - 172)
-                                : math.min(viewport.width - 142.0, points.last.dx + 31),
-                            top: points.last.dy - 12,
-                            width: 140,
-                            height: 25,
-                            child: const IgnorePointer(
-                              child: DecoratedBox(
-                                decoration: BoxDecoration(
-                                  color: Color(0xDF1F1A16),
-                                  borderRadius: BorderRadius.all(Radius.circular(6)),
-                                ),
-                                child: Center(
-                                  child: Text('MEYDAN OKUMA',
-                                      style: TextStyle(color: Color(0xFFFFDA85),
-                                          fontSize: 11, fontWeight: FontWeight.w900)),
-                                ),
-                              ),
                             ),
                           ),
                       ],
@@ -303,6 +288,37 @@ class WordHuntHarborSegmentScreen extends StatelessWidget {
   }
 }
 
+/// Geometry shared by the touch target, star anchor, challenge badge and
+/// route painter. All offsets are logical pixels from the 68dp touch box.
+abstract final class WordHuntHarborNodeGeometry {
+  static const double hitboxSize = 68;
+  static const double ringSize = 54;
+  static const double ringInset = 7;
+  static const double starTop = 68;
+  static const double challengeTop = 94;
+  static const double challengeWidth = 132;
+  static const double challengeHeight = 22;
+
+  /// Run the water-light trail between ring *edges* and above star rows,
+  /// rather than drawing a bright center-to-center line through the UI.
+  static Path connection(Offset from, Offset to) {
+    final direction = to.dx >= from.dx ? 1.0 : -1.0;
+    final start = from + Offset(direction * 31, -6);
+    final finish = to + Offset(-direction * 31, -6);
+    final delta = finish - start;
+    return Path()
+      ..moveTo(start.dx, start.dy)
+      ..cubicTo(
+        start.dx + delta.dx * 0.36,
+        start.dy + delta.dy * 0.13 - 5,
+        start.dx + delta.dx * 0.64,
+        finish.dy - delta.dy * 0.13 - 8,
+        finish.dx,
+        finish.dy,
+      );
+  }
+}
+
 class _HarborNode extends StatelessWidget {
   const _HarborNode({required this.node, required this.earned, this.onTap});
 
@@ -314,11 +330,11 @@ class _HarborNode extends StatelessWidget {
   Widget build(BuildContext context) {
     final number = node.absoluteLevelIndex;
     final challenge = node.gameplayType == WordHuntLevelType.challenge;
-    final rim = !node.unlocked
-        ? const Color(0xFF82939E)
-        : challenge
-        ? const Color(0xFFF4BB60)
-        : const Color(0xFF70E4E6);
+    final rim = challenge
+        ? (node.unlocked ? const Color(0xFFF4BB60) : const Color(0xFFAD9064))
+        : !node.unlocked
+            ? const Color(0xFF82939E)
+            : const Color(0xFF70E4E6);
     return Semantics(
       button: node.unlocked,
       enabled: node.unlocked,
@@ -331,10 +347,10 @@ class _HarborNode extends StatelessWidget {
           clipBehavior: Clip.none,
           children: <Widget>[
             Positioned(
-              left: 7,
-              top: 15.5,
-              width: 54,
-              height: 54,
+              left: WordHuntHarborNodeGeometry.ringInset,
+              top: WordHuntHarborNodeGeometry.ringInset,
+              width: WordHuntHarborNodeGeometry.ringSize,
+              height: WordHuntHarborNodeGeometry.ringSize,
               child: Stack(
                 clipBehavior: Clip.none,
                 children: <Widget>[
@@ -380,23 +396,63 @@ class _HarborNode extends StatelessWidget {
                 ],
               ),
             ),
+            // Every star plaque is centered on its own ring; its 7dp visual
+            // gap below the rim is independent of its earned star count.
             Positioned(
-              left: 1,
-              bottom: 0,
-              child: DecoratedBox(
-                key: Key('word_hunt_harbor_star_backplate_$number'),
-                decoration: BoxDecoration(color: const Color(0xCE081725),
-                    borderRadius: BorderRadius.circular(9)),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 1),
-                  child: WordHuntProgressStars(
-                    keyPrefix: 'word_hunt_harbor_star_${number}_',
-                    earned: earned,
-                    size: 15,
+              left: 0,
+              right: 0,
+              top: WordHuntHarborNodeGeometry.starTop,
+              child: Center(
+                child: DecoratedBox(
+                  key: Key('word_hunt_harbor_star_backplate_$number'),
+                  decoration: BoxDecoration(color: const Color(0xCE081725),
+                      borderRadius: BorderRadius.circular(9)),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 1),
+                    child: WordHuntProgressStars(
+                      keyPrefix: 'word_hunt_harbor_star_${number}_',
+                      earned: earned,
+                      size: 15,
+                    ),
                   ),
                 ),
               ),
             ),
+            if (challenge)
+              Positioned(
+                left: (WordHuntHarborNodeGeometry.hitboxSize -
+                    WordHuntHarborNodeGeometry.challengeWidth) / 2,
+                top: WordHuntHarborNodeGeometry.challengeTop,
+                width: WordHuntHarborNodeGeometry.challengeWidth,
+                height: WordHuntHarborNodeGeometry.challengeHeight,
+                child: IgnorePointer(
+                  child: DecoratedBox(
+                    key: Key('word_hunt_harbor_challenge_$number'),
+                    decoration: BoxDecoration(
+                      color: const Color(0xE318202C),
+                      border: Border.all(
+                        color: node.unlocked
+                            ? const Color(0xC2E2B669)
+                            : const Color(0xA68F8068),
+                      ),
+                      borderRadius: BorderRadius.circular(11),
+                      boxShadow: const <BoxShadow>[
+                        BoxShadow(color: Color(0x66000000), blurRadius: 6),
+                      ],
+                    ),
+                    child: Center(
+                      child: Text('MEYDAN OKUMA',
+                          style: TextStyle(
+                            color: node.unlocked
+                                ? const Color(0xFFFFDA85)
+                                : const Color(0xFFBDB197),
+                            fontSize: 10.5, fontWeight: FontWeight.w900,
+                            letterSpacing: 0.45,
+                          )),
+                    ),
+                  ),
+                ),
+              ),
           ],
         ),
       ),
@@ -412,18 +468,19 @@ class _HarborRoutePathPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     for (var index = 0; index + 1 < points.length; index++) {
-      final from = points[index], to = points[index + 1];
-      final path = Path()..moveTo(from.dx, from.dy)
-        ..quadraticBezierTo((from.dx + to.dx) / 2,
-            (from.dy + to.dy) / 2 + (index.isEven ? -13 : 13), to.dx, to.dy);
+      final path = WordHuntHarborNodeGeometry.connection(
+        points[index], points[index + 1],
+      );
       final lit = nodes[index + 1].unlocked;
+      // Restrained underlay and slim water-light core. The path never draws
+      // over star plates, numbers or the integrated challenge badge.
       canvas.drawPath(path, Paint()
-        ..color = lit ? const Color(0x663CE0DE) : const Color(0x324A6572)
-        ..style = PaintingStyle.stroke ..strokeWidth = lit ? 5 : 3
+        ..color = lit ? const Color(0x3543BEB1) : const Color(0x254A6572)
+        ..style = PaintingStyle.stroke ..strokeWidth = lit ? 4 : 3
         ..strokeCap = StrokeCap.round);
       canvas.drawPath(path, Paint()
-        ..color = lit ? const Color(0xCC80F1E5) : const Color(0x99677C87)
-        ..style = PaintingStyle.stroke ..strokeWidth = lit ? 1.7 : 1.1
+        ..color = lit ? const Color(0xB8A0E8D4) : const Color(0x82778E9A)
+        ..style = PaintingStyle.stroke ..strokeWidth = lit ? 1.6 : 1.1
         ..strokeCap = StrokeCap.round);
     }
   }

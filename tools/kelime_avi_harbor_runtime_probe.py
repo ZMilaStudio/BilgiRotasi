@@ -79,6 +79,79 @@ def verify_spacing(root: ET.Element, first: int, second: int, label: str) -> str
     return f"{label}: L{first}={a}; L{second}={b}; 48dp and separate taps PASS"
 
 
+
+def verify_composition(root: ET.Element, first: int, last: int,
+                       width: int, height: int) -> str:
+    """All ten real Android semantics hitboxes, not only the former two pairs."""
+    def bounds(node: ET.Element) -> tuple[int, int, int, int]:
+        found = re.fullmatch(r"\[(\d+),(\d+)\]\[(\d+),(\d+)\]",
+                             node.attrib.get("bounds", ""))
+        if not found:
+            raise AssertionError(f"Invalid Android bounds: {node.attrib}")
+        return tuple(map(int, found.groups()))
+
+    def overlaps(a: tuple[int, int, int, int],
+                 b: tuple[int, int, int, int]) -> bool:
+        return a[0] < b[2] and b[0] < a[2] and a[1] < b[3] and b[1] < a[3]
+
+    targets = {}
+    for level in range(first, last + 1):
+        matches = [
+            node for node in root.iter("node")
+            if f"Bölüm {level}," in (
+                node.attrib.get("text", "") + " " +
+                node.attrib.get("content-desc", "")
+            )
+            and re.fullmatch(r"\[\d+,\d+\]\[\d+,\d+\]",
+                             node.attrib.get("bounds", ""))
+        ]
+        if len(matches) != 1:
+            raise AssertionError(f"L{level}: expected one Android node, got {len(matches)}")
+        rect = bounds(matches[0])
+        left, top, right, bottom = rect
+        if not (0 <= left < right <= width and 0 <= top < bottom <= height):
+            raise AssertionError(f"L{level}: clipped/outside screen: {rect}")
+        if right - left < 48 or bottom - top < 48:
+            raise AssertionError(f"L{level}: touch bounds below 48dp: {rect}")
+        targets[level] = rect
+
+    for level in range(first, last + 1):
+        for other in range(level + 1, last + 1):
+            if overlaps(targets[level], targets[other]):
+                raise AssertionError(
+                    f"L{level}/L{other}: Android touch overlap: "
+                    f"{targets[level]}, {targets[other]}"
+                )
+
+    badges = [
+        node for node in root.iter("node")
+        if "MEYDAN OKUMA" in (
+            node.attrib.get("text", "") + " " +
+            node.attrib.get("content-desc", "")
+        )
+        and re.fullmatch(r"\[\d+,\d+\]\[\d+,\d+\]",
+                         node.attrib.get("bounds", ""))
+    ]
+    if len(badges) != 1:
+        raise AssertionError(
+            f"Expected one integrated challenge label, got {len(badges)}"
+        )
+    badge = bounds(badges[0])
+    if badge[1] <= targets[last][3] or badge[3] > height:
+        raise AssertionError(
+            f"L{last} label not below node / clipped: {badge}, {targets[last]}"
+        )
+    for level in range(first, last):
+        if overlaps(badge, targets[level]):
+            raise AssertionError(f"L{last} label overlaps L{level}: {badge}")
+
+    details = "; ".join(f"L{level}={targets[level]}" for level in targets)
+    return (
+        f"{width}x{height} / Segment {(first - 1) // 10 + 1}: "
+        f"{details}; challenge={badge}; all ten 48dp+ and non-overlap PASS"
+    )
+
+
 def verify_logcat() -> None:
     logs = adb("logcat", "-d", "-s", "flutter:I", "Flutter:I")
     (REPORTS / "harbor_flutter_logcat.txt").write_text(logs)
@@ -93,6 +166,7 @@ def main() -> None:
     adb("install", "-r", apk)
     adb("logcat", "-c")
     spacing_evidence = []
+    composition_evidence = []
     for width, height in ((360, 800), (412, 915)):
         adb("shell", "wm", "size", f"{width}x{height}")
         adb("shell", "wm", "density", "160")
@@ -103,13 +177,22 @@ def main() -> None:
         spacing_evidence.append(verify_spacing(
             segment2, 13, 14, f"{width}x{height} / Segment 2"
         ))
+        composition_evidence.append(verify_composition(
+            segment2, 11, 20, width, height,
+        ))
         tap_segment(segment2, 3)
         segment3 = capture(f"harbor_{width}x{height}_segment3", "Bölüm 30")
         spacing_evidence.append(verify_spacing(
             segment3, 23, 24, f"{width}x{height} / Segment 3"
         ))
+        composition_evidence.append(verify_composition(
+            segment3, 21, 30, width, height,
+        ))
     (REPORTS / "harbor_spacing_bounds.txt").write_text(
         "\n".join(spacing_evidence) + "\n"
+    )
+    (REPORTS / "harbor_composition_bounds.txt").write_text(
+        "\n".join(composition_evidence) + "\n"
     )
     verify_logcat()
     (REPORTS / "HARBOR_PASS.txt").write_text(
