@@ -5,7 +5,6 @@ import 'package:word_hunt_flutter_feature/word_hunt_harbor_segment_screen.dart';
 import 'package:word_hunt_flutter_feature/word_hunt_progress.dart';
 import 'package:word_hunt_flutter_feature/word_hunt_reference_route_screen.dart';
 import 'package:word_hunt_flutter_feature/word_hunt_star_visuals.dart';
-import 'package:word_hunt_flutter_feature/word_hunt_starter_content.dart';
 
 WordHuntProgressSnapshot _through(int count) => WordHuntProgressSnapshot(
   bestStarsByLevelId: <String, int>{

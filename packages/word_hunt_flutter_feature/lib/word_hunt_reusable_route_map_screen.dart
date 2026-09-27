@@ -728,39 +728,33 @@ class _ReusableRouteNode extends StatelessWidget {
                 ),
               ),
             ],
-            if (endpointLabel != null) ...<Widget>[
+            // Keep the label inside the existing 86x82 hitbox on narrow phones.
+            // 54px orb + 1px gap + 16px stars + 10px label = 81px max.
+            if (endpointLabel != null)
               SizedBox(
-                height:
-                    sealSpec != null
-                        ? 0
-                        : completed
-                        ? 0
-                        : scenic
-                        ? 2
-                        : 3,
-              ),
-              FittedBox(
-                fit: BoxFit.scaleDown,
-                child: Text(
-                  endpointLabel,
-                  style: TextStyle(
-                    color: theme.textColor.withValues(
-                      alpha: scenic ? 0.90 : 0.94,
-                    ),
-                    fontSize: scenic ? 8.5 : 9,
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: scenic ? 0.35 : 0.45,
-                    shadows: <Shadow>[
-                      Shadow(
-                        color: theme.nodeShadowColor.withValues(alpha: 0.92),
-                        blurRadius: 4,
-                        offset: const Offset(0, 1),
+                height: 10,
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    endpointLabel,
+                    style: TextStyle(
+                      color: theme.textColor.withValues(
+                        alpha: scenic ? 0.90 : 0.94,
                       ),
-                    ],
+                      fontSize: scenic ? 8.5 : 9,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: scenic ? 0.35 : 0.45,
+                      shadows: <Shadow>[
+                        Shadow(
+                          color: theme.nodeShadowColor.withValues(alpha: 0.92),
+                          blurRadius: 4,
+                          offset: const Offset(0, 1),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ],
           ],
         ),
       ),
