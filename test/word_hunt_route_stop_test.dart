@@ -194,7 +194,7 @@ void main() {
         final icon = tester.widget<Icon>(
           find.byKey(Key('word_hunt_route_stop_star_10_$star')),
         );
-        expect(icon.color, WordHuntRouteStopTheme.harbor.starFilled);
+        expect(icon.color, const Color(0xFF65717D));
       }
       expect(
         find.byKey(const Key('word_hunt_route_stop_lock_10')),

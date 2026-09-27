@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
 import 'word_hunt_models.dart';
+import 'word_hunt_harbor_segment_screen.dart';
 import 'word_hunt_pixel_proof_screen.dart';
 import 'word_hunt_progress.dart';
 import 'word_hunt_route_stop.dart';
@@ -139,6 +140,7 @@ class WordHuntReferenceRouteScreen extends StatelessWidget {
     this.onBack,
     this.onInfo,
     this.onLevelTap,
+    this.onSegmentSelect,
     this.segmentIndex = 1,
   });
 
@@ -148,6 +150,7 @@ class WordHuntReferenceRouteScreen extends StatelessWidget {
   final VoidCallback? onBack;
   final VoidCallback? onInfo;
   final ValueChanged<int>? onLevelTap;
+  final ValueChanged<int>? onSegmentSelect;
   final int segmentIndex;
 
   static const WordHuntRouteStopMetrics _metrics =
@@ -168,7 +171,7 @@ class WordHuntReferenceRouteScreen extends StatelessWidget {
         progress,
         9,
       );
-      return WordHuntPixelProofScreen(
+      final master = WordHuntPixelProofScreen(
         key: const Key('word_hunt_production_master_art_route'),
         route: route,
         progress: progress,
@@ -177,6 +180,45 @@ class WordHuntReferenceRouteScreen extends StatelessWidget {
         onInfo: onInfo,
         onLevelTap: onLevelTap,
         segmentIndex: segmentIndex,
+      );
+      if (onSegmentSelect == null) return master;
+      final next = WordHuntRouteProgressEngine.nextPlayableLevelIndex(route, progress);
+      final furthest = ((next - 1) ~/ 10 + 1).clamp(1, route.segments.length);
+      return Stack(
+        fit: StackFit.expand,
+        children: <Widget>[
+          master,
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: SafeArea(
+              top: false,
+              child: WordHuntHarborSegmentNavigation(
+                selected: 1,
+                available: route.segments.length,
+                furthestAccessible: furthest,
+                onSelect: onSegmentSelect!,
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+    if (route.id == WordHuntStarterContent.baslangicLimani.id &&
+        sceneAssetPath == null &&
+        (segmentIndex == 2 || segmentIndex == 3)) {
+      final next = WordHuntRouteProgressEngine.nextPlayableLevelIndex(route, progress);
+      return WordHuntHarborSegmentScreen(
+        route: route,
+        progress: progress,
+        segmentIndex: segmentIndex,
+        furthestAccessibleSegment:
+            ((next - 1) ~/ 10 + 1).clamp(1, route.segments.length),
+        onBack: onBack,
+        onInfo: onInfo,
+        onLevelTap: onLevelTap,
+        onSegmentSelect: onSegmentSelect,
       );
     }
 

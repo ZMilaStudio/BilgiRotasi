@@ -289,6 +289,18 @@ class _WordHuntFeatureEntryScreenState
     }
   }
 
+  /// Visual segment selection is not persisted progression and cannot unlock
+  /// future content. Route exit remains the independent back action.
+  void _selectHarborSegment(int requested) {
+    final route = _activeRoute;
+    if (route.id != WordHuntStarterContent.baslangicLimani.id ||
+        route.segments.isEmpty) return;
+    final furthest = _deriveActiveSegmentIndex(route, _progress);
+    if (requested < 1 || requested > furthest ||
+        requested > route.segments.length) return;
+    setState(() => _activeSegmentIndex = requested);
+  }
+
   void _leaveRoute() {
     if (_catalogMode) {
       setState(() {
@@ -671,6 +683,7 @@ class _WordHuntFeatureEntryScreenState
           onBack: _leaveRoute,
           onInfo: _showInfo,
           onLevelTap: _openLevel,
+          onSegmentSelect: _selectHarborSegment,
           segmentIndex: _activeSegmentIndex,
         );
     }

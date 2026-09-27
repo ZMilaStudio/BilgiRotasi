@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'word_hunt_models.dart';
 import 'word_hunt_progress.dart';
 import 'word_hunt_route_segment_host.dart';
+import 'word_hunt_star_visuals.dart';
 
 /// Gökyüzü Adaları için telefon ekranına göre üretilmiş MASTER ART rota ekranı.
 ///
@@ -216,6 +217,35 @@ class _GokyuzuRuntimeOverlay extends StatelessWidget {
               key: const Key('word_hunt_gokyuzu_master_art_gate'),
               rect: WordHuntGokyuzuMasterArtLayout.gateCounterRect,
               text: 'Kapı: ${route.unlockStarsRequired}',
+            ),
+          // The raster's demo stars are presentation-only. Overlay the real
+          // 0/1/2/3 outcome with the shared owner-approved filled/empty style.
+          for (
+            var index = 0;
+            index < host.nodes.length &&
+                index < WordHuntGokyuzuMasterArtLayout.levelCenters.length;
+            index++
+          )
+            Positioned(
+              left: WordHuntGokyuzuMasterArtLayout.levelCenters[index].dx - 62,
+              top: WordHuntGokyuzuMasterArtLayout.levelCenters[index].dy +
+                  WordHuntGokyuzuMasterArtLayout.levelHitboxDiameters[index] / 2 + 3,
+              width: 124,
+              height: 37,
+              child: DecoratedBox(
+                key: Key('word_hunt_gokyuzu_stars_${host.nodes[index].absoluteLevelIndex}'),
+                decoration: BoxDecoration(
+                  color: const Color(0xF0082548),
+                  borderRadius: BorderRadius.circular(18),
+                ),
+                child: Center(
+                  child: WordHuntProgressStars(
+                    keyPrefix: 'word_hunt_gokyuzu_star_${host.nodes[index].absoluteLevelIndex}_',
+                    earned: progress.starsFor(host.nodes[index].levelId),
+                    size: 32,
+                  ),
+                ),
+              ),
             ),
           for (
             var index = 0;

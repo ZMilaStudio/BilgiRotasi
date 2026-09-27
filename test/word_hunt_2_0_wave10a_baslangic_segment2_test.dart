@@ -134,7 +134,7 @@ void main() {
         findsNothing,
       );
       expect(
-        find.byKey(const Key('word_hunt_reference_canonical_scene')),
+        find.byKey(const Key('word_hunt_harbor_scene_2')),
         findsOneWidget,
       );
       expect(find.text('11'), findsOneWidget);

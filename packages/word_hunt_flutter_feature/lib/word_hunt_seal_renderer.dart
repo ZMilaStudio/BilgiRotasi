@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
 import 'word_hunt_models.dart';
+import 'word_hunt_star_visuals.dart';
 
 enum WordHuntSealMaterialFamily {
   ancientStone,
@@ -142,12 +143,14 @@ class WordHuntSealNode extends StatelessWidget {
     required this.levelType,
     required this.state,
     required this.spec,
+    this.earnedStars = 0,
   });
 
   final int levelIndex;
   final WordHuntLevelType levelType;
   final WordHuntSealNodeState state;
   final WordHuntSealVisualSpec spec;
+  final int earnedStars;
 
   String get _silhouetteName => switch (levelType) {
     WordHuntLevelType.challenge => 'challenge',
@@ -157,7 +160,6 @@ class WordHuntSealNode extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final completed = state == WordHuntSealNodeState.completed;
     final locked = state == WordHuntSealNodeState.locked;
     final footprint = spec.footprintFor(levelType);
 
@@ -219,29 +221,23 @@ class WordHuntSealNode extends StatelessWidget {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color:
-                        completed
-                            ? spec.accentColor.withValues(alpha: 0.20)
+                        index < earnedStars
+                            ? WordHuntStarVisuals.filled.withValues(alpha: 0.20)
                             : spec.shadowColor.withValues(alpha: 0.46),
                     border: Border.all(
                       color:
-                          completed
-                              ? spec.accentColor
-                              : spec.rimColor.withValues(alpha: 0.58),
+                          index < earnedStars
+                              ? WordHuntStarVisuals.filled
+                              : WordHuntStarVisuals.empty,
                       width: 1,
                     ),
                   ),
                   alignment: Alignment.center,
-                  child:
-                      completed
-                          ? Icon(
-                            Icons.star_rounded,
-                            key: Key(
-                              'word_hunt_seal_star_filled_${levelIndex}_$index',
-                            ),
-                            size: 9,
-                            color: spec.accentColor,
-                          )
-                          : null,
+                  child: WordHuntStarVisuals.icon(
+                    earned: index < earnedStars,
+                    size: 10,
+                    key: Key('word_hunt_seal_star_${levelIndex}_$index'),
+                  ),
                 );
               }),
             ),

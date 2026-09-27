@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'word_hunt_models.dart';
 import 'word_hunt_progress.dart';
 import 'word_hunt_pixel_proof_screen.dart';
+import 'word_hunt_star_visuals.dart';
 
 /// Flattened MASTER ART üzerinde yalnız oyun durumunu yansıtan görünür katman.
 ///
@@ -209,13 +210,12 @@ class _LevelStarsOverlay extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: List<Widget>.generate(3, (index) {
             final filled = index < safeStars;
-            return Icon(
-              filled ? Icons.star_rounded : Icons.star_outline_rounded,
+            return WordHuntStarVisuals.icon(
+              earned: filled,
               key: Key(
                 'word_hunt_master_art_level_${levelIndex}_star_${index + 1}',
               ),
               size: iconSize,
-              color: filled ? const Color(0xFFFFC94A) : const Color(0xFF68717C),
             );
           }),
         ),

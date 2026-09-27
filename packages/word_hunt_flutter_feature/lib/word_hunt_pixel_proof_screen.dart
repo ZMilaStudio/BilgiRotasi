@@ -92,8 +92,9 @@ class WordHuntPixelProofScreen extends StatelessWidget {
     );
     return Scaffold(
       backgroundColor: Colors.black,
-      body: ClipRect(
-        child: Center(
+      body: SafeArea(
+        child: ClipRect(
+          child: Center(
           child: FittedBox(
             fit: BoxFit.contain,
             child: SizedBox.fromSize(
@@ -150,6 +151,7 @@ class WordHuntPixelProofScreen extends StatelessWidget {
             ),
           ),
         ),
+      ),
       ),
     );
   }
