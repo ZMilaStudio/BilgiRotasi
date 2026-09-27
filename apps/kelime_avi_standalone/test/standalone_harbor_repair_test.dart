@@ -74,6 +74,129 @@ void main() {
     });
   }
 
+
+  // Check the actual painted ring and star backplate separately from hitbox
+  // geometry. The two target pairs may not overlap at either Android size.
+  for (final (segment, first, second, completed) in <(int, int, int, int)>[
+    (2, 13, 14, 19),
+    (3, 23, 24, 29),
+  ]) {
+    for (final (width, height) in <(int, int)>[
+      (360, 800),
+      (412, 915),
+    ]) {
+      testWidgets('Segment $segment: L$first/L$second separate at ${width}x$height',
+          (tester) async {
+        tester.view.physicalSize = Size(width.toDouble(), height.toDouble());
+        tester.view.devicePixelRatio = 1;
+        addTearDown(tester.view.resetPhysicalSize);
+        addTearDown(tester.view.resetDevicePixelRatio);
+        final tapped = <int>[];
+        await tester.pumpWidget(MaterialApp(
+          home: WordHuntReferenceRouteScreen(
+            progress: _through(completed),
+            segmentIndex: segment,
+            onBack: () {},
+            onInfo: () {},
+            onLevelTap: tapped.add,
+            onSegmentSelect: (_) {},
+          ),
+        ));
+        await tester.pumpAndSettle();
+
+        final scene = tester.getRect(
+          find.byKey(Key('word_hunt_harbor_scene_$segment')),
+        );
+        final sourceImage = tester.getRect(
+          find.byKey(Key('word_hunt_harbor_scene_asset_$segment')),
+        );
+        final source = WordHuntHarborSegmentArt.sourceSize;
+        final scale = sourceImage.width / source.width;
+        final centers = WordHuntHarborSegmentArt.centersFor(segment);
+        expect(
+          tester.getRect(find.byKey(Key('word_hunt_harbor_path_$segment'))),
+          scene,
+        );
+        expect(find.byKey(const Key('word_hunt_harbor_missing_asset')),
+            findsNothing);
+
+        Rect hitbox(int level) =>
+            tester.getRect(find.byKey(Key('word_hunt_harbor_level_$level')));
+        Rect medallion(int level) =>
+            tester.getRect(find.byKey(Key('word_hunt_harbor_medallion_$level')));
+        Rect stars(int level) => tester.getRect(
+            find.byKey(Key('word_hunt_harbor_star_backplate_$level')));
+
+        for (final level in <int>[first, second]) {
+          final hit = hitbox(level);
+          final ring = medallion(level);
+          final starPlate = stars(level);
+          expect(hit.width, greaterThanOrEqualTo(48), reason: 'L$level hitbox');
+          expect(hit.height, greaterThanOrEqualTo(48), reason: 'L$level hitbox');
+          expect(ring.size, const Size(54, 54));
+          expect(starPlate.width, greaterThanOrEqualTo(45));
+          expect(starPlate.height, greaterThanOrEqualTo(15));
+          expect(hit.contains(ring.center), isTrue);
+          expect(hit.contains(starPlate.center), isTrue);
+          expect(scene.contains(hit.topLeft), isTrue);
+          expect(scene.contains(hit.bottomRight), isTrue);
+          expect(
+            tester.widget<Text>(
+              find.byKey(Key('word_hunt_harbor_number_$level')),
+            ).data,
+            '$level',
+          );
+          for (var i = 0; i < 3; i++) {
+            expect(find.byKey(Key('word_hunt_harbor_star_${level}_$i')),
+                findsOneWidget);
+          }
+          // Both the path painter and node overlay use these same projected
+          // centers; also check the medallion is centered on its hitbox.
+          final original = centers[level - (segment - 1) * 10 - 1];
+          final pathPoint = Offset(
+            sourceImage.left + original.dx * scale,
+            sourceImage.top + original.dy * scale,
+          );
+          expect((ring.center - pathPoint).distance, lessThan(0.5),
+              reason: 'L$level path endpoint');
+          expect((ring.center - hit.center).distance, lessThan(0.5),
+              reason: 'L$level touch/visual center');
+        }
+
+        final firstRects = <Rect>[
+          hitbox(first), medallion(first), stars(first),
+        ];
+        final secondRects = <Rect>[
+          hitbox(second), medallion(second), stars(second),
+        ];
+        for (final a in firstRects) {
+          for (final b in secondRects) {
+            expect(a.overlaps(b), isFalse,
+                reason: 'L$first/L$second collision at ${width}x$height');
+          }
+        }
+
+        final viewport = Rect.fromLTWH(
+          0, 0, width.toDouble(), height.toDouble(),
+        );
+        for (final key in <String>[
+          'word_hunt_harbor_back',
+          'word_hunt_harbor_info',
+          'word_hunt_harbor_segment_navigation',
+        ]) {
+          final rect = tester.getRect(find.byKey(Key(key)));
+          expect(viewport.contains(rect.topLeft), isTrue, reason: key);
+          expect(viewport.contains(rect.bottomRight), isTrue, reason: key);
+        }
+        await tester.tap(find.byKey(Key('word_hunt_harbor_level_$first')));
+        await tester.tap(find.byKey(Key('word_hunt_harbor_level_$second')));
+        expect(tapped, <int>[first, second],
+            reason: 'L$first and L$second keep separate target IDs');
+        expect(tester.takeException(), isNull);
+      });
+    }
+  }
+
   testWidgets('0/1/2/3 stars are visually distinct with canonical palette', (tester) async {
     await tester.pumpWidget(const MaterialApp(
       home: Scaffold(

@@ -19,14 +19,14 @@ abstract final class WordHuntHarborSegmentArt {
   // Measured from the separately approved map samples (941x1672), not reused
   // Segment 1 coordinates. These are medallion centers in scene pixel space.
   static const List<Offset> segment2Centers = <Offset>[
-    Offset(185, 362), Offset(405, 411), Offset(645, 485),
-    Offset(716, 624), Offset(534, 741), Offset(289, 862),
+    Offset(185, 362), Offset(405, 411), Offset(600, 485),
+    Offset(800, 624), Offset(534, 741), Offset(289, 862),
     Offset(188, 985), Offset(428, 1107), Offset(676, 1232),
     Offset(452, 1417),
   ];
   static const List<Offset> segment3Centers = <Offset>[
-    Offset(173, 398), Offset(393, 470), Offset(651, 550),
-    Offset(728, 690), Offset(510, 820), Offset(226, 941),
+    Offset(173, 398), Offset(393, 470), Offset(600, 550),
+    Offset(800, 690), Offset(510, 820), Offset(226, 941),
     Offset(427, 1049), Offset(672, 1161), Offset(326, 1279),
     Offset(539, 1419),
   ];
@@ -339,6 +339,7 @@ class _HarborNode extends StatelessWidget {
                 clipBehavior: Clip.none,
                 children: <Widget>[
                   DecoratedBox(
+                    key: Key('word_hunt_harbor_medallion_$number'),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       gradient: LinearGradient(
@@ -383,6 +384,7 @@ class _HarborNode extends StatelessWidget {
               left: 1,
               bottom: 0,
               child: DecoratedBox(
+                key: Key('word_hunt_harbor_star_backplate_$number'),
                 decoration: BoxDecoration(color: const Color(0xCE081725),
                     borderRadius: BorderRadius.circular(9)),
                 child: Padding(

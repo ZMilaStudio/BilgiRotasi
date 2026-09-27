@@ -48,6 +48,37 @@ def tap_segment(root: ET.Element, segment: int) -> None:
     raise AssertionError(f"No clickable Segment {segment} in Android accessibility tree")
 
 
+
+def verify_spacing(root: ET.Element, first: int, second: int, label: str) -> str:
+    """Verify real Android accessible hitboxes and tap both independently."""
+    def target(level: int) -> tuple[int, int, int, int]:
+        candidates = []
+        for node in root.iter("node"):
+            text = node.attrib.get("text", "") + " " + node.attrib.get("content-desc", "")
+            if f"Bölüm {level}," not in text or node.attrib.get("clickable") != "true":
+                continue
+            bounds = re.match(r"\[(\d+),(\d+)\]\[(\d+),(\d+)\]",
+                              node.attrib.get("bounds", ""))
+            if bounds:
+                candidates.append(tuple(map(int, bounds.groups())))
+        if len(candidates) != 1:
+            raise AssertionError(f"{label}: expected one clickable L{level}, got {candidates}")
+        left, top, right, bottom = candidates[0]
+        if right - left < 48 or bottom - top < 48:
+            raise AssertionError(f"{label}: L{level} hitbox <48dp: {candidates[0]}")
+        return candidates[0]
+
+    a = target(first)
+    b = target(second)
+    overlap = a[0] < b[2] and b[0] < a[2] and a[1] < b[3] and b[1] < a[3]
+    if overlap:
+        raise AssertionError(f"{label}: overlapping L{first}/L{second}: {a}, {b}")
+    for left, top, right, bottom in (a, b):
+        adb("shell", "input", "tap", str((left + right) // 2),
+            str((top + bottom) // 2))
+    return f"{label}: L{first}={a}; L{second}={b}; 48dp and separate taps PASS"
+
+
 def verify_logcat() -> None:
     logs = adb("logcat", "-d", "-s", "flutter:I", "Flutter:I")
     (REPORTS / "harbor_flutter_logcat.txt").write_text(logs)
@@ -61,6 +92,7 @@ def main() -> None:
     apk = "apps/kelime_avi_standalone/build/app/outputs/flutter-apk/app-debug.apk"
     adb("install", "-r", apk)
     adb("logcat", "-c")
+    spacing_evidence = []
     for width, height in ((360, 800), (412, 915)):
         adb("shell", "wm", "size", f"{width}x{height}")
         adb("shell", "wm", "density", "160")
@@ -68,8 +100,17 @@ def main() -> None:
         adb("shell", "monkey", "-p", PACKAGE, "-c", "android.intent.category.LAUNCHER", "1")
         time.sleep(4)
         segment2 = capture(f"harbor_{width}x{height}_segment2", "Bölüm 20")
+        spacing_evidence.append(verify_spacing(
+            segment2, 13, 14, f"{width}x{height} / Segment 2"
+        ))
         tap_segment(segment2, 3)
-        capture(f"harbor_{width}x{height}_segment3", "Bölüm 30")
+        segment3 = capture(f"harbor_{width}x{height}_segment3", "Bölüm 30")
+        spacing_evidence.append(verify_spacing(
+            segment3, 23, 24, f"{width}x{height} / Segment 3"
+        ))
+    (REPORTS / "harbor_spacing_bounds.txt").write_text(
+        "\n".join(spacing_evidence) + "\n"
+    )
     verify_logcat()
     (REPORTS / "HARBOR_PASS.txt").write_text(
         "Installed visual-proof debug APK: approved clean Segment 2 and 3 scenes, "
