@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
 import 'word_hunt_models.dart';
+import 'word_hunt_harbor_segment2_screen.dart';
 import 'word_hunt_progress.dart';
 import 'word_hunt_route_segment_host.dart';
 import 'word_hunt_star_visuals.dart';
@@ -151,6 +152,17 @@ class WordHuntHarborSegmentScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (segmentIndex == 2) {
+      return WordHuntHarborSegment2Screen(
+        route: route,
+        progress: progress,
+        furthestAccessibleSegment: furthestAccessibleSegment,
+        onBack: onBack,
+        onInfo: onInfo,
+        onLevelTap: onLevelTap,
+        onSegmentSelect: onSegmentSelect,
+      );
+    }
     final host = WordHuntRouteSegmentHost.forRoute(
       route: route,
       progress: progress,
