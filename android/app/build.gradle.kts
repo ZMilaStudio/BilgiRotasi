@@ -134,5 +134,5 @@ dependencies {
     // Room 2.2.5 and crashes while creating WorkDatabase on Android 16.
     // Keep the transitive API, but resolve it to the Android 16-compatible
     // stable WorkManager line.
-    implementation("androidx.work:work-runtime:2.11.2")
+    implementation("androidx.work:work-runtime:2.12.0")
 }
