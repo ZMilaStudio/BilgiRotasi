@@ -7,6 +7,9 @@ on:
     branches: [main]
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   quality:
     runs-on: ubuntu-latest
@@ -32,3 +35,165 @@ jobs:
 
       - name: Otomatik testler
         run: flutter test
+
+  harbor-segment2-android-proof:
+    if: >-
+      github.event_name == 'workflow_dispatch' &&
+      github.ref == 'refs/heads/qa/harbor-segment2-android-proof'
+    runs-on: ubuntu-22.04
+    timeout-minutes: 45
+
+    steps:
+      - name: Exact QA SHA'yı indir ve kaydet
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+
+      - name: Exact QA authority'yi doğrula
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$GITHUB_REF" = 'refs/heads/qa/harbor-segment2-android-proof'
+          mkdir -p reports/kelime_avi_runtime
+          printf '%s\n' "$GITHUB_SHA" \
+            > reports/kelime_avi_runtime/HARBOR_QA_SOURCE_SHA.txt
+
+      - name: Java 17 kur
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Flutter 3.44.6 kur
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.6'
+          channel: stable
+          cache: true
+
+      - name: Segment 2 hedefli test ve analiz
+        shell: bash
+        run: |
+          set -euo pipefail
+          flutter pub get
+          flutter test \
+            test/word_hunt_harbor_layout_manifest_test.dart \
+            test/word_hunt_harbor_segment2_integration_test.dart \
+            --reporter expanded
+          (
+            cd apps/kelime_avi_standalone
+            flutter pub get
+            flutter analyze --no-pub \
+              lib/harbor_visual_proof_main.dart \
+              test/standalone_harbor_repair_test.dart
+            flutter test \
+              test/standalone_runtime_assets_test.dart \
+              test/standalone_harbor_repair_test.dart \
+              --reporter expanded
+          )
+          python3 -m py_compile tools/kelime_avi_harbor_runtime_probe.py
+          python3 tools/test_harbor_layout_preview.py
+          git diff --check
+
+      - name: Harbor Segment 2 debug proof APK'sını üret
+        shell: bash
+        run: |
+          set -euo pipefail
+          (
+            cd apps/kelime_avi_standalone
+            flutter build apk --debug \
+              --target lib/harbor_visual_proof_main.dart
+          )
+          apk=apps/kelime_avi_standalone/build/app/outputs/flutter-apk/app-debug.apk
+          test -s "$apk"
+          cp "$apk" reports/kelime_avi_runtime/HARBOR_SEGMENT2_QA_DEBUG.apk
+          sha256sum "$apk" \
+            | tee reports/kelime_avi_runtime/HARBOR_DEBUG_APK_SHA256.txt
+
+      - name: APK içindeki onaylı Harbor assetlerini doğrula
+        shell: bash
+        run: |
+          set -euo pipefail
+          apk=apps/kelime_avi_standalone/build/app/outputs/flutter-apk/app-debug.apk
+          packaged_root="$RUNNER_TEMP/harbor-packaged-assets"
+          mkdir -p "$packaged_root"
+          assets=(
+            assets/word_hunt/harbor_segments/segment_02_clean.webp
+            assets/word_hunt/harbor_segments/segment_02_ui/layout_schema_v2.json
+            assets/word_hunt/harbor_segments/segment_02_ui/medallion_blank.png
+            assets/word_hunt/harbor_segments/segment_02_ui/locked_medallion.png
+            assets/word_hunt/harbor_segments/segment_02_ui/star_socket_blank.png
+            assets/word_hunt/harbor_segments/segment_02_ui/challenge_combined_blank.png
+            assets/word_hunt/harbor_segments/segment_02_ui/hanging_lantern.png
+          )
+          : > reports/kelime_avi_runtime/HARBOR_ASSET_IDENTITY.txt
+          : > reports/kelime_avi_runtime/HARBOR_APK_ASSET_LIST.txt
+          for source in "${assets[@]}"; do
+            packaged="$packaged_root/$source"
+            mkdir -p "$(dirname "$packaged")"
+            unzip -Z1 "$apk" \
+              | grep -Fx "assets/flutter_assets/$source" \
+              | tee -a reports/kelime_avi_runtime/HARBOR_APK_ASSET_LIST.txt
+            unzip -p "$apk" "assets/flutter_assets/$source" > "$packaged"
+            test -s "$packaged"
+            cmp -s "$source" "$packaged"
+            source_sha="$(sha256sum "$source" | cut -d' ' -f1)"
+            packaged_sha="$(sha256sum "$packaged" | cut -d' ' -f1)"
+            test "$source_sha" = "$packaged_sha"
+            printf '%s source=%s packaged=%s\n' \
+              "$source" "$source_sha" "$packaged_sha" \
+              | tee -a reports/kelime_avi_runtime/HARBOR_ASSET_IDENTITY.txt
+          done
+
+      - name: Android emulator KVM erişimini doğrula
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -e /dev/kvm
+          test -r /dev/kvm
+          test -w /dev/kvm
+
+      - name: Android 16 üzerinde dört gerçek runtime ekranını yakala
+        id: harbor_runtime
+        continue-on-error: true
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 36
+          target: aosp_atd
+          arch: x86_64
+          profile: pixel_2
+          cores: 2
+          ram-size: 2048M
+          heap-size: 512M
+          emulator-boot-timeout: 1200
+          disable-animations: false
+          script: python3 tools/kelime_avi_harbor_runtime_probe.py
+
+      - name: Harbor Android kanıt paketini yükle
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Harbor-Segment2-Android-Proof-${{ github.sha }}
+          path: reports/kelime_avi_runtime/
+          if-no-files-found: error
+          retention-days: 21
+
+      - name: Harbor proof sonucunu artifact yüklemesinden sonra uygula
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${{ steps.harbor_runtime.outcome }}" = 'success'
+          test -s reports/kelime_avi_runtime/HARBOR_RESULT.json
+          test -s reports/kelime_avi_runtime/HARBOR_RESULT.txt
+          grep -Fxq 'RESULT=PASS' \
+            reports/kelime_avi_runtime/HARBOR_RESULT.txt
+          for capture in \
+            harbor_360x800_mixed \
+            harbor_360x800_l20_playable \
+            harbor_412x915_mixed \
+            harbor_412x915_l20_playable; do
+            test -s "reports/kelime_avi_runtime/${capture}.png"
+            test -s "reports/kelime_avi_runtime/${capture}.xml"
+          done
