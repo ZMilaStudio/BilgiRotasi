@@ -9,6 +9,9 @@ import 'package:word_hunt_flutter_feature/word_hunt_star_visuals.dart';
 import 'package:kelime_avi_standalone/harbor_visual_proof_main.dart'
     as harbor_proof;
 
+const _segment2LayoutAsset =
+    'assets/word_hunt/harbor_segments/segment_02_ui/layout_schema_v2.json';
+
 WordHuntProgressSnapshot _through(int count) => WordHuntProgressSnapshot(
   bestStarsByLevelId: <String, int>{
     for (var index = 1; index <= count; index++)
@@ -21,17 +24,41 @@ Future<void> _pumpHarborProof(WidgetTester tester, Size size) async {
   tester.view.devicePixelRatio = 1;
   addTearDown(tester.view.resetPhysicalSize);
   addTearDown(tester.view.resetDevicePixelRatio);
-  harbor_proof.main();
-  for (var attempt = 0; attempt < 20; attempt++) {
-    await tester.pump(const Duration(milliseconds: 100));
-    if (find
-        .byKey(const Key('word_hunt_harbor_level_20'))
-        .evaluate()
-        .isNotEmpty) {
+  rootBundle.evict(_segment2LayoutAsset);
+  await tester.pumpWidget(
+    harbor_proof.buildHarborVisualProofApp(key: UniqueKey()),
+  );
+  await _pumpUntilVisible(
+    tester,
+    find.byKey(const Key('word_hunt_harbor_level_20')),
+    description: 'Harbor proof Segment 2',
+  );
+}
+
+Future<void> _pumpUntilVisible(
+  WidgetTester tester,
+  Finder finder, {
+  required String description,
+}) async {
+  for (var attempt = 0; attempt < 40; attempt++) {
+    await tester.pump(const Duration(milliseconds: 50));
+    if (finder.evaluate().isNotEmpty) {
       return;
     }
+    if (find
+        .byKey(const Key('word_hunt_harbor_layout_error_2'))
+        .evaluate()
+        .isNotEmpty) {
+      fail('$description reached the Segment 2 layout error state');
+    }
+    if (find
+        .byKey(const Key('word_hunt_harbor_identity_error_2'))
+        .evaluate()
+        .isNotEmpty) {
+      fail('$description reached the Segment 2 identity error state');
+    }
   }
-  fail('Harbor proof screen did not render Segment 2');
+  fail('$description did not reach its expected terminal widget');
 }
 
 void main() {
@@ -148,70 +175,80 @@ void main() {
     'proof entrypoint toggles deterministic mixed and L20-playable snapshots',
     (tester) async {
       final semantics = tester.ensureSemantics();
-      addTearDown(semantics.dispose);
-      await _pumpHarborProof(tester, const Size(360, 800));
+      try {
+        await _pumpHarborProof(tester, const Size(360, 800));
 
-      for (var level = 11; level <= 20; level++) {
+        for (var level = 11; level <= 20; level++) {
+          expect(
+            find.byKey(Key('word_hunt_harbor_level_$level')),
+            findsOneWidget,
+          );
+          expect(
+            tester.getSize(find.byKey(Key('word_hunt_harbor_level_$level'))),
+            const Size(68, 68),
+          );
+        }
         expect(
-          find.byKey(Key('word_hunt_harbor_level_$level')),
+          find.bySemanticsLabel(RegExp(r'Bölüm 11, açık, 1 yıldız')),
           findsOneWidget,
         );
         expect(
-          tester.getSize(find.byKey(Key('word_hunt_harbor_level_$level'))),
-          const Size(68, 68),
-        );
-      }
-      expect(
-        find.bySemanticsLabel(RegExp(r'Bölüm 11, açık, 1 yıldız')),
-        findsOneWidget,
-      );
-      expect(
-        find.bySemanticsLabel(RegExp(r'Bölüm 12, açık, 2 yıldız')),
-        findsOneWidget,
-      );
-      expect(
-        find.bySemanticsLabel(RegExp(r'Bölüm 13, açık, 3 yıldız')),
-        findsOneWidget,
-      );
-      expect(
-        find.bySemanticsLabel(RegExp(r'Bölüm 15, açık, 0 yıldız')),
-        findsOneWidget,
-      );
-      for (var level = 16; level <= 20; level++) {
-        expect(
-          find.bySemanticsLabel(RegExp('Bölüm $level,.*kilitli, 0 yıldız')),
+          find.bySemanticsLabel(RegExp(r'Bölüm 12, açık, 2 yıldız')),
           findsOneWidget,
         );
-        expect(find.byKey(Key('word_hunt_harbor_number_$level')), findsNothing);
         expect(
-          find.byKey(Key('word_hunt_harbor_star_backplate_$level')),
+          find.bySemanticsLabel(RegExp(r'Bölüm 13, açık, 3 yıldız')),
+          findsOneWidget,
+        );
+        expect(
+          find.bySemanticsLabel(RegExp(r'Bölüm 15, açık, 0 yıldız')),
+          findsOneWidget,
+        );
+        for (var level = 16; level <= 20; level++) {
+          expect(
+            find.bySemanticsLabel(RegExp('Bölüm $level,.*kilitli, 0 yıldız')),
+            findsOneWidget,
+          );
+          expect(
+            find.byKey(Key('word_hunt_harbor_number_$level')),
+            findsNothing,
+          );
+          expect(
+            find.byKey(Key('word_hunt_harbor_star_backplate_$level')),
+            findsNothing,
+          );
+        }
+        expect(
+          find.byKey(const Key('word_hunt_harbor_challenge_20')),
           findsNothing,
         );
+
+        await tester.tap(find.byKey(const Key('word_hunt_harbor_info')));
+        await _pumpUntilVisible(
+          tester,
+          find.byKey(const Key('word_hunt_harbor_challenge_20')),
+          description: 'L20-playable proof scenario',
+        );
+
+        expect(
+          find.bySemanticsLabel(
+            RegExp(r'Bölüm 20, meydan okuma, açık, 0 yıldız'),
+          ),
+          findsOneWidget,
+        );
+        expect(
+          find.byKey(const Key('word_hunt_harbor_number_20')),
+          findsOneWidget,
+        );
+        expect(
+          find.byKey(const Key('word_hunt_harbor_challenge_20')),
+          findsOneWidget,
+        );
+        expect(find.text('Meydan Okuma'), findsOneWidget);
+        expect(tester.takeException(), isNull);
+      } finally {
+        semantics.dispose();
       }
-      expect(
-        find.byKey(const Key('word_hunt_harbor_challenge_20')),
-        findsNothing,
-      );
-
-      await tester.tap(find.byKey(const Key('word_hunt_harbor_info')));
-      await tester.pumpAndSettle();
-
-      expect(
-        find.bySemanticsLabel(
-          RegExp(r'Bölüm 20, meydan okuma, açık, 0 yıldız'),
-        ),
-        findsOneWidget,
-      );
-      expect(
-        find.byKey(const Key('word_hunt_harbor_number_20')),
-        findsOneWidget,
-      );
-      expect(
-        find.byKey(const Key('word_hunt_harbor_challenge_20')),
-        findsOneWidget,
-      );
-      expect(find.text('Meydan Okuma'), findsOneWidget);
-      expect(tester.takeException(), isNull);
     },
   );
 
@@ -224,21 +261,24 @@ void main() {
           Size(width.toDouble(), height.toDouble()),
         );
         await tester.tap(find.byKey(const Key('word_hunt_harbor_info')));
-        await tester.pumpAndSettle();
+        await _pumpUntilVisible(
+          tester,
+          find.byKey(const Key('word_hunt_harbor_challenge_20')),
+          description: 'L20-playable geometry scenario',
+        );
 
         final scene = tester.getRect(
           find.byKey(const Key('word_hunt_harbor_scene_2')),
         );
-        final hitbox = tester.getRect(
-          find.byKey(const Key('word_hunt_harbor_level_20')),
-        );
+        final hitboxFinder = find.byKey(const Key('word_hunt_harbor_level_20'));
+        final hitbox = tester.getRect(hitboxFinder);
         final medallion = tester.getRect(
           find.byKey(const Key('word_hunt_harbor_medallion_20')),
         );
         final plaque = tester.getRect(
           find.byKey(const Key('word_hunt_harbor_challenge_20')),
         );
-        expect(hitbox.size, const Size(68, 68));
+        expect(tester.getSize(hitboxFinder), const Size(68, 68));
         expect(plaque.top, greaterThanOrEqualTo(hitbox.bottom));
         expect((plaque.center.dx - hitbox.center.dx).abs(), lessThan(0.01));
         expect((medallion.center.dx - hitbox.center.dx).abs(), lessThan(0.01));
@@ -642,16 +682,29 @@ void main() {
         ),
       ),
     );
-    await tester.pumpAndSettle();
+    await _pumpUntilVisible(
+      tester,
+      find.byKey(const Key('word_hunt_harbor_level_30')),
+      description: 'initial Segment 3 history view',
+    );
     expect(selected, 3);
+    rootBundle.evict(_segment2LayoutAsset);
     await tester.tap(find.byKey(const Key('word_hunt_harbor_segment_2')));
-    await tester.pumpAndSettle();
+    await _pumpUntilVisible(
+      tester,
+      find.byKey(const Key('word_hunt_harbor_level_12')),
+      description: 'Segment 2 history view',
+    );
     expect(selected, 2);
     await tester.tap(find.byKey(const Key('word_hunt_harbor_level_12')));
     expect(seen, <int>[12]);
     expect(progress.starsFor('baslangic-12'), 1);
     await tester.tap(find.byKey(const Key('word_hunt_harbor_segment_3')));
-    await tester.pumpAndSettle();
+    await _pumpUntilVisible(
+      tester,
+      find.byKey(const Key('word_hunt_harbor_level_30')),
+      description: 'replayed Segment 3 history view',
+    );
     expect(selected, 3);
     expect(progress.starsFor('baslangic-29'), 3);
     expect(find.byKey(const Key('word_hunt_harbor_level_30')), findsOneWidget);

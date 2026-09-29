@@ -7,10 +7,13 @@ import 'package:word_hunt_flutter_feature/word_hunt_starter_content.dart';
 
 /// Debug-only Android screenshot entrypoint. It never writes device progress,
 /// and is not referenced from the production application entrypoint.
-void main() => runApp(const _HarborVisualProofApp());
+void main() => runApp(buildHarborVisualProofApp());
+
+@visibleForTesting
+Widget buildHarborVisualProofApp({Key? key}) => _HarborVisualProofApp(key: key);
 
 class _HarborVisualProofApp extends StatefulWidget {
-  const _HarborVisualProofApp();
+  const _HarborVisualProofApp({super.key});
 
   @override
   State<_HarborVisualProofApp> createState() => _HarborVisualProofAppState();
