@@ -203,6 +203,11 @@ jobs:
             sudo udevadm trigger --name-match=kvm
           fi
 
+          if [[ ! -r /dev/kvm || ! -w /dev/kvm ]]; then
+            echo 'Applying conditional /dev/kvm mode fallback.'
+            sudo chmod 0666 /dev/kvm
+          fi
+
           echo '== /dev/kvm after permission setup =='
           ls -l /dev/kvm
           stat -c 'device=%n type=%F owner=%U(%u) group=%G(%g) mode=%A(%a)' /dev/kvm
