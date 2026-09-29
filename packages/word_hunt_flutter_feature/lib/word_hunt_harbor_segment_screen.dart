@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
 import 'word_hunt_models.dart';
+import 'word_hunt_harbor_segment2_screen.dart';
 import 'word_hunt_progress.dart';
 import 'word_hunt_route_segment_host.dart';
 import 'word_hunt_star_visuals.dart';
@@ -22,15 +23,27 @@ abstract final class WordHuntHarborSegmentArt {
   // Composition envelopes (68dp touch, 54dp ring, centered 49dp stars,
   // 132dp final challenge badge) were checked at both target viewports.
   static const List<Offset> segment2Centers = <Offset>[
-    Offset(180, 350), Offset(405, 465), Offset(625, 565),
-    Offset(816, 697), Offset(535, 824), Offset(316, 951),
-    Offset(125, 1085), Offset(410, 1194), Offset(724, 1322),
+    Offset(180, 350),
+    Offset(405, 465),
+    Offset(625, 565),
+    Offset(816, 697),
+    Offset(535, 824),
+    Offset(316, 951),
+    Offset(125, 1085),
+    Offset(410, 1194),
+    Offset(724, 1322),
     Offset(390, 1420),
   ];
   static const List<Offset> segment3Centers = <Offset>[
-    Offset(174, 385), Offset(409, 488), Offset(625, 588),
-    Offset(814, 715), Offset(550, 839), Offset(325, 970),
-    Offset(130, 1085), Offset(415, 1200), Offset(735, 1330),
+    Offset(174, 385),
+    Offset(409, 488),
+    Offset(625, 588),
+    Offset(814, 715),
+    Offset(550, 839),
+    Offset(325, 970),
+    Offset(130, 1085),
+    Offset(415, 1200),
+    Offset(735, 1330),
     Offset(390, 1425),
   ];
 
@@ -79,17 +92,20 @@ class WordHuntHarborSegmentNavigation extends StatelessWidget {
                   button: true,
                   enabled: index <= furthestAccessible,
                   selected: index == selected,
-                  label: 'Segment $index, bölümler ${(index - 1) * 10 + 1}–${index * 10}',
+                  label:
+                      'Segment $index, bölümler ${(index - 1) * 10 + 1}–${index * 10}',
                   child: Material(
-                    color: index == selected
-                        ? const Color(0xFF244B53)
-                        : const Color(0xD9193040),
+                    color:
+                        index == selected
+                            ? const Color(0xFF244B53)
+                            : const Color(0xD9193040),
                     borderRadius: BorderRadius.circular(12),
                     child: InkWell(
                       key: Key('word_hunt_harbor_segment_$index'),
-                      onTap: index <= furthestAccessible
-                          ? () => onSelect(index)
-                          : null,
+                      onTap:
+                          index <= furthestAccessible
+                              ? () => onSelect(index)
+                              : null,
                       borderRadius: BorderRadius.circular(12),
                       child: Container(
                         constraints: const BoxConstraints(minHeight: 48),
@@ -97,9 +113,10 @@ class WordHuntHarborSegmentNavigation extends StatelessWidget {
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
-                            color: index == selected
-                                ? const Color(0xFFFFD45B)
-                                : const Color(0xFF748997),
+                            color:
+                                index == selected
+                                    ? const Color(0xFFFFD45B)
+                                    : const Color(0xFF748997),
                             width: index == selected ? 1.6 : 0.8,
                           ),
                         ),
@@ -107,12 +124,14 @@ class WordHuntHarborSegmentNavigation extends StatelessWidget {
                           '${(index - 1) * 10 + 1}–${index * 10}',
                           style: TextStyle(
                             fontSize: 13,
-                            fontWeight: index == selected
-                                ? FontWeight.w800
-                                : FontWeight.w600,
-                            color: index <= furthestAccessible
-                                ? const Color(0xFFFFF7E8)
-                                : const Color(0xFF77838D),
+                            fontWeight:
+                                index == selected
+                                    ? FontWeight.w800
+                                    : FontWeight.w600,
+                            color:
+                                index <= furthestAccessible
+                                    ? const Color(0xFFFFF7E8)
+                                    : const Color(0xFF77838D),
                           ),
                         ),
                       ),
@@ -151,6 +170,17 @@ class WordHuntHarborSegmentScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (segmentIndex == 2) {
+      return WordHuntHarborSegment2Screen(
+        route: route,
+        progress: progress,
+        furthestAccessibleSegment: furthestAccessibleSegment,
+        onBack: onBack,
+        onInfo: onInfo,
+        onLevelTap: onLevelTap,
+        onSegmentSelect: onSegmentSelect,
+      );
+    }
     final host = WordHuntRouteSegmentHost.forRoute(
       route: route,
       progress: progress,
@@ -175,9 +205,15 @@ class WordHuntHarborSegmentScreen extends StatelessWidget {
                         IconButton(
                           key: const Key('word_hunt_harbor_back'),
                           tooltip: 'Haritadan çık',
-                          constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+                          constraints: const BoxConstraints(
+                            minWidth: 48,
+                            minHeight: 48,
+                          ),
                           onPressed: onBack,
-                          icon: const Icon(Icons.arrow_back_rounded, color: Color(0xFFFFD45B)),
+                          icon: const Icon(
+                            Icons.arrow_back_rounded,
+                            color: Color(0xFFFFD45B),
+                          ),
                         ),
                         Expanded(
                           child: Text(
@@ -196,17 +232,28 @@ class WordHuntHarborSegmentScreen extends StatelessWidget {
                         IconButton(
                           key: const Key('word_hunt_harbor_info'),
                           tooltip: 'Bilgi',
-                          constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+                          constraints: const BoxConstraints(
+                            minWidth: 48,
+                            minHeight: 48,
+                          ),
                           onPressed: onInfo,
-                          icon: const Icon(Icons.info_outline_rounded, color: Color(0xFFFFD45B)),
+                          icon: const Icon(
+                            Icons.info_outline_rounded,
+                            color: Color(0xFFFFD45B),
+                          ),
                         ),
                       ],
                     ),
                   ),
                   Text(
-                    segmentIndex == 2 ? 'AÇIK DENİZ GEÇİDİ  •  $totalStars / ${route.maximumStars} ★'
+                    segmentIndex == 2
+                        ? 'AÇIK DENİZ GEÇİDİ  •  $totalStars / ${route.maximumStars} ★'
                         : 'ESKİ TERSANE  •  $totalStars / ${route.maximumStars} ★',
-                    style: const TextStyle(color: Color(0xFFE3D6B6), fontSize: 11, fontWeight: FontWeight.w600),
+                    style: const TextStyle(
+                      color: Color(0xFFE3D6B6),
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ],
               ),
@@ -216,12 +263,18 @@ class WordHuntHarborSegmentScreen extends StatelessWidget {
                 builder: (context, constraints) {
                   final viewport = constraints.biggest;
                   final source = WordHuntHarborSegmentArt.sourceSize;
-                  final scale = math.max(viewport.width / source.width,
-                      viewport.height / source.height);
+                  final scale = math.max(
+                    viewport.width / source.width,
+                    viewport.height / source.height,
+                  );
                   final imageSize = source * scale;
-                  final translation = Offset((viewport.width - imageSize.width) / 2,
-                      (viewport.height - imageSize.height) / 2);
-                  final points = WordHuntHarborSegmentArt.centersFor(segmentIndex)
+                  final translation = Offset(
+                    (viewport.width - imageSize.width) / 2,
+                    (viewport.height - imageSize.height) / 2,
+                  );
+                  final points = WordHuntHarborSegmentArt.centersFor(
+                        segmentIndex,
+                      )
                       .map((point) => translation + point * scale)
                       .toList(growable: false);
                   return ClipRect(
@@ -233,20 +286,29 @@ class WordHuntHarborSegmentScreen extends StatelessWidget {
                           rect: translation & imageSize,
                           child: Image.asset(
                             WordHuntHarborSegmentArt.assetFor(segmentIndex),
-                            key: Key('word_hunt_harbor_scene_asset_$segmentIndex'),
+                            key: Key(
+                              'word_hunt_harbor_scene_asset_$segmentIndex',
+                            ),
                             fit: BoxFit.fill,
                             filterQuality: FilterQuality.high,
-                            errorBuilder: (context, error, stackTrace) => const Center(
-                              child: Icon(Icons.broken_image_rounded,
-                                  key: Key('word_hunt_harbor_missing_asset'), color: Colors.red),
-                            ),
+                            errorBuilder:
+                                (context, error, stackTrace) => const Center(
+                                  child: Icon(
+                                    Icons.broken_image_rounded,
+                                    key: Key('word_hunt_harbor_missing_asset'),
+                                    color: Colors.red,
+                                  ),
+                                ),
                           ),
                         ),
                         Positioned.fill(
                           child: IgnorePointer(
                             child: CustomPaint(
                               key: Key('word_hunt_harbor_path_$segmentIndex'),
-                              painter: _HarborRoutePathPainter(points: points, nodes: host.nodes),
+                              painter: _HarborRoutePathPainter(
+                                points: points,
+                                nodes: host.nodes,
+                              ),
                             ),
                           ),
                         ),
@@ -256,16 +318,23 @@ class WordHuntHarborSegmentScreen extends StatelessWidget {
                         // never extra independent map coordinates.
                         for (var i = 0; i < host.nodes.length; i++)
                           Positioned(
-                            left: points[i].dx - WordHuntHarborNodeGeometry.hitboxSize / 2,
-                            top: points[i].dy - WordHuntHarborNodeGeometry.hitboxSize / 2,
+                            left:
+                                points[i].dx -
+                                WordHuntHarborNodeGeometry.hitboxSize / 2,
+                            top:
+                                points[i].dy -
+                                WordHuntHarborNodeGeometry.hitboxSize / 2,
                             width: WordHuntHarborNodeGeometry.hitboxSize,
                             height: WordHuntHarborNodeGeometry.hitboxSize,
                             child: _HarborNode(
                               node: host.nodes[i],
                               earned: progress.starsFor(host.nodes[i].levelId),
-                              onTap: host.nodes[i].unlocked && onLevelTap != null
-                                  ? () => onLevelTap!(host.nodes[i].absoluteLevelIndex)
-                                  : null,
+                              onTap:
+                                  host.nodes[i].unlocked && onLevelTap != null
+                                      ? () => onLevelTap!(
+                                        host.nodes[i].absoluteLevelIndex,
+                                      )
+                                      : null,
                             ),
                           ),
                       ],
@@ -337,15 +406,19 @@ class _HarborNode extends StatelessWidget {
   Widget build(BuildContext context) {
     final number = node.absoluteLevelIndex;
     final challenge = node.gameplayType == WordHuntLevelType.challenge;
-    final rim = challenge
-        ? (node.unlocked ? const Color(0xFFF4BB60) : const Color(0xFFAD9064))
-        : !node.unlocked
+    final rim =
+        challenge
+            ? (node.unlocked
+                ? const Color(0xFFF4BB60)
+                : const Color(0xFFAD9064))
+            : !node.unlocked
             ? const Color(0xFF82939E)
             : const Color(0xFF70E4E6);
     return Semantics(
       button: node.unlocked,
       enabled: node.unlocked,
-      label: 'Bölüm $number, ${challenge ? 'meydan okuma, ' : ''}${node.unlocked ? 'açık' : 'kilitli'}, $earned yıldız',
+      label:
+          'Bölüm $number, ${challenge ? 'meydan okuma, ' : ''}${node.unlocked ? 'açık' : 'kilitli'}, $earned yıldız',
       child: GestureDetector(
         key: Key('word_hunt_harbor_level_$number'),
         behavior: HitTestBehavior.opaque,
@@ -368,23 +441,46 @@ class _HarborNode extends StatelessWidget {
                       gradient: LinearGradient(
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
-                        colors: node.unlocked
-                            ? const <Color>[Color(0xFF214A4B), Color(0xFF071B2D)]
-                            : const <Color>[Color(0xFF374752), Color(0xFF101B28)],
+                        colors:
+                            node.unlocked
+                                ? const <Color>[
+                                  Color(0xFF214A4B),
+                                  Color(0xFF071B2D),
+                                ]
+                                : const <Color>[
+                                  Color(0xFF374752),
+                                  Color(0xFF101B28),
+                                ],
                       ),
-                      border: Border.all(color: rim, width: node.current ? 3 : 2),
+                      border: Border.all(
+                        color: rim,
+                        width: node.current ? 3 : 2,
+                      ),
                       boxShadow: <BoxShadow>[
-                        BoxShadow(color: rim.withValues(alpha: node.current ? 0.65 : 0.28), blurRadius: 7),
-                        const BoxShadow(color: Color(0xA6000000), blurRadius: 4),
+                        BoxShadow(
+                          color: rim.withValues(
+                            alpha: node.current ? 0.65 : 0.28,
+                          ),
+                          blurRadius: 7,
+                        ),
+                        const BoxShadow(
+                          color: Color(0xA6000000),
+                          blurRadius: 4,
+                        ),
                       ],
                     ),
                     child: Center(
                       child: Text(
                         '$number',
                         key: Key('word_hunt_harbor_number_$number'),
-                        style: const TextStyle(color: Color(0xFFFFF5E8),
-                            fontSize: 19, fontWeight: FontWeight.w900,
-                            shadows: <Shadow>[Shadow(color: Colors.black, blurRadius: 3)]),
+                        style: const TextStyle(
+                          color: Color(0xFFFFF5E8),
+                          fontSize: 19,
+                          fontWeight: FontWeight.w900,
+                          shadows: <Shadow>[
+                            Shadow(color: Colors.black, blurRadius: 3),
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -393,10 +489,17 @@ class _HarborNode extends StatelessWidget {
                       right: -3,
                       top: -3,
                       child: DecoratedBox(
-                        decoration: const BoxDecoration(color: Color(0xFF202C36), shape: BoxShape.circle),
+                        decoration: const BoxDecoration(
+                          color: Color(0xFF202C36),
+                          shape: BoxShape.circle,
+                        ),
                         child: const Padding(
                           padding: EdgeInsets.all(3),
-                          child: Icon(Icons.lock_rounded, size: 12, color: Color(0xFFD3DBE2)),
+                          child: Icon(
+                            Icons.lock_rounded,
+                            size: 12,
+                            color: Color(0xFFD3DBE2),
+                          ),
                         ),
                       ),
                     ),
@@ -412,10 +515,15 @@ class _HarborNode extends StatelessWidget {
               child: Center(
                 child: DecoratedBox(
                   key: Key('word_hunt_harbor_star_backplate_$number'),
-                  decoration: BoxDecoration(color: const Color(0xCE081725),
-                      borderRadius: BorderRadius.circular(9)),
+                  decoration: BoxDecoration(
+                    color: const Color(0xCE081725),
+                    borderRadius: BorderRadius.circular(9),
+                  ),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 1),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 2,
+                      vertical: 1,
+                    ),
                     child: WordHuntProgressStars(
                       keyPrefix: 'word_hunt_harbor_star_${number}_',
                       earned: earned,
@@ -427,8 +535,10 @@ class _HarborNode extends StatelessWidget {
             ),
             if (challenge)
               Positioned(
-                left: (WordHuntHarborNodeGeometry.hitboxSize -
-                    WordHuntHarborNodeGeometry.challengeWidth) / 2,
+                left:
+                    (WordHuntHarborNodeGeometry.hitboxSize -
+                        WordHuntHarborNodeGeometry.challengeWidth) /
+                    2,
                 top: WordHuntHarborNodeGeometry.challengeTop,
                 width: WordHuntHarborNodeGeometry.challengeWidth,
                 height: WordHuntHarborNodeGeometry.challengeHeight,
@@ -438,9 +548,10 @@ class _HarborNode extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: const Color(0xE318202C),
                       border: Border.all(
-                        color: node.unlocked
-                            ? const Color(0xC2E2B669)
-                            : const Color(0xA68F8068),
+                        color:
+                            node.unlocked
+                                ? const Color(0xC2E2B669)
+                                : const Color(0xA68F8068),
                       ),
                       borderRadius: BorderRadius.circular(11),
                       boxShadow: const <BoxShadow>[
@@ -448,14 +559,18 @@ class _HarborNode extends StatelessWidget {
                       ],
                     ),
                     child: Center(
-                      child: Text('MEYDAN OKUMA',
-                          style: TextStyle(
-                            color: node.unlocked
-                                ? const Color(0xFFFFDA85)
-                                : const Color(0xFFBDB197),
-                            fontSize: 10.5, fontWeight: FontWeight.w900,
-                            letterSpacing: 0.45,
-                          )),
+                      child: Text(
+                        'MEYDAN OKUMA',
+                        style: TextStyle(
+                          color:
+                              node.unlocked
+                                  ? const Color(0xFFFFDA85)
+                                  : const Color(0xFFBDB197),
+                          fontSize: 10.5,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 0.45,
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -476,19 +591,28 @@ class _HarborRoutePathPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     for (var index = 0; index + 1 < points.length; index++) {
       final path = WordHuntHarborNodeGeometry.connection(
-        points[index], points[index + 1],
+        points[index],
+        points[index + 1],
       );
       final lit = nodes[index + 1].unlocked;
       // Restrained underlay and slim water-light core. The path never draws
       // over star plates, numbers or the integrated challenge badge.
-      canvas.drawPath(path, Paint()
-        ..color = lit ? const Color(0x3543BEB1) : const Color(0x254A6572)
-        ..style = PaintingStyle.stroke ..strokeWidth = lit ? 4 : 3
-        ..strokeCap = StrokeCap.round);
-      canvas.drawPath(path, Paint()
-        ..color = lit ? const Color(0xB8A0E8D4) : const Color(0x82778E9A)
-        ..style = PaintingStyle.stroke ..strokeWidth = lit ? 1.6 : 1.1
-        ..strokeCap = StrokeCap.round);
+      canvas.drawPath(
+        path,
+        Paint()
+          ..color = lit ? const Color(0x3543BEB1) : const Color(0x254A6572)
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = lit ? 4 : 3
+          ..strokeCap = StrokeCap.round,
+      );
+      canvas.drawPath(
+        path,
+        Paint()
+          ..color = lit ? const Color(0xB8A0E8D4) : const Color(0x82778E9A)
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = lit ? 1.6 : 1.1
+          ..strokeCap = StrokeCap.round,
+      );
     }
   }
 

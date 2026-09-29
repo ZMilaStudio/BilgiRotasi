@@ -269,7 +269,11 @@ Bu bölüm, 31 Ağustos kayıtlarındaki `ERROR_STATE_VISUAL = DOĞRULANACAK` du
 - Başlangıç Limanı **20 available / 100 planned** olarak modellenir.
 - Segment1 = L1–10; Segment2 = L11–20.
 - L10 yalnız Segment1 endpoint'tir.
+- **29 Eylül 2026 owner addendum:** L1–10 ilk öğretici etaptır. L10 üzerindeki mevcut özel taç ve premium final görünümü korunur; oyuncuya gösterilecek doğru etiket **“İLK ETAP FİNALİ”**dir. L10 bütün Başlangıç Limanı rotasının finali değildir.
+- Mevcut **“ROTA FİNALİ”** yazısı onaylı Segment1 MASTER ART rasterına gömülüdür. Bu karar kaydı asset/golden değişikliği onayı vermez; güvenli görsel düzeltme ayrı owner değerlendirmesi ve görsel kabul gerektirir.
 - L20 current content frontier'dır; **true route final değildir**.
+- L20 ve L30 meydan okuma düğümleri olarak kalır; L10 tacı bu düğümlere veya başka rota/segmentlere otomatik eklenmez.
+- Başlangıç Limanı gerçek rota finali L100'dür. Bu addendum progression, level ID, yıldız, unlock veya `routeFinal` mantığını değiştirmez.
 - L20 route reward, fake route completion, Gökyüzü false unlock veya nonexistent L21 navigation üretemez.
 - Internal progression route-local 1–100 kalır.
 - Global 1–800 numbering yalnız player-facing display projection'dır ve persist edilmez.

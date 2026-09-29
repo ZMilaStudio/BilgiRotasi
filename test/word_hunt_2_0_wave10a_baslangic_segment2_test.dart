@@ -117,26 +117,33 @@ void main() {
     testWidgets('Segment2 does not reuse baked Segment1 master art', (
       tester,
     ) async {
-      final progress = _progressThrough(route, 10);
+      // The production manifest intentionally rejects synthetic Wave10A IDs.
+      final productionRoute = WordHuntRouteCatalog.starter.route;
+      final progress = _progressThrough(productionRoute, 10);
       await tester.pumpWidget(
         MaterialApp(
           home: WordHuntReferenceRouteScreen(
-            route: route,
+            route: productionRoute,
             progress: progress,
             segmentIndex: 2,
           ),
         ),
       );
-      await tester.pump();
+      await tester.pumpAndSettle();
+      expect(
+        find.byKey(const Key('word_hunt_harbor_layout_error_2')),
+        findsNothing,
+      );
+      expect(
+        find.byKey(const Key('word_hunt_harbor_identity_error_2')),
+        findsNothing,
+      );
 
       expect(
         find.byKey(const Key('word_hunt_production_master_art_route')),
         findsNothing,
       );
-      expect(
-        find.byKey(const Key('word_hunt_harbor_scene_2')),
-        findsOneWidget,
-      );
+      expect(find.byKey(const Key('word_hunt_harbor_scene_2')), findsOneWidget);
       expect(find.text('11'), findsOneWidget);
     });
 
@@ -231,13 +238,16 @@ void main() {
       );
     });
 
-    test('staged route rejects lying routeFinal at current content frontier', () {
-      final invalid = _partialRoute(lastType: WordHuntLevelType.routeFinal);
-      expect(
-        WordHuntDefinitionValidator.validateRoute(invalid),
-        contains('staged 2.0 içerik sınırı rota finali olamaz'),
-      );
-    });
+    test(
+      'staged route rejects lying routeFinal at current content frontier',
+      () {
+        final invalid = _partialRoute(lastType: WordHuntLevelType.routeFinal);
+        expect(
+          WordHuntDefinitionValidator.validateRoute(invalid),
+          contains('staged 2.0 içerik sınırı rota finali olamaz'),
+        );
+      },
+    );
   });
 }
 
