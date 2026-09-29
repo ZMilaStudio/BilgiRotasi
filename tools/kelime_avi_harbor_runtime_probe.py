@@ -142,7 +142,7 @@ def verify_accessibility(
         11: "1 yıldız",
         12: "2 yıldız",
         13: "3 yıldız",
-        15: "0 yıldız",
+        15: "2 yıldız" if scenario == "l20_playable" else "0 yıldız",
         20: "0 yıldız",
     }
     rectangles: dict[int, tuple[int, int, int, int]] = {}
