@@ -285,6 +285,11 @@ class _HarborPremiumNode extends StatelessWidget {
 
   static const _ui = 'assets/word_hunt/harbor_segments/segment_02_ui/';
   final WordHuntRouteMapNodeProjection node;
+  // Brown interior measured in the approved 1252x1203 combined artwork,
+  // excluding the gold border, bolts and transparent margins. The manifest's
+  // separate-badge anchor is not the text anchor of this combined artwork.
+  static const _challengeAssetSize = Size(1252, 1203);
+  static const _challengePaintedInterior = Rect.fromLTRB(160, 865, 1092, 1055);
   final int earned;
   final Offset starOffset;
   final Offset? challengeOffset;
@@ -314,6 +319,18 @@ class _HarborPremiumNode extends StatelessWidget {
             ? 96.0
             : 65.0;
     final visualDy = challenge && !locked ? 24.0 : 0.0;
+    final artworkOrigin = Offset(
+      34 - visualWidth / 2,
+      34 + visualDy - visualHeight / 2,
+    );
+    final plaqueScaleX = visualWidth / _challengeAssetSize.width;
+    final plaqueScaleY = visualHeight / _challengeAssetSize.height;
+    final plaqueInterior = Rect.fromLTWH(
+      artworkOrigin.dx + _challengePaintedInterior.left * plaqueScaleX,
+      artworkOrigin.dy + _challengePaintedInterior.top * plaqueScaleY,
+      _challengePaintedInterior.width * plaqueScaleX,
+      _challengePaintedInterior.height * plaqueScaleY,
+    );
     return Semantics(
       button: node.unlocked,
       enabled: node.unlocked,
@@ -420,24 +437,26 @@ class _HarborPremiumNode extends StatelessWidget {
                 ),
               ),
             if (challenge && !locked && challengeOffset != null)
-              Positioned(
-                left: 34 + challengeOffset!.dx - 56,
-                top: 34 + challengeOffset!.dy - 10,
-                width: 112,
-                height: 20,
-                child: Center(
-                  child: Text(
-                    'Meydan Okuma',
-                    key: Key('word_hunt_harbor_challenge_$number'),
-                    maxLines: 1,
-                    style: const TextStyle(
-                      color: Color(0xFFFFE5A6),
-                      fontFamily: 'serif',
-                      fontSize: 11.5,
-                      fontWeight: FontWeight.bold,
-                      shadows: <Shadow>[
-                        Shadow(color: Colors.black, blurRadius: 2),
-                      ],
+              Positioned.fromRect(
+                rect: plaqueInterior,
+                child: SizedBox(
+                  key: Key('word_hunt_harbor_challenge_$number'),
+                  child: Center(
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(
+                        'Meydan Okuma',
+                        maxLines: 1,
+                        style: const TextStyle(
+                          color: Color(0xFFFFE5A6),
+                          fontFamily: 'serif',
+                          fontSize: 11.5,
+                          fontWeight: FontWeight.bold,
+                          shadows: <Shadow>[
+                            Shadow(color: Colors.black, blurRadius: 2),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
                 ),
