@@ -148,13 +148,89 @@ jobs:
               | tee -a reports/kelime_avi_runtime/HARBOR_ASSET_IDENTITY.txt
           done
 
-      - name: Android emulator KVM erişimini doğrula
+      - name: Android emulator KVM ortamını tanıla ve hazırla
         shell: bash
         run: |
           set -euo pipefail
-          test -e /dev/kvm
-          test -r /dev/kvm
-          test -w /dev/kvm
+
+          echo '== Runner identity and groups =='
+          whoami
+          id
+          printf 'groups=%s\n' "$(id -Gn)"
+
+          echo '== Virtualization capabilities =='
+          uname -a
+          lscpu | grep -E \
+            '^(Architecture|CPU\(s\)|Vendor ID|Model name|Virtualization|Hypervisor vendor):' \
+            || true
+          if grep -Eq '(^|[[:space:]])(vmx|svm)([[:space:]]|$)' /proc/cpuinfo; then
+            echo 'cpu_virtualization_flags=present'
+          else
+            echo 'cpu_virtualization_flags=absent'
+          fi
+          if command -v systemd-detect-virt >/dev/null 2>&1; then
+            printf 'detected_virtualization='
+            systemd-detect-virt || true
+          fi
+          if command -v lsmod >/dev/null 2>&1; then
+            lsmod | grep '^kvm' || echo 'loaded_kvm_modules=none'
+          fi
+
+          if [[ ! -e /dev/kvm ]]; then
+            echo '::error::/dev/kvm is absent; the runner does not expose the KVM device.'
+            ls -ld /dev
+            exit 1
+          fi
+          if [[ ! -c /dev/kvm ]]; then
+            echo '::error::/dev/kvm exists but is not a character device.'
+            ls -ld /dev/kvm
+            exit 1
+          fi
+
+          echo '== /dev/kvm before permission setup =='
+          ls -l /dev/kvm
+          stat -c 'device=%n type=%F owner=%U(%u) group=%G(%g) mode=%A(%a)' /dev/kvm
+          [[ -r /dev/kvm ]] && before_read=yes || before_read=no
+          [[ -w /dev/kvm ]] && before_write=yes || before_write=no
+          printf 'effective_access_before read=%s write=%s\n' \
+            "$before_read" "$before_write"
+
+          if [[ "$before_read" != yes || "$before_write" != yes ]]; then
+            echo 'Applying the android-emulator-runner documented KVM udev rule.'
+            echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' \
+              | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+            sudo udevadm control --reload-rules
+            sudo udevadm trigger --name-match=kvm
+          fi
+
+          echo '== /dev/kvm after permission setup =='
+          ls -l /dev/kvm
+          stat -c 'device=%n type=%F owner=%U(%u) group=%G(%g) mode=%A(%a)' /dev/kvm
+          [[ -r /dev/kvm ]] && after_read=yes || after_read=no
+          [[ -w /dev/kvm ]] && after_write=yes || after_write=no
+          printf 'effective_access_after read=%s write=%s\n' \
+            "$after_read" "$after_write"
+          if [[ "$after_read" != yes || "$after_write" != yes ]]; then
+            echo '::error::/dev/kvm is present but remains inaccessible for read/write.'
+            exit 1
+          fi
+
+          python3 - <<'PY'
+          import os
+          import sys
+
+          try:
+              descriptor = os.open('/dev/kvm', os.O_RDWR)
+          except OSError as error:
+              print(
+                  f'::error::Unable to open /dev/kvm read/write: '
+                  f'errno={error.errno} {error.strerror}',
+              )
+              sys.exit(1)
+          else:
+              os.close(descriptor)
+              print('kvm_open_read_write=success')
+          PY
 
       - name: Android 16 üzerinde dört gerçek runtime ekranını yakala
         id: harbor_runtime
