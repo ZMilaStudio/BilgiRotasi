@@ -10,6 +10,7 @@ on:
       - 'test/word_hunt*'
       - 'tools/kelime_avi*'
       - 'tools/test_kelime_avi_harbor_runtime_probe.py'
+      - 'tools/test_kelime_avi_runtime_status_transfer.py'
       - 'tools/harbor_layout_preview.py'
       - 'tools/test_harbor_layout_preview.py'
       - 'docs/project-memory/KARARLAR.md'
@@ -88,6 +89,7 @@ jobs:
           python3 -c "import PIL; print(f'Pillow {PIL.__version__}')"
           python3 tools/test_harbor_layout_preview.py
           python3 -m unittest discover -s tools -p 'test_kelime_avi_harbor_runtime_probe.py'
+          python3 -m unittest discover -s tools -p 'test_kelime_avi_runtime_status_transfer.py'
           git diff --check
 
       - name: Standard standalone debug APK
@@ -255,14 +257,14 @@ jobs:
           emulator-boot-timeout: 1200
           disable-animations: false
           script: |
+            : > reports/kelime_avi_runtime/STANDARD_PROBE_EXIT_CODE.txt
+            : > reports/kelime_avi_runtime/HARBOR_PROBE_EXIT_CODE.txt
             cp apps/kelime_avi_standalone/build/app/outputs/flutter-apk/app-debug.apk "$RUNNER_TEMP/harbor-proof.apk"
             cp "$RUNNER_TEMP/harbor-standard/app-debug.apk" apps/kelime_avi_standalone/build/app/outputs/flutter-apk/app-debug.apk
-            standard_status=0
-            python3 tools/kelime_avi_android_runtime_probe.py || standard_status=$?
+            python3 tools/kelime_avi_android_runtime_probe.py; probe_status=$?; printf '%s\n' "$probe_status" > reports/kelime_avi_runtime/STANDARD_PROBE_EXIT_CODE.txt
             cp "$RUNNER_TEMP/harbor-proof.apk" apps/kelime_avi_standalone/build/app/outputs/flutter-apk/app-debug.apk
-            harbor_status=0
-            python3 tools/kelime_avi_harbor_runtime_probe.py || harbor_status=$?
-            test "$standard_status" -eq 0 && test "$harbor_status" -eq 0
+            python3 tools/kelime_avi_harbor_runtime_probe.py; probe_status=$?; printf '%s\n' "$probe_status" > reports/kelime_avi_runtime/HARBOR_PROBE_EXIT_CODE.txt
+            printf '0\n' | cmp -s - reports/kelime_avi_runtime/STANDARD_PROBE_EXIT_CODE.txt && printf '0\n' | cmp -s - reports/kelime_avi_runtime/HARBOR_PROBE_EXIT_CODE.txt
 
       - name: Harbor Android kanıt paketini yükle
         if: always()
@@ -279,6 +281,13 @@ jobs:
         run: |
           set -euo pipefail
           test "${{ steps.harbor_runtime.outcome }}" = 'success'
+          for probe in STANDARD HARBOR; do
+            status_file="reports/kelime_avi_runtime/${probe}_PROBE_EXIT_CODE.txt"
+            if ! printf '0\n' | cmp -s - "$status_file"; then
+              echo "::error::$probe probe exit code is missing, invalid or nonzero."
+              exit 1
+            fi
+          done
           test -s reports/kelime_avi_runtime/HARBOR_RESULT.json
           test -s reports/kelime_avi_runtime/HARBOR_RESULT.txt
           grep -Fxq 'RESULT=PASS' \
