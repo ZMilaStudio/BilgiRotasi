@@ -196,7 +196,8 @@ def _svg(manifest, asset_bytes, source_digest, asset_digest, width, height) -> b
     for node in manifest["nodes"]:
         cx, cy = _project(node["_center"], scale, tx, ty)
         level_id = html.escape(node["levelId"])
-        pieces.append(f'<g id="node-{level_id}" data-level-id="{level_id}"><circle cx="{cx:.5f}" cy="{cy:.5f}" r="27"/><circle cx="{cx:.5f}" cy="{cy:.5f}" r="23" fill="none" stroke="#00d5ff" stroke-width="0.7"/><text x="{cx:.5f}" y="{cy+5:.5f}" text-anchor="middle" fill="#fff5e8" stroke="none" font-family="sans-serif" font-size="14">{level_id.rsplit('-',1)[1]}</text></g>')
+        level_number = level_id.rsplit("-", 1)[1]
+        pieces.append(f'<g id="node-{level_id}" data-level-id="{level_id}"><circle cx="{cx:.5f}" cy="{cy:.5f}" r="27"/><circle cx="{cx:.5f}" cy="{cy:.5f}" r="23" fill="none" stroke="#00d5ff" stroke-width="0.7"/><text x="{cx:.5f}" y="{cy+5:.5f}" text-anchor="middle" fill="#fff5e8" stroke="none" font-family="sans-serif" font-size="14">{level_number}</text></g>')
     pieces.append('</g><g id="stars" fill="none" stroke="#ffd45b" stroke-width="1.2" font-family="sans-serif" font-size="6" text-anchor="middle">')
     for node in manifest["nodes"]:
         cx, cy = _project_offset(node["_center"], node["_star_offset"], scale, tx, ty)
