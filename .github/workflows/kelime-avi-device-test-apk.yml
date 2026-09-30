@@ -21,17 +21,17 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ github.sha }}
-          fetch-depth: 2
+          fetch-depth: 0
           persist-credentials: false
 
-      - name: Verify parent and workflow-only diff then select production source
+      - name: Verify cumulative workflow-only diff then select production source
         shell: bash
         run: |
           set -euo pipefail
           test "$GITHUB_REF" = 'refs/heads/diag/kelime-avi-device-apk-9691abb'
           test "$(git rev-parse HEAD)" = "$TEMPORARY_WORKFLOW_SHA"
           test "$(git rev-list --parents -n 1 HEAD | wc -w)" -eq 2
-          test "$(git rev-parse HEAD^)" = "$PRODUCTION_SOURCE_SHA"
+          git merge-base --is-ancestor "$PRODUCTION_SOURCE_SHA" HEAD
           test "$(git diff --name-only "$PRODUCTION_SOURCE_SHA" HEAD)" = '.github/workflows/kelime-avi-device-test-apk.yml'
           git checkout --detach "$PRODUCTION_SOURCE_SHA"
           test "$(git rev-parse HEAD)" = "$PRODUCTION_SOURCE_SHA"
@@ -71,50 +71,126 @@ jobs:
       - name: Verify APK identity and prepare delivery
         shell: bash
         run: |
-          set -euo pipefail
-          apk=apps/kelime_avi_standalone/build/app/outputs/flutter-apk/app-debug.apk
-          test -s "$apk"
-          aapt="$(find "$ANDROID_HOME/build-tools" -name aapt -type f | sort -V | tail -n 1)"
-          apksigner="$(find "$ANDROID_HOME/build-tools" -name apksigner -type f | sort -V | tail -n 1)"
-          test -x "$aapt"
-          test -x "$apksigner"
-          "$aapt" dump badging "$apk" > "$RUNNER_TEMP/device-apk-badging.txt"
-          grep -Fxq 'application-debuggable' "$RUNNER_TEMP/device-apk-badging.txt"
-          "$apksigner" verify --print-certs "$apk" > "$RUNNER_TEMP/device-apk-signature.txt"
-          grep -Eq '^Signer #1 certificate DN: .*CN=Android Debug' "$RUNNER_TEMP/device-apk-signature.txt"
-          python3 - <<'PY'
+          set -Eeuo pipefail
+          shell_gate=python_available
+          trap 'rc=$?; printf "GATE %s: FAIL\nFAILED_GATE=%s\nFAILED_COMMAND=%s\nEXIT_CODE=%s\n" "$shell_gate" "$shell_gate" "$BASH_COMMAND" "$rc"; exit "$rc"' ERR
+          command -v python3
+          printf 'GATE python_available: PASS\n'
+          shell_gate=verification_python
+          if python3 - <<'PY'
           import hashlib
           import os
           import pathlib
           import re
+          import shlex
           import shutil
-          apk = pathlib.Path("apps/kelime_avi_standalone/build/app/outputs/flutter-apk/app-debug.apk")
-          badging = (pathlib.Path(os.environ["RUNNER_TEMP"]) / "device-apk-badging.txt").read_text()
-          match = re.search(r"^package: name='([^']+)' versionCode='([^']+)' versionName='([^']*)'", badging, re.MULTILINE)
-          if not match:
-              raise SystemExit("Missing APK package/version metadata")
-          package, code, version = match.groups()
-          if package != "com.zmilastudio.kelimeavi" or not code.isdigit() or not version:
-              raise SystemExit("Invalid APK identity/version")
-          digest = hashlib.sha256(apk.read_bytes()).hexdigest()
-          delivery = pathlib.Path(os.environ["RUNNER_TEMP"]) / "device-apk-delivery"
-          delivery.mkdir()
-          shutil.copyfile(apk, delivery / "KelimeAvi-device-test-9691abb-debug.apk")
-          manifest = "\n".join([
-              "production_source_sha=" + os.environ["PRODUCTION_SOURCE_SHA"],
-              "temporary_workflow_sha=" + os.environ["TEMPORARY_WORKFLOW_SHA"],
-              "apk_sha256=" + digest,
-              "apk_size_bytes=" + str(apk.stat().st_size),
-              "package_id=" + package,
-              "version_name=" + version,
-              "version_code=" + code,
-              "build_type=debug",
-              "entrypoint=lib/main.dart",
-              "signing=Android Debug (non-production)",
-          ]) + "\n"
-          (delivery / "manifest.txt").write_text(manifest)
-          print(manifest)
+          import subprocess
+          import sys
+
+          current_gate = "apk_exists"
+          current_command = "inspect APK path"
+          class GateFailure(Exception):
+              def __init__(self, reason, code=1):
+                  super().__init__(reason)
+                  self.code = code if code > 0 else 1
+
+          def require(condition, reason):
+              if not condition:
+                  raise GateFailure(reason)
+
+          def gate(name, command, operation):
+              global current_gate, current_command
+              current_gate, current_command = name, command
+              result = operation()
+              print("GATE " + name + ": PASS", flush=True)
+              return result
+
+          def tool(args, input_text=None):
+              result = subprocess.run(args, input=input_text, text=True, capture_output=True)
+              print("ACTUAL command=" + shlex.join(args), flush=True)
+              print("ACTUAL exit_code=" + str(result.returncode), flush=True)
+              if result.stdout:
+                  print(result.stdout, end="" if result.stdout.endswith("\n") else "\n", flush=True)
+              if result.stderr:
+                  print(result.stderr, end="" if result.stderr.endswith("\n") else "\n", flush=True)
+              if result.returncode != 0:
+                  raise GateFailure("Tool returned exit code " + str(result.returncode), result.returncode)
+              return result.stdout
+
+          try:
+              apk = pathlib.Path("apps/kelime_avi_standalone/build/app/outputs/flutter-apk/app-debug.apk")
+              print("ACTUAL apk_path=" + str(apk.resolve()), flush=True)
+              print("ACTUAL apk_size_bytes=" + (str(apk.stat().st_size) if apk.exists() else "MISSING"), flush=True)
+              gate("apk_exists", "APK exists and is a file", lambda: require(apk.is_file(), "APK is missing or not a file"))
+              gate("apk_nonempty", "APK byte size > 0", lambda: require(apk.stat().st_size > 0, "APK is empty"))
+              aapt_command = 'find "$ANDROID_HOME/build-tools" -name aapt -type f | sort -V | tail -n 1'
+              aapt = gate("aapt_selection", aapt_command, lambda: tool(["bash", "-o", "pipefail", "-c", aapt_command])).strip()
+              print("ACTUAL aapt_path=" + aapt, flush=True)
+              gate("aapt_executable", "test -x selected aapt", lambda: require(bool(aapt) and os.path.isfile(aapt) and os.access(aapt, os.X_OK), "Selected aapt is missing or not executable"))
+              signer_command = 'find "$ANDROID_HOME/build-tools" -name apksigner -type f | sort -V | tail -n 1'
+              apksigner = gate("apksigner_selection", signer_command, lambda: tool(["bash", "-o", "pipefail", "-c", signer_command])).strip()
+              print("ACTUAL apksigner_path=" + apksigner, flush=True)
+              gate("apksigner_executable", "test -x selected apksigner", lambda: require(bool(apksigner) and os.path.isfile(apksigner) and os.access(apksigner, os.X_OK), "Selected apksigner is missing or not executable"))
+              badging = gate("aapt_metadata", shlex.join([aapt, "dump", "badging", str(apk)]), lambda: tool([aapt, "dump", "badging", str(apk)]))
+              match = re.search(r"^package: name='([^']+)' versionCode='([^']+)' versionName='([^']*)'", badging, re.MULTILINE)
+              print("ACTUAL package_metadata_match=" + str(match is not None), flush=True)
+              gate("metadata_parser", "parse aapt package/version metadata", lambda: require(match is not None, "Missing APK package/version metadata"))
+              package, code, version = match.groups()
+              print("ACTUAL package_id=" + package, flush=True)
+              print("ACTUAL version_code=" + code, flush=True)
+              print("ACTUAL version_name=" + version, flush=True)
+              gate("package_id", "package_id == com.zmilastudio.kelimeavi", lambda: require(package == "com.zmilastudio.kelimeavi", "Unexpected package_id=" + package))
+              gate("version_code", "versionCode is numeric", lambda: require(code.isdigit(), "Invalid versionCode=" + code))
+              gate("version_name", "versionName is nonempty", lambda: require(bool(version), "Empty versionName"))
+              digest = gate("sha256_generation", "hashlib.sha256(APK bytes)", lambda: hashlib.sha256(apk.read_bytes()).hexdigest())
+              print("ACTUAL apk_sha256=" + digest, flush=True)
+              gate("sha256_format", "SHA-256 has 64 lowercase hex characters", lambda: require(re.fullmatch(r"[0-9a-f]{64}", digest) is not None, "Invalid SHA-256"))
+              debug_args = ["grep", "-Fxq", "application-debuggable"]
+              print("ACTUAL application_debuggable=" + str("application-debuggable" in badging.splitlines()), flush=True)
+              gate("application_debuggable", shlex.join(debug_args), lambda: tool(debug_args, badging))
+              signature_args = [apksigner, "verify", "--print-certs", str(apk)]
+              signature = gate("apk_signature_verification", shlex.join(signature_args), lambda: tool(signature_args))
+              certificate_lines = [line for line in signature.splitlines() if "certificate DN:" in line]
+              print("ACTUAL certificate_dn=" + (" | ".join(certificate_lines) if certificate_lines else "NO certificate DN line"), flush=True)
+              debug_regex = r"^Signer #1 certificate DN: .*CN=Android Debug"
+              signer_args = ["grep", "-Eq", debug_regex]
+              print("ACTUAL android_debug_identity_match=" + str(re.search(debug_regex, signature, re.MULTILINE) is not None), flush=True)
+              gate("android_debug_identity", shlex.join(signer_args), lambda: tool(signer_args, signature))
+              delivery = pathlib.Path(os.environ["RUNNER_TEMP"]) / "device-apk-delivery"
+              gate("delivery_directory", "create device-apk-delivery directory", lambda: delivery.mkdir())
+              delivered_apk = delivery / "KelimeAvi-device-test-9691abb-debug.apk"
+              gate("delivery_apk_copy", "copy verified APK into delivery directory", lambda: shutil.copyfile(apk, delivered_apk))
+              manifest = "\n".join([
+                  "production_source_sha=" + os.environ["PRODUCTION_SOURCE_SHA"],
+                  "temporary_workflow_sha=" + os.environ["TEMPORARY_WORKFLOW_SHA"],
+                  "apk_sha256=" + digest,
+                  "apk_size_bytes=" + str(apk.stat().st_size),
+                  "package_id=" + package,
+                  "version_name=" + version,
+                  "version_code=" + code,
+                  "build_type=debug",
+                  "entrypoint=lib/main.dart",
+                  "signing=Android Debug (non-production)",
+              ]) + "\n"
+              manifest_path = delivery / "manifest.txt"
+              gate("delivery_manifest", "write delivery manifest", lambda: manifest_path.write_text(manifest))
+              gate("delivery_manifest_readback", "verify manifest content", lambda: require(manifest_path.read_text() == manifest, "Manifest readback differs"))
+              print(manifest, flush=True)
+          except Exception as error:
+              code = error.code if isinstance(error, GateFailure) else 1
+              print("GATE " + current_gate + ": FAIL - " + str(error), flush=True)
+              print("FAILED_GATE=" + current_gate, flush=True)
+              print("FAILED_COMMAND=" + current_command, flush=True)
+              print("EXIT_CODE=" + str(code), flush=True)
+              sys.exit(code)
           PY
+          then
+            printf 'GATE delivery_verification_complete: PASS\n'
+          else
+            rc=$?
+            printf 'Delivery blocked; detailed FAILED_GATE/FAILED_COMMAND above. EXIT_CODE=%s\n' "$rc"
+            exit "$rc"
+          fi
 
       - name: Upload owner device-test package
         uses: actions/upload-artifact@v4
