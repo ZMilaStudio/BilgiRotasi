@@ -1,0 +1,94 @@
+name: L10 Six-Pixel Ubuntu Diagnostic
+
+on:
+  push:
+    branches:
+      - diag/l10-six-pixel-ubuntu-ea18a5b
+
+permissions:
+  contents: read
+
+jobs:
+  diagnostic:
+    if: >-
+      github.event_name == 'push' &&
+      github.repository == 'ZMilaStudio/BilgiRotasi' &&
+      github.ref == 'refs/heads/diag/l10-six-pixel-ubuntu-ea18a5b'
+    runs-on: ubuntu-22.04
+    timeout-minutes: 20
+    env:
+      DIAGNOSTIC_SHA: ${{ github.sha }}
+      PRODUCTION_SHA: ea18a5b83f12f9ef5f08c1c50a2e0724e916922a
+    steps:
+      - name: Checkout exact diagnostic SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 2
+
+      - name: Fail-closed authority and unchanged production gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          export L10_DIAGNOSTIC_OUT="$RUNNER_TEMP/l10-sixpixel"
+          printf 'L10_DIAGNOSTIC_OUT=%s\n' "$L10_DIAGNOSTIC_OUT" >> "$GITHUB_ENV"
+          test "$GITHUB_EVENT_NAME" = push
+          test "$GITHUB_REPOSITORY" = ZMilaStudio/BilgiRotasi
+          test "$GITHUB_REF" = refs/heads/diag/l10-six-pixel-ubuntu-ea18a5b
+          test "$(git rev-parse HEAD)" = "$DIAGNOSTIC_SHA"
+          test "$(git rev-parse HEAD^)" = "$PRODUCTION_SHA"
+          expected="$(printf '%s\n' \
+            .github/workflows/word-hunt-l10-six-pixel-diagnostic.yml \
+            test/diagnostics/word_hunt_l10_six_pixel_diagnostic_test.dart | sort)"
+          actual="$(git diff --name-only HEAD^ HEAD | sort)"
+          test "$actual" = "$expected"
+          git diff --exit-code HEAD^ HEAD -- \
+            packages/word_hunt_flutter_feature/lib/word_hunt_pixel_proof_screen.dart \
+            test/word_hunt_l10_stage_final_label_test.dart assets/word_hunt
+          mkdir -p "$L10_DIAGNOSTIC_OUT"
+          {
+            printf 'diagnostic_sha=%s\nproduction_sha=%s\n' "$DIAGNOSTIC_SHA" "$PRODUCTION_SHA"
+            printf 'event=%s\nref=%s\n' "$GITHUB_EVENT_NAME" "$GITHUB_REF"
+            printf 'runner_image=%s\nrunner_image_version=%s\n' "${ImageOS:-unknown}" "${ImageVersion:-unknown}"
+            uname -a
+            cat /etc/os-release
+          } | tee "$L10_DIAGNOSTIC_OUT/environment.txt"
+
+      - name: Flutter 3.44.6
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.6'
+          channel: stable
+          cache: true
+
+      - name: Record and verify toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          flutter --version --machine > "$L10_DIAGNOSTIC_OUT/flutter-version.json"
+          flutter --version | tee -a "$L10_DIAGNOSTIC_OUT/environment.txt"
+          python3 - <<'PY'
+          import json, os
+          with open(os.path.join(os.environ['L10_DIAGNOSTIC_OUT'], 'flutter-version.json')) as source:
+              version = json.load(source)
+          assert version['frameworkVersion'] == '3.44.6', version
+          assert version['frameworkRevision'].startswith('ee80f08bbf'), version
+          PY
+
+      - name: Collect production-equivalent raster diagnostics only
+        shell: bash
+        run: |
+          set -euo pipefail
+          flutter pub get
+          flutter test --no-pub \
+            test/diagnostics/word_hunt_l10_six_pixel_diagnostic_test.dart \
+            --reporter expanded 2>&1 | tee "$L10_DIAGNOSTIC_OUT/test.log"
+
+      - name: Upload diagnostic evidence even on failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: L10-Six-Pixel-Ubuntu-Diagnostic-${{ github.sha }}
+          path: ${{ runner.temp }}/l10-sixpixel/
+          if-no-files-found: error
+          retention-days: 30
