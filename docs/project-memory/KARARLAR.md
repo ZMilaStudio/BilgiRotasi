@@ -294,3 +294,13 @@ Bu bölüm, 31 Ağustos kayıtlarındaki `ERROR_STATE_VISUAL = DOĞRULANACAK` du
 - Wave10B bu closure ile başlamaz. Başlangıç L21+ veya başka rota L11+ ayrı owner/manager checkpoint gerektirir.
 - No artwork/version/tag/release/Play/merge action bu karara dahil değildir.
 
+## 18. 1 Ekim 2026 — Checkpoint A fiziksel cihaz bulguları / owner repair kararı
+
+- Başlangıç Limanı 8×8 kalır. Target yoğunluğu: L1–5 = 6; L6–10 = 7; L11–19 = 7–8; L20 = 8–9; L21–29 ≈ 8; L30 en fazla 9.
+- Okunabilir yerleşim: bir hücrede üç target yok; bir kelime en fazla iki target ile kesişir; aynı çift en fazla bir hücre paylaşır. Board genelinde dağılım korunur; zorluk yalnız overlap ile artmaz. Öğretici etapta yatay/dikey ağırlığı, ilerleyen seviyelerde kontrollü çapraz/ters yön tercih edilir.
+- Kelimeler grid'e sığdırmak için kırpılmaz; uydurma/kısaltılmış/doğal olmayan Türkçe kullanılmaz. L26 `gökkuşak` ve `çisenti` kaldırılır; doğal hava kelimeleriyle değiştirilir.
+- Standalone için gizli, compile-time debug-only QA/Test Panel gerekir. Gerçek schema-3 progress/storage kullanır; destructive preset öncesi onay, TEST MODE ve seed özeti gösterir. Release/profile akışında erişilemez; production unlock kurallarını değiştirmez.
+- Mevcut Segment3/Tersane temiz sahnesi ve basit node tasarımı owner tarafından bu Checkpoint A için kabul edildi; bu repair redesign yetkisi değildir.
+- Bundan sonraki yeni haritaların node'ları daha premium, tema ile bütünleşik, karakterli ve mevcut Tersane simple-node seviyesinden daha zengin olmalıdır.
+- Gökyüzü unlock hâlâ Checkpoint B kapsamındadır. Gelecek `pilot30_v1`: mevcut L1–30 tamamlanmış ve en az 18 yıldız; gerçek routeComplete değildir. `full100_v2` gerçek rota finali L100'dür. Bu karar o unlock uygulamasını başlatmaz.
+

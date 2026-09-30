@@ -608,7 +608,7 @@ class ContentCompilerV2Tests(unittest.TestCase):
         starter = self.corpus.routes["baslangic-limani"]
         self.assertEqual(starter.available_level_count, 30)
         self.assertEqual(starter.planned_level_count, 100)
-        self.assertEqual(len(starter.reserved_words), 196)
+        self.assertEqual(len(starter.reserved_words), 247)
 
     def test_wave10a_l11_to_l20_is_current_reserved_corpus(self) -> None:
         starter = self.corpus.routes["baslangic-limani"]
@@ -784,6 +784,29 @@ class ContentCompilerV2Tests(unittest.TestCase):
         self.assertEqual(compiler.normalize_runtime_semantics("ı"), "I")
         self.assertEqual(compiler.normalize_runtime_semantics("İ"), "İ")
         self.assertEqual(compiler.normalize_runtime_semantics("I"), "I")
+
+
+class DeviceReadabilityTests(unittest.TestCase):
+    def test_opt_in_readability_is_deterministic_and_spread(self):
+        words = ['DENİZ', 'GEMİ', 'LİMAN', 'DALGA', 'SAHİL', 'KÜREK', 'MARTI']
+        def generate():
+            rng = compiler.StableRng('checkpoint-a-device-v1/L2/0')
+            partial, placements = compiler.place_all(words, rng, readable=True, directions=((0, 1), (1, 0)))
+            rows = compiler.finalize_grid(partial, words, rng)
+            return rows, placements
+        rows, placements = generate()
+        self.assertEqual((rows, placements), generate())
+        self.assertTrue(all(compiler.count_occurrences(rows, word) == 1 for word in words))
+        paths = [set(compiler.cells_for(p.word, p.row, p.col, p.dr, p.dc)) for p in placements]
+        occupied = set().union(*paths)
+        self.assertTrue(all(sum(cell in path for path in paths) <= 2 for cell in occupied))
+        for i, path in enumerate(paths):
+            intersections = [len(path & other) for j, other in enumerate(paths) if i != j]
+            self.assertTrue(all(count <= 1 for count in intersections))
+            self.assertLessEqual(sum(count > 0 for count in intersections), 2)
+        self.assertEqual(len({(r // 4, c // 4) for r, c in occupied}), 4)
+        self.assertGreaterEqual(len({r for r, _ in occupied}), 7)
+        self.assertGreaterEqual(len({c for _, c in occupied}), 7)
 
 
 if __name__ == "__main__":

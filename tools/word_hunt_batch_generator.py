@@ -790,7 +790,11 @@ def rollback(grid: list[list[str | None]], changed: Iterable[tuple[int, int]]) -
         grid[row][col] = None
 
 
-def place_all(words: Sequence[str], rng: StableRng) -> tuple[list[list[str | None]], list[Placement]]:
+def place_all(
+    words: Sequence[str], rng: StableRng, *, readable: bool = False,
+    directions: Sequence[tuple[int, int]] = DIRECTIONS,
+    minimum_diagonals: int = 0,
+) -> tuple[list[list[str | None]], list[Placement]]:
     grid: list[list[str | None]] = [[None] * GRID_SIZE for _ in range(GRID_SIZE)]
     ordered = sorted(words, key=lambda word: (-len(word), word))
     placements: list[Placement] = []
@@ -801,12 +805,31 @@ def place_all(words: Sequence[str], rng: StableRng) -> tuple[list[list[str | Non
         if index == len(ordered):
             return True
         word = ordered[index]
-        for placement in candidate_placements(word, grid, rng):
+        candidates = candidate_placements(word, grid, rng)
+        if readable:
+            # Prefer free cells rather than maximizing dense intersections.
+            candidates.sort(key=lambda p: sum(grid[r][c] is not None for r, c in (cells_for(p.word, p.row, p.col, p.dr, p.dc) or ())))
+            if len(word) <= 5 and sum(bool(p.dr and p.dc) for p in placements) < minimum_diagonals:
+                candidates.sort(key=lambda p: not (p.dr and p.dc))
+        for placement in candidates:
             visited_nodes += 1
-            if visited_nodes > MAX_BACKTRACK_NODES:
+            budget = 2000 if readable else MAX_BACKTRACK_NODES
+            if visited_nodes > budget:
                 raise _SearchBudgetExceeded(
-                    f"backtracking budget exceeded ({MAX_BACKTRACK_NODES})"
+                    f"backtracking budget exceeded ({budget})"
                 )
+            if (placement.dr, placement.dc) not in directions:
+                continue
+            if readable:
+                footprint = set(cells_for(word, placement.row, placement.col, placement.dr, placement.dc) or ())
+                previous = [set(cells_for(p.word, p.row, p.col, p.dr, p.dc) or ()) for p in placements]
+                overlaps = [len(footprint & cells) for cells in previous]
+                if any(count > 1 for count in overlaps) or sum(count > 0 for count in overlaps) > 2:
+                    continue
+                if any(sum(cell in cells for cells in previous) >= 2 for cell in footprint):
+                    continue
+                if any(overlaps[i] and sum(bool(cells & other) for j, other in enumerate(previous) if i != j) >= 2 for i, cells in enumerate(previous)):
+                    continue
             changed = apply_placement(grid, placement)
             placements.append(placement)
             if backtrack(index + 1):
@@ -817,6 +840,15 @@ def place_all(words: Sequence[str], rng: StableRng) -> tuple[list[list[str | Non
 
     if not backtrack(0):
         raise FactoryError("word set could not be placed in 8x8 grid")
+    if readable:
+        if sum(bool(p.dr and p.dc) for p in placements) < minimum_diagonals:
+            raise FactoryError("readable placement lacks controlled diagonals")
+        occupied = {(r, c) for p in placements for r, c in (cells_for(p.word, p.row, p.col, p.dr, p.dc) or ())}
+        # Explicit spatial coverage: all four quadrants and at least seven
+        # distinct rows/columns. Reject clustered candidates; caller can retry
+        # with another deterministic seed. Legacy compiler defaults stay frozen.
+        if len({(r // 4, c // 4) for r, c in occupied}) != 4 or len({r for r, _ in occupied}) < 7 or len({c for _, c in occupied}) < 7:
+            raise FactoryError("readable placement is too clustered")
     return grid, placements
 
 

@@ -40,10 +40,10 @@ void main() {
     }
   });
 
-  test('Segment1 kelime yoğunluğu 6 kelimeden 10 kelimeye kontrollü artar', () {
-    const expectedTargetCounts = <int>[5, 5, 6, 6, 7, 7, 8, 7, 9, 9];
+  test('Segment1 owner device yoğunluğu 6/7 target sözleşmesini taşır', () {
+    const expectedTargetCounts = <int>[6, 6, 6, 6, 6, 7, 7, 7, 7, 7];
     const expectedBonusCounts = <int>[1, 1, 1, 1, 1, 1, 1, 2, 1, 1];
-    const expectedTotals = <int>[6, 6, 7, 7, 8, 8, 9, 9, 10, 10];
+    const expectedTotals = <int>[7, 7, 7, 7, 7, 8, 8, 9, 8, 8];
     var totalWords = 0;
     for (var index = 0; index < 10; index++) {
       final level = route.levels[index];
@@ -53,7 +53,7 @@ void main() {
       expect(total, expectedTotals[index], reason: level.id);
       totalWords += total;
     }
-    expect(totalWords, 80);
+    expect(totalWords, 76);
   });
 
   test('rota, kelimeler ve bilgi kartları kalite validatorından geçer', () {
@@ -144,14 +144,12 @@ void main() {
     expect(_findPhysicalOccurrences(level.grid, 'ROKET'), hasLength(1));
   });
 
-  test('Bölüm 10 dokuz target + HAZİNE final sözleşmesini taşır', () {
+  test('Bölüm 10 yedi target + HAZİNE etap final sözleşmesini taşır', () {
     final level = route.levels[9];
     expect(level.targetWords, const <String>[
       'PUSULA',
       'YOL',
       'İPUCU',
-      'PARKUR',
-      'NİŞAN',
       'KEŞİF',
       'HARİTA',
       'MACERA',
@@ -162,7 +160,7 @@ void main() {
   });
 
   test(
-    'Bölüm 5 ve final yatay dikey diagonal yön ailelerini birlikte taşır',
+    'Öğretici challenge yatay/dikey, etap finali kontrollü çapraz taşır',
     () {
       for (final levelIndex in <int>[5, 10]) {
         final productionCase = _productionCases[levelIndex - 1];
@@ -172,10 +170,10 @@ void main() {
               if (path.columnDelta == 0) return 'vertical';
               return 'diagonal';
             }).toSet();
-        expect(families, const <String>{
+        expect(families, <String>{
           'horizontal',
           'vertical',
-          'diagonal',
+          if (levelIndex == 10) 'diagonal',
         }, reason: 'Bölüm $levelIndex');
       }
     },
@@ -317,47 +315,49 @@ const _productionCases = <_ProductionCase>[
   _ProductionCase(
     levelIndex: 1,
     grid: <String>[
-      'BHVFKNÇL',
-      'MROTAMBK',
-      'GZGBLITÜ',
-      'EJÖİEOGS',
-      'MEELMASA',
-      'ZFOGÖORF',
-      'ESTİOYUN',
-      'LYUARFCÜ',
+      'EGVRPBĞK',
+      'LNVPOİÜH',
+      'MSCMYLSE',
+      'ACFAUGİV',
+      'MHÜSNİLF',
+      'CLOABÖGĞ',
+      'KALEMGİB',
+      'SLJROTAG',
     ],
-    targets: <String>['KALEM', 'MASA', 'OYUN', 'ROTA', 'BİLGİ'],
+    targets: <String>['KALEM', 'MASA', 'OYUN', 'ROTA', 'BİLGİ', 'SİLGİ'],
     bonus: <String>['ELMA'],
     paths: <_ExpectedPath>[
-      _ExpectedPath('KALEM', 0, 4, 1, 0, 5),
-      _ExpectedPath('MASA', 4, 4, 0, 1, 4),
-      _ExpectedPath('OYUN', 6, 4, 0, 1, 4),
-      _ExpectedPath('ROTA', 1, 1, 0, 1, 4),
-      _ExpectedPath('BİLGİ', 2, 3, 1, 0, 5),
-      _ExpectedPath('ELMA', 4, 2, 0, 1, 4, isBonus: true),
+      _ExpectedPath('KALEM', 6, 0, 0, 1, 5),
+      _ExpectedPath('MASA', 2, 3, 1, 0, 4),
+      _ExpectedPath('OYUN', 1, 4, 1, 0, 4),
+      _ExpectedPath('ROTA', 7, 3, 0, 1, 4),
+      _ExpectedPath('BİLGİ', 0, 5, 1, 0, 5),
+      _ExpectedPath('SİLGİ', 2, 6, 1, 0, 5),
+      _ExpectedPath('ELMA', 0, 0, 1, 0, 4, isBonus: true),
     ],
   ),
   _ProductionCase(
     levelIndex: 2,
     grid: <String>[
-      'CĞAPİÇCL',
-      'MIUGEMİP',
-      'PMARTILG',
-      'HLÜDBÜHR',
-      'EİĞEAÖIF',
-      'VMJNTLÜŞ',
-      'SAHİLUGÇ',
-      'ANJZSLTA',
+      'DLİMANON',
+      'ENVSAHİL',
+      'NCMARTIĞ',
+      'İDKİEAKC',
+      'ZACÖİDZS',
+      'ALKÜREKD',
+      'ÇGKGEMİN',
+      'ŞAOKLIHG',
     ],
-    targets: <String>['DENİZ', 'GEMİ', 'LİMAN', 'DALGA', 'SAHİL'],
+    targets: <String>['DENİZ', 'GEMİ', 'LİMAN', 'DALGA', 'SAHİL', 'KÜREK'],
     bonus: <String>['MARTI'],
     paths: <_ExpectedPath>[
-      _ExpectedPath('DENİZ', 3, 3, 1, 0, 5),
-      _ExpectedPath('GEMİ', 1, 3, 0, 1, 4),
-      _ExpectedPath('LİMAN', 3, 1, 1, 0, 5),
-      _ExpectedPath('DALGA', 3, 3, 1, 1, 5),
-      _ExpectedPath('SAHİL', 6, 0, 0, 1, 5),
-      _ExpectedPath('MARTI', 2, 1, 0, 1, 5, isBonus: true),
+      _ExpectedPath('DENİZ', 0, 0, 1, 0, 5),
+      _ExpectedPath('GEMİ', 6, 3, 0, 1, 4),
+      _ExpectedPath('LİMAN', 0, 1, 0, 1, 5),
+      _ExpectedPath('DALGA', 3, 1, 1, 0, 5),
+      _ExpectedPath('SAHİL', 1, 3, 0, 1, 5),
+      _ExpectedPath('KÜREK', 5, 2, 0, 1, 5),
+      _ExpectedPath('MARTI', 2, 2, 0, 1, 5, isBonus: true),
     ],
   ),
   _ProductionCase(
@@ -411,14 +411,14 @@ const _productionCases = <_ProductionCase>[
   _ProductionCase(
     levelIndex: 5,
     grid: <String>[
-      'ANKARAJB',
-      'TÜRKİYEA',
-      'OMOVÜAKŞ',
-      'ÖÇEGÜNUK',
-      'OZZCZILE',
-      'KALELTEN',
-      'OVFĞZİÜT',
-      'ŞEHİRZSÜ',
+      'BZAPTİKÖ',
+      'AĞNUÜÖUD',
+      'ŞUKLRHLM',
+      'KŞACKĞEE',
+      'EERÇİRJC',
+      'NHAIYRGL',
+      'TİGİEARİ',
+      'CRÜANITS',
     ],
     targets: <String>[
       'ANKARA',
@@ -427,18 +427,16 @@ const _productionCases = <_ProductionCase>[
       'BAŞKENT',
       'MECLİS',
       'KULE',
-      'KALE',
     ],
     bonus: <String>['ANIT'],
     paths: <_ExpectedPath>[
-      _ExpectedPath('ANKARA', 0, 0, 0, 1, 6),
-      _ExpectedPath('ŞEHİR', 7, 0, 0, 1, 5),
-      _ExpectedPath('TÜRKİYE', 1, 0, 0, 1, 7),
-      _ExpectedPath('BAŞKENT', 0, 7, 1, 0, 7),
-      _ExpectedPath('MECLİS', 2, 1, 1, 1, 6),
-      _ExpectedPath('KULE', 2, 6, 1, 0, 4),
-      _ExpectedPath('KALE', 5, 0, 0, 1, 4),
-      _ExpectedPath('ANIT', 2, 5, 1, 0, 4, isBonus: true),
+      _ExpectedPath('ANKARA', 0, 2, 1, 0, 6),
+      _ExpectedPath('ŞEHİR', 3, 1, 1, 0, 5),
+      _ExpectedPath('TÜRKİYE', 0, 4, 1, 0, 7),
+      _ExpectedPath('BAŞKENT', 0, 0, 1, 0, 7),
+      _ExpectedPath('MECLİS', 2, 7, 1, 0, 6),
+      _ExpectedPath('KULE', 0, 6, 1, 0, 4),
+      _ExpectedPath('ANIT', 7, 3, 0, 1, 4, isBonus: true),
     ],
   ),
   _ProductionCase(
@@ -477,14 +475,14 @@ const _productionCases = <_ProductionCase>[
   _ProductionCase(
     levelIndex: 7,
     grid: <String>[
-      'IŞKZNTEM',
-      'MRBKRİEO',
-      'GHAEAYOD',
-      'RĞLTVNNO',
-      'IİÇEKAAY',
-      'YKNPVEŞT',
-      'ADPOLENÖ',
-      'ÇUKÖSÇNP',
+      'ĞGARIBAL',
+      'ÇAYIRIÇP',
+      'POLENPCE',
+      'KMEYVEFT',
+      'SAKOVANE',
+      'EJNEZSKK',
+      'IHNAMUOV',
+      'BSZOTNJK',
     ],
     targets: <String>[
       'ARI',
@@ -494,58 +492,56 @@ const _productionCases = <_ProductionCase>[
       'KANAT',
       'POLEN',
       'PETEK',
-      'NEKTAR',
     ],
     bonus: <String>['ÇAYIR'],
     paths: <_ExpectedPath>[
-      _ExpectedPath('ARI', 2, 2, -1, -1, 3),
-      _ExpectedPath('MEYVE', 0, 7, 1, -1, 5),
-      _ExpectedPath('BAL', 1, 2, 1, 0, 3),
-      _ExpectedPath('KOVAN', 7, 2, -1, 1, 5),
-      _ExpectedPath('KANAT', 1, 3, 1, 1, 5),
-      _ExpectedPath('POLEN', 6, 2, 0, 1, 5),
-      _ExpectedPath('PETEK', 5, 3, -1, 0, 5),
-      _ExpectedPath('NEKTAR', 6, 6, -1, -1, 6),
-      _ExpectedPath('ÇAYIR', 7, 0, -1, 0, 5, isBonus: true),
+      _ExpectedPath('ARI', 0, 2, 0, 1, 3),
+      _ExpectedPath('MEYVE', 3, 1, 0, 1, 5),
+      _ExpectedPath('BAL', 0, 5, 0, 1, 3),
+      _ExpectedPath('KOVAN', 4, 2, 0, 1, 5),
+      _ExpectedPath('KANAT', 3, 0, 1, 1, 5),
+      _ExpectedPath('POLEN', 2, 0, 0, 1, 5),
+      _ExpectedPath('PETEK', 1, 7, 1, 0, 5),
+      _ExpectedPath('ÇAYIR', 1, 0, 0, 1, 5, isBonus: true),
     ],
   ),
   _ProductionCase(
     levelIndex: 8,
     grid: <String>[
-      'ILFAULİU',
-      'ĞMAÇSDCŞ',
-      'ÇHIZSNLO',
-      'AGMKUVÇK',
-      'İPRYAKVG',
-      'VROKSTLO',
-      'İÇPTHVÖL',
-      'PÇSPÖVÜP',
+      'HIİFTOPS',
+      'ÇSETAEŞK',
+      'MKPAAUJO',
+      'ANLOĞKLR',
+      'ÇYUYRİIV',
+      'DOYUNCUM',
+      'UGOLDÖYÜ',
+      'JİÇHIZMR',
     ],
     targets: <String>['SPOR', 'TOP', 'FAUL', 'OYUNCU', 'TAKIM', 'GOL', 'MAÇ'],
     bonus: <String>['HIZ', 'SKOR'],
     paths: <_ExpectedPath>[
-      _ExpectedPath('SPOR', 7, 2, -1, 0, 4),
-      _ExpectedPath('TOP', 6, 3, -1, -1, 3),
-      _ExpectedPath('FAUL', 0, 2, 0, 1, 4),
-      _ExpectedPath('OYUNCU', 5, 2, -1, 1, 6),
-      _ExpectedPath('TAKIM', 5, 5, -1, -1, 5),
-      _ExpectedPath('GOL', 4, 7, 1, 0, 3),
-      _ExpectedPath('MAÇ', 1, 1, 0, 1, 3),
-      _ExpectedPath('HIZ', 2, 1, 0, 1, 3, isBonus: true),
-      _ExpectedPath('SKOR', 5, 4, 0, -1, 4, isBonus: true),
+      _ExpectedPath('SPOR', 1, 1, 1, 1, 4),
+      _ExpectedPath('TOP', 0, 4, 0, 1, 3),
+      _ExpectedPath('FAUL', 0, 3, 1, 1, 4),
+      _ExpectedPath('OYUNCU', 5, 1, 0, 1, 6),
+      _ExpectedPath('TAKIM', 1, 3, 1, 1, 5),
+      _ExpectedPath('GOL', 6, 1, 0, 1, 3),
+      _ExpectedPath('MAÇ', 2, 0, 1, 0, 3),
+      _ExpectedPath('HIZ', 7, 3, 0, 1, 3, isBonus: true),
+      _ExpectedPath('SKOR', 0, 7, 1, 0, 4, isBonus: true),
     ],
   ),
   _ProductionCase(
     levelIndex: 9,
     grid: <String>[
-      'VGRETARK',
-      'NEGEZEGZ',
-      'NİKESGÜI',
-      'ĞOGUÜNDD',
-      'RGYNMÜYL',
-      'ÜDETNRAI',
-      'UŞZYFÖZY',
-      'ÜMARSYUÜ',
+      'DÜNYAFAĞ',
+      'GRKMUUGY',
+      'CEKMĞZFI',
+      'UİZRAKYL',
+      'ZKUEORMD',
+      'ANNYGKSI',
+      'YOMMDEEZ',
+      'GÜNEŞUNT',
     ],
     targets: <String>[
       'MARS',
@@ -555,41 +551,35 @@ const _productionCases = <_ProductionCase>[
       'GÜNEŞ',
       'DÜNYA',
       'UYDU',
-      'KRATER',
-      'YÖRÜNGE',
     ],
     bonus: <String>['ROKET'],
     paths: <_ExpectedPath>[
-      _ExpectedPath('MARS', 7, 1, 0, 1, 4),
-      _ExpectedPath('UZAY', 7, 6, -1, 0, 4),
-      _ExpectedPath('YILDIZ', 6, 7, -1, 0, 6),
-      _ExpectedPath('GEZEGEN', 1, 6, 0, -1, 7),
-      _ExpectedPath('GÜNEŞ', 2, 5, 1, -1, 5),
-      _ExpectedPath('DÜNYA', 3, 6, 1, -1, 5),
-      _ExpectedPath('UYDU', 3, 3, 1, -1, 4),
-      _ExpectedPath('KRATER', 0, 7, 0, -1, 6),
-      _ExpectedPath('YÖRÜNGE', 7, 5, -1, 0, 7),
-      _ExpectedPath('ROKET', 4, 0, -1, 1, 5, isBonus: true),
+      _ExpectedPath('MARS', 2, 3, 1, 1, 4),
+      _ExpectedPath('UZAY', 3, 0, 1, 0, 4),
+      _ExpectedPath('YILDIZ', 1, 7, 1, 0, 6),
+      _ExpectedPath('GEZEGEN', 1, 0, 1, 1, 7),
+      _ExpectedPath('GÜNEŞ', 7, 0, 0, 1, 5),
+      _ExpectedPath('DÜNYA', 0, 0, 0, 1, 5),
+      _ExpectedPath('UYDU', 4, 2, 1, 1, 4),
+      _ExpectedPath('ROKET', 3, 3, 1, 1, 5, isBonus: true),
     ],
   ),
   _ProductionCase(
     levelIndex: 10,
     grid: <String>[
-      'MHEDEFYP',
-      'NATPAKAA',
-      'FZCYOLTR',
-      'FİLEUİIK',
-      'İNRSRDUU',
-      'ŞEUALADR',
-      'EPHUCUPİ',
-      'KNİŞANIB',
+      'ÖFHARİTA',
+      'YPUSULAT',
+      'İOMACERA',
+      'FÖLİAEÇK',
+      'ÇKAPTANE',
+      'BİUŞAMCŞ',
+      'HAZİNEFİ',
+      'DİPUCUJF',
     ],
     targets: <String>[
       'PUSULA',
       'YOL',
       'İPUCU',
-      'PARKUR',
-      'NİŞAN',
       'KEŞİF',
       'HARİTA',
       'MACERA',
@@ -597,16 +587,14 @@ const _productionCases = <_ProductionCase>[
     ],
     bonus: <String>['HAZİNE'],
     paths: <_ExpectedPath>[
-      _ExpectedPath('PUSULA', 6, 1, -1, 1, 6),
-      _ExpectedPath('YOL', 2, 3, 0, 1, 3),
-      _ExpectedPath('İPUCU', 6, 7, 0, -1, 5),
-      _ExpectedPath('PARKUR', 0, 7, 1, 0, 6),
-      _ExpectedPath('NİŞAN', 7, 1, 0, 1, 5),
-      _ExpectedPath('KEŞİF', 7, 0, -1, 0, 5),
-      _ExpectedPath('HARİTA', 6, 2, -1, 1, 6),
-      _ExpectedPath('MACERA', 0, 0, 1, 1, 6),
-      _ExpectedPath('KAPTAN', 1, 5, 0, -1, 6),
-      _ExpectedPath('HAZİNE', 0, 1, 1, 0, 6, isBonus: true),
+      _ExpectedPath('PUSULA', 1, 1, 0, 1, 6),
+      _ExpectedPath('YOL', 1, 0, 1, 1, 3),
+      _ExpectedPath('İPUCU', 7, 1, 0, 1, 5),
+      _ExpectedPath('KEŞİF', 3, 7, 1, 0, 5),
+      _ExpectedPath('HARİTA', 0, 2, 0, 1, 6),
+      _ExpectedPath('MACERA', 2, 2, 0, 1, 6),
+      _ExpectedPath('KAPTAN', 4, 1, 0, 1, 6),
+      _ExpectedPath('HAZİNE', 6, 0, 0, 1, 6, isBonus: true),
     ],
   ),
 ];

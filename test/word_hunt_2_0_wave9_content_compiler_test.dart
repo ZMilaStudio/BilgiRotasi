@@ -6,7 +6,7 @@ import 'package:bilgi_rotasi/word_hunt/word_hunt_path.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_route_catalog.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-const _lockPath = 'tools/word_hunt_segment1_source_lock.json';
+const _lockPath = 'tools/word_hunt_checkpoint_a_source_lock.json';
 
 const _expectedRouteIds = <String>[
   'baslangic-limani',
@@ -20,7 +20,7 @@ const _expectedRouteIds = <String>[
 ];
 
 const _expectedFingerprints = <String, String>{
-  'baslangic-limani': '39462daa',
+  'baslangic-limani': 'd52a5898',
   'gokyuzu-adalari': '2fd4e4af',
   'orman-yolu': 'de4fe1f9',
   'orman-2': '71084c8f',
@@ -31,7 +31,7 @@ const _expectedFingerprints = <String, String>{
 };
 
 const _expectedReservedCounts = <String, int>{
-  'baslangic-limani': 80,
+  'baslangic-limani': 76,
   'gokyuzu-adalari': 80,
   'orman-yolu': 54,
   'orman-2': 67,
@@ -49,14 +49,10 @@ void main() {
       final decoded =
           jsonDecode(File(_lockPath).readAsStringSync()) as Map<String, dynamic>;
       expect(decoded['schemaVersion'], 1);
-      expect(decoded['lockVersion'], 'wave8-segment1-v1');
+      expect(decoded['lockVersion'], 'checkpoint-a-device-segment1-v1');
       expect(
-        decoded['wave8ImplementationAuthority'],
-        'd07ec30d82ca97931d0a72589d649ff93daae366',
-      );
-      expect(
-        decoded['wave8FinalIntegrationAuthority'],
-        'c289b09b186d3e97d7b13413f84ebc7c994a52f4',
+        decoded['implementationBaseAuthority'],
+        '9691abb52c7e3ae9c4ed82a1f699a6fa63f5862f',
       );
 
       final lockedRoutes =

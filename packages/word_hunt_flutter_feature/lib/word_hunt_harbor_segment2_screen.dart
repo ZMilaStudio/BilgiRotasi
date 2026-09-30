@@ -395,10 +395,15 @@ class _HarborPremiumNode extends StatelessWidget {
                   ),
                 ),
               ),
-            if (!locked && !challenge)
+            if (!locked)
               Positioned(
                 left: 34 + starOffset.dx - 32.5,
-                top: 34 + starOffset.dy - 12,
+                // The combined challenge artwork already contains its plaque.
+                // Keep earned stars below that artwork, not over its caption.
+                top:
+                    challenge
+                        ? artworkOrigin.dy + visualHeight + 2
+                        : 34 + starOffset.dy - 12,
                 width: 65,
                 height: 24,
                 child: Stack(

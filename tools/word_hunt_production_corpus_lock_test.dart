@@ -43,7 +43,7 @@ void main() {
     );
     expect(starter['availableLevelCount'], 30);
     expect(starter['plannedLevelCount'], 100);
-    expect(starter['reservedWordCount'], 196);
+    expect(starter['reservedWordCount'], 247);
 
     final levels = (starter['levels']! as List).cast<Map<String, Object?>>();
     expect(

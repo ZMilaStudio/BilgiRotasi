@@ -35,16 +35,16 @@ void main() {
     );
 
     final expected = <int, (List<String>, List<String>, WordHuntLevelType)>{
-      21: (<String>['AVİZE', 'TABAK', 'ÇATAL', 'YORGAN'], <String>['KUPA'], WordHuntLevelType.normal),
-      22: (<String>['KOLTUK', 'DOLAP', 'HAVLU', 'BANYO'], <String>['SÜNGER'], WordHuntLevelType.normal),
-      23: (<String>['OTOBÜS', 'TAKSİ', 'DURAK', 'BİLET', 'ŞOFÖR'], <String>['VAPUR'], WordHuntLevelType.normal),
-      24: (<String>['EKMEK', 'PEYNİR', 'YOĞURT', 'REÇEL', 'ÇÖREK'], <String>['KAŞIK'], WordHuntLevelType.normal),
-      25: (<String>['MARKET', 'SEPET', 'KASA', 'PARA', 'FİŞ'], <String>['ETİKET'], WordHuntLevelType.normal),
-      26: (<String>['GÖKKUŞAK', 'DOLU', 'KIRAĞI', 'ÇİSENTİ', 'SAĞANAK'], <String>['AYAZ'], WordHuntLevelType.normal),
-      27: (<String>['BURUN', 'KULAK', 'PARMAK', 'OMUZ', 'DİZ'], <String>['SAÇ'], WordHuntLevelType.normal),
-      28: (<String>['KÖPEK', 'ZEBRA', 'BALIK', 'HOROZ', 'KELEBEK'], <String>['TİMSAH'], WordHuntLevelType.normal),
-      29: (<String>['ROBOT', 'EKRAN', 'KLAVYE', 'TELEFON', 'KAMERA'], <String>['PİL'], WordHuntLevelType.normal),
-      30: (<String>['TRAFİK', 'SOKAK', 'BİNA', 'PARK', 'FIRIN'], <String>['ECZANE'], WordHuntLevelType.challenge),
+      21: (<String>['AVİZE', 'TABAK', 'ÇATAL', 'YORGAN', 'LAMBA', 'ÇARŞAF', 'YATAK', 'MİNDER'], <String>['KUPA'], WordHuntLevelType.normal),
+      22: (<String>['KOLTUK', 'DOLAP', 'HAVLU', 'BANYO', 'LAVABO', 'MUSLUK', 'DUŞ', 'KİLİM'], <String>['SÜNGER'], WordHuntLevelType.normal),
+      23: (<String>['OTOBÜS', 'TAKSİ', 'DURAK', 'BİLET', 'ŞOFÖR', 'TREN', 'TRAMVAY', 'METRO'], <String>['VAPUR'], WordHuntLevelType.normal),
+      24: (<String>['EKMEK', 'PEYNİR', 'YOĞURT', 'REÇEL', 'ÇÖREK', 'SİMİT', 'POĞAÇA', 'TEREYAĞI'], <String>['KAŞIK'], WordHuntLevelType.normal),
+      25: (<String>['MARKET', 'SEPET', 'KASA', 'PARA', 'FİŞ', 'ÜRÜN', 'İNDİRİM', 'MÜŞTERİ'], <String>['ETİKET'], WordHuntLevelType.normal),
+      26: (<String>['RÜZGAR', 'DOLU', 'KIRAĞI', 'ŞİMŞEK', 'SAĞANAK', 'YAĞMUR', 'SİS', 'FIRTINA'], <String>['AYAZ'], WordHuntLevelType.normal),
+      27: (<String>['BURUN', 'KULAK', 'PARMAK', 'OMUZ', 'DİZ', 'AYAK', 'DAMAR', 'BOYUN'], <String>['SAÇ'], WordHuntLevelType.normal),
+      28: (<String>['KÖPEK', 'ZEBRA', 'BALIK', 'HOROZ', 'KELEBEK', 'KURT', 'ASLAN', 'TAVŞAN'], <String>['TİMSAH'], WordHuntLevelType.normal),
+      29: (<String>['ROBOT', 'EKRAN', 'KLAVYE', 'TELEFON', 'KAMERA', 'TABLET', 'FARE', 'İNTERNET'], <String>['PİL'], WordHuntLevelType.normal),
+      30: (<String>['TRAFİK', 'SOKAK', 'BİNA', 'PARK', 'FIRIN', 'CADDE', 'APARTMAN', 'OTEL'], <String>['ECZANE'], WordHuntLevelType.challenge),
     };
 
     for (final entry in expected.entries) {

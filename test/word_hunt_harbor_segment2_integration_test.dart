@@ -9,6 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:word_hunt_flutter_feature/word_hunt_harbor_layout_manifest.dart';
 import 'package:word_hunt_flutter_feature/word_hunt_star_visuals.dart';
+import 'package:word_hunt_domain/word_hunt_progress_codec.dart';
 
 void main() {
   final route = WordHuntStarterContent.baslangicLimani;
@@ -63,6 +64,7 @@ void main() {
     WidgetTester tester, {
     required Size size,
     required WordHuntProgressSnapshot progress,
+    int segment = 2,
     ValueChanged<int>? onLevelTap,
   }) async {
     tester.view.physicalSize = size;
@@ -75,7 +77,7 @@ void main() {
           bundle: _ManifestAssetBundle(),
           child: WordHuntReferenceRouteScreen(
             route: route,
-            segmentIndex: 2,
+            segmentIndex: segment,
             progress: progress,
             onLevelTap: onLevelTap,
           ),
@@ -85,13 +87,16 @@ void main() {
     for (var attempt = 0; attempt < 5; attempt++) {
       await tester.pump(const Duration(milliseconds: 100));
       if (find
-          .byKey(const Key('word_hunt_harbor_level_11'))
+          .byKey(Key('word_hunt_harbor_level_${segment == 2 ? 11 : 21}'))
           .evaluate()
           .isNotEmpty) {
         break;
       }
     }
-    expect(find.byKey(const Key('word_hunt_harbor_level_11')), findsOneWidget);
+    expect(
+      find.byKey(Key('word_hunt_harbor_level_${segment == 2 ? 11 : 21}')),
+      findsOneWidget,
+    );
     expect(tester.takeException(), isNull);
     expect(
       find.byKey(const Key('word_hunt_harbor_layout_error_2')),
@@ -174,6 +179,76 @@ void main() {
       findsNothing,
     );
   });
+
+  for (final size in const [Size(360, 800), Size(412, 915)]) {
+    for (var earned = 0; earned <= 3; earned++) {
+      testWidgets('L20 saved $earned stars below plaque at $size', (
+        tester,
+      ) async {
+        final progress = through(
+          19,
+        ).recordLevelResult(levelId: 'baslangic-20', stars: earned);
+        await show(tester, size: size, progress: progress);
+        for (var i = 0; i < 3; i++) {
+          final icon = tester.widget<Icon>(
+            find.byKey(Key('word_hunt_harbor_star_20_$i')),
+          );
+          expect(
+            icon.color,
+            i < earned ? WordHuntStarVisuals.filled : WordHuntStarVisuals.empty,
+          );
+        }
+        final stars = tester.getRect(
+          find.byKey(const Key('word_hunt_harbor_star_backplate_20')),
+        );
+        final image = tester.getRect(
+          find.byKey(const Key('word_hunt_harbor_medallion_20')),
+        );
+        final plaque = tester.getRect(
+          find.byKey(const Key('word_hunt_harbor_challenge_20')),
+        );
+        final scene = tester.getRect(
+          find.byKey(const Key('word_hunt_harbor_scene_2')),
+        );
+        expect(stars.top, greaterThan(image.bottom));
+        expect(stars.overlaps(plaque), isFalse);
+        expect(
+          scene.contains(stars.topLeft) && scene.contains(stars.bottomRight),
+          isTrue,
+        );
+        expect(
+          tester.getSize(find.byKey(const Key('word_hunt_harbor_level_20'))),
+          const Size(68, 68),
+        );
+      });
+      testWidgets('L30 challenge retains $earned saved stars at $size', (
+        tester,
+      ) async {
+        final completed = through(
+          29,
+        ).recordLevelResult(levelId: 'baslangic-30', stars: earned);
+        final saved = WordHuntProgressCodec.decode(
+          WordHuntProgressCodec.encode(completed, ownerScope: 'guest'),
+          expectedOwnerScope: 'guest',
+        );
+        expect(saved.starsFor('baslangic-30'), earned);
+        await show(tester, size: size, progress: saved, segment: 3);
+        expect(
+          find.byKey(const Key('word_hunt_harbor_challenge_30')),
+          findsOneWidget,
+        );
+        for (var i = 0; i < 3; i++) {
+          final icon = tester.widget<Icon>(
+            find.byKey(Key('word_hunt_harbor_star_30_$i')),
+          );
+          expect(
+            icon.color,
+            i < earned ? WordHuntStarVisuals.filled : WordHuntStarVisuals.empty,
+          );
+        }
+      });
+    }
+  }
 
   testWidgets('68dp hit target calls real level callback only when unlocked', (
     tester,
