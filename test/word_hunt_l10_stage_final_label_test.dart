@@ -15,6 +15,39 @@ const _sourceKey = Key('word_hunt_pixel_proof_source_scene');
 const _captureKey = Key('l10_regression_capture');
 const _approvedRect = Rect.fromLTRB(477, 1006, 567, 1060);
 
+// Ubuntu diagnostic 36705208205 isolated a one-physical-pixel text raster edge.
+// Captures below use pixelRatio 1 / DPR 1, so these are screenshot pixel units.
+Rect _captionRasterRegion(Rect cover) => Rect.fromLTRB(
+  cover.left.floorToDouble(),
+  cover.top.floorToDouble(),
+  cover.right.ceilToDouble(),
+  cover.bottom.ceilToDouble(),
+).inflate(1);
+
+void _expectNoMutationOutsideRasterRegion(
+  img.Image before,
+  img.Image after,
+  Rect rasterRegion,
+) {
+  var changedOutside = 0;
+  for (var y = 0; y < before.height; y++) {
+    for (var x = 0; x < before.width; x++) {
+      final a = before.getPixel(x, y);
+      final b = after.getPixel(x, y);
+      if ((a.r != b.r || a.g != b.g || a.b != b.b || a.a != b.a) &&
+          !rasterRegion.contains(Offset(x.toDouble(), y.toDouble()))) {
+        changedOutside++;
+      }
+    }
+  }
+  expect(
+    changedOutside,
+    0,
+    reason:
+        'No pixel outside the L10 caption plus one physical raster-edge pixel may change',
+  );
+}
+
 Widget _app(Widget screen) =>
     RepaintBoundary(key: _captureKey, child: MaterialApp(home: screen));
 
@@ -78,6 +111,44 @@ Widget _legacyScene(Stack scene) => Scaffold(
 );
 
 void main() {
+  test(
+    'one-pixel caption fringe accepts edges but rejects mutation beyond it',
+    () {
+      const cover = Rect.fromLTRB(10.25, 20.5, 30.25, 40.5);
+      final rasterRegion = _captionRasterRegion(cover);
+      expect(rasterRegion, const Rect.fromLTRB(9, 19, 32, 42));
+      final before = img.Image(width: 50, height: 50, numChannels: 4);
+      final edgePattern = img.Image.from(before);
+      // Synthetic points on all four sides of the first physical-pixel fringe.
+      for (final pixel in const <Offset>[
+        Offset(9, 30),
+        Offset(31, 30),
+        Offset(20, 19),
+        Offset(20, 41),
+      ]) {
+        edgePattern.setPixelRgba(
+          pixel.dx.toInt(),
+          pixel.dy.toInt(),
+          20,
+          30,
+          40,
+          255,
+        );
+      }
+      _expectNoMutationOutsideRasterRegion(before, edgePattern, rasterRegion);
+      final beyondEdge = img.Image.from(edgePattern)
+        ..setPixelRgba(32, 30, 20, 30, 40, 255);
+      expect(
+        () => _expectNoMutationOutsideRasterRegion(
+          before,
+          beyondEdge,
+          rasterRegion,
+        ),
+        throwsA(isA<TestFailure>()),
+      );
+    },
+  );
+
   for (final viewport in const <Size>[Size(360, 800), Size(412, 915)]) {
     testWidgets('L10 caption and fail-closed regional pixels at $viewport', (
       tester,
@@ -203,7 +274,6 @@ void main() {
       expect(after.width, before.width);
       expect(after.height, before.height);
       var changedInside = 0;
-      var changedOutside = 0;
       // Include only rasterized edge pixels of the accepted source rectangle.
       final region = Rect.fromLTRB(
         cover.left.floorToDouble(),
@@ -218,16 +288,14 @@ void main() {
           if (a.r != b.r || a.g != b.g || a.b != b.b || a.a != b.a) {
             if (region.contains(Offset(x.toDouble(), y.toDouble()))) {
               changedInside++;
-            } else {
-              changedOutside++;
             }
           }
         }
       }
-      expect(
-        changedOutside,
-        0,
-        reason: 'No pixel outside the L10 label may change',
+      _expectNoMutationOutsideRasterRegion(
+        before,
+        after,
+        _captionRasterRegion(cover),
       );
       expect(
         changedInside,
