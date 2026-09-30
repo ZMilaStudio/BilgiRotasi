@@ -117,6 +117,41 @@ jobs:
                   raise GateFailure("Tool returned exit code " + str(result.returncode), result.returncode)
               return result.stdout
 
+          def android_debug_certificate_dn(line):
+              match = re.fullmatch(r"(?:Signer(?:\s+#\d+|\s+\([^)]*\))?|V\d+\s+Signer):?\s+certificate DN:\s*(.+)", line.strip())
+              if not match:
+                  return None
+              dn = match.group(1)
+              fields, field = [], []
+              escaped = quoted = False
+              for char in dn:
+                  if escaped:
+                      field.append(char)
+                      escaped = False
+                  elif char == "\\":
+                      field.append(char)
+                      escaped = True
+                  elif char == '"':
+                      field.append(char)
+                      quoted = not quoted
+                  elif char in ",+" and not quoted:
+                      fields.append("".join(field).strip())
+                      field = []
+                  else:
+                      field.append(char)
+              if escaped or quoted:
+                  return None
+              fields.append("".join(field).strip())
+              common_names = []
+              for field in fields:
+                  attribute, separator, value = field.partition("=")
+                  if separator and attribute.strip().upper() == "CN":
+                      value = value.strip()
+                      if value.startswith('"') and value.endswith('"'):
+                          value = value[1:-1]
+                      common_names.append(value)
+              return dn if common_names == ["Android Debug"] else None
+
           try:
               apk = pathlib.Path("apps/kelime_avi_standalone/build/app/outputs/flutter-apk/app-debug.apk")
               print("ACTUAL apk_path=" + str(apk.resolve()), flush=True)
@@ -152,10 +187,10 @@ jobs:
               signature = gate("apk_signature_verification", shlex.join(signature_args), lambda: tool(signature_args))
               certificate_lines = [line for line in signature.splitlines() if "certificate DN:" in line]
               print("ACTUAL certificate_dn=" + (" | ".join(certificate_lines) if certificate_lines else "NO certificate DN line"), flush=True)
-              debug_regex = r"^Signer #1 certificate DN: .*CN=Android Debug"
-              signer_args = ["grep", "-Eq", debug_regex]
-              print("ACTUAL android_debug_identity_match=" + str(re.search(debug_regex, signature, re.MULTILINE) is not None), flush=True)
-              gate("android_debug_identity", shlex.join(signer_args), lambda: tool(signer_args, signature))
+              matched_dns = [dn for line in signature.splitlines() if (dn := android_debug_certificate_dn(line)) is not None]
+              print("ACTUAL matched_android_debug_certificate_dn=" + (" | ".join(matched_dns) if matched_dns else "NONE"), flush=True)
+              print("ACTUAL android_debug_identity_match=" + str(bool(matched_dns)), flush=True)
+              gate("android_debug_identity", "verify signer certificate DN has exact CN=Android Debug", lambda: require(bool(matched_dns), "No verified signer certificate DN has exact CN=Android Debug"))
               delivery = pathlib.Path(os.environ["RUNNER_TEMP"]) / "device-apk-delivery"
               gate("delivery_directory", "create device-apk-delivery directory", lambda: delivery.mkdir())
               delivered_apk = delivery / "KelimeAvi-device-test-9691abb-debug.apk"
