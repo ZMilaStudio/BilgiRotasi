@@ -116,6 +116,11 @@ class WordHuntPixelProofScreen extends StatelessWidget {
                     progress: progress,
                   ),
                   if (nodeNineOpenOverride) const _NodeNineOpenOverride(),
+                  if (route.id == WordHuntStarterContent.baslangicLimani.id &&
+                      segmentIndex == 1)
+                    const _L10FirstStageCaption(
+                      key: Key('word_hunt_l10_caption_layer'),
+                    ),
                   for (
                     var index = 0;
                     index < host.nodes.length &&
@@ -155,6 +160,51 @@ class WordHuntPixelProofScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Owner-approved wording repair in source coordinates, not viewport pixels.
+/// The flattened JPEG, plaque border, chest, crown and hitboxes stay intact.
+class _L10FirstStageCaption extends StatelessWidget {
+  const _L10FirstStageCaption({super.key});
+
+  @override
+  Widget build(BuildContext context) => Positioned.fromRect(
+    key: const Key('word_hunt_l10_caption_cover'),
+    rect: const Rect.fromLTRB(477, 1006, 567, 1060),
+    child: IgnorePointer(
+      child: ExcludeSemantics(
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(2),
+            gradient: const LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: <Color>[Color(0xFF1B130C), Color(0xFF0C0B05)],
+            ),
+          ),
+          child: const Center(
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                'İLK ETAP\nFİNALİ',
+                key: Key('word_hunt_l10_stage_final_caption'),
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  inherit: false,
+                  decoration: TextDecoration.none,
+                  fontFamily: 'serif',
+                  color: Color(0xFFFFDF8A),
+                  fontSize: 19,
+                  height: 1.12,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
 }
 
 class _NodeNineOpenOverride extends StatelessWidget {
