@@ -193,7 +193,9 @@ void main() {
     );
 
     final skyRule = WordHuntRouteCatalog.gokyuzu.unlockRule;
-    expect(skyRule.kind, WordHuntRouteUnlockKind.routeComplete);
+    expect(skyRule.kind, WordHuntRouteUnlockKind.completedLevelsAndStars);
+    expect(skyRule.requiredCompletedLevels, 30);
+    expect(skyRule.requiredStars, 60);
     expect(
       skyRule.prerequisiteRoute,
       same(WordHuntStarterContent.baslangicLimani),
@@ -201,7 +203,7 @@ void main() {
     expect(WordHuntStarterContent.baslangicLimani.unlockStarsRequired, 18);
     expect(
       WordHuntRouteCatalog.gokyuzu.lockedMessage,
-      'Başlangıç Limanı’nı tamamla ve en az 18 yıldız kazan.',
+      'Başlangıç Limanı L1–30’u tamamla ve en az 60 yıldız kazan.',
     );
 
     final forestRule = WordHuntRouteCatalog.orman.unlockRule;
@@ -640,7 +642,7 @@ void main() {
     );
 
     expect(
-      find.text('Başlangıç Limanı’nı tamamla ve en az 18 yıldız kazan.'),
+      find.text('Başlangıç Limanı L1–30’u tamamla ve en az 60 yıldız kazan.'),
       findsOneWidget,
     );
     expect(

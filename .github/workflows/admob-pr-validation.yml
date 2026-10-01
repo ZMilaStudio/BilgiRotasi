@@ -26,7 +26,11 @@ jobs:
         github.event.pull_request.number == 224 &&
         github.repository == 'ZMilaStudio/BilgiRotasi' &&
         github.event.pull_request.base.ref == 'release/final-closed-test-aab-1.68.8' &&
-        github.event.pull_request.head.ref == 'feat/kelime-avi-harbor-repair-checkpoint-a') }}
+        github.event.pull_request.head.ref == 'feat/kelime-avi-harbor-repair-checkpoint-a') &&
+        !(github.event_name == 'pull_request' &&
+        github.repository == 'ZMilaStudio/BilgiRotasi' &&
+        github.event.pull_request.base.ref == 'release/final-closed-test-aab-1.68.8' &&
+        github.event.pull_request.head.ref == 'feat/kelime-avi-checkpoint-b-pilot-sky-unlock') }}
     runs-on: ubuntu-22.04
     timeout-minutes: 60
 

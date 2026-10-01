@@ -142,6 +142,7 @@ abstract final class WordHuntRouteRewardEngine {
       unlockedInfoCards: unlockedInfoCards,
       foundBonusCount: foundBonusCount,
     );
+    updated = WordHuntRouteCatalog.grantEligiblePilotAccess(updated);
     final afterRouteComplete = WordHuntRouteProgressEngine.isRouteComplete(
       route,
       updated,
@@ -162,12 +163,12 @@ abstract final class WordHuntRouteRewardEngine {
     );
   }
 
-  /// Historical progress için yalnız eksik reward ownership kayıtlarını ekler.
+  /// Historical progress için eksik pilot access ve reward ownership ekler.
   /// Stars, info cards ve progression verisi değiştirilmez.
   static WordHuntProgressSnapshot backfillCompletedRoutes(
     WordHuntProgressSnapshot progress,
   ) {
-    var updated = progress;
+    var updated = WordHuntRouteCatalog.grantEligiblePilotAccess(progress);
     for (final route in WordHuntLegacyProgressMigration.frozenLegacyRoutes) {
       if (WordHuntLegacyProgressMigration.isFrozenLegacyRouteComplete(
             route,

@@ -15,7 +15,12 @@ import 'word_hunt_yeralti_kralligi_visual_theme.dart';
 ///
 /// Yeni rotalar için selector widget'ına özel koşul eklemek yerine bu veri
 /// sözleşmesi kullanılmalıdır.
-enum WordHuntRouteUnlockKind { always, routeStars, routeComplete }
+enum WordHuntRouteUnlockKind {
+  always,
+  routeStars,
+  routeComplete,
+  completedLevelsAndStars,
+}
 
 /// Production rota ekranının hangi ortak renderer ailesini kullandığını söyler.
 ///
@@ -33,21 +38,43 @@ class WordHuntRouteUnlockRule {
   const WordHuntRouteUnlockRule.always()
     : kind = WordHuntRouteUnlockKind.always,
       prerequisiteRoute = null,
-      requiredStars = 0;
+      requiredStars = 0,
+      requiredCompletedLevels = 0;
 
   const WordHuntRouteUnlockRule.routeStars({
     required this.prerequisiteRoute,
     required this.requiredStars,
   }) : kind = WordHuntRouteUnlockKind.routeStars,
+       requiredCompletedLevels = 0,
        assert(requiredStars > 0);
 
   const WordHuntRouteUnlockRule.routeComplete({required this.prerequisiteRoute})
     : kind = WordHuntRouteUnlockKind.routeComplete,
-      requiredStars = 0;
+      requiredStars = 0,
+      requiredCompletedLevels = 0;
+
+  const WordHuntRouteUnlockRule.completedLevelsAndStars({
+    required this.prerequisiteRoute,
+    required this.requiredCompletedLevels,
+    required this.requiredStars,
+  }) : kind = WordHuntRouteUnlockKind.completedLevelsAndStars,
+       assert(requiredCompletedLevels > 0),
+       assert(requiredStars > 0);
 
   final WordHuntRouteUnlockKind kind;
   final WordHuntRouteDefinition? prerequisiteRoute;
   final int requiredStars;
+  final int requiredCompletedLevels;
+
+  Iterable<WordHuntLevelDefinition> get _eligibleLevels {
+    final levels =
+        prerequisiteRoute?.levels ?? const <WordHuntLevelDefinition>[];
+    return kind == WordHuntRouteUnlockKind.completedLevelsAndStars
+        ? levels.where(
+          (level) => level.index >= 1 && level.index <= requiredCompletedLevels,
+        )
+        : levels;
+  }
 
   bool isUnlocked(WordHuntProgressSnapshot progress) {
     switch (kind) {
@@ -55,6 +82,11 @@ class WordHuntRouteUnlockRule {
         return true;
       case WordHuntRouteUnlockKind.routeStars:
         return currentStars(progress) >= requiredStars;
+      case WordHuntRouteUnlockKind.completedLevelsAndStars:
+        final indexes = _eligibleLevels.map((level) => level.index).toSet();
+        return indexes.length == requiredCompletedLevels &&
+            currentCompletedLevels(progress) == requiredCompletedLevels &&
+            currentStars(progress) >= requiredStars;
       case WordHuntRouteUnlockKind.routeComplete:
         final prerequisite = prerequisiteRoute;
         if (prerequisite == null) return false;
@@ -68,13 +100,16 @@ class WordHuntRouteUnlockRule {
   int currentStars(WordHuntProgressSnapshot progress) {
     final prerequisite = prerequisiteRoute;
     if (prerequisite == null) return 0;
-    return WordHuntRouteProgressEngine.totalStars(prerequisite, progress);
+    return _eligibleLevels.fold<int>(
+      0,
+      (total, level) => total + progress.starsFor(level.id),
+    );
   }
 
   int currentCompletedLevels(WordHuntProgressSnapshot progress) {
     final prerequisite = prerequisiteRoute;
     if (prerequisite == null) return 0;
-    return prerequisite.levels
+    return _eligibleLevels
         .where(
           (level) =>
               WordHuntRouteProgressEngine.isLevelCompleted(level, progress),
@@ -132,6 +167,22 @@ class WordHuntRouteCatalogEntry {
 
 /// Application presentation adapter over the shared production content authority.
 abstract final class WordHuntRouteCatalog {
+  /// Idempotent, lossless access grant. Call on load/backfill and progress updates.
+  /// Only bounded pilot policies earn this entitlement; downstream rules stay intact.
+  static WordHuntProgressSnapshot grantEligiblePilotAccess(
+    WordHuntProgressSnapshot progress,
+  ) {
+    var updated = progress;
+    for (final entry in entries) {
+      if (entry.unlockRule.kind ==
+              WordHuntRouteUnlockKind.completedLevelsAndStars &&
+          entry.unlockRule.isUnlocked(updated)) {
+        updated = updated.grantGrandfatheredRouteAccess(entry.route.id);
+      }
+    }
+    return updated;
+  }
+
   static WordHuntRouteCatalogEntry _entry({
     required String routeId,
     required IconData icon,
@@ -174,6 +225,12 @@ abstract final class WordHuntRouteCatalog {
       case WordHuntContentRouteUnlockKind.routeComplete:
         return WordHuntRouteUnlockRule.routeComplete(
           prerequisiteRoute: _prerequisiteRouteFor(rule),
+        );
+      case WordHuntContentRouteUnlockKind.completedLevelsAndStars:
+        return WordHuntRouteUnlockRule.completedLevelsAndStars(
+          prerequisiteRoute: _prerequisiteRouteFor(rule),
+          requiredCompletedLevels: rule.requiredCompletedLevels,
+          requiredStars: rule.requiredStars,
         );
     }
   }
