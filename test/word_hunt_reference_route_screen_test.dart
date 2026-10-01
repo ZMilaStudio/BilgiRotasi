@@ -1,3 +1,4 @@
+import 'package:bilgi_rotasi/word_hunt/word_hunt_starter_content.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_models.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_progress.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_reference_route_screen.dart';
@@ -101,7 +102,7 @@ void main() {
 
       expect(find.text('KELİME AVI'), findsOneWidget);
       expect(find.text('BAŞLANGIÇ LİMANI'), findsOneWidget);
-      expect(find.text('0 / 90'), findsOneWidget);
+      expect(find.text('0 / ${WordHuntStarterContent.baslangicLimani.maximumStars}'), findsOneWidget);
       expect(find.text('Kapı: 18'), findsOneWidget);
     },
   );

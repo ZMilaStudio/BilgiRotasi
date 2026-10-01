@@ -282,6 +282,39 @@ def verify_segment3(root: ET.Element, width: int, height: int) -> None:
                          "48dp+, non-overlap, L30 challenge, L23/L24 taps PASS")
 
 
+def verify_segment4(root: ET.Element, scenario: str, width: int, height: int) -> None:
+    """Exact deterministic Segment 4 state; real Android accessibility evidence."""
+    if scenario not in ("segment4_mixed", "l40_playable"):
+        raise AssertionError(f"Unknown Segment 4 scenario: {scenario}")
+    completed = 33 if scenario == "segment4_mixed" else 39
+    rectangles = {}
+    for level in range(31, 41):
+        matches = level_nodes(root, level)
+        if len(matches) != 1:
+            raise AssertionError(f"L{level}: expected one Android node")
+        node = matches[0]
+        rect = bounds(node)
+        if not (0 <= rect[0] < rect[2] <= width and 0 <= rect[1] < rect[3] <= height):
+            raise AssertionError(f"L{level}: clipped/outside screen: {rect}")
+        if rect[2] - rect[0] < 48 or rect[3] - rect[1] < 48:
+            raise AssertionError(f"L{level}: touch bounds below 48dp")
+        opened = level <= completed + 1
+        if (node.attrib.get("clickable") == "true") != opened:
+            raise AssertionError(f"L{level}: incorrect clickable state")
+        stars = (level - 31) % 3 + 1 if level <= completed else 0
+        label = node_text(node).casefold()
+        if ("açık" if opened else "kilitli") not in label or f"{stars} yıldız" not in label:
+            raise AssertionError(f"L{level}: incorrect fixture state/stars: {label}")
+        if level == 40 and "meydan okuma" not in label:
+            raise AssertionError("L40 challenge semantics missing")
+        rectangles[level] = rect
+    for level in range(31, 41):
+        for other in range(level + 1, 41):
+            if overlaps(rectangles[level], rectangles[other]):
+                raise AssertionError(f"L{level}/L{other}: Android hitbox overlap")
+    ACCESSIBILITY.append(f"{width}x{height} {scenario}: ten nodes, stars, locks, 48dp+, non-overlap PASS")
+
+
 def tap_info(root: ET.Element, width: int) -> None:
     matches = [
         node
@@ -345,8 +378,8 @@ def verify_geometry(records: list[dict[str, object]]) -> None:
 
     summaries: list[str] = []
     for width, height in ((360, 800), (412, 915)):
-        for scenario in ("mixed", "l20Playable", "segment3"):
-            segment = 3 if scenario == "segment3" else 2
+        for scenario in ("mixed", "l20Playable", "segment3", "segment4Mixed", "l40Playable"):
+            segment = 4 if scenario in ("segment4Mixed", "l40Playable") else 3 if scenario == "segment3" else 2
             first, last = (segment - 1) * 10 + 1, segment * 10
             proof_key = (scenario, width, height)
             evidence = grouped.get(proof_key)
@@ -359,6 +392,10 @@ def verify_geometry(records: list[dict[str, object]]) -> None:
             }
             if scenario != "mixed":
                 required.add(f"word_hunt_harbor_challenge_{last}")
+            if segment == 4:
+                last_open = 34 if scenario == "segment4Mixed" else 40
+                required.update(f"word_hunt_harbor_stars_{level}"
+                                for level in range(31, last_open + 1))
             missing = sorted(required - evidence.keys())
             if missing:
                 raise AssertionError(f"{proof_key}: missing RenderBox keys: {missing}")
@@ -388,6 +425,15 @@ def verify_geometry(records: list[dict[str, object]]) -> None:
                         raise AssertionError(
                             f"{proof_key}: L{level}/L{other} RenderBox overlap"
                         )
+            if segment == 4:
+                for level in range(31, last_open + 1):
+                    stars = rect_from(evidence[f"word_hunt_harbor_stars_{level}"])
+                    if not (scene[0] <= stars[0] < stars[2] <= scene[2]
+                            and scene[1] <= stars[1] < stars[3] <= scene[3]):
+                        raise AssertionError(f"{proof_key}: L{level} stars clipped")
+                    for other, rect in hitboxes.items():
+                        if other != level and overlaps(stars, rect):
+                            raise AssertionError(f"{proof_key}: L{level} stars overlap L{other}")
 
             medallion = rect_from(evidence[f"word_hunt_harbor_medallion_{last}"])
             if not (
@@ -564,6 +610,7 @@ def run() -> None:
             record_failure(l20_name, error)
 
         segment3_name = f"harbor_{width}x{height}_segment3"
+        segment3 = None
         try:
             if l20 is None:
                 raise AssertionError("No L20 accessibility tree for Segment 3 transition")
@@ -575,11 +622,27 @@ def run() -> None:
         except Exception as error:
             record_failure(segment3_name, error)
 
+        previous = segment3
+        for scenario in ("segment4_mixed", "l40_playable"):
+            name = f"harbor_{width}x{height}_{scenario}"
+            try:
+                if previous is None:
+                    raise AssertionError("Missing preceding scenario accessibility tree")
+                tap_info(previous, width)
+                state = "kilitli" if scenario == "segment4_mixed" else "açık"
+                current = capture(name, (f"Bölüm 40, meydan okuma, {state}, 0 yıldız",))
+                previous = current
+                if png_size(REPORTS / f"{name}.png") != (width, height):
+                    raise AssertionError(f"{name}: incorrect screenshot dimensions")
+                verify_segment4(current, scenario, width, height)
+            except Exception as error:
+                record_failure(name, error)
+
 
 def write_result() -> None:
     expected = {f"harbor_{w}x{h}_{s}.png"
                 for w, h in ((360, 800), (412, 915))
-                for s in ("mixed", "l20_playable", "segment3")}
+                for s in ("mixed", "l20_playable", "segment3", "segment4_mixed", "l40_playable")}
     if set(CAPTURES) != expected:
         record_failure("Capture inventory", f"expected={sorted(expected)}, actual={sorted(CAPTURES)}")
     result = {

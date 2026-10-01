@@ -145,7 +145,7 @@ void main() {
       );
       await seeder.prepare(completed: 30);
       expect((await seeder.load()).bestStarsByLevelId, {
-        for (final l in route.levels) l.id: 3,
+        for (final l in route.levels.take(30)) l.id: 3,
       });
       await seeder.prepareLevel(20);
       final completed = (await seeder.load()).recordLevelResult(

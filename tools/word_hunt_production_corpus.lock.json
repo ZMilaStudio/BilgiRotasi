@@ -15,51 +15,66 @@
   "routes": [
     {
       "routeId": "baslangic-limani",
-      "availableLevelCount": 30,
+      "availableLevelCount": 40,
       "plannedLevelCount": 100,
-      "reservedWordCount": 247,
+      "reservedWordCount": 338,
       "reservedWords": [
+        "ANAHTAR",
         "ANIT",
         "ANKARA",
         "APARTMAN",
+        "ARALIK",
         "ARI",
         "ARMUT",
         "ASLAN",
+        "ATKI",
         "AVİZE",
         "AYAK",
         "AYAZ",
         "AĞAÇ",
+        "AŞÇI",
         "BADEM",
         "BAHÇE",
         "BAL",
         "BALIK",
         "BAMBU",
+        "BANKA",
         "BANYO",
         "BARDAK",
         "BAVUL",
         "BAŞKENT",
+        "BERBER",
+        "BIÇAK",
+        "BOT",
         "BOYA",
         "BOYUN",
         "BULUT",
         "BURUN",
+        "BİBER",
         "BİLET",
         "BİLGİ",
         "BİNA",
         "BİSİKLET",
         "CADDE",
         "CAM",
+        "CEKET",
         "CEVİZ",
+        "CEZVE",
         "DALGA",
         "DAMAR",
         "DEFTER",
         "DENİZ",
+        "DERGİ",
         "DERS",
+        "DOKTOR",
         "DOLAP",
         "DOLU",
+        "DOMATES",
         "DOĞA",
         "DURAK",
         "DUVAR",
         "DUŞ",
+        "DÜKKAN",
         "DÜNYA",
         "DÜRBÜN",
         "DÜĞME",
@@ -67,30 +82,49 @@
         "ECZANE",
         "EKMEK",
         "EKRAN",
+        "EKİM",
+        "ELDİVEN",
         "ELMA",
         "ERİK",
+        "ETEK",
         "ETİKET",
+        "EYLÜL",
+        "EŞEK",
         "FARE",
         "FAUL",
         "FENER",
         "FIRIN",
         "FIRTINA",
         "FIRÇA",
+        "FOTOĞRAF",
         "FİDAN",
         "FİŞ",
+        "GAZETE",
         "GEMİ",
         "GEZEGEN",
         "GOL",
+        "GURUR",
+        "GÖMLEK",
         "GÜNEŞ",
+        "HABER",
+        "HAKİM",
         "HALI",
         "HARİTA",
+        "HASTANE",
         "HAVLU",
         "HAVUZ",
+        "HAVUÇ",
         "HAZİNE",
+        "HAZİRAN",
         "HEDEF",
+        "HIRKA",
         "HIZ",
         "HIZLI",
         "HOROZ",
+        "HUNİ",
+        "HÜZÜN",
+        "HİNDİ",
+        "KABAK",
         "KALEM",
         "KAMERA",
         "KANAT",
@@ -102,20 +136,27 @@
         "KASE",
         "KAVUN",
         "KAYAK",
+        "KAZ",
         "KAZAK",
         "KAĞIT",
         "KAŞIK",
         "KEDİ",
         "KELEBEK",
         "KEMAN",
+        "KEMER",
+        "KEPÇE",
         "KESTANE",
+        "KEÇİ",
         "KEŞİF",
         "KIRAĞI",
         "KIYI",
         "KLAVYE",
         "KOLTUK",
+        "KORKU",
         "KOVAN",
+        "KOYUN",
         "KOŞU",
+        "KRAVAT",
         "KULAK",
         "KULE",
         "KUMANDA",
@@ -136,46 +177,70 @@
         "LİMAN",
         "MACERA",
         "MAKAS",
+        "MANDA",
         "MANDAL",
         "MARKET",
         "MARS",
         "MARTI",
+        "MARUL",
         "MASA",
+        "MATKAP",
+        "MAYIS",
         "MAÇ",
+        "MAŞA",
         "MECLİS",
+        "MEKTUP",
+        "MERAK",
         "MERCAN",
         "MERDİVEN",
+        "MESAJ",
+        "METRE",
         "METRO",
         "MEYVE",
         "MUSLUK",
         "MUZ",
+        "MÜZE",
         "MÜZİK",
         "MÜŞTERİ",
+        "MİMAR",
         "MİNDER",
         "NEHİR",
+        "NEŞE",
         "NOTA",
+        "NİSAN",
+        "OCAK",
         "ODUN",
         "OKUL",
         "OMUZ",
         "ORMAN",
         "OTEL",
         "OTOBÜS",
+        "OTOPARK",
         "OYUN",
         "OYUNCU",
         "PANTOLON",
         "PARA",
         "PARK",
         "PARMAK",
+        "PATLICAN",
         "PENCERE",
+        "PENSE",
         "PERDE",
         "PETEK",
         "PEYNİR",
+        "PIRASA",
         "POLEN",
+        "POLİS",
         "PORTAKAL",
+        "POSTA",
+        "POSTANE",
         "POĞAÇA",
         "PUSULA",
         "PİL",
+        "PİLOT",
         "PİYANO",
+        "RADYO",
+        "RENDE",
         "RENK",
         "RESİM",
         "REÇEL",
@@ -184,24 +249,32 @@
         "ROTA",
         "RÜZGAR",
         "SAAT",
+        "SABIR",
         "SABUN",
         "SAHİL",
         "SAKSI",
         "SANDALYE",
+        "SARIMSAK",
         "SAYFA",
         "SAÇ",
         "SAĞANAK",
         "SEPET",
         "SES",
+        "SEVİNÇ",
         "SINIF",
         "SKOR",
         "SOKAK",
+        "SOMUN",
+        "SOĞAN",
         "SPOR",
+        "STADYUM",
         "SÜNGER",
+        "SÜRAHİ",
         "SÜRE",
         "SÜT",
         "SİLGİ",
         "SİMİT",
+        "SİNEMA",
         "SİS",
         "TABAK",
         "TABLET",
@@ -209,10 +282,16 @@
         "TAKIM",
         "TAKSİ",
         "TARAK",
+        "TAVA",
+        "TAVUK",
         "TAVŞAN",
         "TELEFON",
+        "TEMMUZ",
         "TENCERE",
+        "TEPSİ",
         "TEREYAĞI",
+        "TERZİ",
+        "TESTERE",
         "TOP",
         "TOPRAK",
         "TRAFİK",
@@ -221,16 +300,21 @@
         "TURNA",
         "TÜRKİYE",
         "TİMSAH",
+        "TİYATRO",
+        "UMUT",
         "UYDU",
         "UZAY",
         "VAGON",
         "VAPUR",
+        "VİDA",
+        "VİDEO",
         "YAPRAK",
         "YASTIK",
         "YATAK",
         "YAĞMUR",
         "YELKEN",
         "YEŞİL",
+        "YIL",
         "YILDIZ",
         "YOL",
         "YORGAN",
@@ -246,17 +330,23 @@
         "ÇAYIR",
         "ÇEKMECE",
         "ÇEKİRDEK",
+        "ÇEKİÇ",
         "ÇORAP",
         "ÇÖREK",
+        "ÇİFTÇİ",
         "ÇİLEK",
         "ÇİMEN",
+        "ÇİVİ",
         "ÇİÇEK",
         "ÖDEV",
+        "ÖFKE",
+        "ÖKÜZ",
         "ÖRDEK",
         "ÜRÜN",
         "ÜZÜM",
         "İNCİR",
         "İNDİRİM",
+        "İNEK",
         "İNTERNET",
         "İPUCU",
         "ŞAPKA",
@@ -264,10 +354,17 @@
         "ŞEHİR",
         "ŞEMSİYE",
         "ŞOFÖR",
+        "ŞUBAT",
         "ŞİMŞEK",
         "ŞİŞE"
       ],
       "wordOrigins": [
+        {
+          "word": "ANAHTAR",
+          "levelId": "baslangic-37",
+          "localIndex": 37,
+          "role": "TARGET"
+        },
         {
           "word": "ANIT",
           "levelId": "baslangic-5",
@@ -287,6 +384,12 @@
           "role": "TARGET"
         },
         {
+          "word": "ARALIK",
+          "levelId": "baslangic-40",
+          "localIndex": 40,
+          "role": "TARGET"
+        },
+        {
           "word": "ARI",
           "levelId": "baslangic-7",
           "localIndex": 7,
@@ -302,6 +405,12 @@
           "word": "ASLAN",
           "levelId": "baslangic-28",
           "localIndex": 28,
+          "role": "TARGET"
+        },
+        {
+          "word": "ATKI",
+          "levelId": "baslangic-32",
+          "localIndex": 32,
           "role": "TARGET"
         },
         {
@@ -326,6 +435,12 @@
           "word": "AĞAÇ",
           "levelId": "baslangic-6",
           "localIndex": 6,
+          "role": "TARGET"
+        },
+        {
+          "word": "AŞÇI",
+          "levelId": "baslangic-33",
+          "localIndex": 33,
           "role": "TARGET"
         },
         {
@@ -359,6 +474,12 @@
           "role": "TARGET"
         },
         {
+          "word": "BANKA",
+          "levelId": "baslangic-34",
+          "localIndex": 34,
+          "role": "TARGET"
+        },
+        {
           "word": "BANYO",
           "levelId": "baslangic-22",
           "localIndex": 22,
@@ -383,6 +504,24 @@
           "role": "TARGET"
         },
         {
+          "word": "BERBER",
+          "levelId": "baslangic-33",
+          "localIndex": 33,
+          "role": "TARGET"
+        },
+        {
+          "word": "BIÇAK",
+          "levelId": "baslangic-31",
+          "localIndex": 31,
+          "role": "TARGET"
+        },
+        {
+          "word": "BOT",
+          "levelId": "baslangic-32",
+          "localIndex": 32,
+          "role": "TARGET"
+        },
+        {
           "word": "BOYA",
           "levelId": "baslangic-16",
           "localIndex": 16,
@@ -404,6 +543,12 @@
           "word": "BURUN",
           "levelId": "baslangic-27",
           "localIndex": 27,
+          "role": "TARGET"
+        },
+        {
+          "word": "BİBER",
+          "levelId": "baslangic-36",
+          "localIndex": 36,
           "role": "TARGET"
         },
         {
@@ -443,9 +588,21 @@
           "role": "TARGET"
         },
         {
+          "word": "CEKET",
+          "levelId": "baslangic-32",
+          "localIndex": 32,
+          "role": "TARGET"
+        },
+        {
           "word": "CEVİZ",
           "levelId": "baslangic-18",
           "localIndex": 18,
+          "role": "TARGET"
+        },
+        {
+          "word": "CEZVE",
+          "levelId": "baslangic-31",
+          "localIndex": 31,
           "role": "TARGET"
         },
         {
@@ -473,9 +630,21 @@
           "role": "TARGET"
         },
         {
+          "word": "DERGİ",
+          "levelId": "baslangic-39",
+          "localIndex": 39,
+          "role": "TARGET"
+        },
+        {
           "word": "DERS",
           "levelId": "baslangic-3",
           "localIndex": 3,
+          "role": "TARGET"
+        },
+        {
+          "word": "DOKTOR",
+          "levelId": "baslangic-33",
+          "localIndex": 33,
           "role": "TARGET"
         },
         {
@@ -488,6 +657,12 @@
           "word": "DOLU",
           "levelId": "baslangic-26",
           "localIndex": 26,
+          "role": "TARGET"
+        },
+        {
+          "word": "DOMATES",
+          "levelId": "baslangic-36",
+          "localIndex": 36,
           "role": "TARGET"
         },
         {
@@ -512,6 +687,12 @@
           "word": "DUŞ",
           "levelId": "baslangic-22",
           "localIndex": 22,
+          "role": "TARGET"
+        },
+        {
+          "word": "DÜKKAN",
+          "levelId": "baslangic-34",
+          "localIndex": 34,
           "role": "TARGET"
         },
         {
@@ -557,6 +738,18 @@
           "role": "TARGET"
         },
         {
+          "word": "EKİM",
+          "levelId": "baslangic-40",
+          "localIndex": 40,
+          "role": "TARGET"
+        },
+        {
+          "word": "ELDİVEN",
+          "levelId": "baslangic-32",
+          "localIndex": 32,
+          "role": "TARGET"
+        },
+        {
           "word": "ELMA",
           "levelId": "baslangic-1",
           "localIndex": 1,
@@ -569,10 +762,28 @@
           "role": "TARGET"
         },
         {
+          "word": "ETEK",
+          "levelId": "baslangic-32",
+          "localIndex": 32,
+          "role": "TARGET"
+        },
+        {
           "word": "ETİKET",
           "levelId": "baslangic-25",
           "localIndex": 25,
           "role": "BONUS"
+        },
+        {
+          "word": "EYLÜL",
+          "levelId": "baslangic-40",
+          "localIndex": 40,
+          "role": "TARGET"
+        },
+        {
+          "word": "EŞEK",
+          "levelId": "baslangic-35",
+          "localIndex": 35,
+          "role": "TARGET"
         },
         {
           "word": "FARE",
@@ -611,6 +822,12 @@
           "role": "BONUS"
         },
         {
+          "word": "FOTOĞRAF",
+          "levelId": "baslangic-39",
+          "localIndex": 39,
+          "role": "TARGET"
+        },
+        {
           "word": "FİDAN",
           "levelId": "baslangic-11",
           "localIndex": 11,
@@ -620,6 +837,12 @@
           "word": "FİŞ",
           "levelId": "baslangic-25",
           "localIndex": 25,
+          "role": "TARGET"
+        },
+        {
+          "word": "GAZETE",
+          "levelId": "baslangic-39",
+          "localIndex": 39,
           "role": "TARGET"
         },
         {
@@ -641,9 +864,33 @@
           "role": "TARGET"
         },
         {
+          "word": "GURUR",
+          "levelId": "baslangic-38",
+          "localIndex": 38,
+          "role": "BONUS"
+        },
+        {
+          "word": "GÖMLEK",
+          "levelId": "baslangic-32",
+          "localIndex": 32,
+          "role": "TARGET"
+        },
+        {
           "word": "GÜNEŞ",
           "levelId": "baslangic-9",
           "localIndex": 9,
+          "role": "TARGET"
+        },
+        {
+          "word": "HABER",
+          "levelId": "baslangic-39",
+          "localIndex": 39,
+          "role": "TARGET"
+        },
+        {
+          "word": "HAKİM",
+          "levelId": "baslangic-33",
+          "localIndex": 33,
           "role": "TARGET"
         },
         {
@@ -659,6 +906,12 @@
           "role": "TARGET"
         },
         {
+          "word": "HASTANE",
+          "levelId": "baslangic-34",
+          "localIndex": 34,
+          "role": "TARGET"
+        },
+        {
           "word": "HAVLU",
           "levelId": "baslangic-22",
           "localIndex": 22,
@@ -671,15 +924,33 @@
           "role": "TARGET"
         },
         {
+          "word": "HAVUÇ",
+          "levelId": "baslangic-36",
+          "localIndex": 36,
+          "role": "TARGET"
+        },
+        {
           "word": "HAZİNE",
           "levelId": "baslangic-10",
           "localIndex": 10,
           "role": "BONUS"
         },
         {
+          "word": "HAZİRAN",
+          "levelId": "baslangic-40",
+          "localIndex": 40,
+          "role": "TARGET"
+        },
+        {
           "word": "HEDEF",
           "levelId": "baslangic-4",
           "localIndex": 4,
+          "role": "TARGET"
+        },
+        {
+          "word": "HIRKA",
+          "levelId": "baslangic-32",
+          "localIndex": 32,
           "role": "TARGET"
         },
         {
@@ -699,6 +970,30 @@
           "levelId": "baslangic-28",
           "localIndex": 28,
           "role": "TARGET"
+        },
+        {
+          "word": "HUNİ",
+          "levelId": "baslangic-31",
+          "localIndex": 31,
+          "role": "BONUS"
+        },
+        {
+          "word": "HÜZÜN",
+          "levelId": "baslangic-38",
+          "localIndex": 38,
+          "role": "TARGET"
+        },
+        {
+          "word": "HİNDİ",
+          "levelId": "baslangic-35",
+          "localIndex": 35,
+          "role": "TARGET"
+        },
+        {
+          "word": "KABAK",
+          "levelId": "baslangic-36",
+          "localIndex": 36,
+          "role": "BONUS"
         },
         {
           "word": "KALEM",
@@ -767,6 +1062,12 @@
           "role": "TARGET"
         },
         {
+          "word": "KAZ",
+          "levelId": "baslangic-35",
+          "localIndex": 35,
+          "role": "BONUS"
+        },
+        {
           "word": "KAZAK",
           "levelId": "baslangic-18",
           "localIndex": 18,
@@ -803,9 +1104,27 @@
           "role": "TARGET"
         },
         {
+          "word": "KEMER",
+          "levelId": "baslangic-32",
+          "localIndex": 32,
+          "role": "TARGET"
+        },
+        {
+          "word": "KEPÇE",
+          "levelId": "baslangic-31",
+          "localIndex": 31,
+          "role": "TARGET"
+        },
+        {
           "word": "KESTANE",
           "levelId": "baslangic-18",
           "localIndex": 18,
+          "role": "TARGET"
+        },
+        {
+          "word": "KEÇİ",
+          "levelId": "baslangic-35",
+          "localIndex": 35,
           "role": "TARGET"
         },
         {
@@ -839,15 +1158,33 @@
           "role": "TARGET"
         },
         {
+          "word": "KORKU",
+          "levelId": "baslangic-38",
+          "localIndex": 38,
+          "role": "TARGET"
+        },
+        {
           "word": "KOVAN",
           "levelId": "baslangic-7",
           "localIndex": 7,
           "role": "TARGET"
         },
         {
+          "word": "KOYUN",
+          "levelId": "baslangic-35",
+          "localIndex": 35,
+          "role": "TARGET"
+        },
+        {
           "word": "KOŞU",
           "levelId": "baslangic-4",
           "localIndex": 4,
+          "role": "BONUS"
+        },
+        {
+          "word": "KRAVAT",
+          "levelId": "baslangic-32",
+          "localIndex": 32,
           "role": "BONUS"
         },
         {
@@ -971,6 +1308,12 @@
           "role": "TARGET"
         },
         {
+          "word": "MANDA",
+          "levelId": "baslangic-35",
+          "localIndex": 35,
+          "role": "TARGET"
+        },
+        {
           "word": "MANDAL",
           "levelId": "baslangic-20",
           "localIndex": 20,
@@ -995,9 +1338,27 @@
           "role": "BONUS"
         },
         {
+          "word": "MARUL",
+          "levelId": "baslangic-36",
+          "localIndex": 36,
+          "role": "TARGET"
+        },
+        {
           "word": "MASA",
           "levelId": "baslangic-1",
           "localIndex": 1,
+          "role": "TARGET"
+        },
+        {
+          "word": "MATKAP",
+          "levelId": "baslangic-37",
+          "localIndex": 37,
+          "role": "TARGET"
+        },
+        {
+          "word": "MAYIS",
+          "levelId": "baslangic-40",
+          "localIndex": 40,
           "role": "TARGET"
         },
         {
@@ -1007,9 +1368,27 @@
           "role": "TARGET"
         },
         {
+          "word": "MAŞA",
+          "levelId": "baslangic-31",
+          "localIndex": 31,
+          "role": "TARGET"
+        },
+        {
           "word": "MECLİS",
           "levelId": "baslangic-5",
           "localIndex": 5,
+          "role": "TARGET"
+        },
+        {
+          "word": "MEKTUP",
+          "levelId": "baslangic-39",
+          "localIndex": 39,
+          "role": "TARGET"
+        },
+        {
+          "word": "MERAK",
+          "levelId": "baslangic-38",
+          "localIndex": 38,
           "role": "TARGET"
         },
         {
@@ -1023,6 +1402,18 @@
           "levelId": "baslangic-15",
           "localIndex": 15,
           "role": "TARGET"
+        },
+        {
+          "word": "MESAJ",
+          "levelId": "baslangic-39",
+          "localIndex": 39,
+          "role": "BONUS"
+        },
+        {
+          "word": "METRE",
+          "levelId": "baslangic-37",
+          "localIndex": 37,
+          "role": "BONUS"
         },
         {
           "word": "METRO",
@@ -1049,6 +1440,12 @@
           "role": "TARGET"
         },
         {
+          "word": "MÜZE",
+          "levelId": "baslangic-34",
+          "localIndex": 34,
+          "role": "TARGET"
+        },
+        {
           "word": "MÜZİK",
           "levelId": "baslangic-12",
           "localIndex": 12,
@@ -1058,6 +1455,12 @@
           "word": "MÜŞTERİ",
           "levelId": "baslangic-25",
           "localIndex": 25,
+          "role": "TARGET"
+        },
+        {
+          "word": "MİMAR",
+          "levelId": "baslangic-33",
+          "localIndex": 33,
           "role": "TARGET"
         },
         {
@@ -1073,9 +1476,27 @@
           "role": "TARGET"
         },
         {
+          "word": "NEŞE",
+          "levelId": "baslangic-38",
+          "localIndex": 38,
+          "role": "TARGET"
+        },
+        {
           "word": "NOTA",
           "levelId": "baslangic-12",
           "localIndex": 12,
+          "role": "TARGET"
+        },
+        {
+          "word": "NİSAN",
+          "levelId": "baslangic-40",
+          "localIndex": 40,
+          "role": "TARGET"
+        },
+        {
+          "word": "OCAK",
+          "levelId": "baslangic-40",
+          "localIndex": 40,
           "role": "TARGET"
         },
         {
@@ -1115,6 +1536,12 @@
           "role": "TARGET"
         },
         {
+          "word": "OTOPARK",
+          "levelId": "baslangic-34",
+          "localIndex": 34,
+          "role": "BONUS"
+        },
+        {
           "word": "OYUN",
           "levelId": "baslangic-1",
           "localIndex": 1,
@@ -1151,9 +1578,21 @@
           "role": "TARGET"
         },
         {
+          "word": "PATLICAN",
+          "levelId": "baslangic-36",
+          "localIndex": 36,
+          "role": "TARGET"
+        },
+        {
           "word": "PENCERE",
           "levelId": "baslangic-14",
           "localIndex": 14,
+          "role": "TARGET"
+        },
+        {
+          "word": "PENSE",
+          "levelId": "baslangic-37",
+          "localIndex": 37,
           "role": "TARGET"
         },
         {
@@ -1175,15 +1614,39 @@
           "role": "TARGET"
         },
         {
+          "word": "PIRASA",
+          "levelId": "baslangic-36",
+          "localIndex": 36,
+          "role": "TARGET"
+        },
+        {
           "word": "POLEN",
           "levelId": "baslangic-7",
           "localIndex": 7,
           "role": "TARGET"
         },
         {
+          "word": "POLİS",
+          "levelId": "baslangic-33",
+          "localIndex": 33,
+          "role": "TARGET"
+        },
+        {
           "word": "PORTAKAL",
           "levelId": "baslangic-20",
           "localIndex": 20,
+          "role": "TARGET"
+        },
+        {
+          "word": "POSTA",
+          "levelId": "baslangic-39",
+          "localIndex": 39,
+          "role": "TARGET"
+        },
+        {
+          "word": "POSTANE",
+          "levelId": "baslangic-34",
+          "localIndex": 34,
           "role": "TARGET"
         },
         {
@@ -1205,9 +1668,27 @@
           "role": "BONUS"
         },
         {
+          "word": "PİLOT",
+          "levelId": "baslangic-33",
+          "localIndex": 33,
+          "role": "BONUS"
+        },
+        {
           "word": "PİYANO",
           "levelId": "baslangic-17",
           "localIndex": 17,
+          "role": "TARGET"
+        },
+        {
+          "word": "RADYO",
+          "levelId": "baslangic-39",
+          "localIndex": 39,
+          "role": "TARGET"
+        },
+        {
+          "word": "RENDE",
+          "levelId": "baslangic-31",
+          "localIndex": 31,
           "role": "TARGET"
         },
         {
@@ -1259,6 +1740,12 @@
           "role": "TARGET"
         },
         {
+          "word": "SABIR",
+          "levelId": "baslangic-38",
+          "localIndex": 38,
+          "role": "TARGET"
+        },
+        {
           "word": "SABUN",
           "levelId": "baslangic-13",
           "localIndex": 13,
@@ -1280,6 +1767,12 @@
           "word": "SANDALYE",
           "levelId": "baslangic-19",
           "localIndex": 19,
+          "role": "TARGET"
+        },
+        {
+          "word": "SARIMSAK",
+          "levelId": "baslangic-36",
+          "localIndex": 36,
           "role": "TARGET"
         },
         {
@@ -1313,6 +1806,12 @@
           "role": "TARGET"
         },
         {
+          "word": "SEVİNÇ",
+          "levelId": "baslangic-38",
+          "localIndex": 38,
+          "role": "TARGET"
+        },
+        {
           "word": "SINIF",
           "levelId": "baslangic-3",
           "localIndex": 3,
@@ -1331,9 +1830,27 @@
           "role": "TARGET"
         },
         {
+          "word": "SOMUN",
+          "levelId": "baslangic-37",
+          "localIndex": 37,
+          "role": "TARGET"
+        },
+        {
+          "word": "SOĞAN",
+          "levelId": "baslangic-36",
+          "localIndex": 36,
+          "role": "TARGET"
+        },
+        {
           "word": "SPOR",
           "levelId": "baslangic-8",
           "localIndex": 8,
+          "role": "TARGET"
+        },
+        {
+          "word": "STADYUM",
+          "levelId": "baslangic-34",
+          "localIndex": 34,
           "role": "TARGET"
         },
         {
@@ -1341,6 +1858,12 @@
           "levelId": "baslangic-22",
           "localIndex": 22,
           "role": "BONUS"
+        },
+        {
+          "word": "SÜRAHİ",
+          "levelId": "baslangic-31",
+          "localIndex": 31,
+          "role": "TARGET"
         },
         {
           "word": "SÜRE",
@@ -1364,6 +1887,12 @@
           "word": "SİMİT",
           "levelId": "baslangic-24",
           "localIndex": 24,
+          "role": "TARGET"
+        },
+        {
+          "word": "SİNEMA",
+          "levelId": "baslangic-34",
+          "localIndex": 34,
           "role": "TARGET"
         },
         {
@@ -1409,6 +1938,18 @@
           "role": "TARGET"
         },
         {
+          "word": "TAVA",
+          "levelId": "baslangic-31",
+          "localIndex": 31,
+          "role": "TARGET"
+        },
+        {
+          "word": "TAVUK",
+          "levelId": "baslangic-35",
+          "localIndex": 35,
+          "role": "TARGET"
+        },
+        {
           "word": "TAVŞAN",
           "levelId": "baslangic-28",
           "localIndex": 28,
@@ -1421,15 +1962,39 @@
           "role": "TARGET"
         },
         {
+          "word": "TEMMUZ",
+          "levelId": "baslangic-40",
+          "localIndex": 40,
+          "role": "TARGET"
+        },
+        {
           "word": "TENCERE",
           "levelId": "baslangic-18",
           "localIndex": 18,
           "role": "TARGET"
         },
         {
+          "word": "TEPSİ",
+          "levelId": "baslangic-31",
+          "localIndex": 31,
+          "role": "TARGET"
+        },
+        {
           "word": "TEREYAĞI",
           "levelId": "baslangic-24",
           "localIndex": 24,
+          "role": "TARGET"
+        },
+        {
+          "word": "TERZİ",
+          "levelId": "baslangic-33",
+          "localIndex": 33,
+          "role": "TARGET"
+        },
+        {
+          "word": "TESTERE",
+          "levelId": "baslangic-37",
+          "localIndex": 37,
           "role": "TARGET"
         },
         {
@@ -1481,6 +2046,18 @@
           "role": "BONUS"
         },
         {
+          "word": "TİYATRO",
+          "levelId": "baslangic-34",
+          "localIndex": 34,
+          "role": "TARGET"
+        },
+        {
+          "word": "UMUT",
+          "levelId": "baslangic-38",
+          "localIndex": 38,
+          "role": "TARGET"
+        },
+        {
           "word": "UYDU",
           "levelId": "baslangic-9",
           "localIndex": 9,
@@ -1503,6 +2080,18 @@
           "levelId": "baslangic-23",
           "localIndex": 23,
           "role": "BONUS"
+        },
+        {
+          "word": "VİDA",
+          "levelId": "baslangic-37",
+          "localIndex": 37,
+          "role": "TARGET"
+        },
+        {
+          "word": "VİDEO",
+          "levelId": "baslangic-39",
+          "localIndex": 39,
+          "role": "TARGET"
         },
         {
           "word": "YAPRAK",
@@ -1539,6 +2128,12 @@
           "levelId": "baslangic-6",
           "localIndex": 6,
           "role": "TARGET"
+        },
+        {
+          "word": "YIL",
+          "levelId": "baslangic-40",
+          "localIndex": 40,
+          "role": "BONUS"
         },
         {
           "word": "YILDIZ",
@@ -1631,6 +2226,12 @@
           "role": "TARGET"
         },
         {
+          "word": "ÇEKİÇ",
+          "levelId": "baslangic-37",
+          "localIndex": 37,
+          "role": "TARGET"
+        },
+        {
           "word": "ÇORAP",
           "levelId": "baslangic-14",
           "localIndex": 14,
@@ -1640,6 +2241,12 @@
           "word": "ÇÖREK",
           "levelId": "baslangic-24",
           "localIndex": 24,
+          "role": "TARGET"
+        },
+        {
+          "word": "ÇİFTÇİ",
+          "levelId": "baslangic-33",
+          "localIndex": 33,
           "role": "TARGET"
         },
         {
@@ -1655,6 +2262,12 @@
           "role": "TARGET"
         },
         {
+          "word": "ÇİVİ",
+          "levelId": "baslangic-37",
+          "localIndex": 37,
+          "role": "TARGET"
+        },
+        {
           "word": "ÇİÇEK",
           "levelId": "baslangic-6",
           "localIndex": 6,
@@ -1664,6 +2277,18 @@
           "word": "ÖDEV",
           "levelId": "baslangic-3",
           "localIndex": 3,
+          "role": "TARGET"
+        },
+        {
+          "word": "ÖFKE",
+          "levelId": "baslangic-38",
+          "localIndex": 38,
+          "role": "TARGET"
+        },
+        {
+          "word": "ÖKÜZ",
+          "levelId": "baslangic-35",
+          "localIndex": 35,
           "role": "TARGET"
         },
         {
@@ -1694,6 +2319,12 @@
           "word": "İNDİRİM",
           "levelId": "baslangic-25",
           "localIndex": 25,
+          "role": "TARGET"
+        },
+        {
+          "word": "İNEK",
+          "levelId": "baslangic-35",
+          "localIndex": 35,
           "role": "TARGET"
         },
         {
@@ -1736,6 +2367,12 @@
           "word": "ŞOFÖR",
           "levelId": "baslangic-23",
           "localIndex": 23,
+          "role": "TARGET"
+        },
+        {
+          "word": "ŞUBAT",
+          "levelId": "baslangic-40",
+          "localIndex": 40,
           "role": "TARGET"
         },
         {
@@ -2838,6 +3475,377 @@
           "timeLimitSeconds": 120,
           "gridHash": "1d3d2cb3043f7b6f17cf8c11193c00e8c6a459609f612ba8b5e612a8038c4511",
           "levelFingerprint": "862c0f05823721ea22a212c5920c743a7bc87e26afb137f81e499e417e8aec45"
+        },
+        {
+          "localIndex": 31,
+          "levelId": "baslangic-31",
+          "type": "normal",
+          "grid": [
+            "PSÜRAHİK",
+            "İİYKABVE",
+            "İMNVACPP",
+            "ESAUEÇJÇ",
+            "DTPZHMIE",
+            "NŞVEAADB",
+            "EEGŞTĞÖL",
+            "RĞACPRNC"
+          ],
+          "targetWords": [
+            "TAVA",
+            "BIÇAK",
+            "RENDE",
+            "TEPSİ",
+            "SÜRAHİ",
+            "CEZVE",
+            "KEPÇE",
+            "MAŞA"
+          ],
+          "bonusWords": [
+            "HUNİ"
+          ],
+          "starRules": {
+            "twoStarMaxMistakes": 2,
+            "threeStarMaxMistakes": 0,
+            "twoStarMaxSeconds": null,
+            "threeStarMaxSeconds": null
+          },
+          "timeLimitSeconds": null,
+          "gridHash": "c1a2181946301e2b656bdb22660c7c4f39c48b3898145f32dd8bd4a3339b6d2b",
+          "levelFingerprint": "1b0460bd2c47ccd73c04393f2524c06bfe2c4388dcaa8f3a774363976886ef04"
+        },
+        {
+          "localIndex": 32,
+          "levelId": "baslangic-32",
+          "type": "normal",
+          "grid": [
+            "JOTIERGĞ",
+            "KÖOKLYÖK",
+            "RTBTDBME",
+            "AFEAİVLM",
+            "VKIKVVEE",
+            "AURKEDKR",
+            "TIEINCŞJ",
+            "KETEHCAN"
+          ],
+          "targetWords": [
+            "ETEK",
+            "CEKET",
+            "GÖMLEK",
+            "KEMER",
+            "BOT",
+            "ATKI",
+            "ELDİVEN",
+            "HIRKA"
+          ],
+          "bonusWords": [
+            "KRAVAT"
+          ],
+          "starRules": {
+            "twoStarMaxMistakes": 2,
+            "threeStarMaxMistakes": 0,
+            "twoStarMaxSeconds": null,
+            "threeStarMaxSeconds": null
+          },
+          "timeLimitSeconds": null,
+          "gridHash": "d8afcb23ac8320b184f27887016345a8f4cda10e3296237719ce27927a8799f5",
+          "levelFingerprint": "cafb0b3ab9aed08cb3dd07bf26facc2ed7a9ce67d7997bad3ced482daf9a7eaa"
+        },
+        {
+          "localIndex": 33,
+          "levelId": "baslangic-33",
+          "type": "normal",
+          "grid": [
+            "İÇTFİÇIT",
+            "ICRMKNÇE",
+            "GRERİEŞR",
+            "POPEAKAZ",
+            "İTOBCMAİ",
+            "LKLRÜMİH",
+            "OOİEİŞGM",
+            "TDSBHTAK"
+          ],
+          "targetWords": [
+            "DOKTOR",
+            "MİMAR",
+            "AŞÇI",
+            "TERZİ",
+            "POLİS",
+            "HAKİM",
+            "ÇİFTÇİ",
+            "BERBER"
+          ],
+          "bonusWords": [
+            "PİLOT"
+          ],
+          "starRules": {
+            "twoStarMaxMistakes": 2,
+            "threeStarMaxMistakes": 0,
+            "twoStarMaxSeconds": null,
+            "threeStarMaxSeconds": null
+          },
+          "timeLimitSeconds": null,
+          "gridHash": "886a53f9a8dd7a01cb8e4216edc856e543827564c4d17a4c224a5a5fbe1128a9",
+          "levelFingerprint": "fa74dcb1ec068683c8485c3d287182eb2977518a98722fd36ed6a4b5bd40f5b1"
+        },
+        {
+          "localIndex": 34,
+          "levelId": "baslangic-34",
+          "type": "normal",
+          "grid": [
+            "ORTAYİTS",
+            "NTZEPEHT",
+            "AİOTZAAA",
+            "KMAPSÜKD",
+            "KZETANMY",
+            "ÜCANARYU",
+            "DNİBİAKM",
+            "EENATSOP"
+          ],
+          "targetWords": [
+            "MÜZE",
+            "SİNEMA",
+            "TİYATRO",
+            "BANKA",
+            "POSTANE",
+            "HASTANE",
+            "STADYUM",
+            "DÜKKAN"
+          ],
+          "bonusWords": [
+            "OTOPARK"
+          ],
+          "starRules": {
+            "twoStarMaxMistakes": 2,
+            "threeStarMaxMistakes": 0,
+            "twoStarMaxSeconds": null,
+            "threeStarMaxSeconds": null
+          },
+          "timeLimitSeconds": null,
+          "gridHash": "18bfc81e12ab6ddc036fee4511ba10c46f6c022c01112fedc2e58a18438f4ef6",
+          "levelFingerprint": "db775e27b2af3b4b6f9511f5b3204cf6e096858e4397876a07615b78e71f2cfc"
+        },
+        {
+          "localIndex": 35,
+          "levelId": "baslangic-35",
+          "type": "normal",
+          "grid": [
+            "KADNAMKK",
+            "EİULCHAU",
+            "ŞNTÇİŞZV",
+            "EEVNKMNA",
+            "AKDÖIUİT",
+            "ÇİKHYÇPÜ",
+            "PÜUOEZGL",
+            "ZIKKYTCÜ"
+          ],
+          "targetWords": [
+            "MANDA",
+            "İNEK",
+            "KOYUN",
+            "KEÇİ",
+            "TAVUK",
+            "HİNDİ",
+            "ÖKÜZ",
+            "EŞEK"
+          ],
+          "bonusWords": [
+            "KAZ"
+          ],
+          "starRules": {
+            "twoStarMaxMistakes": 2,
+            "threeStarMaxMistakes": 0,
+            "twoStarMaxSeconds": null,
+            "threeStarMaxSeconds": null
+          },
+          "timeLimitSeconds": null,
+          "gridHash": "10580de95962cce1e27522386af15fe2f36d22e268c28a40c8567c8f6f07f3a9",
+          "levelFingerprint": "3161a05ea5249b80a88373d7cbe3345d14a3a194b1729d6391c5cf4dfd833991"
+        },
+        {
+          "localIndex": 36,
+          "levelId": "baslangic-36",
+          "type": "normal",
+          "grid": [
+            "NBNAĞOSP",
+            "ADİAGVAI",
+            "COGBĞÜRR",
+            "IMKÇEŞIA",
+            "LAACURMS",
+            "TTBRSVSA",
+            "AEAKUĞAL",
+            "PSKJÇLKH"
+          ],
+          "targetWords": [
+            "DOMATES",
+            "BİBER",
+            "PIRASA",
+            "PATLICAN",
+            "SOĞAN",
+            "SARIMSAK",
+            "HAVUÇ",
+            "MARUL"
+          ],
+          "bonusWords": [
+            "KABAK"
+          ],
+          "starRules": {
+            "twoStarMaxMistakes": 2,
+            "threeStarMaxMistakes": 0,
+            "twoStarMaxSeconds": null,
+            "threeStarMaxSeconds": null
+          },
+          "timeLimitSeconds": null,
+          "gridHash": "47b9ba8b19f451ab2ce01b060bf19fb29625755995d0e1758e2ca95dd620cf41",
+          "levelFingerprint": "f03094abb824af887ba03783aef277c29c1ba5bed1d870e0d32fb5bec7e9d1e4"
+        },
+        {
+          "localIndex": 37,
+          "levelId": "baslangic-37",
+          "type": "normal",
+          "grid": [
+            "ÇİKEÇÇAL",
+            "EBNÜİNEP",
+            "SCDVAREA",
+            "NBİHEARK",
+            "ETTTSDTT",
+            "PASÇKİEA",
+            "RENCRVMM",
+            "TNUMOSKE"
+          ],
+          "targetWords": [
+            "ÇEKİÇ",
+            "PENSE",
+            "TESTERE",
+            "MATKAP",
+            "VİDA",
+            "ÇİVİ",
+            "ANAHTAR",
+            "SOMUN"
+          ],
+          "bonusWords": [
+            "METRE"
+          ],
+          "starRules": {
+            "twoStarMaxMistakes": 2,
+            "threeStarMaxMistakes": 0,
+            "twoStarMaxSeconds": null,
+            "threeStarMaxSeconds": null
+          },
+          "timeLimitSeconds": null,
+          "gridHash": "295a1b8b989b3f728d9c859223d98ff3b947add3bbfce25a39215655e9d72d6a",
+          "levelFingerprint": "2c3e4b0b52203c130ea3ec16bc0bdd1255f09d7009c7997b0f5cf6d44a25e764"
+        },
+        {
+          "localIndex": 38,
+          "levelId": "baslangic-38",
+          "type": "normal",
+          "grid": [
+            "PÇNİVESÇ",
+            "ĞUYMERAK",
+            "İGSFEKFÖ",
+            "UHUALGÖİ",
+            "TKÜRBĞRN",
+            "UVRZUICE",
+            "MELOÜRRŞ",
+            "UKBHKNVE"
+          ],
+          "targetWords": [
+            "SEVİNÇ",
+            "ÖFKE",
+            "KORKU",
+            "MERAK",
+            "SABIR",
+            "UMUT",
+            "NEŞE",
+            "HÜZÜN"
+          ],
+          "bonusWords": [
+            "GURUR"
+          ],
+          "starRules": {
+            "twoStarMaxMistakes": 2,
+            "threeStarMaxMistakes": 0,
+            "twoStarMaxSeconds": null,
+            "threeStarMaxSeconds": null
+          },
+          "timeLimitSeconds": null,
+          "gridHash": "36cf45d5ddb2f4e8d0f5c14b6df8cc737322b8cffd4b9e145a993d74e7272534",
+          "levelFingerprint": "13604d95b5f3eafc6ccac38419c12480d3a5f891e4f79f0837f833b7f63688c6"
+        },
+        {
+          "localIndex": 39,
+          "levelId": "baslangic-39",
+          "type": "normal",
+          "grid": [
+            "ÜİAVTLPF",
+            "CETHTORO",
+            "PTSÜTEMT",
+            "UEOOBDEO",
+            "TZPAEİSĞ",
+            "KAHRZVAR",
+            "EGGEPCJA",
+            "MİOYDARF"
+          ],
+          "targetWords": [
+            "RADYO",
+            "GAZETE",
+            "DERGİ",
+            "HABER",
+            "MEKTUP",
+            "POSTA",
+            "FOTOĞRAF",
+            "VİDEO"
+          ],
+          "bonusWords": [
+            "MESAJ"
+          ],
+          "starRules": {
+            "twoStarMaxMistakes": 2,
+            "threeStarMaxMistakes": 0,
+            "twoStarMaxSeconds": null,
+            "threeStarMaxSeconds": null
+          },
+          "timeLimitSeconds": null,
+          "gridHash": "86652df6c312f7b0cf21cb31c5500f60113fca35b0c988ba552227f51bea3b24",
+          "levelFingerprint": "296b62506488be6a9deef672b4550de05ffe81c7472fb5b475951ff0656135db"
+        },
+        {
+          "localIndex": 40,
+          "levelId": "baslangic-40",
+          "type": "challenge",
+          "grid": [
+            "KMNİSANV",
+            "HIAŞUBAT",
+            "SALYRZJT",
+            "EOZAIYEE",
+            "YUCİRSKM",
+            "LUĞARAİM",
+            "ÜLIYKAMU",
+            "LUFZÖÖNZ"
+          ],
+          "targetWords": [
+            "OCAK",
+            "ŞUBAT",
+            "NİSAN",
+            "MAYIS",
+            "HAZİRAN",
+            "TEMMUZ",
+            "EYLÜL",
+            "EKİM",
+            "ARALIK"
+          ],
+          "bonusWords": [
+            "YIL"
+          ],
+          "starRules": {
+            "twoStarMaxMistakes": 2,
+            "threeStarMaxMistakes": 0,
+            "twoStarMaxSeconds": 100,
+            "threeStarMaxSeconds": 75
+          },
+          "timeLimitSeconds": 120,
+          "gridHash": "c337f085ce42714d4b78abbf1b52562b449750445103e1393a7c78846e8b7949",
+          "levelFingerprint": "f9d57ec3aa237ec2397f34374c5b35982614cf660d18e1ca9e7cdb716fe9438a"
         }
       ]
     },
@@ -8728,5 +9736,5 @@
       ]
     }
   ],
-  "sourceDigest": "ad78b5ea3bf349865553f16de0cf514ac2ab0516b8d6c91946d7eecac8ed173b"
+  "sourceDigest": "c797e574a3c590cfe68ebacd2fff7f89b5b14686c39a98c281b99c86c3d327bf"
 }

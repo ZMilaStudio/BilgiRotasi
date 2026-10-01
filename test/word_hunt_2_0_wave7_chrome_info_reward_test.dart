@@ -243,9 +243,9 @@ void main() {
     test('production keeps staged Starter plus seven legacy routes', () {
       expect(WordHuntRouteCatalog.entries.length, 8);
       final starter = WordHuntRouteCatalog.starter.route;
-      expect(starter.levels, hasLength(30));
+      expect(starter.levels, hasLength(40));
       expect(starter.plannedRouteLevelCount, 100);
-      expect(starter.segments, hasLength(3));
+      expect(starter.segments, hasLength(4));
       expect(starter.segments[0].startLevelIndex, 1);
       expect(starter.segments[0].endLevelIndex, 10);
       expect(starter.segments[1].startLevelIndex, 11);

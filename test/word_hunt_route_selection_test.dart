@@ -313,13 +313,13 @@ void main() {
     expect(WordHuntRouteCatalog.gokyuzu.isUnlocked(progress), isFalse);
   });
 
-  test('Başlangıç finali tamam ama 17 yıldızda Gökyüzü kapalı kalır', () {
+  test('Başlangıç pilot endpoint tamam ama 17 yıldızda Gökyüzü kapalı kalır', () {
     final levels = WordHuntStarterContent.baslangicLimani.levels;
     final progress = WordHuntProgressSnapshot(
       bestStarsByLevelId: <String, int>{
         for (final level in levels.take(5)) level.id: 3,
         levels[5].id: 1,
-        levels.last.id: 1,
+        levels[29].id: 1,
       },
     );
 

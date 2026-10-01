@@ -52,7 +52,10 @@ void main() {
         find.byKey(const Key('word_hunt_master_art_progress_counter_text')),
         findsOneWidget,
       );
-      expect(find.text('0 / 90'), findsOneWidget);
+      expect(
+        find.text('0 / ${WordHuntStarterContent.baslangicLimani.maximumStars}'),
+        findsOneWidget,
+      );
       expect(
         find.byKey(const Key('word_hunt_master_art_level_1_locked')),
         findsNothing,
@@ -122,7 +125,10 @@ void main() {
     );
     await tester.pump();
 
-    expect(find.text('15 / 90'), findsOneWidget);
+    expect(
+      find.text('15 / ${WordHuntStarterContent.baslangicLimani.maximumStars}'),
+      findsOneWidget,
+    );
     expect(
       find.byKey(const Key('word_hunt_master_art_level_8_locked')),
       findsNothing,
@@ -140,15 +146,19 @@ void main() {
     );
 
     expect(
-      tester.widget<Icon>(
-        find.byKey(const Key('word_hunt_master_art_level_1_star_3')),
-      ).icon,
+      tester
+          .widget<Icon>(
+            find.byKey(const Key('word_hunt_master_art_level_1_star_3')),
+          )
+          .icon,
       Icons.star_rounded,
     );
     expect(
-      tester.widget<Icon>(
-        find.byKey(const Key('word_hunt_master_art_level_2_star_3')),
-      ).icon,
+      tester
+          .widget<Icon>(
+            find.byKey(const Key('word_hunt_master_art_level_2_star_3')),
+          )
+          .icon,
       Icons.star_outline_rounded,
     );
   });

@@ -15,7 +15,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   const checkpointBRouteCount = 8;
-  const checkpointBAvailableLevelCount = 100;
+  const checkpointBAvailableLevelCount = 110;
 
   test(
     'Checkpoint B discovers and validates the current production corpus',
@@ -60,7 +60,7 @@ void main() {
     },
   );
 
-  test('100/100 available levels are physically playable and scoreable', () {
+  test('110/110 available levels are physically playable and scoreable', () {
     for (final entry in WordHuntRouteCatalog.entries) {
       final route = entry.route;
 
@@ -345,10 +345,19 @@ void main() {
               reason: '$context / staged frontier granted route reward',
             );
             if (entryIndex + 1 < entries.length) {
+              final next = entries[entryIndex + 1];
+              final pilotEligible =
+                  next.unlockRule.kind ==
+                      WordHuntRouteUnlockKind.completedLevelsAndStars &&
+                  next.unlockRule.currentCompletedLevels(progress) ==
+                      next.unlockRule.requiredCompletedLevels &&
+                  next.unlockRule.currentStars(progress) >=
+                      next.unlockRule.requiredStars;
               expect(
-                entries[entryIndex + 1].isUnlocked(progress),
-                isFalse,
-                reason: '$context / staged frontier unlocked next route',
+                next.isUnlocked(progress),
+                pilotEligible,
+                reason:
+                    '$context / pilot access must stay separate from true completion',
               );
             }
           } else {
