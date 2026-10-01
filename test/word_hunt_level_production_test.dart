@@ -1,11 +1,15 @@
 import 'package:bilgi_rotasi/word_hunt/word_hunt_gameplay_presentation.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_models.dart';
+import 'package:bilgi_rotasi/word_hunt/word_hunt_path.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_screens.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_starter_content.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'support/word_hunt_canonical_paths.dart';
+
 void main() {
+  final levelOne = WordHuntStarterContent.baslangicLimani.levels.first;
   Future<void> pumpLevel(
     WidgetTester tester, {
     WordHuntLevelDefinition? level,
@@ -45,46 +49,23 @@ void main() {
     await tester.pump();
   }
 
+  Future<void> dragPath(WidgetTester tester, List<WordHuntCell> path) =>
+      dragCells(
+        tester,
+        startRow: path.first.row,
+        startColumn: path.first.column,
+        endRow: path.last.row,
+        endColumn: path.last.column,
+      );
+
   Future<void> completeLevelOneTargets(WidgetTester tester) async {
-    await dragCells(
-      tester,
-      startRow: 0,
-      startColumn: 4,
-      endRow: 4,
-      endColumn: 4,
-    );
-    await dragCells(
-      tester,
-      startRow: 4,
-      startColumn: 4,
-      endRow: 4,
-      endColumn: 7,
-    );
-    await dragCells(
-      tester,
-      startRow: 6,
-      startColumn: 4,
-      endRow: 6,
-      endColumn: 7,
-    );
-    await dragCells(
-      tester,
-      startRow: 1,
-      startColumn: 1,
-      endRow: 1,
-      endColumn: 4,
-    );
-    await dragCells(
-      tester,
-      startRow: 2,
-      startColumn: 3,
-      endRow: 6,
-      endColumn: 3,
-    );
+    for (final word in levelOne.targetWords) {
+      await dragPath(tester, canonicalPath(levelOne, word));
+    }
   }
 
   testWidgets(
-    'production Bölüm 1 8x8 grid ve 0/5 başlangıç durumunu gösterir',
+    'production Bölüm 1 8x8 grid ve canonical target başlangıç durumunu gösterir',
     (tester) async {
       await pumpLevel(tester);
       expect(
@@ -92,13 +73,15 @@ void main() {
         findsOneWidget,
       );
       expect(find.text('Bölüm 1'), findsOneWidget);
-      expect(find.text('0/5'), findsOneWidget);
+      expect(find.text('0/${levelOne.targetWords.length}'), findsOneWidget);
       expect(find.text('0 hata'), findsOneWidget);
-      expect(find.text('KALEM'), findsOneWidget);
-      expect(find.text('BİLGİ'), findsOneWidget);
-      expect(find.text('ELMA'), findsOneWidget);
+      for (final word in [...levelOne.targetWords, ...levelOne.bonusWords]) {
+        expect(find.text(word), findsOneWidget);
+      }
       expect(
-        find.byKey(const Key('word_hunt_production_bonus_icon_ELMA')),
+        find.byKey(
+          Key('word_hunt_production_bonus_icon_${levelOne.bonusWords.single}'),
+        ),
         findsOneWidget,
       );
       expect(
@@ -138,7 +121,6 @@ void main() {
     (tester) async {
       const surface = Size(411, 731);
       const levelIndexes = <int>[1, 5, 8, 10];
-      const targetCounts = <int>[5, 7, 7, 9];
 
       for (
         var levelOffset = 0;
@@ -146,14 +128,12 @@ void main() {
         levelOffset++
       ) {
         final levelIndex = levelIndexes[levelOffset];
-        await pumpLevel(
-          tester,
-          level: WordHuntStarterContent.baslangicLimani.levels[levelIndex - 1],
-          surfaceSize: surface,
-        );
+        final level =
+            WordHuntStarterContent.baslangicLimani.levels[levelIndex - 1];
+        await pumpLevel(tester, level: level, surfaceSize: surface);
 
         expect(find.text('Bölüm $levelIndex'), findsOneWidget);
-        expect(find.text('0/${targetCounts[levelOffset]}'), findsOneWidget);
+        expect(find.text('0/${level.targetWords.length}'), findsOneWidget);
         expect(
           find.byKey(const Key('word_hunt_production_instruction_plate')),
           findsOneWidget,
@@ -204,36 +184,18 @@ void main() {
 
   testWidgets('target reverse wrong ve bonus ayrışır', (tester) async {
     await pumpLevel(tester);
-    await dragCells(
-      tester,
-      startRow: 4,
-      startColumn: 4,
-      endRow: 0,
-      endColumn: 4,
-    );
-    expect(find.text('1/5'), findsOneWidget);
+    await dragPath(tester, canonicalPath(levelOne, 'KALEM').reversed.toList());
+    expect(find.text('1/${levelOne.targetWords.length}'), findsOneWidget);
     expect(
       find.byKey(const Key('word_hunt_production_target_KALEM_found')),
       findsOneWidget,
     );
 
-    await dragCells(
-      tester,
-      startRow: 0,
-      startColumn: 0,
-      endRow: 0,
-      endColumn: 3,
-    );
+    await dragPath(tester, wrongSelection(levelOne));
     expect(find.text('1 hata'), findsOneWidget);
     await tester.pump(const Duration(milliseconds: 300));
 
-    await dragCells(
-      tester,
-      startRow: 4,
-      startColumn: 2,
-      endRow: 4,
-      endColumn: 5,
-    );
+    await dragPath(tester, canonicalPath(levelOne, levelOne.bonusWords.single));
     expect(
       find.byKey(const Key('word_hunt_production_bonus_ELMA_found')),
       findsOneWidget,
@@ -247,19 +209,18 @@ void main() {
       var now = DateTime(2026, 8, 29, 12);
       await pumpLevel(tester, now: () => now);
 
-      await dragCells(
-        tester,
-        startRow: 0,
-        startColumn: 0,
-        endRow: 0,
-        endColumn: 3,
-      );
+      await dragPath(tester, wrongSelection(levelOne));
       expect(find.text('1 hata'), findsOneWidget);
       await tester.pump(const Duration(milliseconds: 300));
 
       now = now.add(const Duration(seconds: 10));
       await completeLevelOneTargets(tester);
-      expect(find.text('5/5'), findsOneWidget);
+      expect(
+        find.text(
+          '${levelOne.targetWords.length}/${levelOne.targetWords.length}',
+        ),
+        findsOneWidget,
+      );
       expect(
         find.byKey(const Key('word_hunt_production_finish')),
         findsOneWidget,
@@ -288,21 +249,12 @@ void main() {
         frozen,
       );
 
-      await dragCells(
-        tester,
-        startRow: 0,
-        startColumn: 0,
-        endRow: 0,
-        endColumn: 3,
-      );
+      await dragPath(tester, wrongSelection(levelOne));
       expect(find.text('1 hata'), findsOneWidget);
 
-      await dragCells(
+      await dragPath(
         tester,
-        startRow: 4,
-        startColumn: 2,
-        endRow: 4,
-        endColumn: 5,
+        canonicalPath(levelOne, levelOne.bonusWords.single),
       );
       expect(
         find.byKey(const Key('word_hunt_production_bonus_ELMA_found')),
@@ -353,18 +305,14 @@ void main() {
     await tester.pump(const Duration(seconds: 1));
     expect(find.text('65s'), findsOneWidget);
 
-    await dragCells(
-      tester,
-      startRow: 0,
-      startColumn: 0,
-      endRow: 0,
-      endColumn: 5,
-    );
+    await dragPath(tester, canonicalPath(level, level.targetWords.first));
     expect(
-      find.byKey(const Key('word_hunt_production_target_ANKARA_found')),
+      find.byKey(
+        Key('word_hunt_production_target_${level.targetWords.first}_found'),
+      ),
       findsOneWidget,
     );
-    expect(find.text('1/7'), findsOneWidget);
+    expect(find.text('1/${level.targetWords.length}'), findsOneWidget);
   });
 
   testWidgets('kısa temas hata sayılmaz, tek hücre taşan hedef bulunur', (
@@ -372,24 +320,17 @@ void main() {
   ) async {
     final level = WordHuntStarterContent.baslangicLimani.levels[4];
     await pumpLevel(tester, level: level);
+    final fixture = extendableTarget(level);
 
-    await tester.tap(
-      find.byKey(const Key('word_hunt_production_cell_2_0')),
-    );
+    await tester.tap(find.byKey(const Key('word_hunt_production_cell_2_0')));
     await tester.pump();
     expect(find.text('0 hata'), findsOneWidget);
 
-    await dragCells(
-      tester,
-      startRow: 0,
-      startColumn: 0,
-      endRow: 0,
-      endColumn: 6,
-    );
-    expect(find.text('1/7'), findsOneWidget);
+    await dragPath(tester, extendPath(fixture.$2, 1));
+    expect(find.text('1/${level.targetWords.length}'), findsOneWidget);
     expect(find.text('0 hata'), findsOneWidget);
     expect(
-      find.byKey(const Key('word_hunt_production_target_ANKARA_found')),
+      find.byKey(Key('word_hunt_production_target_${fixture.$1}_found')),
       findsOneWidget,
     );
   });
@@ -398,18 +339,15 @@ void main() {
     final level = WordHuntStarterContent.baslangicLimani.levels[4];
     await pumpLevel(tester, level: level);
 
-    final firstStart = tester.getCenter(
-      find.byKey(const Key('word_hunt_production_cell_0_0')),
+    final firstPath = canonicalPath(level, level.targetWords.first);
+    final secondPath = canonicalPath(level, level.targetWords[1]);
+    Offset center(WordHuntCell cell) => tester.getCenter(
+      find.byKey(Key('word_hunt_production_cell_${cell.row}_${cell.column}')),
     );
-    final firstEnd = tester.getCenter(
-      find.byKey(const Key('word_hunt_production_cell_0_5')),
-    );
-    final secondStart = tester.getCenter(
-      find.byKey(const Key('word_hunt_production_cell_7_0')),
-    );
-    final secondEnd = tester.getCenter(
-      find.byKey(const Key('word_hunt_production_cell_7_4')),
-    );
+    final firstStart = center(firstPath.first);
+    final firstEnd = center(firstPath.last);
+    final secondStart = center(secondPath.first);
+    final secondEnd = center(secondPath.last);
 
     final first = await tester.createGesture(pointer: 1);
     final second = await tester.createGesture(pointer: 2);
@@ -421,23 +359,19 @@ void main() {
     await first.up();
     await tester.pump();
 
-    expect(find.text('1/7'), findsOneWidget);
+    expect(find.text('1/${level.targetWords.length}'), findsOneWidget);
     expect(find.text('0 hata'), findsOneWidget);
     expect(
-      find.byKey(const Key('word_hunt_production_target_ANKARA_found')),
+      find.byKey(
+        Key('word_hunt_production_target_${level.targetWords.first}_found'),
+      ),
       findsOneWidget,
     );
   });
 
   testWidgets('anlamlı attempt geri çıkış onayı verir', (tester) async {
     await pumpLevel(tester);
-    await dragCells(
-      tester,
-      startRow: 0,
-      startColumn: 0,
-      endRow: 0,
-      endColumn: 3,
-    );
+    await dragPath(tester, wrongSelection(levelOne));
     await tester.tap(find.byKey(const Key('word_hunt_production_back')));
     await tester.pumpAndSettle();
     expect(

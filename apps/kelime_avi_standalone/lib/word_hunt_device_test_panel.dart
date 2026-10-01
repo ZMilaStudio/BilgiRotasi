@@ -156,10 +156,11 @@ class _WordHuntDeviceTestPanelState extends State<WordHuntDeviceTestPanel> {
         context,
       ).showSnackBar(SnackBar(content: Text('$label hazırlandı. $summary')));
     } catch (error) {
-      if (mounted)
+      if (mounted) {
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text('Preset başarısız: $error')));
+      }
     } finally {
       if (mounted) setState(() => busy = false);
     }

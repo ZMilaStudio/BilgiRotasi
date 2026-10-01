@@ -2,6 +2,8 @@ import 'package:bilgi_rotasi/word_hunt/word_hunt_path.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_starter_content.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'support/word_hunt_canonical_paths.dart';
+
 void main() {
   final level = WordHuntStarterContent.baslangicLimani.levels.first;
 
@@ -17,13 +19,7 @@ void main() {
   );
 
   test('Bölüm 1 canonical KALEM ileri ve ters yönde hedef olur', () {
-    const forward = <WordHuntCell>[
-      WordHuntCell(0, 4),
-      WordHuntCell(1, 4),
-      WordHuntCell(2, 4),
-      WordHuntCell(3, 4),
-      WordHuntCell(4, 4),
-    ];
+    final forward = canonicalPath(level, 'KALEM');
     final reverse = forward.reversed.toList(growable: false);
     expect(evaluate(forward).kind, WordHuntSelectionKind.target);
     expect(evaluate(forward).canonicalWord, 'KALEM');
@@ -32,70 +28,31 @@ void main() {
   });
 
   test('Bölüm 1 yatay/dikey ve reverse targetları çözer', () {
-    const masa = <WordHuntCell>[
-      WordHuntCell(4, 4),
-      WordHuntCell(4, 5),
-      WordHuntCell(4, 6),
-      WordHuntCell(4, 7),
-    ];
-    const oyun = <WordHuntCell>[
-      WordHuntCell(6, 4),
-      WordHuntCell(6, 5),
-      WordHuntCell(6, 6),
-      WordHuntCell(6, 7),
-    ];
-    const rota = <WordHuntCell>[
-      WordHuntCell(1, 1),
-      WordHuntCell(1, 2),
-      WordHuntCell(1, 3),
-      WordHuntCell(1, 4),
-    ];
-    const bilgi = <WordHuntCell>[
-      WordHuntCell(2, 3),
-      WordHuntCell(3, 3),
-      WordHuntCell(4, 3),
-      WordHuntCell(5, 3),
-      WordHuntCell(6, 3),
-    ];
-    for (final entry in <(String, List<WordHuntCell>)>[
-      ('MASA', masa),
-      ('OYUN', oyun),
-      ('ROTA', rota),
-      ('BİLGİ', bilgi),
-    ]) {
-      expect(evaluate(entry.$2).kind, WordHuntSelectionKind.target);
-      expect(evaluate(entry.$2).canonicalWord, entry.$1);
-      expect(evaluate(entry.$2.reversed.toList()).canonicalWord, entry.$1);
+    final families = <String>{};
+    for (final word in level.targetWords) {
+      final path = canonicalPath(level, word);
+      families.add(path.first.row == path.last.row ? 'horizontal' : 'vertical');
+      expect(evaluate(path).kind, WordHuntSelectionKind.target);
+      expect(evaluate(path).canonicalWord, word);
+      expect(
+        evaluate(path.reversed.toList()).kind,
+        WordHuntSelectionKind.target,
+      );
+      expect(evaluate(path.reversed.toList()).canonicalWord, word);
     }
+    expect(families, {'horizontal', 'vertical'});
   });
 
   test('ELMA bonus olur ve bonus completion için zorunlu değildir', () {
-    const elma = <WordHuntCell>[
-      WordHuntCell(4, 2),
-      WordHuntCell(4, 3),
-      WordHuntCell(4, 4),
-      WordHuntCell(4, 5),
-    ];
+    final elma = canonicalPath(level, level.bonusWords.single);
     expect(evaluate(elma).kind, WordHuntSelectionKind.bonus);
     expect(evaluate(elma).canonicalWord, 'ELMA');
-    expect(level.targetWords, <String>[
-      'KALEM',
-      'MASA',
-      'OYUN',
-      'ROTA',
-      'BİLGİ',
-    ]);
+    expect(level.targetWords, isNot(contains(level.bonusWords.single)));
     expect(level.bonusWords, <String>['ELMA']);
   });
 
   test('tekrar target ödül üretmez; bilinmeyen ve kıvrılan yol ayrışır', () {
-    const kalem = <WordHuntCell>[
-      WordHuntCell(0, 4),
-      WordHuntCell(1, 4),
-      WordHuntCell(2, 4),
-      WordHuntCell(3, 4),
-      WordHuntCell(4, 4),
-    ];
+    final kalem = canonicalPath(level, 'KALEM');
     expect(
       evaluate(kalem, foundTargets: const <String>{'KALEM'}).kind,
       WordHuntSelectionKind.alreadyFound,

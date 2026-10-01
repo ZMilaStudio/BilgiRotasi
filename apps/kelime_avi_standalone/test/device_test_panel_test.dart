@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/material.dart';
-import '../lib/main.dart';
-import '../lib/word_hunt_device_test_panel.dart';
-import '../lib/word_hunt_standalone_progress_store.dart';
+import 'package:kelime_avi_standalone/main.dart';
+import 'package:kelime_avi_standalone/word_hunt_device_test_panel.dart';
+import 'package:kelime_avi_standalone/word_hunt_standalone_progress_store.dart';
 import 'package:word_hunt_domain/word_hunt_progress.dart';
 import 'package:word_hunt_domain/word_hunt_progress_codec.dart';
 import 'package:word_hunt_flutter_feature/word_hunt_route_catalog.dart';
@@ -93,7 +93,7 @@ void main() {
           WordHuntRouteProgressEngine.nextPlayableLevelIndex(route, progress),
           level,
         );
-        if (level < 30)
+        if (level < 30) {
           expect(
             WordHuntRouteProgressEngine.isLevelUnlocked(
               route,
@@ -102,6 +102,7 @@ void main() {
             ),
             isFalse,
           );
+        }
         expect(progress.unlockedRouteRewardIds, isEmpty);
       }
       for (final total in [17, 18, 90]) {
@@ -156,8 +157,9 @@ void main() {
       ),
     );
     expect(find.textContaining('TEST MODE'), findsNothing);
-    for (var i = 0; i < 4; i++)
+    for (var i = 0; i < 4; i++) {
       await tester.tap(find.byKey(const Key('kelime_avi_version')));
+    }
     await tester.pump();
     expect(find.byType(WordHuntDeviceTestPanel), findsNothing);
     await tester.tap(find.byKey(const Key('kelime_avi_version')));
