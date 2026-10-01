@@ -69,7 +69,7 @@ jobs:
           grep -Fq 'namespace = "com.zmilastudio.kelimeavi"' "$gradle"
           grep -Fq 'applicationId = "com.zmilastudio.kelimeavi"' "$gradle"
           grep -Fq 'android:label="Kelime Avı"' "$manifest"
-          grep -Fq 'version: 1.0.0+1' "$pubspec"
+          grep -Fq 'version: 1.0.0+2' "$pubspec"
 
       - name: Standalone bağımlılıklarını çöz
         working-directory: apps/kelime_avi_standalone
@@ -121,7 +121,7 @@ jobs:
       - name: Signed AAB artifact'ını yükle
         uses: actions/upload-artifact@v4
         with:
-          name: KelimeAvi-standalone-1.0.0-1-signed-aab
+          name: KelimeAvi-standalone-1.0.0-2-signed-aab
           path: |
             apps/kelime_avi_standalone/build/app/outputs/bundle/release/app-release.aab
             apps/kelime_avi_standalone/app-release.aab.sha256
