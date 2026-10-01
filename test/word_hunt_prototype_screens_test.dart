@@ -5,6 +5,8 @@ import 'package:bilgi_rotasi/word_hunt/word_hunt_starter_content.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'support/word_hunt_canonical_paths.dart';
+
 void main() {
   Future<void> dragCells(
     WidgetTester tester,
@@ -74,11 +76,13 @@ void main() {
   });
 
   testWidgets(
-    'prototype grid 8x8 oranında render olur ve KALEM gesture çalışır',
+    'prototype grid 8x8 oranında render olur ve canonical target gesture çalışır',
     (tester) async {
       await tester.binding.setSurfaceSize(const Size(720, 1280));
       addTearDown(() => tester.binding.setSurfaceSize(null));
       final level = WordHuntStarterContent.baslangicLimani.levels.first;
+      final word = level.targetWords.first;
+      final path = canonicalPath(level, word);
       await tester.pumpWidget(
         MaterialApp(
           home: WordHuntLevelPrototypeScreen(
@@ -93,21 +97,27 @@ void main() {
       await dragCells(
         tester,
         level,
-        startRow: 0,
-        startColumn: 4,
-        endRow: 4,
-        endColumn: 4,
+        startRow: path.first.row,
+        startColumn: path.first.column,
+        endRow: path.last.row,
+        endColumn: path.last.column,
       );
-      expect(find.text('Harika! KALEM bulundu.'), findsOneWidget);
+      expect(find.text('Harika! $word bulundu.'), findsOneWidget);
     },
   );
 
-  testWidgets('Bölüm 2 DENİZ bilgi kartı dinamik 8x8 hücre hesabıyla açılır', (
+  testWidgets('canonical bilgi kartı dinamik 8x8 hücre hesabıyla açılır', (
     tester,
   ) async {
     await tester.binding.setSurfaceSize(const Size(720, 1280));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final level = WordHuntStarterContent.baslangicLimani.levels[1];
+    final card = WordHuntStarterContent.infoCards.firstWhere(
+      (card) =>
+          level.infoCardIds.contains(card.id) &&
+          level.targetWords.contains(card.word),
+    );
+    final path = canonicalPath(level, card.word);
     await tester.pumpWidget(
       MaterialApp(
         home: WordHuntLevelPrototypeScreen(
@@ -120,11 +130,11 @@ void main() {
     await dragCells(
       tester,
       level,
-      startRow: 3,
-      startColumn: 3,
-      endRow: 7,
-      endColumn: 3,
+      startRow: path.first.row,
+      startColumn: path.first.column,
+      endRow: path.last.row,
+      endColumn: path.last.column,
     );
-    expect(find.text('Bilgi kartı açıldı: Deniz'), findsOneWidget);
+    expect(find.text('Bilgi kartı açıldı: ${card.title}'), findsOneWidget);
   });
 }

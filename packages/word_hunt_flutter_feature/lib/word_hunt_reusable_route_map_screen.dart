@@ -9,6 +9,7 @@ import 'word_hunt_route_chrome_theme.dart';
 import 'word_hunt_route_map_decoration.dart';
 import 'word_hunt_route_segment_host.dart';
 import 'word_hunt_seal_renderer.dart';
+import 'word_hunt_star_visuals.dart';
 
 /// Kelime Avı'nın bütün 10-bölümlük rotaları için tek geometri sözleşmesi.
 ///
@@ -446,6 +447,7 @@ class WordHuntReusableRouteMapScreen extends StatelessWidget {
         unlocked: node.unlocked,
         completed: node.completed,
         current: node.current,
+        stars: progress.starsFor(node.levelId),
         theme: theme,
         sealSpec: sealSpec,
         onTap:
@@ -624,7 +626,7 @@ class _ReusableRouteHeader extends StatelessWidget {
             children: <Widget>[
               Icon(
                 Icons.star_rounded,
-                color: theme.accentColor,
+                color: WordHuntStarVisuals.filled,
                 size: scenic ? 18 : 21,
               ),
               SizedBox(width: scenic ? 3 : 4),
@@ -652,6 +654,7 @@ class _ReusableRouteNode extends StatelessWidget {
     required this.unlocked,
     required this.completed,
     required this.current,
+    required this.stars,
     required this.theme,
     this.sealSpec,
     this.onTap,
@@ -661,13 +664,14 @@ class _ReusableRouteNode extends StatelessWidget {
   final bool unlocked;
   final bool completed;
   final bool current;
+  final int stars;
   final WordHuntRouteMapTheme theme;
   final WordHuntSealVisualSpec? sealSpec;
   final VoidCallback? onTap;
 
   String? get _endpointLabel {
     if (level.index == 1) return 'BAŞLANGIÇ';
-    if (level.index == 10) return 'BİTİŞ';
+    if (level.index == 10 && level.type == WordHuntLevelType.routeFinal) return 'BİTİŞ';
     return null;
   }
 
@@ -706,24 +710,44 @@ class _ReusableRouteNode extends StatelessWidget {
             else
               _buildOrbNode(),
             if (sealSpec == null &&
-                completed &&
                 theme.nodeVisualStyle !=
                     WordHuntRouteNodeVisualStyle.facetedCrystal) ...<Widget>[
               SizedBox(height: scenic ? 0 : 1),
               SizedBox(
-                height: scenic ? 10 : 12,
+                height: scenic ? 14 : 16,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: List<Widget>.generate(
                     3,
-                    (_) => Icon(
-                      Icons.star_rounded,
-                      size: scenic ? 10 : 12,
-                      color: theme.accentColor,
+                    (index) => WordHuntStarVisuals.icon(
+                      earned: index < stars,
+                      size: scenic ? 13 : 15,
+                      key: Key('word_hunt_reusable_star_${level.index}_$index'),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+            // Keep the label inside the existing 86x82 hitbox on narrow phones.
+            // 54px orb + 1px gap + 16px stars + 10px label = 81px max.
+            if (endpointLabel != null)
+              SizedBox(
+                height: 10,
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    endpointLabel,
+                    style: TextStyle(
+                      color: theme.textColor.withValues(
+                        alpha: scenic ? 0.90 : 0.94,
+                      ),
+                      fontSize: scenic ? 8.5 : 9,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: scenic ? 0.35 : 0.45,
                       shadows: <Shadow>[
                         Shadow(
-                          color: theme.nodeShadowColor.withValues(alpha: 0.68),
-                          blurRadius: 3,
+                          color: theme.nodeShadowColor.withValues(alpha: 0.92),
+                          blurRadius: 4,
                           offset: const Offset(0, 1),
                         ),
                       ],
@@ -731,40 +755,6 @@ class _ReusableRouteNode extends StatelessWidget {
                   ),
                 ),
               ),
-            ],
-            if (endpointLabel != null) ...<Widget>[
-              SizedBox(
-                height:
-                    sealSpec != null
-                        ? 0
-                        : completed
-                        ? 0
-                        : scenic
-                        ? 2
-                        : 3,
-              ),
-              FittedBox(
-                fit: BoxFit.scaleDown,
-                child: Text(
-                  endpointLabel,
-                  style: TextStyle(
-                    color: theme.textColor.withValues(
-                      alpha: scenic ? 0.90 : 0.94,
-                    ),
-                    fontSize: scenic ? 8.5 : 9,
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: scenic ? 0.35 : 0.45,
-                    shadows: <Shadow>[
-                      Shadow(
-                        color: theme.nodeShadowColor.withValues(alpha: 0.92),
-                        blurRadius: 4,
-                        offset: const Offset(0, 1),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
           ],
         ),
       ),
@@ -787,6 +777,7 @@ class _ReusableRouteNode extends StatelessWidget {
         levelType: level.type,
         state: state,
         spec: sealSpec!,
+        earnedStars: stars,
       ),
     );
   }
@@ -1024,20 +1015,19 @@ class _ReusableRouteNode extends StatelessWidget {
                         ),
                       ),
                     ),
-                  if (completed)
-                    Positioned(
+                  Positioned(
                       left: 0,
                       right: 0,
                       bottom: -1,
                       child: Center(
                         child: Container(
                           key: Key('word_hunt_faceted_stars_${level.index}'),
-                          width: 31,
-                          height: 10,
+                          width: 48,
+                          height: 18,
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
                             color: theme.nodeShadowColor.withValues(
-                              alpha: 0.56,
+                              alpha: 0.70,
                             ),
                             borderRadius: BorderRadius.circular(6),
                             border: Border.all(
@@ -1050,12 +1040,10 @@ class _ReusableRouteNode extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: List<Widget>.generate(
                               3,
-                              (_) => Icon(
-                                Icons.star_rounded,
-                                size: 8,
-                                color: theme.accentColor.withValues(
-                                  alpha: 0.96,
-                                ),
+                              (index) => WordHuntStarVisuals.icon(
+                                earned: index < stars,
+                                size: 13,
+                                key: Key('word_hunt_faceted_star_${level.index}_$index'),
                               ),
                             ),
                           ),

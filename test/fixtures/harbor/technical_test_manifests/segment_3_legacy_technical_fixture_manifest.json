@@ -1,0 +1,420 @@
+{
+  "schemaVersion": 2,
+  "routeId": "baslangic-limani",
+  "segmentIndex": 3,
+  "scene": {
+    "assetPath": "assets/word_hunt/harbor_segments/segment_03_clean.webp",
+    "coordinateSpace": "scenePixels",
+    "coordinateSize": [
+      941,
+      1672
+    ],
+    "sha256": "230ea2158d8173029123dfb6b68593c2b015d4f278ad524b94221c8de9ae231c"
+  },
+  "minimumHitTargetLogicalDp": 68,
+  "nodes": [
+    {
+      "levelId": "baslangic-21",
+      "center": {
+        "unit": "scenePixels",
+        "x": 174,
+        "y": 385
+      },
+      "connectionAnchor": {
+        "unit": "scenePixels",
+        "x": 174,
+        "y": 385
+      },
+      "starAnchor": {
+        "unit": "nodeRelativeLogicalDp",
+        "x": 0,
+        "y": 42.5
+      }
+    },
+    {
+      "levelId": "baslangic-22",
+      "center": {
+        "unit": "scenePixels",
+        "x": 409,
+        "y": 488
+      },
+      "connectionAnchor": {
+        "unit": "scenePixels",
+        "x": 409,
+        "y": 488
+      },
+      "starAnchor": {
+        "unit": "nodeRelativeLogicalDp",
+        "x": 0,
+        "y": 42.5
+      }
+    },
+    {
+      "levelId": "baslangic-23",
+      "center": {
+        "unit": "scenePixels",
+        "x": 625,
+        "y": 588
+      },
+      "connectionAnchor": {
+        "unit": "scenePixels",
+        "x": 625,
+        "y": 588
+      },
+      "starAnchor": {
+        "unit": "nodeRelativeLogicalDp",
+        "x": 0,
+        "y": 42.5
+      }
+    },
+    {
+      "levelId": "baslangic-24",
+      "center": {
+        "unit": "scenePixels",
+        "x": 814,
+        "y": 715
+      },
+      "connectionAnchor": {
+        "unit": "scenePixels",
+        "x": 814,
+        "y": 715
+      },
+      "starAnchor": {
+        "unit": "nodeRelativeLogicalDp",
+        "x": 0,
+        "y": 42.5
+      }
+    },
+    {
+      "levelId": "baslangic-25",
+      "center": {
+        "unit": "scenePixels",
+        "x": 550,
+        "y": 839
+      },
+      "connectionAnchor": {
+        "unit": "scenePixels",
+        "x": 550,
+        "y": 839
+      },
+      "starAnchor": {
+        "unit": "nodeRelativeLogicalDp",
+        "x": 0,
+        "y": 42.5
+      }
+    },
+    {
+      "levelId": "baslangic-26",
+      "center": {
+        "unit": "scenePixels",
+        "x": 325,
+        "y": 970
+      },
+      "connectionAnchor": {
+        "unit": "scenePixels",
+        "x": 325,
+        "y": 970
+      },
+      "starAnchor": {
+        "unit": "nodeRelativeLogicalDp",
+        "x": 0,
+        "y": 42.5
+      }
+    },
+    {
+      "levelId": "baslangic-27",
+      "center": {
+        "unit": "scenePixels",
+        "x": 130,
+        "y": 1085
+      },
+      "connectionAnchor": {
+        "unit": "scenePixels",
+        "x": 130,
+        "y": 1085
+      },
+      "starAnchor": {
+        "unit": "nodeRelativeLogicalDp",
+        "x": 0,
+        "y": 42.5
+      }
+    },
+    {
+      "levelId": "baslangic-28",
+      "center": {
+        "unit": "scenePixels",
+        "x": 415,
+        "y": 1200
+      },
+      "connectionAnchor": {
+        "unit": "scenePixels",
+        "x": 415,
+        "y": 1200
+      },
+      "starAnchor": {
+        "unit": "nodeRelativeLogicalDp",
+        "x": 0,
+        "y": 42.5
+      }
+    },
+    {
+      "levelId": "baslangic-29",
+      "center": {
+        "unit": "scenePixels",
+        "x": 735,
+        "y": 1330
+      },
+      "connectionAnchor": {
+        "unit": "scenePixels",
+        "x": 735,
+        "y": 1330
+      },
+      "starAnchor": {
+        "unit": "nodeRelativeLogicalDp",
+        "x": 0,
+        "y": 42.5
+      }
+    },
+    {
+      "levelId": "baslangic-30",
+      "center": {
+        "unit": "scenePixels",
+        "x": 390,
+        "y": 1425
+      },
+      "connectionAnchor": {
+        "unit": "scenePixels",
+        "x": 390,
+        "y": 1425
+      },
+      "starAnchor": {
+        "unit": "nodeRelativeLogicalDp",
+        "x": 0,
+        "y": 42.5
+      },
+      "challengeAnchor": {
+        "unit": "nodeRelativeLogicalDp",
+        "x": 0,
+        "y": 71
+      }
+    }
+  ],
+  "connections": [
+    {
+      "fromLevelId": "baslangic-21",
+      "toLevelId": "baslangic-22",
+      "start": {
+        "unit": "scenePixels",
+        "x": 174,
+        "y": 385
+      },
+      "control1": {
+        "unit": "scenePixels",
+        "x": 252.33333333333331,
+        "y": 419.3333333333333
+      },
+      "control2": {
+        "unit": "scenePixels",
+        "x": 330.66666666666663,
+        "y": 453.6666666666667
+      },
+      "end": {
+        "unit": "scenePixels",
+        "x": 409,
+        "y": 488
+      }
+    },
+    {
+      "fromLevelId": "baslangic-22",
+      "toLevelId": "baslangic-23",
+      "start": {
+        "unit": "scenePixels",
+        "x": 409,
+        "y": 488
+      },
+      "control1": {
+        "unit": "scenePixels",
+        "x": 481.0,
+        "y": 521.3333333333334
+      },
+      "control2": {
+        "unit": "scenePixels",
+        "x": 553.0,
+        "y": 554.6666666666666
+      },
+      "end": {
+        "unit": "scenePixels",
+        "x": 625,
+        "y": 588
+      }
+    },
+    {
+      "fromLevelId": "baslangic-23",
+      "toLevelId": "baslangic-24",
+      "start": {
+        "unit": "scenePixels",
+        "x": 625,
+        "y": 588
+      },
+      "control1": {
+        "unit": "scenePixels",
+        "x": 688.0,
+        "y": 630.3333333333334
+      },
+      "control2": {
+        "unit": "scenePixels",
+        "x": 751.0,
+        "y": 672.6666666666666
+      },
+      "end": {
+        "unit": "scenePixels",
+        "x": 814,
+        "y": 715
+      }
+    },
+    {
+      "fromLevelId": "baslangic-24",
+      "toLevelId": "baslangic-25",
+      "start": {
+        "unit": "scenePixels",
+        "x": 814,
+        "y": 715
+      },
+      "control1": {
+        "unit": "scenePixels",
+        "x": 726.0,
+        "y": 756.3333333333334
+      },
+      "control2": {
+        "unit": "scenePixels",
+        "x": 638.0,
+        "y": 797.6666666666666
+      },
+      "end": {
+        "unit": "scenePixels",
+        "x": 550,
+        "y": 839
+      }
+    },
+    {
+      "fromLevelId": "baslangic-25",
+      "toLevelId": "baslangic-26",
+      "start": {
+        "unit": "scenePixels",
+        "x": 550,
+        "y": 839
+      },
+      "control1": {
+        "unit": "scenePixels",
+        "x": 475.0,
+        "y": 882.6666666666666
+      },
+      "control2": {
+        "unit": "scenePixels",
+        "x": 400.0,
+        "y": 926.3333333333334
+      },
+      "end": {
+        "unit": "scenePixels",
+        "x": 325,
+        "y": 970
+      }
+    },
+    {
+      "fromLevelId": "baslangic-26",
+      "toLevelId": "baslangic-27",
+      "start": {
+        "unit": "scenePixels",
+        "x": 325,
+        "y": 970
+      },
+      "control1": {
+        "unit": "scenePixels",
+        "x": 260.0,
+        "y": 1008.3333333333334
+      },
+      "control2": {
+        "unit": "scenePixels",
+        "x": 195.0,
+        "y": 1046.6666666666667
+      },
+      "end": {
+        "unit": "scenePixels",
+        "x": 130,
+        "y": 1085
+      }
+    },
+    {
+      "fromLevelId": "baslangic-27",
+      "toLevelId": "baslangic-28",
+      "start": {
+        "unit": "scenePixels",
+        "x": 130,
+        "y": 1085
+      },
+      "control1": {
+        "unit": "scenePixels",
+        "x": 225.0,
+        "y": 1123.3333333333333
+      },
+      "control2": {
+        "unit": "scenePixels",
+        "x": 320.0,
+        "y": 1161.6666666666667
+      },
+      "end": {
+        "unit": "scenePixels",
+        "x": 415,
+        "y": 1200
+      }
+    },
+    {
+      "fromLevelId": "baslangic-28",
+      "toLevelId": "baslangic-29",
+      "start": {
+        "unit": "scenePixels",
+        "x": 415,
+        "y": 1200
+      },
+      "control1": {
+        "unit": "scenePixels",
+        "x": 521.6666666666666,
+        "y": 1243.3333333333333
+      },
+      "control2": {
+        "unit": "scenePixels",
+        "x": 628.3333333333334,
+        "y": 1286.6666666666667
+      },
+      "end": {
+        "unit": "scenePixels",
+        "x": 735,
+        "y": 1330
+      }
+    },
+    {
+      "fromLevelId": "baslangic-29",
+      "toLevelId": "baslangic-30",
+      "start": {
+        "unit": "scenePixels",
+        "x": 735,
+        "y": 1330
+      },
+      "control1": {
+        "unit": "scenePixels",
+        "x": 620.0,
+        "y": 1361.6666666666667
+      },
+      "control2": {
+        "unit": "scenePixels",
+        "x": 505.0,
+        "y": 1393.3333333333333
+      },
+      "end": {
+        "unit": "scenePixels",
+        "x": 390,
+        "y": 1425
+      }
+    }
+  ]
+}

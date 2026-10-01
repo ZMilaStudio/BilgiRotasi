@@ -142,7 +142,7 @@ const _historicalDuplicateExtraOccurrences = <String, int>{
 };
 
 const _expectedContentFingerprints = <String, String>{
-  'baslangic-limani': '39462daa',
+  'baslangic-limani': 'd52a5898',
   'gokyuzu-adalari': '2fd4e4af',
   'orman-yolu': 'de4fe1f9',
   'orman-2': '71084c8f',
@@ -153,7 +153,7 @@ const _expectedContentFingerprints = <String, String>{
 };
 
 const _reservedWordCounts = <String, int>{
-  'baslangic-limani': 80,
+  'baslangic-limani': 76,
   'gokyuzu-adalari': 80,
   'orman-yolu': 54,
   'orman-2': 67,
@@ -191,16 +191,16 @@ const _changedLevelIds = <String>{
 
 const _expectedWordCounts = <String, List<(int, int)>>{
   'baslangic-limani': <(int, int)>[
-    (5, 1),
-    (5, 1),
+    (6, 1),
+    (6, 1),
+    (6, 1),
     (6, 1),
     (6, 1),
     (7, 1),
     (7, 1),
-    (8, 1),
     (7, 2),
-    (9, 1),
-    (9, 1),
+    (7, 1),
+    (7, 1),
   ],
   'gokyuzu-adalari': <(int, int)>[
     (5, 1),

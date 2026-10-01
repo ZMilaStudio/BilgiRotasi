@@ -45,6 +45,8 @@ flutter:
     - assets/questions.json
     - assets/word_hunt/
     - assets/word_hunt/baslangic_limani/
+    - assets/word_hunt/harbor_segments/
+    - assets/word_hunt/harbor_segments/segment_02_ui/
     - assets/word_hunt/v5_reference_assets/
     - assets/word_hunt/gokyuzu_adalari/
 

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'word_hunt_models.dart';
 import 'word_hunt_production_assets.dart';
+import 'word_hunt_star_visuals.dart';
 
 /// Kelime Avı rota düğümlerinin tema bağımsız, deterministik geometrisi.
 ///
@@ -324,9 +325,6 @@ class _StopMedallionAndStars extends StatelessWidget {
         _RouteStopStars(
           levelIndex: level.index,
           stars: stars,
-          unlocked: unlocked,
-          goldTarget: level.type == WordHuntLevelType.routeFinal,
-          theme: theme,
           starSize: metrics.starSize,
         ),
       ],
@@ -423,8 +421,11 @@ class _RouteStopOrb extends StatelessWidget {
     };
     final visuallyHighlighted = unlocked || lockedFinal;
     final numberIsBakedIntoBindingSource =
-        level.type == WordHuntLevelType.challenge ||
-        level.type == WordHuntLevelType.routeFinal;
+        (level.type == WordHuntLevelType.challenge && level.index == 5) ||
+        (level.type == WordHuntLevelType.routeFinal && level.index == 10);
+    final requiresNeutralMedallion = unlocked &&
+        (level.type == WordHuntLevelType.challenge && level.index != 5 ||
+         level.type == WordHuntLevelType.routeFinal && level.index != 10);
     final assetPath = WordHuntProductionAssets.nodeFor(
       type: level.type,
       unlocked: unlocked,
@@ -437,12 +438,34 @@ class _RouteStopOrb extends StatelessWidget {
         fit: StackFit.expand,
         clipBehavior: Clip.none,
         children: [
-          Image.asset(
-            assetPath,
-            key: Key('word_hunt_route_stop_asset_${level.index}'),
-            fit: BoxFit.contain,
-            filterQuality: FilterQuality.high,
-          ),
+          if (requiresNeutralMedallion)
+            Positioned.fill(
+              key: Key('word_hunt_route_stop_neutral_${level.index}'),
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: const LinearGradient(colors: <Color>[
+                    Color(0xFF493019), Color(0xFF172434),
+                  ]),
+                  border: Border.all(
+                    color: level.type == WordHuntLevelType.challenge
+                        ? const Color(0xFFFFCB70)
+                        : const Color(0xFFF5DC82),
+                    width: 3,
+                  ),
+                  boxShadow: const <BoxShadow>[
+                    BoxShadow(color: Color(0x66FFAE31), blurRadius: 9),
+                  ],
+                ),
+              ),
+            )
+          else
+            Image.asset(
+              assetPath,
+              key: Key('word_hunt_route_stop_asset_${level.index}'),
+              fit: BoxFit.contain,
+              filterQuality: FilterQuality.high,
+            ),
           Center(
             child:
                 visuallyHighlighted
@@ -501,17 +524,11 @@ class _RouteStopStars extends StatelessWidget {
   const _RouteStopStars({
     required this.levelIndex,
     required this.stars,
-    required this.unlocked,
-    required this.goldTarget,
-    required this.theme,
     required this.starSize,
   });
 
   final int levelIndex;
   final int stars;
-  final bool unlocked;
-  final bool goldTarget;
-  final WordHuntRouteStopTheme theme;
   final double starSize;
 
   @override
@@ -519,24 +536,10 @@ class _RouteStopStars extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: List<Widget>.generate(3, (index) {
-        final earned = index < stars || goldTarget;
-        return Icon(
-          earned ? Icons.star_rounded : Icons.star_border_rounded,
-          key: Key('word_hunt_route_stop_star_${levelIndex}_$index'),
+        return WordHuntStarVisuals.icon(
+          earned: index < stars,
           size: starSize,
-          color:
-              earned
-                  ? theme.starFilled
-                  : theme.starEmpty.withValues(alpha: unlocked ? 1 : 0.72),
-          shadows:
-              earned
-                  ? <Shadow>[
-                    Shadow(
-                      color: theme.starFilled.withValues(alpha: 0.55),
-                      blurRadius: 4,
-                    ),
-                  ]
-                  : const <Shadow>[],
+          key: Key('word_hunt_route_stop_star_${levelIndex}_$index'),
         );
       }),
     );

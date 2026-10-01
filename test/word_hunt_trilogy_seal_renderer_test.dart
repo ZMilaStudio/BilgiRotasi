@@ -10,6 +10,7 @@ void main() {
     required WordHuntLevelType type,
     required WordHuntSealNodeState state,
     required int levelIndex,
+    int earnedStars = 0,
   }) async {
     await tester.pumpWidget(
       MaterialApp(
@@ -20,6 +21,7 @@ void main() {
               levelType: type,
               state: state,
               spec: spec,
+              earnedStars: earnedStars,
             ),
           ),
         ),
@@ -116,7 +118,7 @@ void main() {
     expect(find.text('5'), findsOneWidget);
   });
 
-  testWidgets('completed has three filled stars and other states keep sockets empty', (
+  testWidgets('seal sockets show exact earned stars irrespective of visual state', (
     tester,
   ) async {
     for (final state in <WordHuntSealNodeState>[
@@ -137,8 +139,8 @@ void main() {
           findsOneWidget,
         );
         expect(
-          find.byKey(Key('word_hunt_seal_star_filled_5_$i')),
-          findsNothing,
+          find.byKey(Key('word_hunt_seal_star_5_$i')),
+          findsOneWidget,
         );
       }
       expect(find.byIcon(Icons.star_rounded), findsNothing);
@@ -150,6 +152,7 @@ void main() {
       type: WordHuntLevelType.challenge,
       state: WordHuntSealNodeState.completed,
       levelIndex: 5,
+      earnedStars: 2,
     );
     for (var i = 0; i < 3; i++) {
       expect(
@@ -157,11 +160,12 @@ void main() {
         findsOneWidget,
       );
       expect(
-        find.byKey(Key('word_hunt_seal_star_filled_5_$i')),
+        find.byKey(Key('word_hunt_seal_star_5_$i')),
         findsOneWidget,
       );
     }
-    expect(find.byIcon(Icons.star_rounded), findsNWidgets(3));
+    expect(find.byIcon(Icons.star_rounded), findsNWidgets(2));
+    expect(find.byIcon(Icons.star_outline_rounded), findsOneWidget);
   });
 
   testWidgets('locked seal keeps silhouette and uses secondary physical lock', (

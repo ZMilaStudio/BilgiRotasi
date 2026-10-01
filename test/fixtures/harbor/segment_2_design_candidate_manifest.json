@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 2,
+  "routeId": "baslangic-limani",
+  "segmentIndex": 2,
+  "scene": {
+    "assetPath": "assets/word_hunt/harbor_segments/segment_02_clean.webp",
+    "coordinateSpace": "scenePixels",
+    "coordinateSize": [941, 1672],
+    "sha256": "cd115f2eb3866beb4e1375ad545e31c23dce60b02d23d960f9b46b9c5828b566"
+  },
+  "minimumHitTargetLogicalDp": 68,
+  "nodes": [
+    {"levelId": "baslangic-11", "center": {"unit": "scenePixels", "x": 325, "y": 1475}, "connectionAnchor": {"unit": "scenePixels", "x": 325, "y": 1475}, "starAnchor": {"unit": "nodeRelativeLogicalDp", "x": 0, "y": 42.5}},
+    {"levelId": "baslangic-12", "center": {"unit": "scenePixels", "x": 195, "y": 1255}, "connectionAnchor": {"unit": "scenePixels", "x": 195, "y": 1255}, "starAnchor": {"unit": "nodeRelativeLogicalDp", "x": 0, "y": 42.5}},
+    {"levelId": "baslangic-13", "center": {"unit": "scenePixels", "x": 240, "y": 1000}, "connectionAnchor": {"unit": "scenePixels", "x": 240, "y": 1000}, "starAnchor": {"unit": "nodeRelativeLogicalDp", "x": 0, "y": 42.5}},
+    {"levelId": "baslangic-14", "center": {"unit": "scenePixels", "x": 200, "y": 770}, "connectionAnchor": {"unit": "scenePixels", "x": 200, "y": 770}, "starAnchor": {"unit": "nodeRelativeLogicalDp", "x": 0, "y": 42.5}},
+    {"levelId": "baslangic-15", "center": {"unit": "scenePixels", "x": 225, "y": 520}, "connectionAnchor": {"unit": "scenePixels", "x": 225, "y": 520}, "starAnchor": {"unit": "nodeRelativeLogicalDp", "x": 0, "y": 42.5}},
+    {"levelId": "baslangic-16", "center": {"unit": "scenePixels", "x": 405, "y": 315}, "connectionAnchor": {"unit": "scenePixels", "x": 405, "y": 315}, "starAnchor": {"unit": "nodeRelativeLogicalDp", "x": 0, "y": 42.5}},
+    {"levelId": "baslangic-17", "center": {"unit": "scenePixels", "x": 600, "y": 390}, "connectionAnchor": {"unit": "scenePixels", "x": 600, "y": 390}, "starAnchor": {"unit": "nodeRelativeLogicalDp", "x": 0, "y": 42.5}},
+    {"levelId": "baslangic-18", "center": {"unit": "scenePixels", "x": 760, "y": 600}, "connectionAnchor": {"unit": "scenePixels", "x": 760, "y": 600}, "starAnchor": {"unit": "nodeRelativeLogicalDp", "x": 0, "y": 42.5}},
+    {"levelId": "baslangic-19", "center": {"unit": "scenePixels", "x": 680, "y": 895}, "connectionAnchor": {"unit": "scenePixels", "x": 680, "y": 895}, "starAnchor": {"unit": "nodeRelativeLogicalDp", "x": 0, "y": 42.5}},
+    {"levelId": "baslangic-20", "center": {"unit": "scenePixels", "x": 675, "y": 1180}, "connectionAnchor": {"unit": "scenePixels", "x": 675, "y": 1180}, "starAnchor": {"unit": "nodeRelativeLogicalDp", "x": 0, "y": 42.5}, "challengeAnchor": {"unit": "nodeRelativeLogicalDp", "x": 0, "y": 71}}
+  ],
+  "connections": [
+    {"fromLevelId": "baslangic-11", "toLevelId": "baslangic-12", "start": {"unit": "scenePixels", "x": 325, "y": 1475}, "control1": {"unit": "scenePixels", "x": 265, "y": 1460}, "control2": {"unit": "scenePixels", "x": 170, "y": 1350}, "end": {"unit": "scenePixels", "x": 195, "y": 1255}},
+    {"fromLevelId": "baslangic-12", "toLevelId": "baslangic-13", "start": {"unit": "scenePixels", "x": 195, "y": 1255}, "control1": {"unit": "scenePixels", "x": 145, "y": 1180}, "control2": {"unit": "scenePixels", "x": 190, "y": 1070}, "end": {"unit": "scenePixels", "x": 240, "y": 1000}},
+    {"fromLevelId": "baslangic-13", "toLevelId": "baslangic-14", "start": {"unit": "scenePixels", "x": 240, "y": 1000}, "control1": {"unit": "scenePixels", "x": 320, "y": 955}, "control2": {"unit": "scenePixels", "x": 250, "y": 835}, "end": {"unit": "scenePixels", "x": 200, "y": 770}},
+    {"fromLevelId": "baslangic-14", "toLevelId": "baslangic-15", "start": {"unit": "scenePixels", "x": 200, "y": 770}, "control1": {"unit": "scenePixels", "x": 115, "y": 700}, "control2": {"unit": "scenePixels", "x": 160, "y": 595}, "end": {"unit": "scenePixels", "x": 225, "y": 520}},
+    {"fromLevelId": "baslangic-15", "toLevelId": "baslangic-16", "start": {"unit": "scenePixels", "x": 225, "y": 520}, "control1": {"unit": "scenePixels", "x": 250, "y": 420}, "control2": {"unit": "scenePixels", "x": 345, "y": 365}, "end": {"unit": "scenePixels", "x": 405, "y": 315}},
+    {"fromLevelId": "baslangic-16", "toLevelId": "baslangic-17", "start": {"unit": "scenePixels", "x": 405, "y": 315}, "control1": {"unit": "scenePixels", "x": 455, "y": 300}, "control2": {"unit": "scenePixels", "x": 555, "y": 340}, "end": {"unit": "scenePixels", "x": 600, "y": 390}},
+    {"fromLevelId": "baslangic-17", "toLevelId": "baslangic-18", "start": {"unit": "scenePixels", "x": 600, "y": 390}, "control1": {"unit": "scenePixels", "x": 655, "y": 415}, "control2": {"unit": "scenePixels", "x": 750, "y": 500}, "end": {"unit": "scenePixels", "x": 760, "y": 600}},
+    {"fromLevelId": "baslangic-18", "toLevelId": "baslangic-19", "start": {"unit": "scenePixels", "x": 760, "y": 600}, "control1": {"unit": "scenePixels", "x": 795, "y": 680}, "control2": {"unit": "scenePixels", "x": 725, "y": 805}, "end": {"unit": "scenePixels", "x": 680, "y": 895}},
+    {"fromLevelId": "baslangic-19", "toLevelId": "baslangic-20", "start": {"unit": "scenePixels", "x": 680, "y": 895}, "control1": {"unit": "scenePixels", "x": 625, "y": 975}, "control2": {"unit": "scenePixels", "x": 625, "y": 1100}, "end": {"unit": "scenePixels", "x": 675, "y": 1180}}
+  ]
+}

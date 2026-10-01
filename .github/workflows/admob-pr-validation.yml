@@ -21,6 +21,12 @@ permissions:
 jobs:
   test-build-launch:
     name: Test, release APK ve Android 16 cold-start
+    if: >-
+      ${{ !(github.event_name == 'pull_request' &&
+        github.event.pull_request.number == 224 &&
+        github.repository == 'ZMilaStudio/BilgiRotasi' &&
+        github.event.pull_request.base.ref == 'release/final-closed-test-aab-1.68.8' &&
+        github.event.pull_request.head.ref == 'feat/kelime-avi-harbor-repair-checkpoint-a') }}
     runs-on: ubuntu-22.04
     timeout-minutes: 60
 

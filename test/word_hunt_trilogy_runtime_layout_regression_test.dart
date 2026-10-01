@@ -13,6 +13,7 @@ import 'package:bilgi_rotasi/word_hunt/word_hunt_yeralti_kralligi_content.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_yeralti_kralligi_visual_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:word_hunt_flutter_feature/word_hunt_star_visuals.dart';
 
 void main() {
   final routeThemes = <({
@@ -45,16 +46,32 @@ void main() {
 
       for (final routeTheme in routeThemes) {
         final route = routeTheme.route;
-        for (final scenario in <({int completed, String visualState})>[
-          (completed: 4, visualState: 'locked'),
-          (completed: 9, visualState: 'current'),
-          (completed: 10, visualState: 'completed'),
+        for (final scenario in <({
+          int completed,
+          String visualState,
+          int levelTenStars,
+        })>[
+          (completed: 4, visualState: 'locked', levelTenStars: 0),
+          (completed: 9, visualState: 'current', levelTenStars: 0),
+          (completed: 10, visualState: 'completed', levelTenStars: 1),
+          (completed: 10, visualState: 'completed', levelTenStars: 2),
+          (completed: 10, visualState: 'completed', levelTenStars: 3),
         ]) {
+          final progress = _progressThrough(
+            route,
+            scenario.completed,
+            levelTenStars: scenario.levelTenStars,
+          );
+          expect(
+            progress.starsFor(route.levels[9].id),
+            scenario.levelTenStars,
+            reason: '${route.id} / ${scenario.visualState} / source progress',
+          );
           await _pumpRoute(
             tester,
             route: route,
             theme: routeTheme.theme,
-            progress: _progressThrough(route, scenario.completed),
+            progress: progress,
           );
 
           expect(
@@ -70,28 +87,46 @@ void main() {
             reason: '${route.id} / ${scenario.visualState}',
           );
 
-          if (scenario.visualState == 'completed') {
-            for (var i = 0; i < 3; i++) {
-              expect(
-                find.byKey(Key('word_hunt_seal_star_filled_10_$i')),
-                findsOneWidget,
-                reason: route.id,
-              );
-            }
-          } else {
-            for (var i = 0; i < 3; i++) {
-              expect(
-                find.byKey(Key('word_hunt_seal_star_socket_10_$i')),
-                findsOneWidget,
-                reason: route.id,
-              );
-              expect(
-                find.byKey(Key('word_hunt_seal_star_filled_10_$i')),
-                findsNothing,
-                reason: route.id,
-              );
-            }
+          expect(
+            find.byKey(const Key('word_hunt_seal_star_row_10')),
+            findsOneWidget,
+            reason: '${route.id} / ${scenario.visualState}',
+          );
+          expect(
+            find.byKey(const Key('word_hunt_seal_physical_lock_10')),
+            scenario.visualState == 'locked' ? findsOneWidget : findsNothing,
+            reason: '${route.id} / ${scenario.visualState}',
+          );
+
+          var filledCount = 0;
+          for (var i = 0; i < 3; i++) {
+            expect(
+              find.byKey(Key('word_hunt_seal_star_socket_10_$i')),
+              findsOneWidget,
+              reason: '${route.id} / ${scenario.visualState} / socket $i',
+            );
+            final star = tester.widget<Icon>(
+              find.byKey(Key('word_hunt_seal_star_10_$i')),
+            );
+            final filled = i < scenario.levelTenStars;
+            if (star.icon == Icons.star_rounded) filledCount++;
+            expect(
+              star.icon,
+              filled ? Icons.star_rounded : Icons.star_outline_rounded,
+              reason: '${route.id} / ${scenario.visualState} / icon $i',
+            );
+            expect(
+              star.color,
+              filled ? WordHuntStarVisuals.filled : WordHuntStarVisuals.empty,
+              reason: '${route.id} / ${scenario.visualState} / color $i',
+            );
+            expect(star.size, 10, reason: '${route.id} / star $i');
           }
+          expect(
+            filledCount,
+            scenario.levelTenStars,
+            reason: '${route.id} / ${scenario.visualState} / filled count',
+          );
 
           expect(
             tester.takeException(),
@@ -194,11 +229,13 @@ void main() {
 
 WordHuntProgressSnapshot _progressThrough(
   WordHuntRouteDefinition route,
-  int completedCount,
-) {
+  int completedCount, {
+  int levelTenStars = 3,
+}) {
   return WordHuntProgressSnapshot(
     bestStarsByLevelId: <String, int>{
-      for (final level in route.levels.take(completedCount)) level.id: 3,
+      for (final level in route.levels.take(completedCount))
+        level.id: level.index == 10 ? levelTenStars : 3,
     },
   );
 }

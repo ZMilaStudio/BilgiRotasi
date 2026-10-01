@@ -2,11 +2,18 @@ name: Kelime Avı Standalone Android Runtime Proof
 
 on:
   pull_request:
-    branches:
-      - release/final-closed-test-aab-1.68.8
+    branches: [release/final-closed-test-aab-1.68.8]
     paths:
       - 'apps/kelime_avi_standalone/**'
-      - 'tools/kelime_avi_android_runtime_probe.py'
+      - 'assets/word_hunt/**'
+      - 'packages/word_hunt_flutter_feature/**'
+      - 'test/word_hunt*'
+      - 'tools/kelime_avi*'
+      - 'tools/test_kelime_avi_harbor_runtime_probe.py'
+      - 'tools/test_kelime_avi_runtime_status_transfer.py'
+      - 'tools/harbor_layout_preview.py'
+      - 'tools/test_harbor_layout_preview.py'
+      - 'docs/project-memory/KARARLAR.md'
       - '.github/workflows/kelime_avi_standalone_runtime_proof.yml'
 
 permissions:
@@ -14,48 +21,230 @@ permissions:
 
 jobs:
   android-runtime:
+    if: >-
+      github.event.pull_request.head.repo.full_name == 'ZMilaStudio/BilgiRotasi' &&
+      github.event.pull_request.head.ref == 'feat/kelime-avi-harbor-repair-checkpoint-a'
     runs-on: ubuntu-22.04
     timeout-minutes: 45
+    env:
+      PROOF_SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+      HEAD_BRANCH: ${{ github.event.pull_request.head.ref }}
     steps:
-      - uses: actions/checkout@v4
+      - name: Exact Checkpoint A SHA'yı indir ve kaydet
+        uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.sha }}
 
-      - uses: actions/setup-java@v4
+      - name: Exact Checkpoint A authority'yi doğrula
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$PROOF_SOURCE_SHA"
+          test "$HEAD_BRANCH" = 'feat/kelime-avi-harbor-repair-checkpoint-a'
+          mkdir -p reports/kelime_avi_runtime
+          printf '%s\n' "$PROOF_SOURCE_SHA" \
+            > reports/kelime_avi_runtime/HARBOR_SOURCE_SHA.txt
+
+      - name: Java 17 kur
+        uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
 
-      - uses: subosito/flutter-action@v2
+      - name: Flutter 3.44.6 kur
+        uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.44.6'
           channel: stable
           cache: true
 
-      - name: Verify standalone asset bundle and narrow layout
-        working-directory: apps/kelime_avi_standalone
+      - name: Segment 2 ve 3 hedefli test ve analiz
+        shell: bash
         run: |
+          set -euo pipefail
           flutter pub get
-          flutter test test/standalone_runtime_assets_test.dart --reporter expanded
-          flutter build apk --debug
+          flutter test \
+            test/word_hunt_harbor_repair_test.dart \
+            test/word_hunt_harbor_legacy_production_parity_test.dart \
+            test/word_hunt_2_0_wave10a_baslangic_segment2_test.dart \
+            test/word_hunt_2_0_wave10b_baslangic_segment3_test.dart \
+            test/word_hunt_route_stop_test.dart \
+            test/word_hunt_pixel_proof_screen_test.dart \
+            test/word_hunt_harbor_layout_manifest_test.dart \
+            test/word_hunt_harbor_segment2_integration_test.dart \
+            --reporter expanded
+          (
+            cd apps/kelime_avi_standalone
+            flutter pub get
+            flutter analyze --no-pub \
+              lib/harbor_visual_proof_main.dart \
+              test/standalone_harbor_repair_test.dart
+            flutter test \
+              test/standalone_runtime_assets_test.dart \
+              test/standalone_harbor_repair_test.dart \
+              --reporter expanded
+          )
+          python3 -m py_compile tools/kelime_avi_harbor_runtime_probe.py
+          python3 -m pip install --disable-pip-version-check 'Pillow==11.3.0'
+          python3 -c "import PIL; print(f'Pillow {PIL.__version__}')"
+          python3 tools/test_harbor_layout_preview.py
+          python3 -m unittest discover -s tools -p 'test_kelime_avi_harbor_runtime_probe.py'
+          python3 -m unittest discover -s tools -p 'test_kelime_avi_runtime_status_transfer.py'
+          git diff --check
 
-      - name: Verify nested assets in the built APK
+      - name: Standard standalone debug APK
+        run: |
+          (cd apps/kelime_avi_standalone && flutter build apk --debug)
+          mkdir -p "$RUNNER_TEMP/harbor-standard"
+          cp apps/kelime_avi_standalone/build/app/outputs/flutter-apk/app-debug.apk "$RUNNER_TEMP/harbor-standard/app-debug.apk"
+
+      - name: Harbor Segment 2 and 3 debug proof APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          (
+            cd apps/kelime_avi_standalone
+            flutter build apk --debug \
+              --target lib/harbor_visual_proof_main.dart
+          )
+          apk=apps/kelime_avi_standalone/build/app/outputs/flutter-apk/app-debug.apk
+          test -s "$apk"
+          cp "$apk" reports/kelime_avi_runtime/HARBOR_CHECKPOINT_A_DEBUG.apk
+          sha256sum "$apk" \
+            | tee reports/kelime_avi_runtime/HARBOR_DEBUG_APK_SHA256.txt
+
+      - name: APK içindeki onaylı Harbor assetlerini doğrula
         shell: bash
         run: |
           set -euo pipefail
           apk=apps/kelime_avi_standalone/build/app/outputs/flutter-apk/app-debug.apk
-          test -s "$apk"
-          unzip -Z1 "$apk" | grep -Fx 'assets/flutter_assets/assets/word_hunt/v5_reference_assets/harbor_background_1080x1920.png'
-          unzip -Z1 "$apk" | grep -Fx 'assets/flutter_assets/assets/word_hunt/v5_reference_assets/cell_idle.png'
-          unzip -Z1 "$apk" | grep -Fx 'assets/flutter_assets/assets/word_hunt/baslangic_limani/node_normal.webp'
-          sha256sum "$apk"
+          packaged_root="$RUNNER_TEMP/harbor-packaged-assets"
+          mkdir -p "$packaged_root"
+          assets=(
+            assets/word_hunt/v5_reference_assets/harbor_background_1080x1920.png
+            assets/word_hunt/v5_reference_assets/cell_idle.png
+            assets/word_hunt/baslangic_limani/node_normal.webp
+            assets/word_hunt/baslangic_limani_master_art_visual_proof.jpg
+            assets/word_hunt/harbor_segments/segment_03_clean.webp
+            assets/word_hunt/harbor_segments/segment_02_clean.webp
+            assets/word_hunt/harbor_segments/segment_02_ui/layout_schema_v2.json
+            assets/word_hunt/harbor_segments/segment_02_ui/medallion_blank.png
+            assets/word_hunt/harbor_segments/segment_02_ui/locked_medallion.png
+            assets/word_hunt/harbor_segments/segment_02_ui/star_socket_blank.png
+            assets/word_hunt/harbor_segments/segment_02_ui/challenge_combined_blank.png
+            assets/word_hunt/harbor_segments/segment_02_ui/hanging_lantern.png
+          )
+          : > reports/kelime_avi_runtime/HARBOR_ASSET_IDENTITY.txt
+          : > reports/kelime_avi_runtime/HARBOR_APK_ASSET_LIST.txt
+          for source in "${assets[@]}"; do
+            packaged="$packaged_root/$source"
+            mkdir -p "$(dirname "$packaged")"
+            unzip -Z1 "$apk" \
+              | grep -Fx "assets/flutter_assets/$source" \
+              | tee -a reports/kelime_avi_runtime/HARBOR_APK_ASSET_LIST.txt
+            unzip -p "$apk" "assets/flutter_assets/$source" > "$packaged"
+            test -s "$packaged"
+            cmp -s "$source" "$packaged"
+            source_sha="$(sha256sum "$source" | cut -d' ' -f1)"
+            packaged_sha="$(sha256sum "$packaged" | cut -d' ' -f1)"
+            test "$source_sha" = "$packaged_sha"
+            printf '%s source=%s packaged=%s\n' \
+              "$source" "$source_sha" "$packaged_sha" \
+              | tee -a reports/kelime_avi_runtime/HARBOR_ASSET_IDENTITY.txt
+          done
 
-      - name: Prepare Android emulator acceleration
+      - name: Android emulator KVM ortamını tanıla ve hazırla
+        shell: bash
         run: |
-          test -e /dev/kvm
-          sudo chmod 666 /dev/kvm
+          set -euo pipefail
 
-      - name: Run installed APK through start, route and gameplay
+          echo '== Runner identity and groups =='
+          whoami
+          id
+          printf 'groups=%s\n' "$(id -Gn)"
+
+          echo '== Virtualization capabilities =='
+          uname -a
+          lscpu | grep -E \
+            '^(Architecture|CPU\(s\)|Vendor ID|Model name|Virtualization|Hypervisor vendor):' \
+            || true
+          if grep -Eq '(^|[[:space:]])(vmx|svm)([[:space:]]|$)' /proc/cpuinfo; then
+            echo 'cpu_virtualization_flags=present'
+          else
+            echo 'cpu_virtualization_flags=absent'
+          fi
+          if command -v systemd-detect-virt >/dev/null 2>&1; then
+            printf 'detected_virtualization='
+            systemd-detect-virt || true
+          fi
+          if command -v lsmod >/dev/null 2>&1; then
+            lsmod | grep '^kvm' || echo 'loaded_kvm_modules=none'
+          fi
+
+          if [[ ! -e /dev/kvm ]]; then
+            echo '::error::/dev/kvm is absent; the runner does not expose the KVM device.'
+            ls -ld /dev
+            exit 1
+          fi
+          if [[ ! -c /dev/kvm ]]; then
+            echo '::error::/dev/kvm exists but is not a character device.'
+            ls -ld /dev/kvm
+            exit 1
+          fi
+
+          echo '== /dev/kvm before permission setup =='
+          ls -l /dev/kvm
+          stat -c 'device=%n type=%F owner=%U(%u) group=%G(%g) mode=%A(%a)' /dev/kvm
+          [[ -r /dev/kvm ]] && before_read=yes || before_read=no
+          [[ -w /dev/kvm ]] && before_write=yes || before_write=no
+          printf 'effective_access_before read=%s write=%s\n' \
+            "$before_read" "$before_write"
+
+          if [[ "$before_read" != yes || "$before_write" != yes ]]; then
+            echo 'Applying the android-emulator-runner documented KVM udev rule.'
+            echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' \
+              | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+            sudo udevadm control --reload-rules
+            sudo udevadm trigger --name-match=kvm
+          fi
+
+          if [[ ! -r /dev/kvm || ! -w /dev/kvm ]]; then
+            echo 'Applying conditional /dev/kvm mode fallback.'
+            sudo chmod 0666 /dev/kvm
+          fi
+
+          echo '== /dev/kvm after permission setup =='
+          ls -l /dev/kvm
+          stat -c 'device=%n type=%F owner=%U(%u) group=%G(%g) mode=%A(%a)' /dev/kvm
+          [[ -r /dev/kvm ]] && after_read=yes || after_read=no
+          [[ -w /dev/kvm ]] && after_write=yes || after_write=no
+          printf 'effective_access_after read=%s write=%s\n' \
+            "$after_read" "$after_write"
+          if [[ "$after_read" != yes || "$after_write" != yes ]]; then
+            echo '::error::/dev/kvm is present but remains inaccessible for read/write.'
+            exit 1
+          fi
+
+          python3 - <<'PY'
+          import os
+          import sys
+
+          try:
+              descriptor = os.open('/dev/kvm', os.O_RDWR)
+          except OSError as error:
+              print(
+                  f'::error::Unable to open /dev/kvm read/write: '
+                  f'errno={error.errno} {error.strerror}',
+              )
+              sys.exit(1)
+          else:
+              os.close(descriptor)
+              print('kvm_open_read_write=success')
+          PY
+
+      - name: Android 16 standard app and six Harbor captures
+        id: harbor_runtime
+        continue-on-error: true
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 36
@@ -66,20 +255,52 @@ jobs:
           ram-size: 2048M
           heap-size: 512M
           emulator-boot-timeout: 1200
-          script: python3 tools/kelime_avi_android_runtime_probe.py
+          disable-animations: false
+          script: |
+            : > reports/kelime_avi_runtime/STANDARD_PROBE_EXIT_CODE.txt
+            : > reports/kelime_avi_runtime/HARBOR_PROBE_EXIT_CODE.txt
+            cp apps/kelime_avi_standalone/build/app/outputs/flutter-apk/app-debug.apk "$RUNNER_TEMP/harbor-proof.apk"
+            cp "$RUNNER_TEMP/harbor-standard/app-debug.apk" apps/kelime_avi_standalone/build/app/outputs/flutter-apk/app-debug.apk
+            python3 tools/kelime_avi_android_runtime_probe.py; probe_status=$?; printf '%s\n' "$probe_status" > reports/kelime_avi_runtime/STANDARD_PROBE_EXIT_CODE.txt
+            cp "$RUNNER_TEMP/harbor-proof.apk" apps/kelime_avi_standalone/build/app/outputs/flutter-apk/app-debug.apk
+            python3 tools/kelime_avi_harbor_runtime_probe.py; probe_status=$?; printf '%s\n' "$probe_status" > reports/kelime_avi_runtime/HARBOR_PROBE_EXIT_CODE.txt
+            printf '0\n' | cmp -s - reports/kelime_avi_runtime/STANDARD_PROBE_EXIT_CODE.txt && printf '0\n' | cmp -s - reports/kelime_avi_runtime/HARBOR_PROBE_EXIT_CODE.txt
 
-      - name: Upload Android runtime evidence
+      - name: Harbor Android kanıt paketini yükle
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: KelimeAvi-android-runtime-proof
+          name: Harbor-CheckpointA-Android-Proof-${{ github.event.pull_request.head.sha }}
           path: reports/kelime_avi_runtime/
-          if-no-files-found: warn
-
-      - name: Upload screenshot debug APK
-        if: success()
-        uses: actions/upload-artifact@v4
-        with:
-          name: KelimeAvi-screenshot-debug-apk
-          path: apps/kelime_avi_standalone/build/app/outputs/flutter-apk/app-debug.apk
           if-no-files-found: error
+          retention-days: 21
+
+      - name: Harbor proof sonucunu artifact yüklemesinden sonra uygula
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${{ steps.harbor_runtime.outcome }}" = 'success'
+          for probe in STANDARD HARBOR; do
+            status_file="reports/kelime_avi_runtime/${probe}_PROBE_EXIT_CODE.txt"
+            if ! printf '0\n' | cmp -s - "$status_file"; then
+              echo "::error::$probe probe exit code is missing, invalid or nonzero."
+              exit 1
+            fi
+          done
+          test -s reports/kelime_avi_runtime/HARBOR_RESULT.json
+          test -s reports/kelime_avi_runtime/HARBOR_RESULT.txt
+          grep -Fxq 'RESULT=PASS' \
+            reports/kelime_avi_runtime/HARBOR_RESULT.txt
+          grep -Fxq "SOURCE_SHA=$PROOF_SOURCE_SHA" reports/kelime_avi_runtime/HARBOR_RESULT.txt
+          grep -Fxq 'CAPTURE_COUNT=6' reports/kelime_avi_runtime/HARBOR_RESULT.txt
+          for capture in \
+            harbor_360x800_mixed \
+            harbor_360x800_l20_playable \
+            harbor_412x915_mixed \
+            harbor_412x915_l20_playable \
+            harbor_360x800_segment3 \
+            harbor_412x915_segment3; do
+            test -s "reports/kelime_avi_runtime/${capture}.png"
+            test -s "reports/kelime_avi_runtime/${capture}.xml"
+          done

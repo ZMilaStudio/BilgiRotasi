@@ -26,6 +26,8 @@ void main() {
     for (final path in <String>[
       'assets/word_hunt/baslangic_limani_bg.jpg',
       'assets/word_hunt/baslangic_limani/node_normal.webp',
+      'assets/word_hunt/harbor_segments/segment_02_clean.webp',
+      'assets/word_hunt/harbor_segments/segment_03_clean.webp',
       'assets/word_hunt/v5_reference_assets/harbor_background_1080x1920.png',
       'assets/word_hunt/v5_reference_assets/status_panel_empty.png',
       'assets/word_hunt/v5_reference_assets/cell_idle.png',

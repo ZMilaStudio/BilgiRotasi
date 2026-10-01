@@ -17,15 +17,19 @@
       "routeId": "baslangic-limani",
       "availableLevelCount": 30,
       "plannedLevelCount": 100,
-      "reservedWordCount": 196,
+      "reservedWordCount": 247,
       "reservedWords": [
         "ANIT",
         "ANKARA",
+        "APARTMAN",
         "ARI",
         "ARMUT",
+        "ASLAN",
         "AVİZE",
+        "AYAK",
         "AYAZ",
         "AĞAÇ",
+        "BADEM",
         "BAHÇE",
         "BAL",
         "BALIK",
@@ -34,14 +38,19 @@
         "BARDAK",
         "BAVUL",
         "BAŞKENT",
+        "BOYA",
+        "BOYUN",
         "BULUT",
         "BURUN",
         "BİLET",
         "BİLGİ",
         "BİNA",
         "BİSİKLET",
+        "CADDE",
+        "CAM",
         "CEVİZ",
         "DALGA",
+        "DAMAR",
         "DEFTER",
         "DENİZ",
         "DERS",
@@ -49,6 +58,8 @@
         "DOLU",
         "DOĞA",
         "DURAK",
+        "DUVAR",
+        "DUŞ",
         "DÜNYA",
         "DÜRBÜN",
         "DÜĞME",
@@ -57,34 +68,38 @@
         "EKMEK",
         "EKRAN",
         "ELMA",
+        "ERİK",
         "ETİKET",
+        "FARE",
         "FAUL",
         "FENER",
         "FIRIN",
+        "FIRTINA",
         "FIRÇA",
         "FİDAN",
         "FİŞ",
         "GEMİ",
         "GEZEGEN",
         "GOL",
-        "GÖKKUŞAK",
         "GÜNEŞ",
         "HALI",
         "HARİTA",
         "HAVLU",
+        "HAVUZ",
         "HAZİNE",
         "HEDEF",
         "HIZ",
         "HIZLI",
         "HOROZ",
-        "KALE",
         "KALEM",
         "KAMERA",
         "KANAT",
+        "KAPI",
         "KAPTAN",
         "KARPUZ",
         "KASA",
         "KASABA",
+        "KASE",
         "KAVUN",
         "KAYAK",
         "KAZAK",
@@ -93,24 +108,31 @@
         "KEDİ",
         "KELEBEK",
         "KEMAN",
+        "KESTANE",
         "KEŞİF",
         "KIRAĞI",
+        "KIYI",
         "KLAVYE",
         "KOLTUK",
         "KOVAN",
         "KOŞU",
-        "KRATER",
         "KULAK",
         "KULE",
         "KUMANDA",
         "KUMRU",
         "KUMSAL",
         "KUPA",
+        "KURT",
         "KÖMÜR",
         "KÖPEK",
         "KÖPRÜ",
+        "KÖY",
+        "KÜREK",
+        "KİLİM",
         "KİRAZ",
         "KİTAP",
+        "LAMBA",
+        "LAVABO",
         "LİMAN",
         "MACERA",
         "MAKAS",
@@ -123,21 +145,26 @@
         "MECLİS",
         "MERCAN",
         "MERDİVEN",
+        "METRO",
         "MEYVE",
+        "MUSLUK",
+        "MUZ",
         "MÜZİK",
+        "MÜŞTERİ",
+        "MİNDER",
         "NEHİR",
-        "NEKTAR",
-        "NİŞAN",
+        "NOTA",
+        "ODUN",
         "OKUL",
         "OMUZ",
         "ORMAN",
+        "OTEL",
         "OTOBÜS",
         "OYUN",
         "OYUNCU",
         "PANTOLON",
         "PARA",
         "PARK",
-        "PARKUR",
         "PARMAK",
         "PENCERE",
         "PERDE",
@@ -145,14 +172,17 @@
         "PEYNİR",
         "POLEN",
         "PORTAKAL",
+        "POĞAÇA",
         "PUSULA",
         "PİL",
         "PİYANO",
         "RENK",
+        "RESİM",
         "REÇEL",
         "ROBOT",
         "ROKET",
         "ROTA",
+        "RÜZGAR",
         "SAAT",
         "SABUN",
         "SAHİL",
@@ -162,21 +192,32 @@
         "SAÇ",
         "SAĞANAK",
         "SEPET",
+        "SES",
         "SINIF",
         "SKOR",
         "SOKAK",
         "SPOR",
         "SÜNGER",
         "SÜRE",
+        "SÜT",
+        "SİLGİ",
+        "SİMİT",
+        "SİS",
         "TABAK",
+        "TABLET",
+        "TAHTA",
         "TAKIM",
         "TAKSİ",
         "TARAK",
+        "TAVŞAN",
         "TELEFON",
         "TENCERE",
+        "TEREYAĞI",
         "TOP",
         "TOPRAK",
         "TRAFİK",
+        "TRAMVAY",
+        "TREN",
         "TURNA",
         "TÜRKİYE",
         "TİMSAH",
@@ -186,34 +227,44 @@
         "VAPUR",
         "YAPRAK",
         "YASTIK",
+        "YATAK",
+        "YAĞMUR",
         "YELKEN",
         "YEŞİL",
         "YILDIZ",
         "YOL",
         "YORGAN",
         "YOĞURT",
-        "YÖRÜNGE",
         "ZAMAN",
         "ZEBRA",
         "ZEYTİN",
         "ÇABUK",
         "ÇANTA",
+        "ÇARŞAF",
         "ÇATAL",
+        "ÇATI",
         "ÇAYIR",
         "ÇEKMECE",
         "ÇEKİRDEK",
         "ÇORAP",
         "ÇÖREK",
-        "ÇİSENTİ",
+        "ÇİLEK",
+        "ÇİMEN",
         "ÇİÇEK",
         "ÖDEV",
         "ÖRDEK",
+        "ÜRÜN",
+        "ÜZÜM",
         "İNCİR",
+        "İNDİRİM",
+        "İNTERNET",
         "İPUCU",
         "ŞAPKA",
+        "ŞARKI",
         "ŞEHİR",
         "ŞEMSİYE",
         "ŞOFÖR",
+        "ŞİMŞEK",
         "ŞİŞE"
       ],
       "wordOrigins": [
@@ -230,6 +281,12 @@
           "role": "TARGET"
         },
         {
+          "word": "APARTMAN",
+          "levelId": "baslangic-30",
+          "localIndex": 30,
+          "role": "TARGET"
+        },
+        {
           "word": "ARI",
           "levelId": "baslangic-7",
           "localIndex": 7,
@@ -242,9 +299,21 @@
           "role": "TARGET"
         },
         {
+          "word": "ASLAN",
+          "levelId": "baslangic-28",
+          "localIndex": 28,
+          "role": "TARGET"
+        },
+        {
           "word": "AVİZE",
           "levelId": "baslangic-21",
           "localIndex": 21,
+          "role": "TARGET"
+        },
+        {
+          "word": "AYAK",
+          "levelId": "baslangic-27",
+          "localIndex": 27,
           "role": "TARGET"
         },
         {
@@ -257,6 +326,12 @@
           "word": "AĞAÇ",
           "levelId": "baslangic-6",
           "localIndex": 6,
+          "role": "TARGET"
+        },
+        {
+          "word": "BADEM",
+          "levelId": "baslangic-18",
+          "localIndex": 18,
           "role": "TARGET"
         },
         {
@@ -308,6 +383,18 @@
           "role": "TARGET"
         },
         {
+          "word": "BOYA",
+          "levelId": "baslangic-16",
+          "localIndex": 16,
+          "role": "TARGET"
+        },
+        {
+          "word": "BOYUN",
+          "levelId": "baslangic-27",
+          "localIndex": 27,
+          "role": "TARGET"
+        },
+        {
           "word": "BULUT",
           "levelId": "baslangic-11",
           "localIndex": 11,
@@ -344,6 +431,18 @@
           "role": "TARGET"
         },
         {
+          "word": "CADDE",
+          "levelId": "baslangic-30",
+          "localIndex": 30,
+          "role": "TARGET"
+        },
+        {
+          "word": "CAM",
+          "levelId": "baslangic-20",
+          "localIndex": 20,
+          "role": "TARGET"
+        },
+        {
           "word": "CEVİZ",
           "levelId": "baslangic-18",
           "localIndex": 18,
@@ -353,6 +452,12 @@
           "word": "DALGA",
           "levelId": "baslangic-2",
           "localIndex": 2,
+          "role": "TARGET"
+        },
+        {
+          "word": "DAMAR",
+          "levelId": "baslangic-27",
+          "localIndex": 27,
           "role": "TARGET"
         },
         {
@@ -395,6 +500,18 @@
           "word": "DURAK",
           "levelId": "baslangic-23",
           "localIndex": 23,
+          "role": "TARGET"
+        },
+        {
+          "word": "DUVAR",
+          "levelId": "baslangic-11",
+          "localIndex": 11,
+          "role": "TARGET"
+        },
+        {
+          "word": "DUŞ",
+          "levelId": "baslangic-22",
+          "localIndex": 22,
           "role": "TARGET"
         },
         {
@@ -446,10 +563,22 @@
           "role": "BONUS"
         },
         {
+          "word": "ERİK",
+          "levelId": "baslangic-14",
+          "localIndex": 14,
+          "role": "TARGET"
+        },
+        {
           "word": "ETİKET",
           "levelId": "baslangic-25",
           "localIndex": 25,
           "role": "BONUS"
+        },
+        {
+          "word": "FARE",
+          "levelId": "baslangic-29",
+          "localIndex": 29,
+          "role": "TARGET"
         },
         {
           "word": "FAUL",
@@ -467,6 +596,12 @@
           "word": "FIRIN",
           "levelId": "baslangic-30",
           "localIndex": 30,
+          "role": "TARGET"
+        },
+        {
+          "word": "FIRTINA",
+          "levelId": "baslangic-26",
+          "localIndex": 26,
           "role": "TARGET"
         },
         {
@@ -506,12 +641,6 @@
           "role": "TARGET"
         },
         {
-          "word": "GÖKKUŞAK",
-          "levelId": "baslangic-26",
-          "localIndex": 26,
-          "role": "TARGET"
-        },
-        {
           "word": "GÜNEŞ",
           "levelId": "baslangic-9",
           "localIndex": 9,
@@ -533,6 +662,12 @@
           "word": "HAVLU",
           "levelId": "baslangic-22",
           "localIndex": 22,
+          "role": "TARGET"
+        },
+        {
+          "word": "HAVUZ",
+          "levelId": "baslangic-15",
+          "localIndex": 15,
           "role": "TARGET"
         },
         {
@@ -566,12 +701,6 @@
           "role": "TARGET"
         },
         {
-          "word": "KALE",
-          "levelId": "baslangic-5",
-          "localIndex": 5,
-          "role": "TARGET"
-        },
-        {
           "word": "KALEM",
           "levelId": "baslangic-1",
           "localIndex": 1,
@@ -587,6 +716,12 @@
           "word": "KANAT",
           "levelId": "baslangic-7",
           "localIndex": 7,
+          "role": "TARGET"
+        },
+        {
+          "word": "KAPI",
+          "levelId": "baslangic-11",
+          "localIndex": 11,
           "role": "TARGET"
         },
         {
@@ -611,6 +746,12 @@
           "word": "KASABA",
           "levelId": "baslangic-20",
           "localIndex": 20,
+          "role": "TARGET"
+        },
+        {
+          "word": "KASE",
+          "levelId": "baslangic-17",
+          "localIndex": 17,
           "role": "TARGET"
         },
         {
@@ -662,6 +803,12 @@
           "role": "TARGET"
         },
         {
+          "word": "KESTANE",
+          "levelId": "baslangic-18",
+          "localIndex": 18,
+          "role": "TARGET"
+        },
+        {
           "word": "KEŞİF",
           "levelId": "baslangic-10",
           "localIndex": 10,
@@ -671,6 +818,12 @@
           "word": "KIRAĞI",
           "levelId": "baslangic-26",
           "localIndex": 26,
+          "role": "TARGET"
+        },
+        {
+          "word": "KIYI",
+          "levelId": "baslangic-15",
+          "localIndex": 15,
           "role": "TARGET"
         },
         {
@@ -696,12 +849,6 @@
           "levelId": "baslangic-4",
           "localIndex": 4,
           "role": "BONUS"
-        },
-        {
-          "word": "KRATER",
-          "levelId": "baslangic-9",
-          "localIndex": 9,
-          "role": "TARGET"
         },
         {
           "word": "KULAK",
@@ -740,6 +887,12 @@
           "role": "BONUS"
         },
         {
+          "word": "KURT",
+          "levelId": "baslangic-28",
+          "localIndex": 28,
+          "role": "TARGET"
+        },
+        {
           "word": "KÖMÜR",
           "levelId": "baslangic-19",
           "localIndex": 19,
@@ -758,6 +911,24 @@
           "role": "TARGET"
         },
         {
+          "word": "KÖY",
+          "levelId": "baslangic-20",
+          "localIndex": 20,
+          "role": "TARGET"
+        },
+        {
+          "word": "KÜREK",
+          "levelId": "baslangic-2",
+          "localIndex": 2,
+          "role": "TARGET"
+        },
+        {
+          "word": "KİLİM",
+          "levelId": "baslangic-22",
+          "localIndex": 22,
+          "role": "TARGET"
+        },
+        {
           "word": "KİRAZ",
           "levelId": "baslangic-13",
           "localIndex": 13,
@@ -767,6 +938,18 @@
           "word": "KİTAP",
           "levelId": "baslangic-3",
           "localIndex": 3,
+          "role": "TARGET"
+        },
+        {
+          "word": "LAMBA",
+          "levelId": "baslangic-21",
+          "localIndex": 21,
+          "role": "TARGET"
+        },
+        {
+          "word": "LAVABO",
+          "levelId": "baslangic-22",
+          "localIndex": 22,
           "role": "TARGET"
         },
         {
@@ -842,9 +1025,27 @@
           "role": "TARGET"
         },
         {
+          "word": "METRO",
+          "levelId": "baslangic-23",
+          "localIndex": 23,
+          "role": "TARGET"
+        },
+        {
           "word": "MEYVE",
           "levelId": "baslangic-7",
           "localIndex": 7,
+          "role": "TARGET"
+        },
+        {
+          "word": "MUSLUK",
+          "levelId": "baslangic-22",
+          "localIndex": 22,
+          "role": "TARGET"
+        },
+        {
+          "word": "MUZ",
+          "levelId": "baslangic-17",
+          "localIndex": 17,
           "role": "TARGET"
         },
         {
@@ -854,21 +1055,33 @@
           "role": "TARGET"
         },
         {
+          "word": "MÜŞTERİ",
+          "levelId": "baslangic-25",
+          "localIndex": 25,
+          "role": "TARGET"
+        },
+        {
+          "word": "MİNDER",
+          "levelId": "baslangic-21",
+          "localIndex": 21,
+          "role": "TARGET"
+        },
+        {
           "word": "NEHİR",
           "levelId": "baslangic-6",
           "localIndex": 6,
           "role": "TARGET"
         },
         {
-          "word": "NEKTAR",
-          "levelId": "baslangic-7",
-          "localIndex": 7,
+          "word": "NOTA",
+          "levelId": "baslangic-12",
+          "localIndex": 12,
           "role": "TARGET"
         },
         {
-          "word": "NİŞAN",
-          "levelId": "baslangic-10",
-          "localIndex": 10,
+          "word": "ODUN",
+          "levelId": "baslangic-19",
+          "localIndex": 19,
           "role": "TARGET"
         },
         {
@@ -887,6 +1100,12 @@
           "word": "ORMAN",
           "levelId": "baslangic-6",
           "localIndex": 6,
+          "role": "TARGET"
+        },
+        {
+          "word": "OTEL",
+          "levelId": "baslangic-30",
+          "localIndex": 30,
           "role": "TARGET"
         },
         {
@@ -923,12 +1142,6 @@
           "word": "PARK",
           "levelId": "baslangic-30",
           "localIndex": 30,
-          "role": "TARGET"
-        },
-        {
-          "word": "PARKUR",
-          "levelId": "baslangic-10",
-          "localIndex": 10,
           "role": "TARGET"
         },
         {
@@ -974,6 +1187,12 @@
           "role": "TARGET"
         },
         {
+          "word": "POĞAÇA",
+          "levelId": "baslangic-24",
+          "localIndex": 24,
+          "role": "TARGET"
+        },
+        {
           "word": "PUSULA",
           "levelId": "baslangic-10",
           "localIndex": 10,
@@ -998,6 +1217,12 @@
           "role": "TARGET"
         },
         {
+          "word": "RESİM",
+          "levelId": "baslangic-16",
+          "localIndex": 16,
+          "role": "TARGET"
+        },
+        {
           "word": "REÇEL",
           "levelId": "baslangic-24",
           "localIndex": 24,
@@ -1019,6 +1244,12 @@
           "word": "ROTA",
           "levelId": "baslangic-1",
           "localIndex": 1,
+          "role": "TARGET"
+        },
+        {
+          "word": "RÜZGAR",
+          "levelId": "baslangic-26",
+          "localIndex": 26,
           "role": "TARGET"
         },
         {
@@ -1076,6 +1307,12 @@
           "role": "TARGET"
         },
         {
+          "word": "SES",
+          "levelId": "baslangic-12",
+          "localIndex": 12,
+          "role": "TARGET"
+        },
+        {
           "word": "SINIF",
           "levelId": "baslangic-3",
           "localIndex": 3,
@@ -1112,9 +1349,45 @@
           "role": "TARGET"
         },
         {
+          "word": "SÜT",
+          "levelId": "baslangic-20",
+          "localIndex": 20,
+          "role": "TARGET"
+        },
+        {
+          "word": "SİLGİ",
+          "levelId": "baslangic-1",
+          "localIndex": 1,
+          "role": "TARGET"
+        },
+        {
+          "word": "SİMİT",
+          "levelId": "baslangic-24",
+          "localIndex": 24,
+          "role": "TARGET"
+        },
+        {
+          "word": "SİS",
+          "levelId": "baslangic-26",
+          "localIndex": 26,
+          "role": "TARGET"
+        },
+        {
           "word": "TABAK",
           "levelId": "baslangic-21",
           "localIndex": 21,
+          "role": "TARGET"
+        },
+        {
+          "word": "TABLET",
+          "levelId": "baslangic-29",
+          "localIndex": 29,
+          "role": "TARGET"
+        },
+        {
+          "word": "TAHTA",
+          "levelId": "baslangic-19",
+          "localIndex": 19,
           "role": "TARGET"
         },
         {
@@ -1136,6 +1409,12 @@
           "role": "TARGET"
         },
         {
+          "word": "TAVŞAN",
+          "levelId": "baslangic-28",
+          "localIndex": 28,
+          "role": "TARGET"
+        },
+        {
           "word": "TELEFON",
           "levelId": "baslangic-29",
           "localIndex": 29,
@@ -1145,6 +1424,12 @@
           "word": "TENCERE",
           "levelId": "baslangic-18",
           "localIndex": 18,
+          "role": "TARGET"
+        },
+        {
+          "word": "TEREYAĞI",
+          "levelId": "baslangic-24",
+          "localIndex": 24,
           "role": "TARGET"
         },
         {
@@ -1163,6 +1448,18 @@
           "word": "TRAFİK",
           "levelId": "baslangic-30",
           "localIndex": 30,
+          "role": "TARGET"
+        },
+        {
+          "word": "TRAMVAY",
+          "levelId": "baslangic-23",
+          "localIndex": 23,
+          "role": "TARGET"
+        },
+        {
+          "word": "TREN",
+          "levelId": "baslangic-23",
+          "localIndex": 23,
           "role": "TARGET"
         },
         {
@@ -1220,6 +1517,18 @@
           "role": "TARGET"
         },
         {
+          "word": "YATAK",
+          "levelId": "baslangic-21",
+          "localIndex": 21,
+          "role": "TARGET"
+        },
+        {
+          "word": "YAĞMUR",
+          "levelId": "baslangic-26",
+          "localIndex": 26,
+          "role": "TARGET"
+        },
+        {
           "word": "YELKEN",
           "levelId": "baslangic-17",
           "localIndex": 17,
@@ -1256,12 +1565,6 @@
           "role": "TARGET"
         },
         {
-          "word": "YÖRÜNGE",
-          "levelId": "baslangic-9",
-          "localIndex": 9,
-          "role": "TARGET"
-        },
-        {
           "word": "ZAMAN",
           "levelId": "baslangic-4",
           "localIndex": 4,
@@ -1292,9 +1595,21 @@
           "role": "TARGET"
         },
         {
+          "word": "ÇARŞAF",
+          "levelId": "baslangic-21",
+          "localIndex": 21,
+          "role": "TARGET"
+        },
+        {
           "word": "ÇATAL",
           "levelId": "baslangic-21",
           "localIndex": 21,
+          "role": "TARGET"
+        },
+        {
+          "word": "ÇATI",
+          "levelId": "baslangic-11",
+          "localIndex": 11,
           "role": "TARGET"
         },
         {
@@ -1328,9 +1643,15 @@
           "role": "TARGET"
         },
         {
-          "word": "ÇİSENTİ",
-          "levelId": "baslangic-26",
-          "localIndex": 26,
+          "word": "ÇİLEK",
+          "levelId": "baslangic-13",
+          "localIndex": 13,
+          "role": "TARGET"
+        },
+        {
+          "word": "ÇİMEN",
+          "levelId": "baslangic-13",
+          "localIndex": 13,
           "role": "TARGET"
         },
         {
@@ -1352,9 +1673,33 @@
           "role": "TARGET"
         },
         {
+          "word": "ÜRÜN",
+          "levelId": "baslangic-25",
+          "localIndex": 25,
+          "role": "TARGET"
+        },
+        {
+          "word": "ÜZÜM",
+          "levelId": "baslangic-14",
+          "localIndex": 14,
+          "role": "TARGET"
+        },
+        {
           "word": "İNCİR",
           "levelId": "baslangic-14",
           "localIndex": 14,
+          "role": "TARGET"
+        },
+        {
+          "word": "İNDİRİM",
+          "levelId": "baslangic-25",
+          "localIndex": 25,
+          "role": "TARGET"
+        },
+        {
+          "word": "İNTERNET",
+          "levelId": "baslangic-29",
+          "localIndex": 29,
           "role": "TARGET"
         },
         {
@@ -1367,6 +1712,12 @@
           "word": "ŞAPKA",
           "levelId": "baslangic-16",
           "localIndex": 16,
+          "role": "TARGET"
+        },
+        {
+          "word": "ŞARKI",
+          "levelId": "baslangic-12",
+          "localIndex": 12,
           "role": "TARGET"
         },
         {
@@ -1388,6 +1739,12 @@
           "role": "TARGET"
         },
         {
+          "word": "ŞİMŞEK",
+          "levelId": "baslangic-26",
+          "localIndex": 26,
+          "role": "TARGET"
+        },
+        {
           "word": "ŞİŞE",
           "levelId": "baslangic-17",
           "localIndex": 17,
@@ -1400,21 +1757,22 @@
           "levelId": "baslangic-1",
           "type": "normal",
           "grid": [
-            "BHVFKNÇL",
-            "MROTAMBK",
-            "GZGBLITÜ",
-            "EJÖİEOGS",
-            "MEELMASA",
-            "ZFOGÖORF",
-            "ESTİOYUN",
-            "LYUARFCÜ"
+            "EGVRPBĞK",
+            "LNVPOİÜH",
+            "MSCMYLSE",
+            "ACFAUGİV",
+            "MHÜSNİLF",
+            "CLOABÖGĞ",
+            "KALEMGİB",
+            "SLJROTAG"
           ],
           "targetWords": [
             "KALEM",
             "MASA",
             "OYUN",
             "ROTA",
-            "BİLGİ"
+            "BİLGİ",
+            "SİLGİ"
           ],
           "bonusWords": [
             "ELMA"
@@ -1426,29 +1784,30 @@
             "threeStarMaxSeconds": null
           },
           "timeLimitSeconds": null,
-          "gridHash": "ef7f524e4502c330121ef32ef020f3a0b54ab6c392813744b0e3ac5ab69fabe0",
-          "levelFingerprint": "500fafef28dd2fac51d7a6cfa54a49b74851d3213c2c352642d38875e0320b3a"
+          "gridHash": "a6413c23db65573efad1cd96bd92083629df02d83ecf8c1971ee0c7f9d100c9f",
+          "levelFingerprint": "104de9494ee2945d4d0153b3aa0d628cbf852a6cf1fcb7f0faa679089d0d0fd3"
         },
         {
           "localIndex": 2,
           "levelId": "baslangic-2",
           "type": "normal",
           "grid": [
-            "CĞAPİÇCL",
-            "MIUGEMİP",
-            "PMARTILG",
-            "HLÜDBÜHR",
-            "EİĞEAÖIF",
-            "VMJNTLÜŞ",
-            "SAHİLUGÇ",
-            "ANJZSLTA"
+            "DLİMANON",
+            "ENVSAHİL",
+            "NCMARTIĞ",
+            "İDKİEAKC",
+            "ZACÖİDZS",
+            "ALKÜREKD",
+            "ÇGKGEMİN",
+            "ŞAOKLIHG"
           ],
           "targetWords": [
             "DENİZ",
             "GEMİ",
             "LİMAN",
             "DALGA",
-            "SAHİL"
+            "SAHİL",
+            "KÜREK"
           ],
           "bonusWords": [
             "MARTI"
@@ -1460,8 +1819,8 @@
             "threeStarMaxSeconds": null
           },
           "timeLimitSeconds": null,
-          "gridHash": "f3959e4f6cb1f2a7982594adeaff90d1945d03aaec5e020e62c14cbdd7b291f7",
-          "levelFingerprint": "fb8afebeac54c333305ed6f5cf3de564032d2071699234e5ee92435c39f758fd"
+          "gridHash": "22b0868c520974491a985a8c5e6f4f4ac3e42e195bc87429d49c876847dcd1f8",
+          "levelFingerprint": "3937a7384de4d5a9619cfdb03fd7b89242d15b020c5c6a51754cf51808cbccdd"
         },
         {
           "localIndex": 3,
@@ -1538,14 +1897,14 @@
           "levelId": "baslangic-5",
           "type": "challenge",
           "grid": [
-            "ANKARAJB",
-            "TÜRKİYEA",
-            "OMOVÜAKŞ",
-            "ÖÇEGÜNUK",
-            "OZZCZILE",
-            "KALELTEN",
-            "OVFĞZİÜT",
-            "ŞEHİRZSÜ"
+            "BZAPTİKÖ",
+            "AĞNUÜÖUD",
+            "ŞUKLRHLM",
+            "KŞACKĞEE",
+            "EERÇİRJC",
+            "NHAIYRGL",
+            "TİGİEARİ",
+            "CRÜANITS"
           ],
           "targetWords": [
             "ANKARA",
@@ -1553,8 +1912,7 @@
             "TÜRKİYE",
             "BAŞKENT",
             "MECLİS",
-            "KULE",
-            "KALE"
+            "KULE"
           ],
           "bonusWords": [
             "ANIT"
@@ -1566,8 +1924,8 @@
             "threeStarMaxSeconds": 35
           },
           "timeLimitSeconds": 60,
-          "gridHash": "036b4849493081ccf2d47473ce368a9d427e61bd46b3377c4b19de0df0a8609e",
-          "levelFingerprint": "feed4d3015f70ea825d52bc9956b54c581fdf7d83dec692e90de4a276d157203"
+          "gridHash": "de1f8cda15c471f21256c265a9b3cb81155a7d3bddf10dab78750dbfaf997582",
+          "levelFingerprint": "4c38c18b55d792c616d4b3776328f23ef632540e327ff7ed214a3e2754673972"
         },
         {
           "localIndex": 6,
@@ -1610,14 +1968,14 @@
           "levelId": "baslangic-7",
           "type": "normal",
           "grid": [
-            "IŞKZNTEM",
-            "MRBKRİEO",
-            "GHAEAYOD",
-            "RĞLTVNNO",
-            "IİÇEKAAY",
-            "YKNPVEŞT",
-            "ADPOLENÖ",
-            "ÇUKÖSÇNP"
+            "ĞGARIBAL",
+            "ÇAYIRIÇP",
+            "POLENPCE",
+            "KMEYVEFT",
+            "SAKOVANE",
+            "EJNEZSKK",
+            "IHNAMUOV",
+            "BSZOTNJK"
           ],
           "targetWords": [
             "ARI",
@@ -1626,8 +1984,7 @@
             "KOVAN",
             "KANAT",
             "POLEN",
-            "PETEK",
-            "NEKTAR"
+            "PETEK"
           ],
           "bonusWords": [
             "ÇAYIR"
@@ -1639,22 +1996,22 @@
             "threeStarMaxSeconds": null
           },
           "timeLimitSeconds": null,
-          "gridHash": "29d33077063716a5a3423efa371cfe6ac1c5f0446d5379e4f2cf2c1c983b6302",
-          "levelFingerprint": "328584c2ae8deb8c53694a9d1201c61bd17f17282ef76e0419679d4cf6b6bd09"
+          "gridHash": "fc94f4dcb621f1827223e915ce060b6edd064c96ff161ed38767f84cf2b1fcef",
+          "levelFingerprint": "58f3054855ef7799fe7be8e0610db3b931bf5db8522e9539e85a4125ab6a818e"
         },
         {
           "localIndex": 8,
           "levelId": "baslangic-8",
           "type": "normal",
           "grid": [
-            "ILFAULİU",
-            "ĞMAÇSDCŞ",
-            "ÇHIZSNLO",
-            "AGMKUVÇK",
-            "İPRYAKVG",
-            "VROKSTLO",
-            "İÇPTHVÖL",
-            "PÇSPÖVÜP"
+            "HIİFTOPS",
+            "ÇSETAEŞK",
+            "MKPAAUJO",
+            "ANLOĞKLR",
+            "ÇYUYRİIV",
+            "DOYUNCUM",
+            "UGOLDÖYÜ",
+            "JİÇHIZMR"
           ],
           "targetWords": [
             "SPOR",
@@ -1676,22 +2033,22 @@
             "threeStarMaxSeconds": null
           },
           "timeLimitSeconds": null,
-          "gridHash": "c87d751d213cd23d22a59ba1218e62eb71eb84710a89075cf79d7f05d0c30858",
-          "levelFingerprint": "e835fe29b178f1b0dcc44ed5f035515f8d74af7ff4918407e4d3241dc7e9f143"
+          "gridHash": "1f1bcddd2ff55b95e520671da7fd8b9eec6658ef65ceab48da1b33857f546fb2",
+          "levelFingerprint": "8014c64c646677e8824e812190c6068810f1769ecbf8f3fdcbebe95ca96833de"
         },
         {
           "localIndex": 9,
           "levelId": "baslangic-9",
           "type": "normal",
           "grid": [
-            "VGRETARK",
-            "NEGEZEGZ",
-            "NİKESGÜI",
-            "ĞOGUÜNDD",
-            "RGYNMÜYL",
-            "ÜDETNRAI",
-            "UŞZYFÖZY",
-            "ÜMARSYUÜ"
+            "DÜNYAFAĞ",
+            "GRKMUUGY",
+            "CEKMĞZFI",
+            "UİZRAKYL",
+            "ZKUEORMD",
+            "ANNYGKSI",
+            "YOMMDEEZ",
+            "GÜNEŞUNT"
           ],
           "targetWords": [
             "MARS",
@@ -1700,9 +2057,7 @@
             "GEZEGEN",
             "GÜNEŞ",
             "DÜNYA",
-            "UYDU",
-            "KRATER",
-            "YÖRÜNGE"
+            "UYDU"
           ],
           "bonusWords": [
             "ROKET"
@@ -1714,29 +2069,27 @@
             "threeStarMaxSeconds": null
           },
           "timeLimitSeconds": null,
-          "gridHash": "686e8d4b3e9c5560875cb9eac75b21d105945882f1a8146d22082c80c7393c57",
-          "levelFingerprint": "c3e7656c2bc5b66eb2ea22808069d55317b740da5101e8aea4c6f57534e88e94"
+          "gridHash": "aa3467a1003ed846cba271aa2d325d4b03fdf6a16fde3570b77bc4be5794b2d7",
+          "levelFingerprint": "94d658c90410060503da609a321a160842c4babd357615d15b040cda71b2b7f6"
         },
         {
           "localIndex": 10,
           "levelId": "baslangic-10",
           "type": "routeFinal",
           "grid": [
-            "MHEDEFYP",
-            "NATPAKAA",
-            "FZCYOLTR",
-            "FİLEUİIK",
-            "İNRSRDUU",
-            "ŞEUALADR",
-            "EPHUCUPİ",
-            "KNİŞANIB"
+            "ÖFHARİTA",
+            "YPUSULAT",
+            "İOMACERA",
+            "FÖLİAEÇK",
+            "ÇKAPTANE",
+            "BİUŞAMCŞ",
+            "HAZİNEFİ",
+            "DİPUCUJF"
           ],
           "targetWords": [
             "PUSULA",
             "YOL",
             "İPUCU",
-            "PARKUR",
-            "NİŞAN",
             "KEŞİF",
             "HARİTA",
             "MACERA",
@@ -1752,28 +2105,31 @@
             "threeStarMaxSeconds": 75
           },
           "timeLimitSeconds": 120,
-          "gridHash": "b3a75ef4b4e2c203590efc2d8ee83a77476d8cc6dce72bbe36adcdbf2f6b37fb",
-          "levelFingerprint": "22490e979f4a8ed03a67842bdf5ddb2567a20a8e6adf37356df79cb1d50d6836"
+          "gridHash": "f3c2687b9572ce414992388b146445dcddaeac4c960868ae0de47572a455cb2d",
+          "levelFingerprint": "eceaea02ca42eb5e7225b234af7cc5aaf3b1e9eafef35c27ff4c200d54c32c06"
         },
         {
           "localIndex": 11,
           "levelId": "baslangic-11",
           "type": "normal",
           "grid": [
-            "ĞNLÖLİAĞ",
-            "IHPKÖNÖT",
-            "FİDÖRENK",
-            "NOZTVTÖA",
-            "AİÜHUPUD",
-            "DODZRLDR",
-            "İZSÜTÜUA",
-            "FNZIÇBNB"
+            "RIKLÖŞFT",
+            "EOAHFJUM",
+            "NHDĞÇLÜG",
+            "KRRFUAHB",
+            "KAABÖUTP",
+            "VVBKAPII",
+            "AUANADİF",
+            "RDÜRPÖKB"
           ],
           "targetWords": [
             "BARDAK",
             "KÖPRÜ",
             "BULUT",
-            "RENK"
+            "RENK",
+            "KAPI",
+            "DUVAR",
+            "ÇATI"
           ],
           "bonusWords": [
             "FİDAN"
@@ -1785,28 +2141,31 @@
             "threeStarMaxSeconds": null
           },
           "timeLimitSeconds": null,
-          "gridHash": "528dc80bd18d4ebe7630a479fb5c52698ce08b035f82f9fe572e906000f7dc91",
-          "levelFingerprint": "ec7176a001c643548e0e434d397c7ff2996b75ea2938e44b400734552c695ba6"
+          "gridHash": "dd1f1b266daaa5fc5941033040097259acbddee99a657809ac3c3a842a915c69",
+          "levelFingerprint": "3c6382af626cc7193a672958da660a8fccb0d77f65080843e34fb8b11d5ace8f"
         },
         {
           "localIndex": 12,
           "levelId": "baslangic-12",
           "type": "normal",
           "grid": [
-            "BFUIZSDÖ",
-            "KCLPIMUM",
-            "SRIÖUJRŞ",
-            "ZERAKEMY",
-            "AMHİTTUU",
-            "HĞZFŞNKÇ",
-            "TÜEZLAAL",
-            "MDYHÖLRÇ"
+            "SESGKUOS",
+            "HEKİERVO",
+            "ÖEZMDMNI",
+            "AÜĞÇEUPK",
+            "MÜAAFKŞR",
+            "DVTNTJYA",
+            "KÖOTEPĞŞ",
+            "ZMNAROTR"
           ],
           "targetWords": [
             "ÇANTA",
             "MÜZİK",
             "KUMRU",
-            "DEFTER"
+            "DEFTER",
+            "NOTA",
+            "ŞARKI",
+            "SES"
           ],
           "bonusWords": [
             "DÜĞME"
@@ -1818,29 +2177,31 @@
             "threeStarMaxSeconds": null
           },
           "timeLimitSeconds": null,
-          "gridHash": "8c5359428e02034ffbf916b4ddd5fbdac921707ace806b0018b01a92f2b02d7c",
-          "levelFingerprint": "1d4f83e990a6df3a874bc996dc1b04f0a2216aa8de6a36f21e6755bb0645e2e8"
+          "gridHash": "ebfe16ce9395b54bd7794fe1e001179b5d032964b07de296443d1c50565bd9c4",
+          "levelFingerprint": "7d7095f8af102bcc9d3f8f7f41aa416deef169dabd8fcc865e0861a821f85a3d"
         },
         {
           "localIndex": 13,
           "levelId": "baslangic-13",
           "type": "normal",
           "grid": [
-            "OJFRBYĞE",
-            "NODMĞYCŞ",
-            "EZĞIEEPÖ",
-            "GAEDREPF",
-            "DRLÇJÇÖÜ",
-            "HİDEKHZH",
-            "BKITSAYN",
-            "İAİNUBAS"
+            "ÇİLEKÜOP",
+            "MEBAHÇEY",
+            "KIEYINİN",
+            "AIKDUTDE",
+            "FŞTBRHEM",
+            "CZASHEKİ",
+            "ASÜIAIPÇ",
+            "ZARİKYLĞ"
           ],
           "targetWords": [
             "BAHÇE",
             "KEDİ",
             "PERDE",
             "SABUN",
-            "YASTIK"
+            "YASTIK",
+            "ÇİMEN",
+            "ÇİLEK"
           ],
           "bonusWords": [
             "KİRAZ"
@@ -1852,29 +2213,31 @@
             "threeStarMaxSeconds": null
           },
           "timeLimitSeconds": null,
-          "gridHash": "8f7f3e0599eb2d825abe3789a36fd77275bc5b1d0764a879a1f2c8b1b05f5925",
-          "levelFingerprint": "9eef2e5177e0da84ae720bb82ddc97c000f03e748059859e64aec37d7c11dd63"
+          "gridHash": "46e77075b4a44bd116e0cd8d0c88e461c1c82756bf9b902d033f219c1059353d",
+          "levelFingerprint": "5138fd74fc0aa1cd8b9062c625760b71e516ba9f3e1366c6771d77944d3ac2ad"
         },
         {
           "localIndex": 14,
           "levelId": "baslangic-14",
           "type": "normal",
           "grid": [
-            "ÖVHUBMAB",
-            "ÖTARAKİE",
-            "ŞTĞGMFRB",
-            "ÖÇBÖOETÇ",
-            "FORİCNİP",
-            "İRFNUESU",
-            "EAETCYGS",
-            "HPIÇTCŞF"
+            "BNOGAVZY",
+            "TARAKÜJE",
+            "PPENCERE",
+            "AĞRGMBÖI",
+            "RMUİAÜKM",
+            "ONÖMCİZG",
+            "ÇGBURNMÜ",
+            "DUSENKİO"
           ],
           "targetWords": [
             "VAGON",
             "BAMBU",
             "İNCİR",
             "TARAK",
-            "PENCERE"
+            "PENCERE",
+            "ERİK",
+            "ÜZÜM"
           ],
           "bonusWords": [
             "ÇORAP"
@@ -1886,29 +2249,31 @@
             "threeStarMaxSeconds": null
           },
           "timeLimitSeconds": null,
-          "gridHash": "f986a21de7e202c435586e6576fb158372440fe0f238ea1f8f3317c77dd6ca64",
-          "levelFingerprint": "12a7d7493bf498b822552269eece91410bffb5fdc122f46331813d10345295f9"
+          "gridHash": "84bc0b8fd055c3532930a2121ba6c1f47f263007d470e021148b98df12de8042",
+          "levelFingerprint": "b5ad715a66de231f5180a0f75ebb45006b4d837146bebaf4e68a5da3d924f35c"
         },
         {
           "localIndex": 15,
           "levelId": "baslangic-15",
           "type": "normal",
           "grid": [
-            "RRTŞSUMD",
-            "ZPÇUVMBÜ",
-            "LNCERNNR",
-            "AFĞCJNNB",
-            "SĞYÖIUAÜ",
-            "MERDİVEN",
-            "UCRÇUADO",
-            "KŞZLLKKT"
+            "FMIĞHNKN",
+            "AEYEAÜUU",
+            "NRCIVBMV",
+            "RDLCURSA",
+            "UİÖUZÜAK",
+            "TVÇCVDLĞ",
+            "İEKLVAKC",
+            "MNIYIKBD"
           ],
           "targetWords": [
             "KUMSAL",
             "TURNA",
             "BAVUL",
             "KAVUN",
-            "MERDİVEN"
+            "MERDİVEN",
+            "KIYI",
+            "HAVUZ"
           ],
           "bonusWords": [
             "DÜRBÜN"
@@ -1920,29 +2285,31 @@
             "threeStarMaxSeconds": null
           },
           "timeLimitSeconds": null,
-          "gridHash": "70f6a68ca6b487acf3a02cd51c82f62ef448ccf92bb5d53f4052c6bba8992f81",
-          "levelFingerprint": "63ef29721735ae5717c52901fa2965745e30896b74daac73eb8af2d37fd93d2d"
+          "gridHash": "cccf4e45e0361d233a2f9fcfd5b79e473e756a783dabaa6ee429750ffb71cad5",
+          "levelFingerprint": "cd4daaed3fa8fed7ba91845f616da18952744e8502fd1794f0aabb6ac11a2374"
         },
         {
           "localIndex": 16,
           "levelId": "baslangic-16",
           "type": "normal",
           "grid": [
-            "ĞBIKGACĞ",
-            "SKFNMUAM",
-            "KEMANJMF",
-            "ÇŞKCPHHI",
-            "HARRĞESR",
-            "SPBECDDÇ",
-            "SKUMANDA",
-            "JALSÇVÜR"
+            "KEMANVPL",
+            "SREÜNKDK",
+            "AADNAMUK",
+            "KAIHVZFE",
+            "AKHBİIES",
+            "MPMERCAN",
+            "HAGÇAYOB",
+            "TŞARESİM"
           ],
           "targetWords": [
             "MERCAN",
             "ŞAPKA",
             "MAKAS",
             "KEMAN",
-            "KUMANDA"
+            "KUMANDA",
+            "RESİM",
+            "BOYA"
           ],
           "bonusWords": [
             "FIRÇA"
@@ -1954,29 +2321,31 @@
             "threeStarMaxSeconds": null
           },
           "timeLimitSeconds": null,
-          "gridHash": "77091f9006d5a2bb026d028ad46bd454e3b93e4567440716b77fd851b6d38032",
-          "levelFingerprint": "59885e39cd0e4ed3b322384b4e683844a4ffa194c2e7cec9994d3a26f22d4f9a"
+          "gridHash": "b3b41d964ac1f308d2e458c58a92685e5ea079967389e59ab69fe03d05ae517b",
+          "levelFingerprint": "e5c4414f727868cd71bdddbbbd77ebedf6aa71a9f2e4fa613e11938eb1cf06a7"
         },
         {
           "localIndex": 17,
           "levelId": "baslangic-17",
           "type": "normal",
           "grid": [
-            "FHMĞUÜOZ",
-            "UYILZFGE",
-            "PYTITÖCY",
-            "İYELKENT",
-            "YİTUMRAİ",
-            "AŞNKZILN",
-            "NPEŞİŞGN",
-            "OÇBRIÇAC"
+            "NİTYEZÖB",
+            "ECOBÇEKO",
+            "USNAEJAY",
+            "LŞAZKVRE",
+            "YİYKMZML",
+            "CŞİKEUUK",
+            "CEPVCMTE",
+            "BJHTEĞKN"
           ],
           "targetWords": [
             "ZEYTİN",
             "ARMUT",
             "ÇEKMECE",
             "PİYANO",
-            "ŞİŞE"
+            "ŞİŞE",
+            "MUZ",
+            "KASE"
           ],
           "bonusWords": [
             "YELKEN"
@@ -1988,29 +2357,31 @@
             "threeStarMaxSeconds": null
           },
           "timeLimitSeconds": null,
-          "gridHash": "8e8a5f20f077c88f7f616d868076226f0b465dd76b6c6285523edbb16e4605b7",
-          "levelFingerprint": "79dfd565b814e3c219c179dd6289b8a17a71d0758e9b43a798c92e45a2ec7c20"
+          "gridHash": "0b6199793752f1f4fdcfdb08599beb3b6b2a0eb265ca950797bfd0d2e4eff837",
+          "levelFingerprint": "a520a6850977e3be0dab4a003041dc067114916f410e5a2f10a642ef472ce432"
         },
         {
           "localIndex": 18,
           "levelId": "baslangic-18",
           "type": "normal",
           "grid": [
-            "IÜZUPRAK",
-            "CMĞGAÜEH",
-            "VKKPŞLRZ",
-            "BİSİKLET",
-            "PELAHBCG",
-            "TTZRVZNK",
-            "DAIZİVEC",
-            "KEDRÖOTR"
+            "ZUPRAKĞZ",
+            "JNOBKPSİ",
+            "ÜRJJAÇRV",
+            "ÖRDEKDZE",
+            "KESTANEC",
+            "BKAZAKLM",
+            "TELKİSİB",
+            "TENCEREP"
           ],
           "targetWords": [
             "KARPUZ",
             "TENCERE",
             "ÖRDEK",
             "BİSİKLET",
-            "CEVİZ"
+            "CEVİZ",
+            "KESTANE",
+            "BADEM"
           ],
           "bonusWords": [
             "KAZAK"
@@ -2022,29 +2393,31 @@
             "threeStarMaxSeconds": null
           },
           "timeLimitSeconds": null,
-          "gridHash": "054645e1e25d5278c463c85226fde6fb9ba4ea9435394cbbbedfde42bf89b072",
-          "levelFingerprint": "a4a9a13c63b1de70135e0fe6543c7097f8949c8219c302e26681f737bd9dc09e"
+          "gridHash": "75aca77ac247e5fa95b1dab23dbbdc71dab2691f5d9c364d054c82979a4d7fdf",
+          "levelFingerprint": "827c85d8786e865037e317ac862602d661015adeddd45188900dd794222f081d"
         },
         {
           "localIndex": 19,
           "levelId": "baslangic-19",
           "type": "normal",
           "grid": [
-            "İHZGPEÖD",
-            "ŞTAİNÇAI",
-            "KLHPVRYS",
-            "GABRÜMÖK",
-            "ŞAYIEOŞA",
-            "EYLADNAS",
-            "GAJKKŞER",
-            "HÇĞKPTJF"
+            "YGSKÖMÜR",
+            "FŞAİİEIF",
+            "İKNDKLEÇ",
+            "IADUANHA",
+            "SYAHEGTN",
+            "KALRHHİU",
+            "AKYFABGD",
+            "SÖETAHKO"
           ],
           "targetWords": [
             "FENER",
             "SAKSI",
             "KAYAK",
             "HALI",
-            "SANDALYE"
+            "SANDALYE",
+            "ODUN",
+            "TAHTA"
           ],
           "bonusWords": [
             "KÖMÜR"
@@ -2056,29 +2429,32 @@
             "threeStarMaxSeconds": null
           },
           "timeLimitSeconds": null,
-          "gridHash": "acce9a75a9a050e14a0a4782bb11a71bcdbd7572b9d7172c3101a73ffd43cfa4",
-          "levelFingerprint": "b3d066da6fdd4ee1f8b76f297814251e1da63dcac8b1f1e9423d4cc64d0956a5"
+          "gridHash": "60fac30cfc6c32c670de0991cb692e64979e06a7c681bb4cc598ab5165dff34c",
+          "levelFingerprint": "adfe4850438a8eebc2e084966da6382252d1020b1d88ec65e070956d06d025c2"
         },
         {
           "localIndex": 20,
           "levelId": "baslangic-20",
           "type": "challenge",
           "grid": [
-            "BÖÜHONIJ",
-            "MANDALTŞ",
-            "RŞEMSİYE",
-            "CAMĞCRGZ",
-            "YKASABAM",
-            "NOLOTNAP",
-            "KEDRİKEÇ",
-            "LAKATROP"
+            "LAKATROP",
+            "MKASABAÖ",
+            "BAMANDAL",
+            "DDCJKÖYF",
+            "PANTOLON",
+            "ŞEMSİYED",
+            "ÇEKİRDEK",
+            "ĞMUTÜSPB"
           ],
           "targetWords": [
             "PANTOLON",
             "PORTAKAL",
             "ŞEMSİYE",
             "KASABA",
-            "ÇEKİRDEK"
+            "ÇEKİRDEK",
+            "SÜT",
+            "CAM",
+            "KÖY"
           ],
           "bonusWords": [
             "MANDAL"
@@ -2090,28 +2466,32 @@
             "threeStarMaxSeconds": 75
           },
           "timeLimitSeconds": 120,
-          "gridHash": "c0f2e4c800bf99347a1e3c738d8adc6ebdcf6afac7bae2a11948dd794e5f1c25",
-          "levelFingerprint": "b3d324dc5d0e6261c7f185740bd90730d4c2c329d2fe156eff31a2fabf3bca15"
+          "gridHash": "e8a9d7c8be8fa5d9f1c7637e6895996a97dda0b8f783e5eca3bbd65aa4789ec7",
+          "levelFingerprint": "381737be9288ff87c1782cc52d8610c11600b54e870fa2997a499ba8982bdce7"
         },
         {
           "localIndex": 21,
           "levelId": "baslangic-21",
           "type": "normal",
           "grid": [
-            "ŞŞĞÇAKİU",
-            "RVCSAKTY",
-            "TNKEBPSY",
-            "HZAUZHEO",
-            "YIBFNİÇR",
-            "ILATAÇVG",
-            "KYTÇKUPA",
-            "TYUKRÇKN"
+            "KABATEÇY",
+            "KUPAZANR",
+            "ÇLİİRYEM",
+            "ATVŞODAÖ",
+            "TAARNBET",
+            "AFGİMBYU",
+            "LAMAIRÜB",
+            "NÜLYATAK"
           ],
           "targetWords": [
             "AVİZE",
             "TABAK",
             "ÇATAL",
-            "YORGAN"
+            "YORGAN",
+            "LAMBA",
+            "ÇARŞAF",
+            "YATAK",
+            "MİNDER"
           ],
           "bonusWords": [
             "KUPA"
@@ -2123,28 +2503,32 @@
             "threeStarMaxSeconds": null
           },
           "timeLimitSeconds": null,
-          "gridHash": "d8b8840574bc71a94aab710f840a72010323a91e97a569acc97c6883134bcad3",
-          "levelFingerprint": "963da0fc7078fddf889fb3925d5ef8b138f7f28ba0ed1f6bcabf78ca79e76b9e"
+          "gridHash": "c619661d6cbbea2cdf7ff92a8ee415e1ba607d6569af313e1489b9659da09395",
+          "levelFingerprint": "0b52a75d91c7f931322c80ba3a90d7c45e1ad369b36b93581dec2f2c4fcb64a5"
         },
         {
           "localIndex": 22,
           "levelId": "baslangic-22",
           "type": "normal",
           "grid": [
-            "EVĞILÜUŞ",
-            "OSLTĞLEN",
-            "VÜOJVKDY",
-            "İNPALODC",
-            "SGHŞYLRK",
-            "TERNPTÜS",
-            "URAISUUY",
-            "KBTEYKÜR"
+            "RLDHAVLU",
+            "KEAKİLİM",
+            "UÖGVŞUDİ",
+            "TBYNAJÜD",
+            "LAKRÜBÖO",
+            "OZKPBSOL",
+            "KKULSUMA",
+            "OYNABKFP"
           ],
           "targetWords": [
             "KOLTUK",
             "DOLAP",
             "HAVLU",
-            "BANYO"
+            "BANYO",
+            "LAVABO",
+            "MUSLUK",
+            "DUŞ",
+            "KİLİM"
           ],
           "bonusWords": [
             "SÜNGER"
@@ -2156,29 +2540,32 @@
             "threeStarMaxSeconds": null
           },
           "timeLimitSeconds": null,
-          "gridHash": "eb10644ff449063b8964c9f0ef5cb227674c51b9bcbbfbf81dcbeb16c06bc4e3",
-          "levelFingerprint": "440d4d94925efe3bbd17a01cace95d2db31333674d6ec84df9e28ddb469f543b"
+          "gridHash": "114397b81206e9391a9839d0b4f36ab5aca4f5e20f60966e7fff866864f2d51a",
+          "levelFingerprint": "bad8a4a58e375ee2fe0cb4c3f8066ec9af26bb1442bcb6ee714185c7dcb72fb2"
         },
         {
           "localIndex": 23,
           "levelId": "baslangic-23",
           "type": "normal",
           "grid": [
-            "OŞOFÖRZE",
-            "LLABSÇLL",
-            "KARUDÜPO",
-            "ÇNÇMFUTV",
-            "OİLJJOAJ",
-            "TELİBPKD",
-            "HEHÜUYSV",
-            "AJSRZKİÇ"
+            "AORTEMİS",
+            "ĞYÜSESÜV",
+            "GAPIKBAR",
+            "DVÖAOPBÖ",
+            "UMTTUİBF",
+            "RAORLUGO",
+            "ARSEŞDÜŞ",
+            "KTTTRENJ"
           ],
           "targetWords": [
             "OTOBÜS",
             "TAKSİ",
             "DURAK",
             "BİLET",
-            "ŞOFÖR"
+            "ŞOFÖR",
+            "TREN",
+            "TRAMVAY",
+            "METRO"
           ],
           "bonusWords": [
             "VAPUR"
@@ -2190,29 +2577,32 @@
             "threeStarMaxSeconds": null
           },
           "timeLimitSeconds": null,
-          "gridHash": "380bb20864ee54eaf95613353abc2eda73cff921c5ef2386c0e5a60e143338a1",
-          "levelFingerprint": "2cb5d50ff17f99df80f54b89fc996e18cf751df9ef7638ce998997e13bff6e2d"
+          "gridHash": "044312ca9fd48e5420c78d07d037ca7fb19fd32278e2e6982823b205047e8ab1",
+          "levelFingerprint": "913e29e9540f804aa08ef24176b044b5759488c8505c48581141a013bb2ef1bf"
         },
         {
           "localIndex": 24,
           "levelId": "baslangic-24",
           "type": "normal",
           "grid": [
-            "CJCÖTDKR",
-            "TZNHFĞAE",
-            "RZTDŞİŞÇ",
-            "UİCKFEIE",
-            "ĞANVKKKL",
-            "OICYJMGE",
-            "YZHKERÖÇ",
-            "ODIKÖPÖM"
+            "DMGTTFIS",
+            "AIZİRRĞZ",
+            "KAJMUİAP",
+            "KASİĞNYO",
+            "EEŞSOYEĞ",
+            "RTMIYERA",
+            "ÖEÜKKPEÇ",
+            "ÇREÇELTA"
           ],
           "targetWords": [
             "EKMEK",
             "PEYNİR",
             "YOĞURT",
             "REÇEL",
-            "ÇÖREK"
+            "ÇÖREK",
+            "SİMİT",
+            "POĞAÇA",
+            "TEREYAĞI"
           ],
           "bonusWords": [
             "KAŞIK"
@@ -2224,29 +2614,32 @@
             "threeStarMaxSeconds": null
           },
           "timeLimitSeconds": null,
-          "gridHash": "3481fde40f3104222947a28ba3d279a02754f5eb4503eba912fb59a1b0c2d6c7",
-          "levelFingerprint": "adc2229a4c9d780e2db32ba2590686b58c1fde395bd14f18d704cf7da0fa1f75"
+          "gridHash": "a3102858ca4b506143a0bd68a8c042518058961099fbad2addc58cb0d5b46dc2",
+          "levelFingerprint": "41a9e18fdcbeb7f8e0b1050912de08de8461ed5e3d0d0043e7a30a019cd16695"
         },
         {
           "localIndex": 25,
           "levelId": "baslangic-25",
           "type": "normal",
           "grid": [
-            "KKÜÜPYŞV",
-            "BUNVOÖFM",
-            "VSÇOEÜKT",
-            "IIŞSEPET",
-            "VİPÜOKIZ",
-            "FHÖAİAİK",
-            "HUYTRSSH",
-            "FTEKRAMP"
+            "GEPARATS",
+            "İCRMGDET",
+            "NKÜÜCPKE",
+            "DUÜŞEÇİK",
+            "İÇRTKTTR",
+            "RÜÜEŞAEA",
+            "İĞNRİMSM",
+            "MKAİFZAA"
           ],
           "targetWords": [
             "MARKET",
             "SEPET",
             "KASA",
             "PARA",
-            "FİŞ"
+            "FİŞ",
+            "ÜRÜN",
+            "İNDİRİM",
+            "MÜŞTERİ"
           ],
           "bonusWords": [
             "ETİKET"
@@ -2258,29 +2651,32 @@
             "threeStarMaxSeconds": null
           },
           "timeLimitSeconds": null,
-          "gridHash": "124877d6a5331c1ca1163ac408ec57f41fe44100b3edf17973ea937b3af59315",
-          "levelFingerprint": "c27d713dda9d96801fe9053b5eb31917086b6f912902292d3018ea674541f06a"
+          "gridHash": "ee648cb41a7bb1465e890b9e178832abbeed6f6e96315f0e7a71e2a48ff4da1d",
+          "levelFingerprint": "080c1cb8405925aec487d25d1e9cdc44818f8c6ffa9a795bb8fdc63bfcc9e07f"
         },
         {
           "localIndex": 26,
           "levelId": "baslangic-26",
           "type": "normal",
           "grid": [
-            "CABKZSEH",
-            "SAĞANAKİ",
-            "SMYŞFÜIT",
-            "ŞAKUZĞRN",
-            "FSLKŞJAE",
-            "GOPKMKĞS",
-            "DPKÖGKIİ",
-            "AÜÇGUCAÇ"
+            "ĞIKEŞMİŞ",
+            "FOTNMBPG",
+            "IRUMĞAYF",
+            "RKKIRAĞI",
+            "TZRAGZÜR",
+            "ISAĞANAK",
+            "NIİYDOLU",
+            "ALISAHPM"
           ],
           "targetWords": [
-            "GÖKKUŞAK",
+            "RÜZGAR",
             "DOLU",
             "KIRAĞI",
-            "ÇİSENTİ",
-            "SAĞANAK"
+            "ŞİMŞEK",
+            "SAĞANAK",
+            "YAĞMUR",
+            "SİS",
+            "FIRTINA"
           ],
           "bonusWords": [
             "AYAZ"
@@ -2292,29 +2688,32 @@
             "threeStarMaxSeconds": null
           },
           "timeLimitSeconds": null,
-          "gridHash": "37ef830d4a84ad162e9a0054e7d81a9c5d82617365fc4322cddf04ddbc70e2cb",
-          "levelFingerprint": "4951502a139c37c9f2bec6940906f3318aa889bec608bea107058c698931b7b1"
+          "gridHash": "fa96268fd82332767e8d952c658cab33e0a0a994bb69e1865f5a35f0a147f1d2",
+          "levelFingerprint": "da2629836668a2d2f7d08dd5c357badae37adb0209d21d97323434ee849bba35"
         },
         {
           "localIndex": 27,
           "levelId": "baslangic-27",
           "type": "normal",
           "grid": [
-            "SPFGYSKD",
-            "ZRAÇZÇKH",
-            "SBURUNAL",
-            "ŞEBZMFLS",
-            "FMLFOAUH",
-            "ŞŞŞOADKC",
-            "ÖBĞJGUİK",
-            "LAMULHEZ"
+            "VPSKZİDN",
+            "ÜADANPUN",
+            "KRYYĞYUJ",
+            "UMRAOROH",
+            "LAABUMVR",
+            "AKMBUÇAÜ",
+            "KVAZUANG",
+            "ÖBDIPSCR"
           ],
           "targetWords": [
             "BURUN",
             "KULAK",
             "PARMAK",
             "OMUZ",
-            "DİZ"
+            "DİZ",
+            "AYAK",
+            "DAMAR",
+            "BOYUN"
           ],
           "bonusWords": [
             "SAÇ"
@@ -2326,29 +2725,32 @@
             "threeStarMaxSeconds": null
           },
           "timeLimitSeconds": null,
-          "gridHash": "f766977b9bfcdd383ee931b2c22241707953b99df94e135657daa34516c40238",
-          "levelFingerprint": "806c8ec341b87643c586b4737202b062c6a8e0c89d41b0287eda93899cc5680c"
+          "gridHash": "8b38657aa4870f5c861493a447f7b08a583413a3003aa0044b13e69b0bd797ea",
+          "levelFingerprint": "797eb0260b22eb44c6e57acb1673a5fd29bc1de16ff25fc60a00b39545d925e3"
         },
         {
           "localIndex": 28,
           "levelId": "baslangic-28",
           "type": "normal",
           "grid": [
-            "ĞÖHJŞKSF",
-            "ZOROHEÇÜ",
-            "UCEBALIK",
-            "İKHRSECÖ",
-            "SKBAMBJP",
-            "YEUMİEHE",
-            "ZFÖNTKJK",
-            "KZAKÇİCG"
+            "ZNKZEBRA",
+            "TEAIDĞPH",
+            "RTÜLLFVO",
+            "UTİMSAHR",
+            "KÖŞBJABO",
+            "KELEBEKZ",
+            "TAVŞANÇN",
+            "SGNKEPÖK"
           ],
           "targetWords": [
             "KÖPEK",
             "ZEBRA",
             "BALIK",
             "HOROZ",
-            "KELEBEK"
+            "KELEBEK",
+            "KURT",
+            "ASLAN",
+            "TAVŞAN"
           ],
           "bonusWords": [
             "TİMSAH"
@@ -2360,29 +2762,32 @@
             "threeStarMaxSeconds": null
           },
           "timeLimitSeconds": null,
-          "gridHash": "b9b503a0a0ffcc74e2b7763610e73e6624d53938ee9d554e2e261be352a5118b",
-          "levelFingerprint": "0cda212f00e9700caa8801cda1d383a51e41b8c1438adc7ab2f60fe647d195bb"
+          "gridHash": "f5b38749841d5a5adb6f56805adf0ea3dd7ea8ec47d180e3cc038d90544d5064",
+          "levelFingerprint": "e56bfb9059d135729c4f6d262bf83c4a35c407e79c7c6633d16aecead8baf552"
         },
         {
           "localIndex": 29,
           "levelId": "baslangic-29",
           "type": "normal",
           "grid": [
-            "VKHNZKIK",
-            "NROAÜLÇE",
-            "FOSRKAÇÜ",
-            "ÜBFKRVŞJ",
-            "ÇOIEÜYEE",
-            "UTMMLEKR",
-            "TAĞİEEZT",
-            "KJPÖPRTY"
+            "HAREMAKİ",
+            "KNCRKPNÜ",
+            "LÇOROTİT",
+            "AENFEBAL",
+            "VIKREBOF",
+            "YÇNRLLAT",
+            "EEKEAREĞ",
+            "TFTNENDT"
           ],
           "targetWords": [
             "ROBOT",
             "EKRAN",
             "KLAVYE",
             "TELEFON",
-            "KAMERA"
+            "KAMERA",
+            "TABLET",
+            "FARE",
+            "İNTERNET"
           ],
           "bonusWords": [
             "PİL"
@@ -2394,29 +2799,32 @@
             "threeStarMaxSeconds": null
           },
           "timeLimitSeconds": null,
-          "gridHash": "06a4a191efb1dd3581726886d2f04eb5a32cb153f13636f2ff68a5eaf79f5fba",
-          "levelFingerprint": "c08e9a5538b07acab17663cca5dcb496a05b7434ce118ad6c0782595f751e4de"
+          "gridHash": "3f09a56f03bf7e6a3fc94caa7c476d693cb1c1a9dbf70b518eaa7aae51eea16f",
+          "levelFingerprint": "ba5e9dff409b879886c81bbc8c9b435c61472596122351a73006768214424540"
         },
         {
           "localIndex": 30,
           "levelId": "baslangic-30",
           "type": "challenge",
           "grid": [
-            "UBĞPYZİK",
-            "UİKFCPGO",
-            "ECVPIATI",
-            "NSÜDBRNC",
-            "AODİAKIZ",
-            "ZKNFTKIN",
-            "CAİVKRUV",
-            "EKOLHKFO"
+            "EDVSOKAK",
+            "KDENAZCE",
+            "RİDÖLETO",
+            "AOFAÜÇTİ",
+            "PSIICKUÖ",
+            "NAMTRAPA",
+            "BİNAVIEĞ",
+            "TRAFİKNH"
           ],
           "targetWords": [
             "TRAFİK",
             "SOKAK",
             "BİNA",
             "PARK",
-            "FIRIN"
+            "FIRIN",
+            "CADDE",
+            "APARTMAN",
+            "OTEL"
           ],
           "bonusWords": [
             "ECZANE"
@@ -2428,8 +2836,8 @@
             "threeStarMaxSeconds": 75
           },
           "timeLimitSeconds": 120,
-          "gridHash": "f1a9cba17cdc67b9dbbb2342b22e248469276b320c182fe8a529f2e12310c621",
-          "levelFingerprint": "2fe7b4aaf11843c695236c38d86dc6bc522843c279d57a20cfea2001e87e8603"
+          "gridHash": "1d3d2cb3043f7b6f17cf8c11193c00e8c6a459609f612ba8b5e612a8038c4511",
+          "levelFingerprint": "862c0f05823721ea22a212c5920c743a7bc87e26afb137f81e499e417e8aec45"
         }
       ]
     },
@@ -8320,5 +8728,5 @@
       ]
     }
   ],
-  "sourceDigest": "9ef2adca73bcbfb56bf308d5fe8678ba4a69cdc583f0559d48a7aa007a8663b1"
+  "sourceDigest": "ad78b5ea3bf349865553f16de0cf514ac2ab0516b8d6c91946d7eecac8ed173b"
 }

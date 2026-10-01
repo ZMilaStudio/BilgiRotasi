@@ -4,6 +4,7 @@ import 'package:bilgi_rotasi/word_hunt/word_hunt_models.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_route_stop.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:word_hunt_flutter_feature/word_hunt_star_visuals.dart';
 
 WordHuntLevelDefinition _level(int index, WordHuntLevelType type) {
   return WordHuntLevelDefinition(
@@ -194,7 +195,7 @@ void main() {
         final icon = tester.widget<Icon>(
           find.byKey(Key('word_hunt_route_stop_star_10_$star')),
         );
-        expect(icon.color, WordHuntRouteStopTheme.harbor.starFilled);
+        expect(icon.color, const Color(0xFF65717D));
       }
       expect(
         find.byKey(const Key('word_hunt_route_stop_lock_10')),
@@ -258,7 +259,7 @@ void main() {
       );
       expect(
         icon.color,
-        WordHuntRouteStopTheme.harbor.starEmpty.withValues(alpha: 0.72),
+        WordHuntStarVisuals.empty,
       );
     }
   });

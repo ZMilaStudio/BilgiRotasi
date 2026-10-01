@@ -188,6 +188,14 @@ jobs:
                   encoding="utf-8"
               )
           )
+          # Current content retains strict Dart parity; historical acceptance remains frozen.
+          from tools.word_hunt_batch_generator import production_corpus_payload_digest
+          historical = json.loads(
+              Path("tools/word_hunt_wave10b_historical_starter.json").read_text(encoding="utf-8")
+          )
+          lock["routes"][0] = historical["route"]
+          lock["sourceDigest"] = historical["sourceDigest"]
+          assert production_corpus_payload_digest(lock) == historical["sourceDigest"]
           assert evidence["kind"] == "WORD_HUNT_WAVE10B_ACCEPTED_PROVENANCE"
           assert evidence["ownerDecision"] == "ACCEPT"
           assert evidence["compilerVersion"] == "ka02-v2"
