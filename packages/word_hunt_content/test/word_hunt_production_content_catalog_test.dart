@@ -51,7 +51,8 @@ void main() {
         ),
         <(int, int)>[(1, 10), (11, 20), (21, 30)],
       );
-      expect(reservedWords, hasLength(196));
+      // Checkpoint A's approved L1–30 density is the current content authority.
+      expect(reservedWords, hasLength(247));
       expect(level30.type, WordHuntLevelType.challenge);
       expect(level30.type, isNot(WordHuntLevelType.routeFinal));
       expect(starter.levels.any((level) => level.index == 31), isFalse);
@@ -63,10 +64,14 @@ void main() {
         entries.first.unlockRule.kind,
         WordHuntContentRouteUnlockKind.always,
       );
+      expect(entries[1].unlockRule.requiredCompletedLevels, 30);
+      expect(entries[1].unlockRule.requiredStars, 60);
       for (var index = 1; index < entries.length; index++) {
         expect(
           entries[index].unlockRule.kind,
-          WordHuntContentRouteUnlockKind.routeComplete,
+          index == 1
+              ? WordHuntContentRouteUnlockKind.completedLevelsAndStars
+              : WordHuntContentRouteUnlockKind.routeComplete,
         );
         expect(
           entries[index].unlockRule.prerequisiteRouteId,

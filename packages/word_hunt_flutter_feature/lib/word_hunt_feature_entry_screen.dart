@@ -30,9 +30,9 @@ import 'word_hunt_themed_production_route_screen.dart';
 ///
 /// Mevcut production sözleşmesi:
 /// - Başlangıç Limanı her zaman açıktır ve mevcut reference renderer'ı kullanır.
-/// - Gökyüzü Adaları 18 Başlangıç Limanı yıldızında açılır ve mevcut MASTER ART
+/// - Gökyüzü Adaları pilot L1–30 tamam + 60 yıldız gate'iyle açılır; mevcut MASTER ART
 ///   renderer/gameplay arka planlarını kullanır.
-/// - Orman Yolu, Başlangıç Limanı 10. bölüm tamamlandığında açılır ve generic
+/// - Orman Yolu, Gökyüzü Adaları true completion sonrası açılır ve generic
 ///   themed reusable renderer ile production Orman skinini kullanır.
 ///
 /// Doğrudan belirli bir rota gösterilecek QA/test senaryolarında
@@ -283,6 +283,9 @@ class _WordHuntFeatureEntryScreenState
       case WordHuntRouteUnlockKind.routeStars:
         return '${entry.route.title} için ${rule.requiredStars} '
             '${prerequisite.title} yıldızı gerekli.';
+      case WordHuntRouteUnlockKind.completedLevelsAndStars:
+        return '${prerequisite.title} L1–${rule.requiredCompletedLevels}’u tamamla '
+            've en az ${rule.requiredStars} yıldız kazan.';
       case WordHuntRouteUnlockKind.routeComplete:
         return '${entry.route.title} için ${prerequisite.title} '
             '${prerequisite.levels.length}. bölümü tamamlaman gerekli.';
@@ -294,10 +297,13 @@ class _WordHuntFeatureEntryScreenState
   void _selectHarborSegment(int requested) {
     final route = _activeRoute;
     if (route.id != WordHuntStarterContent.baslangicLimani.id ||
-        route.segments.isEmpty) return;
+        route.segments.isEmpty)
+      return;
     final furthest = _deriveActiveSegmentIndex(route, _progress);
-    if (requested < 1 || requested > furthest ||
-        requested > route.segments.length) return;
+    if (requested < 1 ||
+        requested > furthest ||
+        requested > route.segments.length)
+      return;
     setState(() => _activeSegmentIndex = requested);
   }
 

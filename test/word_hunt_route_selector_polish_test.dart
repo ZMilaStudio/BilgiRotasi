@@ -146,21 +146,22 @@ void main() {
       },
     );
 
-    testWidgets('STATE C staged starter frontier stays current and Sky locked', (
-      tester,
-    ) async {
-      final progress = progressWith(stars: completedRouteStars(starter));
-      await pumpSelector(tester, progress);
+    testWidgets(
+      'STATE C staged starter frontier stays current and Sky locked',
+      (tester) async {
+        final progress = progressWith(stars: completedRouteStars(starter));
+        await pumpSelector(tester, progress);
 
-      expect(
-        find.descendant(of: card('starter'), matching: find.text('Devam Et')),
-        findsOneWidget,
-      );
-      expect(
-        find.descendant(of: card('gokyuzu'), matching: find.text('Kilitli')),
-        findsOneWidget,
-      );
-    });
+        expect(
+          find.descendant(of: card('starter'), matching: find.text('Devam Et')),
+          findsOneWidget,
+        );
+        expect(
+          find.descendant(of: card('gokyuzu'), matching: find.text('Kilitli')),
+          findsOneWidget,
+        );
+      },
+    );
 
     testWidgets('STATE D sky complete recommends forest as Sıradaki', (
       tester,
@@ -295,7 +296,7 @@ void main() {
 
   group('locked unmet requirement presentation', () {
     testWidgets(
-      'starter final complete at 17 shows 17 / 18 stars on sky lock',
+      'partial starter at 17 shows both pilot conditions on sky lock',
       (tester) async {
         final progress = progressWith(
           stars: <String, int>{
@@ -306,12 +307,14 @@ void main() {
         await pumpSelector(tester, progress);
 
         expect(
-          find.text('Başlangıç Limanı’nı tamamla ve en az 18 yıldız kazan.'),
+          find.text(
+            'Başlangıç Limanı L1–30’u tamamla ve en az 60 yıldız kazan.',
+          ),
           findsOneWidget,
         );
         expect(
           tester.widget<Text>(progressText('gokyuzu')).data,
-          '6 / 30 bölüm',
+          '6 / 30 bölüm • 17 / 60 yıldız',
         );
         expect(
           find.descendant(
@@ -354,7 +357,10 @@ void main() {
       );
       await pumpSelector(tester, progress);
 
-      expect(tester.widget<Text>(progressText('gokyuzu')).data, '8 / 30 bölüm');
+      expect(
+        tester.widget<Text>(progressText('gokyuzu')).data,
+        '8 / 30 bölüm • 8 / 60 yıldız',
+      );
       expect(
         find.descendant(
           of: card('gokyuzu'),
@@ -424,7 +430,7 @@ void main() {
         find.descendant(
           of: find.byType(SnackBar),
           matching: find.text(
-            'Başlangıç Limanı’nı tamamla ve en az 18 yıldız kazan.',
+            'Başlangıç Limanı L1–30’u tamamla ve en az 60 yıldız kazan.',
           ),
         ),
         findsOneWidget,

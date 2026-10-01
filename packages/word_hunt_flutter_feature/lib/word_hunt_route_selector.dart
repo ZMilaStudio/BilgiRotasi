@@ -203,6 +203,9 @@ class WordHuntRouteSelector extends StatelessWidget {
       case WordHuntRouteUnlockKind.routeStars:
         if (prerequisite == null) return 'Henüz açık değil.';
         return 'Kapı: ${rule.requiredStars} ${prerequisite.title} yıldızı';
+      case WordHuntRouteUnlockKind.completedLevelsAndStars:
+        if (prerequisite == null) return 'Henüz açık değil.';
+        return '${prerequisite.title} L1–${rule.requiredCompletedLevels}’u tamamla ve en az ${rule.requiredStars} yıldız kazan.';
       case WordHuntRouteUnlockKind.routeComplete:
         if (prerequisite == null || prerequisite.levels.isEmpty) {
           return 'Henüz açık değil.';
@@ -216,6 +219,12 @@ class WordHuntRouteSelector extends StatelessWidget {
     switch (rule.kind) {
       case WordHuntRouteUnlockKind.always:
         return 'Kilitli';
+      case WordHuntRouteUnlockKind.completedLevelsAndStars:
+        final completed = rule
+            .currentCompletedLevels(progress)
+            .clamp(0, rule.requiredCompletedLevels);
+        final stars = rule.currentStars(progress).clamp(0, rule.requiredStars);
+        return '$completed / ${rule.requiredCompletedLevels} bölüm • $stars / ${rule.requiredStars} yıldız';
       case WordHuntRouteUnlockKind.routeStars:
         final current = rule
             .currentStars(progress)

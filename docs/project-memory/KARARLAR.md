@@ -302,5 +302,14 @@ Bu bölüm, 31 Ağustos kayıtlarındaki `ERROR_STATE_VISUAL = DOĞRULANACAK` du
 - Standalone için gizli, compile-time debug-only QA/Test Panel gerekir. Gerçek schema-3 progress/storage kullanır; destructive preset öncesi onay, TEST MODE ve seed özeti gösterir. Release/profile akışında erişilemez; production unlock kurallarını değiştirmez.
 - Mevcut Segment3/Tersane temiz sahnesi ve basit node tasarımı owner tarafından bu Checkpoint A için kabul edildi; bu repair redesign yetkisi değildir.
 - Bundan sonraki yeni haritaların node'ları daha premium, tema ile bütünleşik, karakterli ve mevcut Tersane simple-node seviyesinden daha zengin olmalıdır.
-- Gökyüzü unlock hâlâ Checkpoint B kapsamındadır. Gelecek `pilot30_v1`: mevcut L1–30 tamamlanmış ve en az 18 yıldız; gerçek routeComplete değildir. `full100_v2` gerçek rota finali L100'dür. Bu karar o unlock uygulamasını başlatmaz.
+- Gökyüzü unlock hâlâ Checkpoint B kapsamındadır. Bu tarihteki öneri L1–30 + 18 yıldızdı (**superseded**: aşağıdaki Checkpoint B owner kararıyla 60 yıldız olarak değiştirilmiştir). Gerçek routeComplete değildir; bu tarihsel karar unlock uygulamasını başlatmamıştır.
+
+## 19. Checkpoint B — owner-approved pilot30_v1 Gökyüzü açılma politikası
+
+- Başlangıç Limanı L1–30'un tamamı completed **AND** yalnız L1–30 üzerinde minimum 60 yıldız gerekir. 30+59 kapalı; 30+60 ve 30+90 açık; eksik bölüm+60 kapalıdır.
+- Pilot unlock yalnız `gokyuzu-adalari` next-route erişim kapısıdır; true `routeComplete`, rota bitirme ödülü veya L30 `routeFinal` değildir. Başlangıç Limanı gerçek finali hâlâ L100; mevcut staged progression 30/100'dür.
+- `full100_v2` unlock threshold/policy L100 üretildiğinde owner tarafından yeniden değerlendirilecektir; bugün yeni threshold belirlenmez. Future L31+ yıldızları pilot30_v1 toplamına dahil edilmez.
+- Pilot erişimini kazanmış oyuncunun `gokyuzu-adalari` erişimi schema 3 `grandfatheredUnlockedRouteIds` içinde persist edilir. Gelecekte gate değişse bile kazanılmış erişim korunur.
+- Mevcut eligible oyuncular load/backfill sırasında tekrar oynamadan, tek idempotent writeback ile erişim kazanır. Replay 59→60 crossing de grant/persist üretir. Schema bump yoktur.
+- Debug-only QA sınırları: 30 complete/59, 30 complete/60, 20 complete/60, 30 complete/90. Sınırları tekrar test etmek için açık onaylı QA preset yalnız Gökyüzü pilot entitlement'ını resetleyebilir; normal production reevaluation erişimi kaldırmaz.
 

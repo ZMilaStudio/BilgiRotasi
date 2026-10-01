@@ -4,6 +4,7 @@ import 'package:word_hunt_content/word_hunt_starter_content.dart';
 import 'package:word_hunt_domain/word_hunt_progress.dart';
 import 'package:word_hunt_domain/word_hunt_progress_codec.dart';
 import 'package:word_hunt_flutter_feature/word_hunt_feature_host.dart';
+import 'package:word_hunt_flutter_feature/word_hunt_route_catalog.dart';
 
 import 'word_hunt_standalone_progress_store.dart';
 
@@ -27,6 +28,7 @@ class WordHuntDeviceTestSeeder {
   Future<WordHuntProgressSnapshot> prepare({
     int completed = 0,
     int? totalStars,
+    bool resetPilotAccess = false,
   }) async {
     if (!kDebugMode) throw StateError('Device Test Panel is debug-only');
     if (completed < 0 ||
@@ -47,16 +49,23 @@ class WordHuntDeviceTestSeeder {
       stars[level.id] = 1 + extra;
       remaining -= extra;
     }
-    final seeded = WordHuntProgressSnapshot(
-      bestStarsByLevelId: stars,
-      bestBonusFoundCountByLevelId: {
-        for (final entry in old.bestBonusFoundCountByLevelId.entries)
-          if (!harborIds.contains(entry.key)) entry.key: entry.value,
-      },
-      unlockedInfoCardIds: old.unlockedInfoCardIds,
-      unlockedRouteRewardIds: old.unlockedRouteRewardIds,
-      grandfatheredUnlockedRouteIds: old.grandfatheredUnlockedRouteIds,
-      lastActiveRouteId: old.lastActiveRouteId,
+    final seeded = WordHuntRouteCatalog.grantEligiblePilotAccess(
+      WordHuntProgressSnapshot(
+        bestStarsByLevelId: stars,
+        bestBonusFoundCountByLevelId: {
+          for (final entry in old.bestBonusFoundCountByLevelId.entries)
+            if (!harborIds.contains(entry.key)) entry.key: entry.value,
+        },
+        unlockedInfoCardIds: old.unlockedInfoCardIds,
+        unlockedRouteRewardIds: old.unlockedRouteRewardIds,
+        grandfatheredUnlockedRouteIds: {
+          for (final id in old.grandfatheredUnlockedRouteIds)
+            if (!resetPilotAccess ||
+                id != WordHuntRouteCatalog.gokyuzu.route.id)
+              id,
+        },
+        lastActiveRouteId: old.lastActiveRouteId,
+      ),
     );
     await store.setString(
       identity.progressStorageKeyForUid(null),
@@ -74,11 +83,29 @@ class WordHuntDeviceTestSeeder {
   }
 
   Future<WordHuntProgressSnapshot> prepareStars(int stars) {
-    if (!const [17, 18, 90].contains(stars)) throw ArgumentError.value(stars);
-    // Completed levels need >=1 star in schema 3. Therefore 17/18-star
-    // presets complete 17/18 levels; 90 completes all 30. No fake 0-star
-    // completion and no Sky unlock/reward injection.
-    return prepare(completed: stars == 90 ? 30 : stars, totalStars: stars);
+    if (!const [59, 60, 90].contains(stars)) throw ArgumentError.value(stars);
+    return preparePilotBoundary(completed: 30, stars: stars);
+  }
+
+  /// Explicit destructive QA reset of this pilot entitlement only, so a locked
+  /// boundary can be retested after an unlocked preset. Normal prep preserves it.
+  Future<WordHuntProgressSnapshot> preparePilotBoundary({
+    required int completed,
+    required int stars,
+  }) {
+    if (!const [
+      (30, 59),
+      (30, 60),
+      (20, 60),
+      (30, 90),
+    ].contains((completed, stars))) {
+      throw ArgumentError('Unsupported pilot boundary preset');
+    }
+    return prepare(
+      completed: completed,
+      totalStars: stars,
+      resetPilotAccess: true,
+    );
   }
 }
 
@@ -132,7 +159,8 @@ class _WordHuntDeviceTestPanelState extends State<WordHuntDeviceTestPanel> {
             title: const Text('TEST MODE — kaydı değiştir'),
             content: Text(
               '$label: mevcut Başlangıç Limanı yıldız/bonus kaydı değiştirilecek. '
-              'Diğer rota ve uygulama verileri korunur. Devam edilsin mi?',
+              'Pilot sınır presetleri önceki Gökyüzü pilot erişimini de sıfırlar. '
+              'Diğer rota ilerlemesi ve uygulama verileri korunur. Devam edilsin mi?',
             ),
             actions: [
               TextButton(
@@ -214,16 +242,19 @@ class _WordHuntDeviceTestPanelState extends State<WordHuntDeviceTestPanel> {
                     ),
             child: const Text('Seçili bölümü hazırla (tamamlanmamış)'),
           ),
-          for (final stars in const [17, 18, 90])
+          for (final preset in const [(30, 59), (30, 60), (20, 60), (30, 90)])
             OutlinedButton(
               onPressed:
                   busy
                       ? null
                       : () => apply(
-                        '$stars yıldız',
-                        () => seeder.prepareStars(stars),
+                        '${preset.$1} tamam / ${preset.$2} yıldız',
+                        () => seeder.preparePilotBoundary(
+                          completed: preset.$1,
+                          stars: preset.$2,
+                        ),
                       ),
-              child: Text('$stars yıldız'),
+              child: Text('${preset.$1} tamam / ${preset.$2} yıldız'),
             ),
         ],
       ),

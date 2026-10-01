@@ -10,27 +10,45 @@ import 'word_hunt_models.dart';
 
 /// Pure production-content unlock semantics, intentionally separate from
 /// Flutter presentation, artwork, and app navigation.
-enum WordHuntContentRouteUnlockKind { always, routeStars, routeComplete }
+enum WordHuntContentRouteUnlockKind {
+  always,
+  routeStars,
+  routeComplete,
+  completedLevelsAndStars,
+}
 
 class WordHuntContentRouteUnlockRule {
   const WordHuntContentRouteUnlockRule.always()
     : kind = WordHuntContentRouteUnlockKind.always,
       prerequisiteRouteId = null,
-      requiredStars = 0;
+      requiredStars = 0,
+      requiredCompletedLevels = 0;
 
   const WordHuntContentRouteUnlockRule.routeStars({
     required this.prerequisiteRouteId,
     required this.requiredStars,
-  }) : kind = WordHuntContentRouteUnlockKind.routeStars;
+  }) : kind = WordHuntContentRouteUnlockKind.routeStars,
+       requiredCompletedLevels = 0;
 
   const WordHuntContentRouteUnlockRule.routeComplete({
     required this.prerequisiteRouteId,
   }) : kind = WordHuntContentRouteUnlockKind.routeComplete,
-       requiredStars = 0;
+       requiredStars = 0,
+       requiredCompletedLevels = 0;
+
+  /// A bounded pilot access gate, not true route completion.
+  const WordHuntContentRouteUnlockRule.completedLevelsAndStars({
+    required this.prerequisiteRouteId,
+    required this.requiredCompletedLevels,
+    required this.requiredStars,
+  }) : kind = WordHuntContentRouteUnlockKind.completedLevelsAndStars,
+       assert(requiredCompletedLevels > 0),
+       assert(requiredStars > 0);
 
   final WordHuntContentRouteUnlockKind kind;
   final String? prerequisiteRouteId;
   final int requiredStars;
+  final int requiredCompletedLevels;
 }
 
 /// Content-side metadata for one production route.
@@ -71,10 +89,12 @@ abstract final class WordHuntProductionContentCatalog {
     route: WordHuntGokyuzuContent.gokyuzuAdalari,
     infoCards: WordHuntGokyuzuContent.infoCards,
     ordinalLabel: 'İkinci rota',
-    unlockRule: WordHuntContentRouteUnlockRule.routeComplete(
+    unlockRule: WordHuntContentRouteUnlockRule.completedLevelsAndStars(
       prerequisiteRouteId: 'baslangic-limani',
+      requiredCompletedLevels: 30,
+      requiredStars: 60,
     ),
-    lockedMessage: 'Başlangıç Limanı’nı tamamla ve en az 18 yıldız kazan.',
+    lockedMessage: 'Başlangıç Limanı L1–30’u tamamla ve en az 60 yıldız kazan.',
   );
 
   static const orman = WordHuntProductionContentEntry(

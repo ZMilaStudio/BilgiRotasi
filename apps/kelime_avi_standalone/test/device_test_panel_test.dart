@@ -105,10 +105,17 @@ void main() {
         }
         expect(progress.unlockedRouteRewardIds, isEmpty);
       }
-      for (final total in [17, 18, 90]) {
-        await seeder.prepareStars(total);
+      for (final preset in [
+        (30, 59, false),
+        (30, 60, true),
+        (20, 60, false),
+        (30, 90, true),
+      ]) {
+        final total = preset.$2;
+        await seeder.preparePilotBoundary(completed: preset.$1, stars: total);
         final progress = await seeder.load();
         expect(WordHuntRouteProgressEngine.totalStars(route, progress), total);
+        expect(progress.bestStarsByLevelId.length, preset.$1);
         expect(
           progress.bestStarsByLevelId.values.every((v) => v >= 1 && v <= 3),
           isTrue,
@@ -117,8 +124,25 @@ void main() {
           WordHuntRouteProgressEngine.isRouteComplete(route, progress),
           isFalse,
         );
-        expect(WordHuntRouteCatalog.entries[1].isUnlocked(progress), isFalse);
+        expect(WordHuntRouteCatalog.gokyuzu.isUnlocked(progress), preset.$3);
+        expect(
+          progress.grandfatheredUnlockedRouteIds.contains('gokyuzu-adalari'),
+          preset.$3,
+        );
+        expect(
+          WordHuntProgressCodec.decode(
+            preferences.strings[identity.progressStorageKeyForUid(null)]!,
+            expectedOwnerScope: 'guest',
+          ).grandfatheredUnlockedRouteIds,
+          progress.grandfatheredUnlockedRouteIds,
+        );
       }
+      // Locked presets remain reproducible even after an unlocked preset.
+      await seeder.preparePilotBoundary(completed: 30, stars: 59);
+      expect(
+        WordHuntRouteCatalog.gokyuzu.isUnlocked(await seeder.load()),
+        isFalse,
+      );
       await seeder.prepare(completed: 30);
       expect((await seeder.load()).bestStarsByLevelId, {
         for (final l in route.levels) l.id: 3,
