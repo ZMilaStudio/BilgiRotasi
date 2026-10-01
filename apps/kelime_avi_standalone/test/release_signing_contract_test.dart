@@ -20,7 +20,7 @@ void main() {
     expect(gradle, contains('applicationId = "com.zmilastudio.kelimeavi"'));
     expect(manifest, contains('android:label="Kelime Avı"'));
     expect(pubspec, contains('name: kelime_avi_standalone'));
-    expect(pubspec, contains('version: 1.0.0+1'));
+    expect(pubspec, contains('version: 1.0.0+2'));
   });
 
   test(
