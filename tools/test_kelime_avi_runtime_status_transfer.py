@@ -61,9 +61,9 @@ class RuntimeStatusTransferTest(unittest.TestCase):
         self.gate = self.gate.replace("${{ steps.harbor_runtime.outcome }}", "success")
         (self.reports / "HARBOR_RESULT.json").write_text('{"synthetic":true}', encoding="utf-8")
         (self.reports / "HARBOR_RESULT.txt").write_text(
-            "RESULT=PASS\nSOURCE_SHA=synthetic-test-sha\nCAPTURE_COUNT=6\n", encoding="utf-8")
+            "RESULT=PASS\nSOURCE_SHA=synthetic-test-sha\nCAPTURE_COUNT=10\n", encoding="utf-8")
         for viewport in ("360x800", "412x915"):
-            for scenario in ("mixed", "l20_playable", "segment3"):
+            for scenario in ("mixed", "l20_playable", "segment3", "segment4_mixed", "l40_playable"):
                 for suffix in ("png", "xml"):
                     (self.reports / f"harbor_{viewport}_{scenario}.{suffix}").write_bytes(b"synthetic test only")
 
