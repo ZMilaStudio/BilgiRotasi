@@ -279,6 +279,10 @@ class _PremiumSegmentState extends State<WordHuntHarborPremiumSegmentScreen> {
   ) {
     final center = transform.projectScene(layout.center);
     final number = node.absoluteLevelIndex;
+    final VoidCallback? action =
+        node.unlocked && widget.onLevelTap != null
+            ? () => widget.onLevelTap?.call(number)
+            : null;
     final challenge = node.gameplayType == WordHuntLevelType.challenge;
     final stars = widget.progress.starsFor(node.levelId);
     final label =
@@ -299,10 +303,11 @@ class _PremiumSegmentState extends State<WordHuntHarborPremiumSegmentScreen> {
         label: label,
         button: node.unlocked,
         enabled: node.unlocked,
+        onTap: action,
         excludeSemantics: true,
         child: GestureDetector(
           behavior: HitTestBehavior.opaque,
-          onTap: node.unlocked ? () => widget.onLevelTap?.call(number) : null,
+          onTap: action,
           child: SizedBox(
             width: 68,
             height: 68,

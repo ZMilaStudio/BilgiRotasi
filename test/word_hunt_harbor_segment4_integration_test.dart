@@ -55,6 +55,13 @@ void main() {
     }
     expect(segment, 4);
     expect(find.byKey(const Key('word_hunt_harbor_level_31')), findsOneWidget);
+    expect(
+      tester
+          .getSemantics(find.byKey(const Key('word_hunt_harbor_level_31')))
+          .getSemanticsData()
+          .hasAction(ui.SemanticsAction.tap),
+      isFalse,
+    );
     await tester.tap(find.byKey(const Key('word_hunt_harbor_segment_3')));
     await tester.pumpAndSettle();
     expect(segment, 3);
@@ -178,6 +185,33 @@ void main() {
             final finder = find.byKey(Key('word_hunt_harbor_level_$n'));
             expect(tester.getSize(finder), const Size(68, 68));
             final rect = tester.getRect(finder);
+            final unlocked = n <= completed + 1;
+            final semantics = tester.getSemantics(finder);
+            final data = semantics.getSemanticsData();
+            expect(data.flagsCollection.isButton, unlocked);
+            expect(
+              data.flagsCollection.isEnabled,
+              unlocked ? ui.Tristate.isTrue : ui.Tristate.isFalse,
+            );
+            expect(data.hasAction(ui.SemanticsAction.tap), unlocked);
+            expect(
+              data.label,
+              'Bölüm $n, ${n == 40 ? "meydan okuma, " : ""}'
+              '${unlocked ? "açık" : "kilitli"}, '
+              '${progress.starsFor("baslangic-$n")} yıldız',
+            );
+            taps.clear();
+            if (unlocked) {
+              tester.binding.performSemanticsAction(
+                ui.SemanticsActionEvent(
+                  viewId: tester.view.viewId,
+                  nodeId: semantics.id,
+                  type: ui.SemanticsAction.tap,
+                ),
+              );
+              expect(taps, [n]);
+            }
+            taps.clear();
             boxes.add(rect);
             expect(scene.contains(rect.topLeft), isTrue);
             expect(
@@ -185,7 +219,7 @@ void main() {
               isTrue,
             );
             await tester.tap(finder);
-            expect(taps.contains(n), n <= completed + 1);
+            expect(taps, unlocked ? [n] : isEmpty);
             final starsFinder = find.byKey(Key('word_hunt_harbor_stars_$n'));
             if (n <= completed + 1) {
               expect(starsFinder, findsOneWidget);
