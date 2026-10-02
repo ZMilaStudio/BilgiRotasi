@@ -1,0 +1,70 @@
+name: Kelime Avı exact-head device test APK
+
+on:
+  push:
+    branches:
+      - diag/kelime-avi-device-apk-db07d7e
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  device-apk:
+    name: Playable standalone debug APK
+    runs-on: ubuntu-22.04
+    timeout-minutes: 30
+    env:
+      SOURCE_SHA: db07d7e0d45a75a82d1635e91fb8e49805f6f08f
+      STANDALONE_DIR: apps/kelime_avi_standalone
+    steps:
+      - name: Exact PR HEAD kaynağını indir
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+
+      - name: Exact source authority doğrula
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+
+      - name: Java 17 kur
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Flutter 3.44.6 kur
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.6'
+          channel: stable
+          cache: true
+
+      - name: Standalone bağımlılıklarını çöz
+        working-directory: apps/kelime_avi_standalone
+        run: flutter pub get
+
+      - name: Normal oynanabilir debug APK üret
+        working-directory: apps/kelime_avi_standalone
+        run: flutter build apk --debug
+
+      - name: Artifact hazırla ve doğrula
+        shell: bash
+        run: |
+          set -euo pipefail
+          apk="$STANDALONE_DIR/build/app/outputs/flutter-apk/app-debug.apk"
+          test -s "$apk"
+          mkdir -p reports/device-apk
+          cp "$apk" reports/device-apk/KelimeAvi-FenerBurnu-device-test-db07d7e.apk
+          printf '%s\n' "$SOURCE_SHA" > reports/device-apk/SOURCE_SHA.txt
+          sha256sum reports/device-apk/KelimeAvi-FenerBurnu-device-test-db07d7e.apk             > reports/device-apk/APK_SHA256.txt
+
+      - name: Oynanabilir APK artifactını yükle
+        uses: actions/upload-artifact@v4
+        with:
+          name: KelimeAvi-device-test-db07d7e
+          path: reports/device-apk/
+          if-no-files-found: error
+          retention-days: 7
