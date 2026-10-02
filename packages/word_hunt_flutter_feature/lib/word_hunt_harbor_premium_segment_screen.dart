@@ -284,6 +284,8 @@ class _PremiumSegmentState extends State<WordHuntHarborPremiumSegmentScreen> {
             ? () => widget.onLevelTap?.call(number)
             : null;
     final challenge = node.gameplayType == WordHuntLevelType.challenge;
+    final prominentLock =
+        widget.segmentIndex == 4 && !node.unlocked && !challenge;
     final stars = widget.progress.starsFor(node.levelId);
     final label =
         'Bölüm $number, ${challenge ? "meydan okuma, " : ""}'
@@ -343,22 +345,42 @@ class _PremiumSegmentState extends State<WordHuntHarborPremiumSegmentScreen> {
                     'assets/word_hunt/harbor_segments/segment_02_ui/'
                     '${node.unlocked ? "medallion_blank.png" : "locked_medallion.png"}',
                     key: Key('word_hunt_harbor_medallion_$number'),
-                    width: node.unlocked ? 62 : 50,
-                    height: node.unlocked ? 65 : 53,
+                    width: node.unlocked || prominentLock ? 62 : 50,
+                    height: node.unlocked || prominentLock ? 65 : 53,
                   ),
                 ),
-                Center(
-                  child: Text(
-                    '$number',
-                    style: const TextStyle(
-                      fontFamily: 'serif',
-                      fontSize: 23,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFFFFE4A1),
-                      shadows: [Shadow(blurRadius: 2)],
+                if (prominentLock)
+                  Positioned(
+                    left: 0,
+                    right: 0,
+                    bottom: 4,
+                    child: Text(
+                      '$number',
+                      key: Key('word_hunt_harbor_locked_number_$number'),
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontFamily: 'serif',
+                        fontSize: 11,
+                        height: 1,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFFFFE4A1),
+                        shadows: [Shadow(blurRadius: 2)],
+                      ),
+                    ),
+                  )
+                else
+                  Center(
+                    child: Text(
+                      '$number',
+                      style: const TextStyle(
+                        fontFamily: 'serif',
+                        fontSize: 23,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFFFFE4A1),
+                        shadows: [Shadow(blurRadius: 2)],
+                      ),
                     ),
                   ),
-                ),
                 if (challenge && plaque != null)
                   Positioned(
                     left: plaque.x - center.x + 34 - 66,

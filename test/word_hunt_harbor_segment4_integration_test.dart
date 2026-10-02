@@ -186,6 +186,44 @@ void main() {
             expect(tester.getSize(finder), const Size(68, 68));
             final rect = tester.getRect(finder);
             final unlocked = n <= completed + 1;
+            final medallionFinder = find.byKey(
+              Key('word_hunt_harbor_medallion_$n'),
+            );
+            final medallion = tester.widget<Image>(medallionFinder);
+            final medallionRect = tester.getRect(medallionFinder);
+            expect(medallionRect.center, rect.center);
+            expect(rect.contains(medallionRect.topLeft), isTrue);
+            expect(rect.contains(medallionRect.bottomRight), isTrue);
+            expect(
+              (medallion.image as AssetImage).assetName,
+              endsWith(
+                unlocked ? 'medallion_blank.png' : 'locked_medallion.png',
+              ),
+            );
+            final lockedNumber = find.byKey(
+              Key('word_hunt_harbor_locked_number_$n'),
+            );
+            if (!unlocked && n != 40) {
+              expect(medallion.width, 62);
+              expect(medallion.height, 65);
+              expect(lockedNumber, findsOneWidget);
+              final numberRect = tester.getRect(lockedNumber);
+              expect(numberRect.center.dx, rect.center.dx);
+              expect(
+                rect.contains(numberRect.bottomRight - const Offset(.01, .01)),
+                isTrue,
+              );
+              expect(
+                numberRect.overlaps(
+                  Rect.fromCenter(center: rect.center, width: 28, height: 28),
+                ),
+                isFalse,
+              );
+            } else {
+              expect(lockedNumber, findsNothing);
+              expect(medallion.width, unlocked ? 62 : 50);
+              expect(medallion.height, unlocked ? 65 : 53);
+            }
             final semantics = tester.getSemantics(finder);
             final data = semantics.getSemanticsData();
             expect(data.flagsCollection.isButton, unlocked);
