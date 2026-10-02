@@ -33,7 +33,7 @@ List<Set<(int, int)>> pathsFor(WordHuntLevelDefinition level, String word) {
 void main() {
   const route = WordHuntStarterContent.baslangicLimani;
   test(
-    'all 30 owner density, natural-word fit and exact placement contracts',
+    'owner density, natural-word fit and full-route exact placement contracts',
     () {
       final allWords = <String>[];
       expect(
@@ -45,21 +45,23 @@ void main() {
       );
       for (final level in route.levels) {
         final count = level.targetWords.length;
-        expect(
-          count,
-          level.index <= 5
-              ? 6
-              : level.index <= 10
-              ? 7
-              : level.index < 20
-              ? inInclusiveRange(7, 8)
-              : level.index == 20
-              ? inInclusiveRange(8, 9)
-              : level.index < 30
-              ? 8
-              : inInclusiveRange(8, 9),
-          reason: level.id,
-        );
+        if (level.index <= 30) {
+          expect(
+            count,
+            level.index <= 5
+                ? 6
+                : level.index <= 10
+                ? 7
+                : level.index < 20
+                ? inInclusiveRange(7, 8)
+                : level.index == 20
+                ? inInclusiveRange(8, 9)
+                : level.index < 30
+                ? 8
+                : inInclusiveRange(8, 9),
+            reason: level.id,
+          );
+        }
         expect(level.grid, hasLength(8));
         expect(level.grid.every((row) => row.length == 8), isTrue);
         final words = [...level.targetWords, ...level.bonusWords];

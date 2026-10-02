@@ -17,9 +17,9 @@ void main() {
         );
 
         if (route.id == 'baslangic-limani') {
-          expect(route.levels, hasLength(30), reason: route.id);
+          expect(route.levels, hasLength(40), reason: route.id);
           expect(route.plannedLevelCount, 100, reason: route.id);
-          expect(route.segments, hasLength(3), reason: route.id);
+          expect(route.segments, hasLength(4), reason: route.id);
           expect(route.segments[0].startLevelIndex, 1, reason: route.id);
           expect(route.segments[0].endLevelIndex, 10, reason: route.id);
           expect(route.segments[1].startLevelIndex, 11, reason: route.id);

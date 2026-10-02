@@ -10,7 +10,7 @@ import 'package:word_hunt_flutter_feature/word_hunt_star_visuals.dart';
 void main() {
   final route = WordHuntStarterContent.baslangicLimani;
   test('shared content and progression authority is unchanged', () {
-    expect(route.availableLevelCount, 30);
+    expect(route.availableLevelCount, 40);
     expect(route.plannedRouteLevelCount, 100);
     expect(route.levels[19].type, WordHuntLevelType.challenge);
     expect(route.levels[29].index, 30);

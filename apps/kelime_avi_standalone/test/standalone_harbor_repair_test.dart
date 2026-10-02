@@ -41,9 +41,18 @@ Future<void> _pumpUntilVisible(
   required String description,
 }) async {
   for (var attempt = 0; attempt < 40; attempt++) {
+    await tester.runAsync(
+      () => Future<void>.delayed(const Duration(milliseconds: 20)),
+    );
     await tester.pump(const Duration(milliseconds: 50));
     if (finder.evaluate().isNotEmpty) {
       return;
+    }
+    if (find
+        .byKey(const Key('word_hunt_harbor_layout_error_4'))
+        .evaluate()
+        .isNotEmpty) {
+      fail('$description reached the Segment 4 layout error state');
     }
     if (find
         .byKey(const Key('word_hunt_harbor_layout_error_2'))
@@ -62,6 +71,54 @@ Future<void> _pumpUntilVisible(
 }
 
 void main() {
+  testWidgets(
+    'Segment 4 proof emits geometry after asynchronous manifest load',
+    (tester) async {
+      final messages = <String>[];
+      final previousDebugPrint = debugPrint;
+      debugPrint = (String? message, {int? wrapWidth}) {
+        if (message != null) messages.add(message);
+      };
+      addTearDown(() => debugPrint = previousDebugPrint);
+      await _pumpHarborProof(tester, const Size(360, 800));
+      for (final scenario in [
+        'l20Playable',
+        'segment3',
+        'segment4Mixed',
+        'l40Playable',
+      ]) {
+        await tester.tap(find.byKey(const Key('word_hunt_harbor_info')));
+        final level = scenario == 'l20Playable'
+            ? 20
+            : scenario == 'segment3'
+            ? 30
+            : 40;
+        await _pumpUntilVisible(
+          tester,
+          find.byKey(Key('word_hunt_harbor_level_$level')),
+          description: scenario,
+        );
+        await tester.pump(const Duration(milliseconds: 100));
+        await tester.pump();
+        expect(
+          messages.any(
+            (m) =>
+                m.startsWith('[HARBOR_PROOF_FRAME]') &&
+                m.contains('"scenario":"$scenario"'),
+          ),
+          isTrue,
+          reason: scenario,
+        );
+      }
+      expect(
+        messages.any((m) => m.contains('"key":"word_hunt_harbor_stars_40"')),
+        isTrue,
+      );
+      await tester.pumpWidget(const SizedBox.shrink());
+      await tester.pump(const Duration(milliseconds: 100));
+      debugPrint = previousDebugPrint;
+    },
+  );
   TestWidgetsFlutterBinding.ensureInitialized();
 
   test(

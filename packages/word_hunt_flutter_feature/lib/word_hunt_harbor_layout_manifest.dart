@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'word_hunt_harbor_segment_registry.dart';
 
 /// Metadata resolved by a build/test tool for a Harbor scene asset.
 ///
@@ -197,6 +198,9 @@ class HarborLayoutManifest {
     if (assetPath == 'assets/word_hunt/harbor_segments/segment_03_clean.webp') {
       return segment3SceneSha256;
     }
+    for (final descriptor in WordHuntHarborSegmentRegistry.premiumSegments.values) {
+      if (descriptor.sceneAsset == assetPath) return descriptor.sceneSha256;
+    }
     return null;
   }
 
@@ -392,8 +396,9 @@ class HarborLayoutManifest {
       errors.add('\$.routeId must equal "$harborRouteId".');
     }
     final segment = _integer(root['segmentIndex'], r'$.segmentIndex', errors);
-    if (segment != null && segment != 2 && segment != 3) {
-      errors.add('\$.segmentIndex must be 2 or 3.');
+    if (segment != null && segment != 2 && segment != 3 &&
+        WordHuntHarborSegmentRegistry.forSegment(segment) == null) {
+      errors.add('\$.segmentIndex must resolve to a registered Harbor segment.');
     }
     final minimumHitTarget = _number(
       root['minimumHitTargetLogicalDp'],
@@ -463,8 +468,11 @@ class HarborLayoutManifest {
           );
         }
       }
-      if (path != null && segment != null && (segment == 2 || segment == 3)) {
+      if (path != null && segment != null &&
+          (segment == 2 || segment == 3 ||
+           WordHuntHarborSegmentRegistry.forSegment(segment) != null)) {
         final expectedPath =
+            WordHuntHarborSegmentRegistry.forSegment(segment)?.sceneAsset ??
             'assets/word_hunt/harbor_segments/segment_0${segment}_clean.webp';
         if (path != expectedPath) {
           errors.add('\$.scene.assetPath must equal "$expectedPath".');
@@ -495,7 +503,7 @@ class HarborLayoutManifest {
       }
     }
 
-    final expectedStart = segment == 2 ? 11 : 21;
+    final expectedStart = ((segment ?? 0) - 1) * 10 + 1;
     final expectedIds = <String>[
       for (var level = expectedStart; level < expectedStart + 10; level++)
         'baslangic-$level',

@@ -15,11 +15,11 @@ void main() {
   final route = WordHuntRouteCatalog.starter.route;
 
   test('Wave10B production authority is exact L21-L30 Segment3 content', () {
-    expect(route.availableLevelCount, 30);
+    expect(route.availableLevelCount, 40);
     expect(route.plannedRouteLevelCount, 100);
-    expect(route.segments, hasLength(3));
+    expect(route.segments, hasLength(4));
     expect(
-      route.levels.skip(20).map((level) => (level.id, level.index)).toList(),
+      route.levels.skip(20).take(10).map((level) => (level.id, level.index)).toList(),
       <(String, int)>[
         ('baslangic-21', 21),
         ('baslangic-22', 22),
@@ -118,7 +118,7 @@ void main() {
     }
   });
 
-  test('L30 is Segment3 frontier, never route final/reward/next-route unlock', () {
+  test('L30 advances to Segment4, never true route final/reward', () {
     final before = _progressThrough(route, 29);
     final transition = WordHuntRouteRewardEngine.recordLevelResult(
       route: route,
@@ -143,17 +143,17 @@ void main() {
     expect(WordHuntRouteProgressEngine.isRouteComplete(route, transition.progress), isFalse);
     expect(transition.afterRouteComplete, isFalse);
     expect(transition.rewardGranted, isFalse);
-    expect(destination.kind, WordHuntCompletionDestinationKind.contentFrontier);
+    expect(destination.kind, WordHuntCompletionDestinationKind.nextSegment);
     expect(destination.isTrueRouteFinal, isFalse);
     expect(destination.routeCompletedNow, isFalse);
     expect(destination.rewardGrantedNow, isFalse);
-    expect(destination.canonicalNextPlayableLevel, 30);
+    expect(destination.canonicalNextPlayableLevel, 31);
     expect(
       transition.progress.unlockedRouteRewardIds,
       isNot(contains(route.routeRewardId)),
     );
     expect(WordHuntRouteCatalog.gokyuzu.isUnlocked(transition.progress), isFalse);
-    expect(WordHuntRouteProgressEngine.isLevelUnlocked(route, transition.progress, 31), isFalse);
+    expect(WordHuntRouteProgressEngine.isLevelUnlocked(route, transition.progress, 31), isTrue);
   });
 
   test('Wave10B persistence stays route-local and stores no global display identity', () {

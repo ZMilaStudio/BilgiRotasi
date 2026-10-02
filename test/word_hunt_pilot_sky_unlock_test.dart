@@ -158,9 +158,9 @@ void main() {
   test('future L31+ remains outside the bounded pilot rule', () {
     final sample = _starter.levels.first;
     final future = WordHuntLevelDefinition(
-      id: 'future-31',
+      id: 'future-41',
       routeId: _starter.id,
-      index: 31,
+      index: 41,
       type: WordHuntLevelType.normal,
       grid: sample.grid,
       targetWords: sample.targetWords,
@@ -236,7 +236,7 @@ void main() {
     final result = WordHuntRouteRewardEngine.recordLevelResult(
       route: _starter,
       progress: before,
-      levelId: _starter.levels.last.id,
+      levelId: _starter.levels[29].id,
       stars: 1,
     );
     expect(WordHuntRouteCatalog.gokyuzu.isUnlocked(result.progress), isTrue);
@@ -369,7 +369,7 @@ void main() {
     });
   }
 
-  testWidgets('unlocked pilot keeps starter staged 30/100, not completed', (
+  testWidgets('unlocked pilot keeps starter staged 40/100, not completed', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -388,7 +388,7 @@ void main() {
       findsNothing,
     );
     expect(
-      find.descendant(of: starter, matching: find.textContaining('30 / 100')),
+      find.descendant(of: starter, matching: find.textContaining('40 / 100')),
       findsOneWidget,
     );
     expect(

@@ -608,7 +608,12 @@ void main() {
     expect(starterNode.label, contains('Devam Et'));
     expect(starterNode.label, contains('Rozet kazanıldı'));
     expect(starterNode.label, contains('Kelime Yolcusu'));
-    expect(starterNode.label, contains('30 / 90 yıldız'));
+    expect(
+      starterNode.label,
+      contains(
+        '${starter.availableLevelCount} / ${starter.maximumStars} yıldız',
+      ),
+    );
 
     final forestNode = tester.getSemantics(
       find.byKey(const Key('word_hunt_route_semantics_orman')),

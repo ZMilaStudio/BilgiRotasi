@@ -6,8 +6,8 @@
       "routeId": "baslangic-limani",
       "levels": [
         {
-          "id": "sample-baslangic-31",
-          "index": 31,
+          "id": "sample-baslangic-41",
+          "index": 41,
           "type": "normal",
           "targetWords": [
             "LAVANTA",
@@ -22,12 +22,12 @@
           }
         },
         {
-          "id": "sample-baslangic-32",
-          "index": 32,
+          "id": "sample-baslangic-42",
+          "index": 42,
           "type": "normal",
           "targetWords": [
             "DÜDÜK",
-            "KEMER"
+            "ZAMBAK"
           ],
           "bonusWords": [
             "KAZMA"

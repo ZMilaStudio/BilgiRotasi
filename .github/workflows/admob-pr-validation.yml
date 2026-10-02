@@ -34,7 +34,11 @@ jobs:
         !(github.event_name == 'pull_request' &&
         github.repository == 'ZMilaStudio/BilgiRotasi' &&
         github.event.pull_request.base.ref == 'release/final-closed-test-aab-1.68.8' &&
-        github.event.pull_request.head.ref == 'fix/kelime-avi-versioncode-2') }}
+        github.event.pull_request.head.ref == 'fix/kelime-avi-versioncode-2') &&
+        !(github.event_name == 'pull_request' &&
+        github.repository == 'ZMilaStudio/BilgiRotasi' &&
+        github.event.pull_request.base.ref == 'release/final-closed-test-aab-1.68.8' &&
+        github.event.pull_request.head.ref == 'feat/kelime-avi-checkpoint-c-fener-burnu') }}
     runs-on: ubuntu-22.04
     timeout-minutes: 60
 

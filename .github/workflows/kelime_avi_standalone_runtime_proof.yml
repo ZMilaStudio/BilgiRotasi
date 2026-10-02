@@ -23,7 +23,8 @@ jobs:
   android-runtime:
     if: >-
       github.event.pull_request.head.repo.full_name == 'ZMilaStudio/BilgiRotasi' &&
-      github.event.pull_request.head.ref == 'feat/kelime-avi-harbor-repair-checkpoint-a'
+      (github.event.pull_request.head.ref == 'feat/kelime-avi-harbor-repair-checkpoint-a' ||
+       github.event.pull_request.head.ref == 'feat/kelime-avi-checkpoint-c-fener-burnu')
     runs-on: ubuntu-22.04
     timeout-minutes: 45
     env:
@@ -40,7 +41,8 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$PROOF_SOURCE_SHA"
-          test "$HEAD_BRANCH" = 'feat/kelime-avi-harbor-repair-checkpoint-a'
+          test "$HEAD_BRANCH" = 'feat/kelime-avi-harbor-repair-checkpoint-a' ||
+            test "$HEAD_BRANCH" = 'feat/kelime-avi-checkpoint-c-fener-burnu'
           mkdir -p reports/kelime_avi_runtime
           printf '%s\n' "$PROOF_SOURCE_SHA" \
             > reports/kelime_avi_runtime/HARBOR_SOURCE_SHA.txt
@@ -72,6 +74,8 @@ jobs:
             test/word_hunt_pixel_proof_screen_test.dart \
             test/word_hunt_harbor_layout_manifest_test.dart \
             test/word_hunt_harbor_segment2_integration_test.dart \
+            test/word_hunt_checkpoint_c_segment4_content_test.dart \
+            test/word_hunt_harbor_segment4_integration_test.dart \
             --reporter expanded
           (
             cd apps/kelime_avi_standalone
@@ -127,6 +131,8 @@ jobs:
             assets/word_hunt/baslangic_limani_master_art_visual_proof.jpg
             assets/word_hunt/harbor_segments/segment_03_clean.webp
             assets/word_hunt/harbor_segments/segment_02_clean.webp
+            assets/word_hunt/harbor_segments/segment_04_clean.webp
+            assets/word_hunt/harbor_segments/segment_04_layout_schema_v2.json
             assets/word_hunt/harbor_segments/segment_02_ui/layout_schema_v2.json
             assets/word_hunt/harbor_segments/segment_02_ui/medallion_blank.png
             assets/word_hunt/harbor_segments/segment_02_ui/locked_medallion.png
@@ -293,14 +299,18 @@ jobs:
           grep -Fxq 'RESULT=PASS' \
             reports/kelime_avi_runtime/HARBOR_RESULT.txt
           grep -Fxq "SOURCE_SHA=$PROOF_SOURCE_SHA" reports/kelime_avi_runtime/HARBOR_RESULT.txt
-          grep -Fxq 'CAPTURE_COUNT=6' reports/kelime_avi_runtime/HARBOR_RESULT.txt
+          grep -Fxq 'CAPTURE_COUNT=10' reports/kelime_avi_runtime/HARBOR_RESULT.txt
           for capture in \
             harbor_360x800_mixed \
             harbor_360x800_l20_playable \
             harbor_412x915_mixed \
             harbor_412x915_l20_playable \
             harbor_360x800_segment3 \
-            harbor_412x915_segment3; do
+            harbor_412x915_segment3 \
+            harbor_360x800_segment4_mixed \
+            harbor_360x800_l40_playable \
+            harbor_412x915_segment4_mixed \
+            harbor_412x915_l40_playable; do
             test -s "reports/kelime_avi_runtime/${capture}.png"
             test -s "reports/kelime_avi_runtime/${capture}.xml"
           done

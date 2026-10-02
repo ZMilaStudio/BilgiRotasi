@@ -243,9 +243,9 @@ void main() {
     test('production keeps staged Starter plus seven legacy routes', () {
       expect(WordHuntRouteCatalog.entries.length, 8);
       final starter = WordHuntRouteCatalog.starter.route;
-      expect(starter.levels, hasLength(30));
+      expect(starter.levels, hasLength(40));
       expect(starter.plannedRouteLevelCount, 100);
-      expect(starter.segments, hasLength(3));
+      expect(starter.segments, hasLength(4));
       expect(starter.segments[0].startLevelIndex, 1);
       expect(starter.segments[0].endLevelIndex, 10);
       expect(starter.segments[1].startLevelIndex, 11);
@@ -270,9 +270,7 @@ void main() {
   group('Wave 7 completion reward layout', () {
     const viewports = <Size>[Size(360, 640), Size(412, 915)];
 
-    testWidgets('one, multiple, none, L50 and L100 reward states fit', (
-      tester,
-    ) async {
+    testWidgets('completion omits cards and stays compact', (tester) async {
       final route = _v2Route();
       final multiple = await _process(route, 10, _progressThrough(route, 9));
       final one = await _process(route, 20, _progressThrough(route, 19));
@@ -308,7 +306,9 @@ void main() {
             MaterialApp(
               home: Scaffold(
                 body: Center(
-                  child: WordHuntCompletionPresentation(destination: destination),
+                  child: WordHuntCompletionPresentation(
+                    destination: destination,
+                  ),
                 ),
               ),
             ),
@@ -326,10 +326,45 @@ void main() {
           );
           expect(
             find.byKey(const Key('word_hunt_completion_info_reward')),
-            destination.milestoneInfoReward.shouldPresent
-                ? findsOneWidget
-                : findsNothing,
+            findsNothing,
           );
+          expect(find.text('Bilgi Kartları Açıldı'), findsNothing);
+          expect(find.text('Yeni Bilgi Kartı'), findsNothing);
+          for (final card in _cards) {
+            expect(find.text(card.title), findsNothing);
+            expect(find.text(card.shortFact), findsNothing);
+          }
+          expect(find.text('Yıldız'), findsOneWidget);
+          expect(
+            find.byKey(const Key('word_hunt_completion_bonus_summary')),
+            findsOneWidget,
+          );
+          final surface = tester.getRect(
+            find.byKey(const Key('word_hunt_completion_content')),
+          );
+          final lastAction = tester.getRect(
+            find.byKey(Key(
+              destination.summary.terminal
+                  ? 'word_hunt_completion_home'
+                  : 'word_hunt_completion_return_route',
+            )),
+          );
+          final strong =
+              destination.isTrueRouteFinal || destination.routeCompletedNow;
+          // Container adds the existing painted border to its 18dp padding.
+          expect(
+            surface.bottom - lastAction.bottom,
+            closeTo(18 + (strong ? 1.8 : 1.2), .01),
+          );
+          if (!destination.isTrueRouteFinal && !destination.routeCompletedNow) {
+            final primary = tester.getRect(
+              find.byKey(const Key('word_hunt_completion_primary')),
+            );
+            final bonus = tester.getRect(
+              find.byKey(const Key('word_hunt_completion_bonus_summary')),
+            );
+            expect(primary.top - bonus.bottom, closeTo(12, 1));
+          }
         }
       }
       await tester.binding.setSurfaceSize(null);
