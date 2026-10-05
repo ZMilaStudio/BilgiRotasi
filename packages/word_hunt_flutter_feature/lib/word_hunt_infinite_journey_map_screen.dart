@@ -64,11 +64,11 @@ class _WordHuntInfiniteJourneyMapScreenState
 
   void jumpToLevel(int ordinal) {
     if (!_controller.hasClients) return;
-    final clamped = ordinal.clamp(1, widget.publishedLevelCount);
+    final clamped = ordinal.clamp(1, widget.publishedLevelCount).toInt();
     final targetY = ((clamped - 1) * _geometry.rowPitch) -
         (MediaQuery.sizeOf(context).height * 0.35);
     final max = _controller.position.maxScrollExtent;
-    _controller.jumpTo(targetY.clamp(0.0, max));
+    _controller.jumpTo(targetY.clamp(0.0, max).toDouble());
   }
 
   @override
