@@ -55,6 +55,7 @@ class WordHuntInfiniteJourneyMapScreen extends StatefulWidget {
     this.levelsPerChunk = 20,
     this.onLevelTap,
     this.controller,
+    this.showContinueControl = true,
   }) : assert(publishedLevelCount >= 1),
        assert(initialOrdinal >= 1),
        assert(currentOrdinal >= 1),
@@ -63,6 +64,7 @@ class WordHuntInfiniteJourneyMapScreen extends StatefulWidget {
   final WordHuntJourneyStateResolver stateForOrdinal;
   final ValueChanged<int>? onLevelTap;
   final WordHuntJourneyMapController? controller;
+  final bool showContinueControl;
   @override
   State<WordHuntInfiniteJourneyMapScreen> createState() => _JourneyMapState();
 }
@@ -178,16 +180,17 @@ class _JourneyMapState extends State<WordHuntInfiniteJourneyMapScreen> {
                   );
                 },
               ),
-              Positioned(
-                right: 12,
-                bottom: 12,
-                child: FloatingActionButton.small(
-                  key: const Key('word_hunt_journey_continue'),
-                  tooltip: 'Devam Et',
-                  onPressed: () => _jump(widget.currentOrdinal),
-                  child: const Icon(Icons.my_location),
+              if (widget.showContinueControl)
+                Positioned(
+                  right: 12,
+                  bottom: 12,
+                  child: FloatingActionButton.small(
+                    key: const Key('word_hunt_journey_continue'),
+                    tooltip: 'Devam Et',
+                    onPressed: () => _jump(widget.currentOrdinal),
+                    child: const Icon(Icons.my_location),
+                  ),
                 ),
-              ),
             ],
           );
         },
