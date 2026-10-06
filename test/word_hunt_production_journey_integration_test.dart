@@ -59,12 +59,12 @@ class MissingPayloadResolver extends JourneyGameplayResolver {
 
 void main() {
   final levels = WordHuntStarterContent.baslangicLimani.levels;
-  test('single build-time parser defaults and fails safe to legacy', () {
-    expect(configuredWordHuntExperience, WordHuntExperienceMode.legacy);
-    for (final value in ['', 'legacy', 'unknown', 'JOURNEY']) {
-      expect(parseWordHuntExperience(value), WordHuntExperienceMode.legacy);
+  test('single build-time parser defaults and fails safe to Journey', () {
+    expect(configuredWordHuntExperience, WordHuntExperienceMode.journey);
+    for (final value in ['', 'journey', 'unknown', 'JOURNEY']) {
+      expect(parseWordHuntExperience(value), WordHuntExperienceMode.journey);
     }
-    expect(parseWordHuntExperience('journey'), WordHuntExperienceMode.journey);
+    expect(parseWordHuntExperience('legacy'), WordHuntExperienceMode.legacy);
   });
   test(
     'production catalog publishes only contiguous resolvable canonical content',
@@ -149,48 +149,50 @@ void main() {
       expect(production.load, throwsFormatException);
     },
   );
-  testWidgets(
-    'default and invalid boot legacy; opt-in boots Journey without legacy reads',
-    (tester) async {
+  for (final entry in <(String, WordHuntExperienceMode?)>[
+    ('no define', null),
+    ('journey', parseWordHuntExperience('journey')),
+    ('invalid', parseWordHuntExperience('invalid')),
+    ('legacy rollback', parseWordHuntExperience('legacy')),
+  ]) {
+    testWidgets('production entry: ${entry.$1}', (tester) async {
       final legacy = LegacySpy();
       final prefs = TrackedPreferences();
       final repo = WordHuntProductionJourneyRepository(preferences: prefs);
-      for (final mode in [null, parseWordHuntExperience('invalid')]) {
-        await tester.pumpWidget(
-          KelimeAviStandaloneApp(
-            key: UniqueKey(),
-            progressStore: legacy,
-            journeyRepository: repo,
-            experienceMode: mode,
-          ),
-        );
-        await tester.pumpAndSettle();
-        expect(find.byType(KelimeAviStandaloneHomeScreen), findsOneWidget);
-        expect(find.byType(WordHuntJourneyPrototypeShell), findsNothing);
-        expect(prefs.reads, isEmpty);
-      }
       await tester.pumpWidget(
         KelimeAviStandaloneApp(
           key: UniqueKey(),
           progressStore: legacy,
           journeyRepository: repo,
-          experienceMode: WordHuntExperienceMode.journey,
+          experienceMode: entry.$2,
         ),
       );
       await tester.pumpAndSettle();
-      expect(find.text('Bölüm 1'), findsOneWidget);
-      expect(find.byType(KelimeAviStandaloneHomeScreen), findsNothing);
-      expect(find.byType(WordHuntFeatureEntryScreen), findsNothing);
-      expect(legacy.reads, isEmpty);
+      if (entry.$2 == WordHuntExperienceMode.legacy) {
+        expect(find.byType(KelimeAviStandaloneHomeScreen), findsOneWidget);
+        expect(find.byType(WordHuntJourneyPrototypeShell), findsNothing);
+        expect(prefs.reads, isEmpty);
+      } else {
+        expect(find.text('Bölüm 1'), findsOneWidget);
+        expect(find.byType(KelimeAviStandaloneHomeScreen), findsNothing);
+        expect(find.byType(WordHuntFeatureEntryScreen), findsNothing);
+        expect(legacy.reads, isEmpty);
+        expect(legacy.writes, isEmpty);
+        for (final key in ['journey_home_continue', 'journey_home_map']) {
+          expect(find.byKey(Key(key)), findsOneWidget);
+        }
+        await owner.press(tester, 'journey_home_map');
+        expect(find.byKey(const Key('journey_go_to')), findsOneWidget);
+      }
       await tester.pumpWidget(const SizedBox());
-    },
-  );
+    });
+  }
   testWidgets(
     'production real completion writes Journey only; rollback and end restore',
     (tester) async {
       final legacy = LegacySpy();
       final prefs = TrackedPreferences();
-      Future<void> boot(WordHuntExperienceMode mode) async {
+      Future<void> boot([WordHuntExperienceMode? mode]) async {
         await tester.pumpWidget(const SizedBox());
         await tester.pumpWidget(
           KelimeAviStandaloneApp(
@@ -204,11 +206,17 @@ void main() {
         await tester.pumpAndSettle();
       }
 
-      await boot(WordHuntExperienceMode.journey);
+      await boot();
       await owner.press(tester, 'journey_home_continue');
       await owner.press(tester, 'word_hunt_journey_level_1');
       expect(find.byType(WordHuntLevelProductionScreen), findsOneWidget);
+      expect(find.byType(WordHuntFeatureEntryScreen), findsNothing);
       await real.solve(tester, levels.first, bonus: true);
+      expect(find.byType(WordHuntLevelProductionScreen), findsNothing);
+      expect(
+        find.byKey(const Key('word_hunt_journey_level_2')),
+        findsOneWidget,
+      );
       final saved =
           await WordHuntProductionJourneyRepository(preferences: prefs).load();
       expect(saved!.bestStarsByStableId[journeyStableId(1)], 3);
@@ -258,7 +266,7 @@ void main() {
       expect(prefs.writes.length, writesBeforeLegacy);
       expect(prefs.values[WordHuntProductionJourneyRepository.key], journeyRaw);
       final legacyRaw = Map.of(legacy.values);
-      await boot(WordHuntExperienceMode.journey);
+      await boot();
       expect(find.text('Bölüm 2'), findsOneWidget);
       expect(legacy.values, legacyRaw);
       final progress = WordHuntJourneyProgress(
@@ -274,7 +282,7 @@ void main() {
       await WordHuntProductionJourneyRepository(
         preferences: prefs,
       ).save(owner.ownerPreset(41));
-      await boot(WordHuntExperienceMode.journey);
+      await boot();
       await owner.press(tester, 'journey_home_continue');
       expect(
         find.text('Şimdilik tüm bölümleri tamamladın. Yeni bölümler yakında.'),

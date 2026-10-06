@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:word_hunt_domain/word_hunt_experience_mode.dart';
 import 'package:kelime_avi_standalone/main.dart';
 import 'package:kelime_avi_standalone/word_hunt_standalone_progress_store.dart';
 import 'package:word_hunt_flutter_feature/word_hunt_feature_entry_screen.dart';
@@ -63,7 +64,12 @@ void main() {
     final store = WordHuntStandaloneProgressStore(
       preferences: _MemoryPreferences(),
     );
-    await tester.pumpWidget(KelimeAviStandaloneApp(progressStore: store));
+    await tester.pumpWidget(
+      KelimeAviStandaloneApp(
+        progressStore: store,
+        experienceMode: WordHuntExperienceMode.legacy,
+      ),
+    );
 
     expect(find.text('Kelime Avı'), findsOneWidget);
     await tester.tap(

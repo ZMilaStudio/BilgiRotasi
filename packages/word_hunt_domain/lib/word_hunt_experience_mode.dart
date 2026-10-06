@@ -1,11 +1,11 @@
-/// Default and rollback both preserve the existing legacy experience.
+/// Journey is the default; legacy remains an explicit rollback option.
 enum WordHuntExperienceMode { legacy, journey }
 
 WordHuntExperienceMode parseWordHuntExperience(String value) =>
-    value == 'journey'
-        ? WordHuntExperienceMode.journey
-        : WordHuntExperienceMode.legacy;
+    value == 'legacy'
+        ? WordHuntExperienceMode.legacy
+        : WordHuntExperienceMode.journey;
 
 final configuredWordHuntExperience = parseWordHuntExperience(
-  const String.fromEnvironment('WORD_HUNT_EXPERIENCE', defaultValue: 'legacy'),
+  const String.fromEnvironment('WORD_HUNT_EXPERIENCE', defaultValue: 'journey'),
 );
