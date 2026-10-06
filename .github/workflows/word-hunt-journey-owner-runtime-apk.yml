@@ -1,0 +1,120 @@
+name: Journey Owner Runtime Test APK
+
+on:
+  pull_request:
+    branches:
+      - feat/kelime-avi-checkpoint-c-fener-burnu
+    paths:
+      - 'apps/kelime_avi_standalone/lib/journey_owner_test_main.dart'
+      - 'apps/kelime_avi_standalone/lib/journey_owner_test_store.dart'
+      - 'test/word_hunt_journey_owner_runtime_test.dart'
+      - 'packages/word_hunt_content/**'
+      - 'packages/word_hunt_domain/**'
+      - 'packages/word_hunt_flutter_feature/**'
+      - '.github/workflows/word-hunt-journey-owner-runtime-apk.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PROOF_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+
+jobs:
+  owner-runtime-apk:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 40
+    steps:
+      - name: Checkout exact source HEAD
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.PROOF_SHA }}
+
+      - name: Validate source and shared assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$PROOF_SHA"
+          link=apps/kelime_avi_standalone/assets/word_hunt
+          test -L "$link"
+          test "$(readlink "$link")" = '../../../assets/word_hunt'
+          test "$(readlink -f "$link")" = "$(readlink -f assets/word_hunt)"
+          test ! -e apps/kelime_avi_standalone/android/key.properties
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Flutter 3.44.6
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.6'
+          channel: stable
+          cache: true
+
+      - name: Validate owner harness and real gameplay
+        shell: bash
+        run: |
+          set -euo pipefail
+          flutter --version
+          flutter pub get
+          flutter test --no-pub \
+            test/word_hunt_journey_gameplay_bridge_test.dart \
+            test/word_hunt_journey_real_gameplay_flow_test.dart \
+            test/word_hunt_journey_owner_runtime_test.dart
+          dart analyze \
+            packages/word_hunt_content/lib/word_hunt_journey_gameplay_resolver.dart \
+            packages/word_hunt_domain/lib/word_hunt_journey_gameplay_completion.dart \
+            packages/word_hunt_flutter_feature/lib/word_hunt_journey_gameplay_host.dart \
+            test/word_hunt_journey_owner_runtime_test.dart
+          git diff --check
+
+      - name: Build explicit Journey owner entry debug APK
+        working-directory: apps/kelime_avi_standalone
+        shell: bash
+        run: |
+          set -euo pipefail
+          flutter pub get
+          flutter analyze --no-pub lib/journey_owner_test_main.dart lib/journey_owner_test_store.dart
+          flutter build apk --debug --no-pub --target lib/journey_owner_test_main.dart
+
+      - name: Verify APK and prepare minimal delivery
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$PROOF_SHA"
+          git diff --exit-code
+          apk=apps/kelime_avi_standalone/build/app/outputs/flutter-apk/app-debug.apk
+          test -s "$apk"
+          python3 - "$apk" <<'PY'
+          import sys, zipfile
+          with zipfile.ZipFile(sys.argv[1]) as archive:
+              assert archive.testzip() is None, 'Corrupt APK'
+              assert 'AndroidManifest.xml' in archive.namelist(), 'Missing manifest'
+              assert 'classes.dex' in archive.namelist(), 'Missing dex'
+          PY
+          aapt=$(find "$ANDROID_HOME/build-tools" -mindepth 2 -maxdepth 2 -name aapt -type f | sort -V | tail -n 1)
+          test -n "$aapt"
+          badging=$("$aapt" dump badging "$apk")
+          printf '%s\n' "$badging"
+          printf '%s\n' "$badging" | grep -q "^package: name='com.zmilastudio.kelimeavi' "
+          printf '%s\n' "$badging" | grep -q '^application-debuggable'
+          short_sha=${PROOF_SHA:0:7}
+          name="KelimeAvi-Journey-Runtime-Test-${short_sha}.apk"
+          mkdir -p owner-delivery
+          cp "$apk" "owner-delivery/$name"
+          (cd owner-delivery && sha256sum "$name" > SHA256.txt)
+          git rev-parse HEAD > owner-delivery/HEAD_SHA.txt
+          printf 'SOURCE_HEAD=%s\nENTRY=lib/journey_owner_test_main.dart\nBUILD_MODE=debug\nAPPLICATION_ID=com.zmilastudio.kelimeavi\nFLUTTER_VERSION=3.44.6\n' "$PROOF_SHA" > owner-delivery/BUILD_METADATA.txt
+          cat owner-delivery/BUILD_METADATA.txt owner-delivery/SHA256.txt
+          stat -c 'APK_BYTES=%s' "owner-delivery/$name"
+
+      - name: Upload owner runtime test package
+        uses: actions/upload-artifact@v4
+        with:
+          name: KelimeAvi-Journey-Runtime-Test-${{ env.PROOF_SHA }}
+          path: owner-delivery/
+          if-no-files-found: error
+          retention-days: 30
