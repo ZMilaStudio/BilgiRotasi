@@ -2,6 +2,8 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart' show ScrollCacheExtent;
 import 'word_hunt_journey_geometry.dart';
+import 'word_hunt_journey_background.dart';
+import 'word_hunt_journey_theme.dart';
 
 enum WordHuntJourneyNodeState {
   locked,
@@ -56,6 +58,7 @@ class WordHuntInfiniteJourneyMapScreen extends StatefulWidget {
     this.onLevelTap,
     this.controller,
     this.showContinueControl = true,
+    this.themeSchedule,
   }) : assert(publishedLevelCount >= 1),
        assert(initialOrdinal >= 1),
        assert(currentOrdinal >= 1),
@@ -65,6 +68,7 @@ class WordHuntInfiniteJourneyMapScreen extends StatefulWidget {
   final ValueChanged<int>? onLevelTap;
   final WordHuntJourneyMapController? controller;
   final bool showContinueControl;
+  final JourneyThemeSchedule? themeSchedule;
   @override
   State<WordHuntInfiniteJourneyMapScreen> createState() => _JourneyMapState();
 }
@@ -176,6 +180,7 @@ class _JourneyMapState extends State<WordHuntInfiniteJourneyMapScreen> {
                           visible: visible,
                           resolver: widget.stateForOrdinal,
                           onTap: widget.onLevelTap,
+                          themeSchedule: widget.themeSchedule,
                         ),
                   );
                 },
@@ -209,6 +214,7 @@ class _JourneyChunk extends StatelessWidget {
     required this.visible,
     required this.resolver,
     this.onTap,
+    this.themeSchedule,
   });
   final WordHuntJourneyGeometry geometry;
   final int chunk, count;
@@ -216,6 +222,7 @@ class _JourneyChunk extends StatelessWidget {
   final Rect visible;
   final WordHuntJourneyStateResolver resolver;
   final ValueChanged<int>? onTap;
+  final JourneyThemeSchedule? themeSchedule;
   @override
   Widget build(BuildContext context) {
     final first = chunk * geometry.levelsPerChunk + 1;
@@ -224,6 +231,16 @@ class _JourneyChunk extends StatelessWidget {
       child: Stack(
         clipBehavior: Clip.hardEdge,
         children: [
+          if (themeSchedule != null)
+            Positioned.fill(
+              child: JourneyChunkBackground(
+                key: ValueKey('journey_background_$chunk'),
+                schedule: themeSchedule!,
+                firstOrdinal: first,
+                rows: last - first + 1,
+                rowPitch: geometry.rowPitch,
+              ),
+            ),
           Positioned.fill(
             child: ExcludeSemantics(
               child: CustomPaint(
@@ -286,6 +303,13 @@ class _JourneyChunk extends StatelessWidget {
                   color: model.challenge ? Colors.amber : Colors.white,
                   width: 2,
                 ),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Color(0xFF08121D),
+                    blurRadius: 4,
+                    spreadRadius: 2,
+                  ),
+                ],
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -361,6 +385,14 @@ class _JourneyRoutePainter extends CustomPainter {
         curve.end.dy,
       );
     }
+    canvas.drawPath(
+      path,
+      Paint()
+        ..color = const Color(0xFF08121D)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 8
+        ..strokeCap = StrokeCap.butt,
+    );
     canvas.drawPath(path, paint);
     canvas.restore();
   }

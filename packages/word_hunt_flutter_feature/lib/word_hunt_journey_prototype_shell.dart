@@ -4,6 +4,8 @@ import 'package:word_hunt_domain/word_hunt_journey_progress.dart';
 import 'package:word_hunt_domain/word_hunt_journey_save_codec.dart';
 import 'word_hunt_infinite_journey_map_screen.dart';
 import 'word_hunt_journey_map_state_adapter.dart';
+import 'word_hunt_journey_theme.dart';
+import 'word_hunt_journey_theme_demo.dart';
 
 /// Independent widget entry. Does not connect to production navigation/storage.
 class WordHuntJourneyPrototypeShell extends StatefulWidget {
@@ -11,9 +13,11 @@ class WordHuntJourneyPrototypeShell extends StatefulWidget {
     super.key,
     required this.catalog,
     required this.repository,
+    this.themeSchedule,
   });
   final PublishedJourneyCatalog catalog;
   final JourneySaveRepository repository;
+  final JourneyThemeSchedule? themeSchedule;
   @override
   State<WordHuntJourneyPrototypeShell> createState() => _ShellState();
 }
@@ -151,6 +155,8 @@ class _ShellState extends State<WordHuntJourneyPrototypeShell> {
           builder:
               (_) => WordHuntJourneySyntheticLevelScreen(
                 ordinal: ordinal,
+                theme: (widget.themeSchedule ?? JourneyThemeSchedule.synthetic)
+                    .themeForOrdinal(ordinal),
                 onComplete:
                     (stars, bonus) => _persist(
                       () => _progress!.recordCompletion(
@@ -275,6 +281,9 @@ class _ShellState extends State<WordHuntJourneyPrototypeShell> {
                             stateForOrdinal: adapter.presentationForOrdinal,
                             onLevelTap: _openLevel,
                             showContinueControl: false,
+                            themeSchedule:
+                                widget.themeSchedule ??
+                                JourneyThemeSchedule.synthetic,
                           )
                           : Center(
                             child: SingleChildScrollView(
@@ -398,8 +407,10 @@ class WordHuntJourneySyntheticLevelScreen extends StatefulWidget {
     super.key,
     required this.ordinal,
     required this.onComplete,
+    this.theme,
   });
   final int ordinal;
+  final JourneyThemeDefinition? theme;
   final Future<bool> Function(int stars, int bonus) onComplete;
   @override
   State<WordHuntJourneySyntheticLevelScreen> createState() => _SyntheticState();
@@ -445,7 +456,37 @@ class _SyntheticState extends State<WordHuntJourneySyntheticLevelScreen> {
   Widget build(BuildContext context) => PopScope(
     canPop: !busy,
     child: Scaffold(
-      appBar: AppBar(title: Text('Bölüm ${widget.ordinal}')),
+      appBar: AppBar(
+        title: Text('Bölüm ${widget.ordinal}'),
+        actions: [
+          if (widget.theme != null)
+            IconButton(
+              tooltip: 'Sentetik okunabilirlik demosu',
+              icon: const Icon(Icons.palette_outlined),
+              onPressed:
+                  () => showDialog<void>(
+                    context: context,
+                    builder:
+                        (_) => AlertDialog(
+                          title: Text(widget.theme!.id),
+                          content: SizedBox(
+                            width: 300,
+                            height: 240,
+                            child: JourneyThemeReadabilityDemo(
+                              theme: widget.theme!,
+                            ),
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: const Text('KAPAT'),
+                            ),
+                          ],
+                        ),
+                  ),
+            ),
+        ],
+      ),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
