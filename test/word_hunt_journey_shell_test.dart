@@ -47,6 +47,7 @@ Future<void> boot(
   await tester.pumpWidget(
     MaterialApp(
       home: WordHuntJourneyPrototypeShell(
+        syntheticProof: true,
         catalog: PublishedJourneyCatalog(
           levelCount: 15000,
           publishedLevelCount: count,

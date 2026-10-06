@@ -6,6 +6,8 @@ import 'word_hunt_infinite_journey_map_screen.dart';
 import 'word_hunt_journey_map_state_adapter.dart';
 import 'word_hunt_journey_theme.dart';
 import 'word_hunt_journey_theme_demo.dart';
+import 'package:word_hunt_content/word_hunt_journey_gameplay_resolver.dart';
+import 'word_hunt_journey_gameplay_host.dart';
 
 /// Independent widget entry. Does not connect to production navigation/storage.
 class WordHuntJourneyPrototypeShell extends StatefulWidget {
@@ -14,10 +16,16 @@ class WordHuntJourneyPrototypeShell extends StatefulWidget {
     required this.catalog,
     required this.repository,
     this.themeSchedule,
+    this.syntheticProof = false,
+    this.gameplayNow,
   });
   final PublishedJourneyCatalog catalog;
   final JourneySaveRepository repository;
   final JourneyThemeSchedule? themeSchedule;
+
+  /// Explicit old Slice 3/4 test harness only. Default Journey flow is real.
+  final bool syntheticProof;
+  final DateTime Function()? gameplayNow;
   @override
   State<WordHuntJourneyPrototypeShell> createState() => _ShellState();
 }
@@ -25,6 +33,7 @@ class WordHuntJourneyPrototypeShell extends StatefulWidget {
 class _ShellState extends State<WordHuntJourneyPrototypeShell> {
   WordHuntJourneyProgress? _progress;
   final _map = WordHuntJourneyMapController();
+  final _gameplay = JourneyGameplayResolver();
   bool _onMap = false, _busy = false, _loading = true, _opening = false;
   int _anchor = 1, _totalStars = 0;
   String? _feedback;
@@ -142,6 +151,12 @@ class _ShellState extends State<WordHuntJourneyPrototypeShell> {
 
   Future<void> _openLevel(int ordinal) async {
     if (_opening || _busy || !adapter.canJumpToOrdinal(ordinal)) return;
+    final record = widget.catalog.recordForOrdinal(ordinal)!;
+    final payload = _gameplay.resolve(record);
+    if (!widget.syntheticProof && payload == null) {
+      setState(() => _feedback = 'Bu bölümün oyun içeriği henüz hazır değil.');
+      return;
+    }
     _opening = true;
     try {
       if (!await _persist(
@@ -153,19 +168,39 @@ class _ShellState extends State<WordHuntJourneyPrototypeShell> {
       await Navigator.of(context).push<void>(
         MaterialPageRoute(
           builder:
-              (_) => WordHuntJourneySyntheticLevelScreen(
-                ordinal: ordinal,
-                theme: (widget.themeSchedule ?? JourneyThemeSchedule.synthetic)
-                    .themeForOrdinal(ordinal),
-                onComplete:
-                    (stars, bonus) => _persist(
-                      () => _progress!.recordCompletion(
-                        journeyStableId(ordinal),
-                        stars: stars,
-                        bonusFound: bonus,
+              (_) =>
+                  !widget.syntheticProof
+                      ? WordHuntJourneyGameplayHost(
+                        record: record,
+                        level: payload!,
+                        now: widget.gameplayNow,
+                        onCompletion:
+                            (result) => _persist(() {
+                              if (!result.completed ||
+                                  result.stableLevelId != record.stableId) {
+                                throw StateError('Unexpected Journey outcome.');
+                              }
+                              _progress!.recordCompletion(
+                                result.stableLevelId,
+                                stars: result.earnedStars,
+                                bonusFound: result.bonusFoundCount,
+                              );
+                            }),
+                      )
+                      : WordHuntJourneySyntheticLevelScreen(
+                        ordinal: ordinal,
+                        theme: (widget.themeSchedule ??
+                                JourneyThemeSchedule.synthetic)
+                            .themeForOrdinal(ordinal),
+                        onComplete:
+                            (stars, bonus) => _persist(
+                              () => _progress!.recordCompletion(
+                                journeyStableId(ordinal),
+                                stars: stars,
+                                bonusFound: bonus,
+                              ),
+                            ),
                       ),
-                    ),
-              ),
         ),
       );
       if (!mounted) return;
