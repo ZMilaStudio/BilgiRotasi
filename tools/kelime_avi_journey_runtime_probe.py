@@ -13,8 +13,27 @@ ERRORS = ("Unable to load asset", "Asset not found", "RenderFlex overflow",
           "FATAL EXCEPTION", "ANR in " + PACKAGE)
 
 
-def adb(*args, binary=False):
-    return subprocess.check_output(["adb", *args], text=not binary)
+def adb(*args, binary=False, timeout=30):
+    return subprocess.check_output(["adb", *args], text=not binary, timeout=timeout)
+
+
+def require_process(timeout=5):
+    try:
+        pid = adb("shell", "pidof", PACKAGE, timeout=timeout).strip()
+    except subprocess.CalledProcessError as error:
+        raise AssertionError("App process died or is absent") from error
+    assert pid, "App process died or is absent"
+
+
+def wait_for_process(timeout=15):
+    deadline = time.monotonic() + timeout
+    while time.monotonic() < deadline:
+        try:
+            require_process(timeout=min(5, deadline - time.monotonic()))
+            return
+        except (AssertionError, subprocess.TimeoutExpired):
+            time.sleep(min(0.5, max(0, deadline - time.monotonic())))
+    raise AssertionError(f"App process did not start within {timeout}s")
 
 
 def label(node):
@@ -50,23 +69,33 @@ def require_clean_log(log):
         assert error.casefold() not in log.casefold(), f"Runtime error: {error}"
 
 
-def capture(name, check):
+def capture(name, check, timeout=30):
+    deadline = time.monotonic() + timeout
     xml = ""
-    for _ in range(15):
-        adb("shell", "uiautomator", "dump", "/sdcard/window.xml")
-        xml = adb("exec-out", "cat", "/sdcard/window.xml")
-        root = ET.fromstring(xml)
+    last_error = "No UI dump available"
+    while time.monotonic() < deadline:
+        # After startup, loss of the process is a real failure, not UI readiness.
+        require_process(timeout=max(0.01, min(5, deadline - time.monotonic())))
         try:
+            adb("shell", "uiautomator", "dump", "/sdcard/window.xml",
+                timeout=max(0.01, deadline - time.monotonic()))
+            xml = adb("exec-out", "cat", "/sdcard/window.xml",
+                      timeout=max(0.01, deadline - time.monotonic()))
+            root = ET.fromstring(xml)
             check(root)
-            break
-        except AssertionError:
-            time.sleep(1)
-    else:
-        (REPORTS / f"{name}.xml").write_text(xml, encoding="utf-8")
-        check(root)
+            require_process()
+            (REPORTS / f"{name}.xml").write_text(xml, encoding="utf-8")
+            (REPORTS / f"{name}.png").write_bytes(
+                adb("exec-out", "screencap", "-p", binary=True))
+            return root
+        except (subprocess.CalledProcessError, subprocess.TimeoutExpired,
+                ET.ParseError, AssertionError) as error:
+            last_error = f"{type(error).__name__}: {error}"
+            time.sleep(min(0.5, max(0, deadline - time.monotonic())))
     (REPORTS / f"{name}.xml").write_text(xml, encoding="utf-8")
-    (REPORTS / f"{name}.png").write_bytes(adb("exec-out", "screencap", "-p", binary=True))
-    return root
+    (REPORTS / f"{name}_readiness_failure.txt").write_text(
+        last_error, encoding="utf-8")
+    raise AssertionError(f"Journey UI {name} not ready within {timeout}s: {last_error}")
 
 
 def tap(root, text):
@@ -84,6 +113,7 @@ def main():
     adb("logcat", "-c")
     adb("shell", "monkey", "-p", PACKAGE, "-c", "android.intent.category.LAUNCHER", "1")
     try:
+        wait_for_process()
         home = capture("01_home", require_home)
         tap(home, "DEVAM ET")
         def require_map(root):
