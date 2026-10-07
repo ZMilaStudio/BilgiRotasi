@@ -72,7 +72,10 @@ void main() {
       ),
       findsNothing,
     );
-    expect(find.text('2 / 90'), findsOneWidget);
+    expect(
+      find.text('2 / ${WordHuntStarterContent.baslangicLimani.maximumStars}'),
+      findsOneWidget,
+    );
   });
 
   testWidgets(

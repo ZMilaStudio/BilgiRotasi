@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 
 import 'word_hunt_models.dart';
 import 'word_hunt_harbor_segment_screen.dart';
+import 'word_hunt_harbor_segment_registry.dart';
+import 'word_hunt_harbor_premium_segment_screen.dart';
 import 'word_hunt_pixel_proof_screen.dart';
 import 'word_hunt_progress.dart';
 import 'word_hunt_route_stop.dart';
@@ -222,6 +224,17 @@ class WordHuntReferenceRouteScreen extends StatelessWidget {
       );
     }
 
+    if (route.id == WordHuntStarterContent.baslangicLimani.id &&
+        sceneAssetPath == null &&
+        WordHuntHarborSegmentRegistry.forSegment(segmentIndex) != null) {
+      final next = WordHuntRouteProgressEngine.nextPlayableLevelIndex(route, progress);
+      return WordHuntHarborPremiumSegmentScreen(
+        route: route, progress: progress, segmentIndex: segmentIndex,
+        furthestAccessibleSegment: ((next - 1) ~/ 10 + 1).clamp(1, route.segments.length),
+        onBack: onBack, onInfo: onInfo, onLevelTap: onLevelTap,
+        onSegmentSelect: onSegmentSelect,
+      );
+    }
     final totalStars = WordHuntRouteProgressEngine.totalStars(route, progress);
     final lastUnlocked = host.nodes
         .where((node) => node.unlocked)

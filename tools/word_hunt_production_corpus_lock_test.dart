@@ -25,7 +25,7 @@ void main() {
     expect(second, first);
   });
 
-  test('current production corpus is 8 routes and 100 available levels', () {
+  test('current production corpus is 8 routes and 110 available levels', () {
     final lock = buildProductionCorpusLock();
     final routes = (lock['routes']! as List).cast<Map<String, Object?>>();
 
@@ -35,20 +35,20 @@ void main() {
         0,
         (total, route) => total + (route['availableLevelCount']! as int),
       ),
-      100,
+      110,
     );
 
     final starter = routes.firstWhere(
       (route) => route['routeId'] == 'baslangic-limani',
     );
-    expect(starter['availableLevelCount'], 30);
+    expect(starter['availableLevelCount'], 40);
     expect(starter['plannedLevelCount'], 100);
-    expect(starter['reservedWordCount'], 247);
+    expect(starter['reservedWordCount'], 338);
 
     final levels = (starter['levels']! as List).cast<Map<String, Object?>>();
     expect(
       levels.map((level) => level['localIndex']),
-      containsAll(<int>[11, 20, 21, 30]),
+      containsAll(<int>[11, 20, 21, 30, 31, 40]),
     );
 
     final words = (starter['reservedWords']! as List).cast<String>();

@@ -47,6 +47,20 @@ class _HarborVisualProofAppState extends State<_HarborVisualProofApp> {
           'baslangic-$level': level % 3 + 1,
       },
     ),
+    _HarborProofScenario.segment4Mixed => WordHuntProgressSnapshot(
+      bestStarsByLevelId: <String, int>{
+        for (var level = 1; level <= 30; level++) 'baslangic-$level': 1,
+        for (var level = 31; level <= 33; level++)
+          'baslangic-$level': level - 30,
+      },
+    ),
+    _HarborProofScenario.l40Playable => WordHuntProgressSnapshot(
+      bestStarsByLevelId: <String, int>{
+        for (var level = 1; level <= 30; level++) 'baslangic-$level': 1,
+        for (var level = 31; level <= 39; level++)
+          'baslangic-$level': (level - 31) % 3 + 1,
+      },
+    ),
   };
 
   void _toggleScenario() {
@@ -54,9 +68,16 @@ class _HarborVisualProofAppState extends State<_HarborVisualProofApp> {
       scenario = switch (scenario) {
         _HarborProofScenario.mixed => _HarborProofScenario.l20Playable,
         _HarborProofScenario.l20Playable => _HarborProofScenario.segment3,
-        _HarborProofScenario.segment3 => _HarborProofScenario.mixed,
+        _HarborProofScenario.segment3 => _HarborProofScenario.segment4Mixed,
+        _HarborProofScenario.segment4Mixed => _HarborProofScenario.l40Playable,
+        _HarborProofScenario.l40Playable => _HarborProofScenario.mixed,
       };
-      selected = scenario == _HarborProofScenario.segment3 ? 3 : 2;
+      selected = switch (scenario) {
+        _HarborProofScenario.segment3 => 3,
+        _HarborProofScenario.segment4Mixed ||
+        _HarborProofScenario.l40Playable => 4,
+        _ => 2,
+      };
       _lastGeometrySignature = null;
     });
   }
@@ -77,6 +98,8 @@ class _HarborVisualProofAppState extends State<_HarborVisualProofApp> {
         if (value != null &&
             (value == 'word_hunt_harbor_scene_2' ||
                 value == 'word_hunt_harbor_scene_3' ||
+                value == 'word_hunt_harbor_scene_4' ||
+                value.startsWith('word_hunt_harbor_stars_') ||
                 value.startsWith('word_hunt_harbor_level_') ||
                 value.startsWith('word_hunt_harbor_medallion_') ||
                 value.startsWith('word_hunt_harbor_star_backplate_') ||
@@ -100,6 +123,12 @@ class _HarborVisualProofAppState extends State<_HarborVisualProofApp> {
       WidgetsBinding.instance.rootElement?.visitChildren(visit);
       if (!evidence.containsKey('word_hunt_harbor_scene_$selected') ||
           !evidence.containsKey('word_hunt_harbor_level_${selected * 10}')) {
+        // Registered scenes load asynchronously without rebuilding this parent.
+        Future<void>.delayed(const Duration(milliseconds: 50), () {
+          if (!mounted) return;
+          _scheduleGeometryEvidence();
+          WidgetsBinding.instance.scheduleFrame();
+        });
         return;
       }
       _lastGeometrySignature = signature;
@@ -132,4 +161,10 @@ class _HarborVisualProofAppState extends State<_HarborVisualProofApp> {
   }
 }
 
-enum _HarborProofScenario { mixed, l20Playable, segment3 }
+enum _HarborProofScenario {
+  mixed,
+  l20Playable,
+  segment3,
+  segment4Mixed,
+  l40Playable,
+}

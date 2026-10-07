@@ -27,6 +27,8 @@ SCENE_SIZE = (941, 1672)
 HEADER_DP = 76
 NAV_DP = 64
 APPROVED_ASSETS = {
+    "assets/word_hunt/harbor_segments/segment_04_clean.webp":
+        "7a184ded2911a6747451d62d08b41d787bfbcd4c2aa48a0e9fe4e1648dd2fbe0",
     "assets/word_hunt/harbor_segments/segment_02_clean.webp":
         "cd115f2eb3866beb4e1375ad545e31c23dce60b02d23d960f9b46b9c5828b566",
     "assets/word_hunt/harbor_segments/segment_03_clean.webp":
@@ -75,8 +77,8 @@ def load_manifest(manifest_path: Path) -> tuple[dict, bytes, Path, str]:
     if not isinstance(manifest, dict) or type(manifest.get("schemaVersion")) is not int or manifest.get("schemaVersion") != 2:
         raise PreviewError("manifest schemaVersion must be 2")
     segment_value = manifest.get("segmentIndex")
-    if manifest.get("routeId") != "baslangic-limani" or isinstance(segment_value, bool) or not isinstance(segment_value, int) or segment_value not in (2, 3):
-        raise PreviewError("only Baslangic Limani Segment 2/3 manifests are supported")
+    if manifest.get("routeId") != "baslangic-limani" or isinstance(segment_value, bool) or not isinstance(segment_value, int) or segment_value not in (2, 3, 4):
+        raise PreviewError("only registered Baslangic Limani Segment 2/3/4 manifests are supported")
     scene = manifest.get("scene")
     _require_keys(manifest, {"schemaVersion", "routeId", "segmentIndex", "scene", "minimumHitTargetLogicalDp", "nodes", "connections"}, "manifest")
     _require_keys(scene, {"assetPath", "coordinateSpace", "coordinateSize", "sha256"}, "scene")
@@ -101,7 +103,7 @@ def load_manifest(manifest_path: Path) -> tuple[dict, bytes, Path, str]:
         if image.size != SCENE_SIZE or image.format != "WEBP":
             raise PreviewError("scene asset must be a 941x1672 WebP")
 
-    first_level = 11 if manifest["segmentIndex"] == 2 else 21
+    first_level = (manifest["segmentIndex"] - 1) * 10 + 1
     expected_ids = [f"baslangic-{n}" for n in range(first_level, first_level + 10)]
     nodes = manifest.get("nodes")
     if not isinstance(nodes, list) or len(nodes) != 10:

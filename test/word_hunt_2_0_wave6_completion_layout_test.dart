@@ -3,8 +3,10 @@ import 'package:bilgi_rotasi/word_hunt/word_hunt_completion_presentations.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_gameplay_presentation.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_models.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_progress.dart';
+import 'package:bilgi_rotasi/word_hunt/word_hunt_progress_codec.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_route_catalog.dart';
 import 'package:bilgi_rotasi/word_hunt/word_hunt_route_rewards.dart';
+import 'package:bilgi_rotasi/word_hunt/word_hunt_starter_content.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -91,7 +93,7 @@ void main() {
     await tester.binding.setSurfaceSize(null);
   });
 
-  testWidgets('unknown bonus history remains readable on strong completion', (
+  testWidgets('unknown bonus history keeps accurate counts without legacy UI', (
     tester,
   ) async {
     await tester.binding.setSurfaceSize(const Size(360, 640));
@@ -99,7 +101,11 @@ void main() {
 
     final route = _route();
     final entry = _entry(route);
-    final before = _progressThrough(99);
+    final legacy = _progressThrough(99);
+    final before = WordHuntProgressSnapshot(
+      bestStarsByLevelId: legacy.bestStarsByLevelId,
+      bestBonusFoundCountByLevelId: const {'wave6-layout-1': 1},
+    );
     final transition = WordHuntRouteRewardEngine.recordLevelResult(
       route: route,
       progress: before,
@@ -126,9 +132,83 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.textContaining('bilinmeyen kayıt var'), findsOneWidget);
+    expect(destination.summary.hasUnknownBonusHistory, isTrue);
+    expect(destination.summary.knownBonusFoundTotal, 1);
+    expect(destination.summary.maximumBonusTotal, 2);
+    expect(find.text('Kaydedilen bonus: 1 / 2'), findsOneWidget);
+    expect(find.textContaining('bilinmeyen kayıt var'), findsNothing);
+    expect(
+      transition.progress.bestBonusFoundCountByLevelId,
+      before.bestBonusFoundCountByLevelId,
+    );
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets(
+    'Segment 4 bonus total preserves unknown and known saved history',
+    (tester) async {
+      const route = WordHuntStarterContent.baslangicLimani;
+      final before = WordHuntProgressSnapshot(
+        bestStarsByLevelId: {for (var n = 1; n <= 30; n++) 'baslangic-$n': 1},
+        bestBonusFoundCountByLevelId: const {
+          'baslangic-1': 1,
+          'baslangic-2': 0,
+        },
+      );
+      final transition = WordHuntRouteRewardEngine.recordLevelResult(
+        route: route,
+        progress: before,
+        levelId: 'baslangic-31',
+        stars: 1,
+        foundBonusCount: 1,
+      );
+      final destination = WordHuntCompletionCoordinator.resolve(
+        route: route,
+        completedLevelId: 'baslangic-31',
+        beforeProgress: before,
+        afterProgress: transition.progress,
+        transition: transition,
+        catalogEntries: [WordHuntRouteCatalog.starter],
+      );
+      final saved = WordHuntProgressCodec.encode(
+        transition.progress,
+        ownerScope: 'owner-review',
+      );
+      expect(destination.summary.hasUnknownBonusHistory, isTrue);
+      expect(destination.summary.knownBonusFoundTotal, 2);
+      expect(destination.summary.maximumBonusTotal, 41);
+      expect(transition.progress.bestBonusFoundCountByLevelId, {
+        'baslangic-1': 1,
+        'baslangic-2': 0,
+        'baslangic-31': 1,
+      });
+      for (final viewport in [const Size(360, 800), const Size(412, 915)]) {
+        await tester.binding.setSurfaceSize(viewport);
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: WordHuntCompletionPresentation(destination: destination),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+        expect(find.text('Kaydedilen bonus: 2 / 41'), findsOneWidget);
+        expect(find.textContaining('bilinmeyen kayıt'), findsNothing);
+        expect(find.text('Yıldız'), findsOneWidget);
+        expect(find.text('Sonraki Bölüm'), findsOneWidget);
+        expect(find.text('Haritaya Dön'), findsOneWidget);
+        expect(tester.takeException(), isNull);
+        expect(
+          WordHuntProgressCodec.encode(
+            transition.progress,
+            ownerScope: 'owner-review',
+          ),
+          saved,
+        );
+      }
+      await tester.binding.setSurfaceSize(null);
+    },
+  );
 }
 
 WordHuntCompletionDestination _destination(

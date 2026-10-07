@@ -11,8 +11,8 @@ import kelime_avi_harbor_runtime_probe as probe
 def geometry():
     records = []
     for width, height in ((360, 800), (412, 915)):
-        for scenario in ("mixed", "l20Playable", "segment3"):
-            segment = 3 if scenario == "segment3" else 2
+        for scenario in ("mixed", "l20Playable", "segment3", "segment4Mixed", "l40Playable"):
+            segment = 4 if scenario in ("segment4Mixed", "l40Playable") else 3 if scenario == "segment3" else 2
             first, last = (segment - 1) * 10 + 1, segment * 10
             def add(key, rect):
                 records.append(dict(scenario=scenario, logicalWidth=width,
@@ -27,6 +27,11 @@ def geometry():
             add(f"word_hunt_harbor_medallion_{last}", (22, 562, 76, 616))
             if scenario != "mixed":
                 add(f"word_hunt_harbor_challenge_{last}", (5, 630, 93, 650))
+            if segment == 4:
+                for level in range(31, 35 if scenario == "segment4Mixed" else 41):
+                    offset = level - 31
+                    x, y = 15 + offset % 3 * 105, 90 + offset // 3 * 155
+                    add(f"word_hunt_harbor_stars_{level}", (x, y + 75, x + 65, y + 99))
     return records
 
 
@@ -57,7 +62,7 @@ class ProbeContractTest(unittest.TestCase):
                        probe.SEMANTICS_AGGREGATED):
             values.clear()
 
-    def test_all_six_geometry_groups_are_required(self):
+    def test_all_ten_geometry_groups_are_required(self):
         probe.verify_geometry(geometry())
         with self.assertRaisesRegex(AssertionError, "Missing Flutter geometry"):
             probe.verify_geometry([r for r in geometry() if r["scenario"] != "segment3"])
@@ -126,6 +131,37 @@ class ProbeContractTest(unittest.TestCase):
         probe.write_result()
         self.assertIn("RESULT=FAIL", (probe.REPORTS / "HARBOR_RESULT.txt").read_text())
         self.assertTrue(probe.FAILURES)
+
+    def test_segment4_state_stars_challenge_and_wrong_clickable(self):
+        for scenario, completed in (("segment4_mixed", 33), ("l40_playable", 39)):
+            root = ET.Element("hierarchy")
+            for level in range(31, 41):
+                offset = level - 31
+                x, y = 15 + offset % 3 * 105, 90 + offset // 3 * 155
+                stars = (level - 31) % 3 + 1 if level <= completed else 0
+                opened = level <= completed + 1
+                challenge = "meydan okuma, " if level == 40 else ""
+                ET.SubElement(root, "node", {
+                    "content-desc": f"Bölüm {level}, {challenge}{'açık' if opened else 'kilitli'}, {stars} yıldız",
+                    "clickable": "true" if opened else "false",
+                    "bounds": f"[{x},{y}][{x+68},{y+68}]",
+                })
+            probe.verify_segment4(root, scenario, 360, 800)
+            root[-1].set("clickable", "false" if scenario == "l40_playable" else "true")
+            with self.assertRaisesRegex(AssertionError, "clickable"):
+                probe.verify_segment4(root, scenario, 360, 800)
+
+    def test_segment4_geometry_and_star_presence_are_fail_closed(self):
+        records = geometry()
+        with self.assertRaisesRegex(AssertionError, "Missing Flutter geometry"):
+            probe.verify_geometry([r for r in records if r["scenario"] != "segment4Mixed"])
+        with self.assertRaisesRegex(AssertionError, "missing RenderBox keys"):
+            probe.verify_geometry([r for r in records if r["key"] != "word_hunt_harbor_stars_31"])
+        for record in records:
+            if record["key"] == "word_hunt_harbor_challenge_40":
+                record["rect"]["right"] = 999
+        with self.assertRaisesRegex(AssertionError, "plaque clipped"):
+            probe.verify_geometry(records)
 
 
 if __name__ == "__main__":

@@ -28,6 +28,8 @@ void main() {
       'assets/word_hunt/baslangic_limani/node_normal.webp',
       'assets/word_hunt/harbor_segments/segment_02_clean.webp',
       'assets/word_hunt/harbor_segments/segment_03_clean.webp',
+      'assets/word_hunt/harbor_segments/segment_04_clean.webp',
+      'assets/word_hunt/harbor_segments/segment_04_layout_schema_v2.json',
       'assets/word_hunt/v5_reference_assets/harbor_background_1080x1920.png',
       'assets/word_hunt/v5_reference_assets/status_panel_empty.png',
       'assets/word_hunt/v5_reference_assets/cell_idle.png',
