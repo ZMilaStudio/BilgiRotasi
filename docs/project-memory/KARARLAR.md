@@ -313,3 +313,14 @@ Bu bölüm, 31 Ağustos kayıtlarındaki `ERROR_STATE_VISUAL = DOĞRULANACAK` du
 - Mevcut eligible oyuncular load/backfill sırasında tekrar oynamadan, tek idempotent writeback ile erişim kazanır. Replay 59→60 crossing de grant/persist üretir. Schema bump yoktur.
 - Debug-only QA sınırları: 30 complete/59, 30 complete/60, 20 complete/60, 30 complete/90. Sınırları tekrar test etmek için açık onaylı QA preset yalnız Gökyüzü pilot entitlement'ını resetleyebilir; normal production reevaluation erişimi kaldırmaz.
 
+## 20. 7 Ekim 2026 — Journey visual production foundation / owner kararı
+
+- Default Journey tek sürekli dünyadır. Kategori/world/route selector oyuncunun yeni Journey progression modeli değildir; eski akış yalnız explicit legacy rollback olarak korunur.
+- İlk production görsel foundation L1–100 Fener Burnu'dur: L1–20 sakin başlangıç kıyısı; L21–50 falez/liman izi; L51–75 burun yaklaşımı; L76–100 ana fener landmark kuşağı. L100 burada görsel landmark'tır; yeni gameplay/final/reward authority üretmez.
+- Elle her 10 level için map/node koordinatı üretme modeli sürdürülemez. Bounded deterministic geometry, tema bantları, chunk-safe background, sparse landmark ve kontrollü decor aynı dünya içinde tekrar kullanılacak; L101+ biyomlar aynı seam'den devam edecek.
+- Readability production policy'dir: node/path ve gameplay harfleri artwork'e feda edilmez. Journey gameplay opaque plate/state surfaces ve fail-closed contrast doğrulaması kullanır. Theme samples/scrim correction light-on-dark ve dark-on-light kurallarını korur.
+- Final raster art henüz bu foundation'ın teslimi değildir. Procedural proof final art kabulü değildir; mevcut art metadata seam'ine doğrulanmış SHA/dimensions/fit/focal-point ile art ekleme ayrıca değerlendirilir.
+- Testçi save/migration korkusu yanlış mimari nedeni olamaz. Bu turda save/progression migration gerekli değildir; Journey ve legacy key ayrımı korunur.
+- Owner açıkça geri almadıkça bu Windows bilgisayarda Android/Gradle APK/AAB build ve emulator yoktur. Hafif test/analyze/format yapılabilir; ağır Android proof remote runner'da olur. Disk cleanup ayrıca exact-path owner onayı gerektirir.
+- Bu karar release/signing/Play/deploy veya merge yetkisi vermez.
+

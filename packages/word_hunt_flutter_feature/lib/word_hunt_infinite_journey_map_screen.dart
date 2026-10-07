@@ -318,14 +318,22 @@ class _JourneyChunk extends StatelessWidget {
                     const Icon(
                       Icons.lock_rounded,
                       color: Colors.white,
-                      size: 18,
+                      size: 24,
                     ),
-                  Text(
-                    '$ordinal',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w800,
-                      fontSize: 14,
+                  SizedBox(
+                    width: 60,
+                    height: 20,
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(
+                        '$ordinal',
+                        maxLines: 1,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w800,
+                          fontSize: 16,
+                        ),
+                      ),
                     ),
                   ),
                   if (model.stars > 0)
@@ -335,9 +343,11 @@ class _JourneyChunk extends StatelessWidget {
                         for (var i = 0; i < 3; i++)
                           Icon(
                             i < model.stars ? Icons.star : Icons.star_outline,
-                            size: 12,
+                            size: 14,
                             color:
-                                i < model.stars ? Colors.amber : Colors.white54,
+                                i < model.stars
+                                    ? Colors.amber
+                                    : const Color(0xFFB4BFC9),
                           ),
                       ],
                     ),
@@ -371,7 +381,7 @@ class _JourneyRoutePainter extends CustomPainter {
         Paint()
           ..color = const Color(0xFFD9C79A)
           ..style = PaintingStyle.stroke
-          ..strokeWidth = 4
+          ..strokeWidth = 5
           ..strokeCap = StrokeCap.butt;
     final path = Path();
     for (final curve in geometry.curvesForChunk(chunk, count, width)) {
@@ -390,7 +400,7 @@ class _JourneyRoutePainter extends CustomPainter {
       Paint()
         ..color = const Color(0xFF08121D)
         ..style = PaintingStyle.stroke
-        ..strokeWidth = 8
+        ..strokeWidth = 9
         ..strokeCap = StrokeCap.butt,
     );
     canvas.drawPath(path, paint);

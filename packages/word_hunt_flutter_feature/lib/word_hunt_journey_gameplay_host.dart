@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:word_hunt_domain/word_hunt_journey_catalog_contract.dart';
 import 'package:word_hunt_domain/word_hunt_journey_gameplay_completion.dart';
-import 'word_hunt_gameplay_presentation.dart';
+import 'word_hunt_journey_gameplay_visual.dart';
 import 'word_hunt_models.dart';
 import 'word_hunt_screens.dart';
 import 'word_hunt_starter_content.dart';
@@ -71,11 +71,9 @@ class _HostState extends State<WordHuntJourneyGameplayHost> {
             (_) => WordHuntLevelProductionScreen(
               level: widget.level,
               infoCards: WordHuntStarterContent.infoCards,
-              presentation: WordHuntRoutePresentationProfiles.starter
-                  .gameplayForLevel(
-                    levelIndex: widget.level.index,
-                    segmentIndex: (widget.level.index - 1) ~/ 10 + 1,
-                  ),
+              presentation: JourneyGameplayVisual.forOrdinal(
+                widget.level.index,
+              ),
               routeTitle: 'Kelime Avı',
               deferCompletionDialog: true,
               now: widget.now,

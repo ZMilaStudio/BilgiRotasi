@@ -379,7 +379,7 @@ void main() {
         );
         expect(
           map.themeSchedule!.themeForOrdinal(ordinal).id,
-          {50: 'coast_v1', 150: 'forest_v1', 250: 'sky_v1'}[ordinal],
+          JourneyThemeSchedule.production.themeForOrdinal(ordinal).id,
         );
         expect(
           find.byKey(Key('word_hunt_journey_level_$ordinal')),
