@@ -21,30 +21,23 @@ permissions:
 jobs:
   test-build-launch:
     name: Test, release APK ve Android 16 cold-start
-    if: >-
-      ${{ !(github.event_name == 'pull_request' &&
-        github.event.pull_request.number == 224 &&
-        github.repository == 'ZMilaStudio/BilgiRotasi' &&
-        github.event.pull_request.base.ref == 'release/final-closed-test-aab-1.68.8' &&
-        github.event.pull_request.head.ref == 'feat/kelime-avi-harbor-repair-checkpoint-a') &&
-        !(github.event_name == 'pull_request' &&
-        github.repository == 'ZMilaStudio/BilgiRotasi' &&
-        github.event.pull_request.base.ref == 'release/final-closed-test-aab-1.68.8' &&
-        github.event.pull_request.head.ref == 'feat/kelime-avi-checkpoint-b-pilot-sky-unlock') &&
-        !(github.event_name == 'pull_request' &&
-        github.repository == 'ZMilaStudio/BilgiRotasi' &&
-        github.event.pull_request.base.ref == 'release/final-closed-test-aab-1.68.8' &&
-        github.event.pull_request.head.ref == 'fix/kelime-avi-versioncode-2') &&
-        !(github.event_name == 'pull_request' &&
-        github.repository == 'ZMilaStudio/BilgiRotasi' &&
-        github.event.pull_request.base.ref == 'release/final-closed-test-aab-1.68.8' &&
-        github.event.pull_request.head.ref == 'feat/kelime-avi-checkpoint-c-fener-burnu') }}
     runs-on: ubuntu-22.04
     timeout-minutes: 60
 
     steps:
       - name: Depoyu indir
         uses: actions/checkout@v4
+
+      - name: Determine permanent signing authorization
+        id: signing
+        run: python3 tools/admob_signed_build_policy.py
+
+      - name: Validate signing policy
+        run: python3 -m unittest discover -s tools -p 'test_admob_signed_build_policy.py'
+
+      - name: Record unsigned validation scope
+        if: steps.signing.outputs.authorized == 'false'
+        run: echo 'SIGNED BUILD NOT AUTHORIZED; non-secret validation remains required. This is not signing PASS.'
 
       - name: Java 17 kur
         uses: actions/setup-java@v4
@@ -109,6 +102,7 @@ jobs:
           git diff --check
 
       - name: Kalıcı Android imzasını hazırla
+        if: steps.signing.outputs.authorized == 'true'
         shell: bash
         env:
           ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
@@ -142,6 +136,7 @@ jobs:
           test -s android/key.properties
 
       - name: Test reklam kimlikli release APK üret
+        if: steps.signing.outputs.authorized == 'true'
         env:
           ORG_GRADLE_PROJECT_ADMOB_ENVIRONMENT: test
         run: >-
@@ -149,6 +144,7 @@ jobs:
           --dart-define=ADMOB_ENVIRONMENT=test
 
       - name: Paket ve birleşik manifesti doğrula
+        if: steps.signing.outputs.authorized == 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -207,12 +203,14 @@ jobs:
             reports/ADMOB_ANDROID_DEPENDENCIES.txt
 
       - name: Emulator için derleme kaynaklarını bırak
+        if: steps.signing.outputs.authorized == 'true'
         shell: bash
         run: |
           set -euo pipefail
           (cd android && ./gradlew --stop)
 
       - name: Android emulator KVM erişimini hazırla
+        if: steps.signing.outputs.authorized == 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -222,6 +220,7 @@ jobs:
           test -w /dev/kvm
 
       - name: Android 16 emulator cold-start (deneme 1/2)
+        if: steps.signing.outputs.authorized == 'true'
         id: android16_attempt_1
         continue-on-error: true
         uses: reactivecircus/android-emulator-runner@v2
@@ -240,7 +239,7 @@ jobs:
 
       - name: İlk AdMob Android 16 denemesini sınıflandır
         id: android16_retry
-        if: always()
+        if: always() && steps.signing.outputs.authorized == 'true'
         shell: bash
         env:
           FIRST_ATTEMPT_OUTCOME: ${{ steps.android16_attempt_1.outcome }}
@@ -275,7 +274,7 @@ jobs:
 
       - name: Android 16 emulator cold-start (temiz deneme 2/2)
         id: android16_attempt_2
-        if: steps.android16_retry.outputs.retry == 'true'
+        if: steps.signing.outputs.authorized == 'true' && steps.android16_retry.outputs.retry == 'true'
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 36
@@ -291,7 +290,7 @@ jobs:
             bash tools/validate_admob_android16_cold_start.sh
 
       - name: AdMob Android 16 uygulama kapısını sonuçlandır
-        if: always()
+        if: always() && steps.signing.outputs.authorized == 'true'
         shell: bash
         env:
           FIRST_ATTEMPT_OUTCOME: ${{ steps.android16_attempt_1.outcome }}
@@ -321,7 +320,7 @@ jobs:
             reports/ADMOB_ANDROID16_VALIDATION_RESULT.txt
 
       - name: APK ve kanıt raporlarını yükle
-        if: always()
+        if: always() && steps.signing.outputs.authorized == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: BilgiRotasi-AdMob-${{ env.VERSION_LABEL }}-kanitlari

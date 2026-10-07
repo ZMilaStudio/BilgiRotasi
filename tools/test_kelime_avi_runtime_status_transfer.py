@@ -36,6 +36,7 @@ class RuntimeStatusTransferTest(unittest.TestCase):
         stub.write_text(
             '#!/bin/sh\n'
             'case "$1" in\n'
+            '  *kelime_avi_journey_runtime_probe.py) echo journey >> probe_calls; exit "$JOURNEY_CODE" ;;\n'
             '  *kelime_avi_android_runtime_probe.py) echo standard >> probe_calls; exit "$STANDARD_CODE" ;;\n'
             '  *kelime_avi_harbor_runtime_probe.py) echo harbor >> probe_calls; exit "$HARBOR_CODE" ;;\n'
             '  *) exit 99 ;;\n'
@@ -48,8 +49,13 @@ class RuntimeStatusTransferTest(unittest.TestCase):
         standard = self.root / "runner-temp/harbor-standard/app-debug.apk"
         standard.parent.mkdir(parents=True)
         standard.write_bytes(b"synthetic standard APK placeholder")
+        for name in ("legacy-rollback", "harbor-proof"):
+            copy = self.root / f"runner-temp/{name}/app-debug.apk"
+            copy.parent.mkdir(parents=True)
+            copy.write_bytes(b"synthetic isolated APK placeholder")
         self.env = dict(os.environ, RUNNER_TEMP="runner-temp", STANDARD_CODE="0", HARBOR_CODE="0",
-                        PROOF_SOURCE_SHA="synthetic-test-sha")
+                        PROOF_SOURCE_SHA="synthetic-test-sha", JOURNEY_CODE="0",
+                        HEAD_BRANCH="feat/kelime-avi-checkpoint-c-fener-burnu")
         self.env["PATH"] = str(self.bin) + os.pathsep + self.env.get("PATH", "")
         self.sh = shutil.which("sh")
         self.bash = shutil.which("bash")
@@ -140,6 +146,39 @@ class RuntimeStatusTransferTest(unittest.TestCase):
             capture.unlink()
             self.assertNotEqual(self.shell(self.gate, bash=True).returncode, 0)
             capture.write_bytes(original_bytes)
+
+    def test_journey_three_authorities_and_each_failure_remain_fail_closed(self):
+        self.env["HEAD_BRANCH"] = "feat/kelime-avi-infinite-journey-v1-slice1"
+        for journey, legacy, harbor in ((0, 0, 0), (1, 0, 0), (0, 2, 0), (0, 0, 3)):
+            with self.subTest(journey=journey, legacy=legacy, harbor=harbor):
+                self.env["JOURNEY_CODE"] = str(journey)
+                result = self.run_probes(legacy, harbor)
+                self.assertEqual(result.returncode == 0, journey == legacy == harbor == 0)
+                self.assertEqual(self.shell(self.gate, bash=True).returncode == 0,
+                                 journey == legacy == harbor == 0)
+                for name, value in (("DEFAULT_JOURNEY", journey),
+                                    ("LEGACY_ROLLBACK", legacy), ("HARBOR", harbor)):
+                    self.assertEqual((self.reports / f"{name}_PROBE_EXIT_CODE.txt").read_bytes(),
+                                     f"{value}\n".encode())
+        self.assertEqual((self.root / "probe_calls").read_text().splitlines(),
+                         ["journey", "standard", "harbor"] * 4)
+
+    def test_journey_missing_invalid_or_unexecuted_status_is_not_pass(self):
+        self.env["HEAD_BRANCH"] = "feat/kelime-avi-infinite-journey-v1-slice1"
+        for probe in ("DEFAULT_JOURNEY", "LEGACY_ROLLBACK"):
+            for value in (None, b"", b"abc\n", b"1\n", b"0", b"00\n", b"0\n0\n"):
+                self.run_probes()
+                status = self.reports / f"{probe}_PROBE_EXIT_CODE.txt"
+                if value is None:
+                    status.unlink()
+                else:
+                    status.write_bytes(value)
+                self.assertNotEqual(self.shell(self.commands[-1]).returncode, 0)
+                self.assertNotEqual(self.shell(self.gate, bash=True).returncode, 0)
+        for omit in ("journey", "android"):
+            self.run_probes()
+            self.assertNotEqual(self.run_probes(omit=omit).returncode, 0)
+            self.assertNotEqual(self.shell(self.gate, bash=True).returncode, 0)
 
 
 if __name__ == "__main__":

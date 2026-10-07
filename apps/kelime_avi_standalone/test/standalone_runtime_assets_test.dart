@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:word_hunt_domain/word_hunt_experience_mode.dart';
 import 'package:kelime_avi_standalone/main.dart';
 import 'package:kelime_avi_standalone/word_hunt_standalone_progress_store.dart';
 
@@ -21,25 +22,28 @@ class _MemoryPreferences implements WordHuntStandalonePreferences {
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  test('standalone bundle contains the nested route and gameplay images', () async {
-    final manifest = await AssetManifest.loadFromAssetBundle(rootBundle);
-    for (final path in <String>[
-      'assets/word_hunt/baslangic_limani_bg.jpg',
-      'assets/word_hunt/baslangic_limani/node_normal.webp',
-      'assets/word_hunt/harbor_segments/segment_02_clean.webp',
-      'assets/word_hunt/harbor_segments/segment_03_clean.webp',
-      'assets/word_hunt/harbor_segments/segment_04_clean.webp',
-      'assets/word_hunt/harbor_segments/segment_04_layout_schema_v2.json',
-      'assets/word_hunt/v5_reference_assets/harbor_background_1080x1920.png',
-      'assets/word_hunt/v5_reference_assets/status_panel_empty.png',
-      'assets/word_hunt/v5_reference_assets/cell_idle.png',
-      'assets/word_hunt/v5_reference_assets/instruction_panel_empty.png',
-      'assets/word_hunt/gokyuzu_adalari/gameplay_bg_bright.webp',
-    ]) {
-      expect(manifest.listAssets(), contains(path), reason: path);
-      expect((await rootBundle.load(path)).lengthInBytes, greaterThan(0));
-    }
-  });
+  test(
+    'standalone bundle contains the nested route and gameplay images',
+    () async {
+      final manifest = await AssetManifest.loadFromAssetBundle(rootBundle);
+      for (final path in <String>[
+        'assets/word_hunt/baslangic_limani_bg.jpg',
+        'assets/word_hunt/baslangic_limani/node_normal.webp',
+        'assets/word_hunt/harbor_segments/segment_02_clean.webp',
+        'assets/word_hunt/harbor_segments/segment_03_clean.webp',
+        'assets/word_hunt/harbor_segments/segment_04_clean.webp',
+        'assets/word_hunt/harbor_segments/segment_04_layout_schema_v2.json',
+        'assets/word_hunt/v5_reference_assets/harbor_background_1080x1920.png',
+        'assets/word_hunt/v5_reference_assets/status_panel_empty.png',
+        'assets/word_hunt/v5_reference_assets/cell_idle.png',
+        'assets/word_hunt/v5_reference_assets/instruction_panel_empty.png',
+        'assets/word_hunt/gokyuzu_adalari/gameplay_bg_bright.webp',
+      ]) {
+        expect(manifest.listAssets(), contains(path), reason: path);
+        expect((await rootBundle.load(path)).lengthInBytes, greaterThan(0));
+      }
+    },
+  );
 
   testWidgets('standalone route and first level render at narrow phone size', (
     tester,
@@ -51,6 +55,7 @@ void main() {
 
     await tester.pumpWidget(
       KelimeAviStandaloneApp(
+        experienceMode: WordHuntExperienceMode.legacy,
         progressStore: WordHuntStandaloneProgressStore(
           preferences: _MemoryPreferences(),
         ),
@@ -59,7 +64,9 @@ void main() {
     expect(find.byType(Banner), findsNothing);
     expect(tester.takeException(), isNull);
 
-    await tester.tap(find.byKey(const Key('kelime_avi_standalone_play_button')));
+    await tester.tap(
+      find.byKey(const Key('kelime_avi_standalone_play_button')),
+    );
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('word_hunt_home_screen')), findsOneWidget);
     expect(tester.takeException(), isNull);
@@ -71,12 +78,18 @@ void main() {
 
     await tester.tap(find.byKey(const Key('word_hunt_route_card_starter')));
     await tester.pumpAndSettle();
-    expect(find.byKey(const Key('word_hunt_production_entry_route')), findsOneWidget);
+    expect(
+      find.byKey(const Key('word_hunt_production_entry_route')),
+      findsOneWidget,
+    );
     expect(tester.takeException(), isNull);
 
     await tester.tap(find.byKey(const Key('word_hunt_pixel_proof_level_1')));
     await tester.pumpAndSettle();
-    expect(find.byKey(const Key('word_hunt_production_screen')), findsOneWidget);
+    expect(
+      find.byKey(const Key('word_hunt_production_screen')),
+      findsOneWidget,
+    );
     expect(find.byKey(const Key('word_hunt_production_grid')), findsOneWidget);
     expect(tester.takeException(), isNull);
   });

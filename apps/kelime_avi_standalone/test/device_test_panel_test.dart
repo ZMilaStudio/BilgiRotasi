@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:word_hunt_domain/word_hunt_experience_mode.dart';
 import 'package:flutter/material.dart';
 import 'package:kelime_avi_standalone/main.dart';
 import 'package:kelime_avi_standalone/word_hunt_device_test_panel.dart';
@@ -175,6 +176,7 @@ void main() {
     final preferences = _Preferences();
     await tester.pumpWidget(
       KelimeAviStandaloneApp(
+        experienceMode: WordHuntExperienceMode.legacy,
         progressStore: WordHuntStandaloneProgressStore(
           preferences: preferences,
         ),

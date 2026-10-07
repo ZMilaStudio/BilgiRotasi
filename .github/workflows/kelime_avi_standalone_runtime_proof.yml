@@ -11,6 +11,7 @@ on:
       - 'tools/kelime_avi*'
       - 'tools/test_kelime_avi_harbor_runtime_probe.py'
       - 'tools/test_kelime_avi_runtime_status_transfer.py'
+      - 'tools/test_kelime_avi_journey_runtime_probe.py'
       - 'tools/harbor_layout_preview.py'
       - 'tools/test_harbor_layout_preview.py'
       - 'docs/project-memory/KARARLAR.md'
@@ -24,7 +25,8 @@ jobs:
     if: >-
       github.event.pull_request.head.repo.full_name == 'ZMilaStudio/BilgiRotasi' &&
       (github.event.pull_request.head.ref == 'feat/kelime-avi-harbor-repair-checkpoint-a' ||
-       github.event.pull_request.head.ref == 'feat/kelime-avi-checkpoint-c-fener-burnu')
+       github.event.pull_request.head.ref == 'feat/kelime-avi-checkpoint-c-fener-burnu' ||
+       github.event.pull_request.head.ref == 'feat/kelime-avi-infinite-journey-v1-slice1')
     runs-on: ubuntu-22.04
     timeout-minutes: 45
     env:
@@ -42,7 +44,8 @@ jobs:
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$PROOF_SOURCE_SHA"
           test "$HEAD_BRANCH" = 'feat/kelime-avi-harbor-repair-checkpoint-a' ||
-            test "$HEAD_BRANCH" = 'feat/kelime-avi-checkpoint-c-fener-burnu'
+            test "$HEAD_BRANCH" = 'feat/kelime-avi-checkpoint-c-fener-burnu' ||
+            test "$HEAD_BRANCH" = 'feat/kelime-avi-infinite-journey-v1-slice1'
           mkdir -p reports/kelime_avi_runtime
           printf '%s\n' "$PROOF_SOURCE_SHA" \
             > reports/kelime_avi_runtime/HARBOR_SOURCE_SHA.txt
@@ -94,13 +97,29 @@ jobs:
           python3 tools/test_harbor_layout_preview.py
           python3 -m unittest discover -s tools -p 'test_kelime_avi_harbor_runtime_probe.py'
           python3 -m unittest discover -s tools -p 'test_kelime_avi_runtime_status_transfer.py'
+          python3 -m unittest discover -s tools -p 'test_kelime_avi_journey_runtime_probe.py'
           git diff --check
 
       - name: Standard standalone debug APK
+        shell: bash
         run: |
+          set -euo pipefail
           (cd apps/kelime_avi_standalone && flutter build apk --debug)
           mkdir -p "$RUNNER_TEMP/harbor-standard"
           cp apps/kelime_avi_standalone/build/app/outputs/flutter-apk/app-debug.apk "$RUNNER_TEMP/harbor-standard/app-debug.apk"
+          printf 'SOURCE_HEAD=%s\nENTRY=lib/main.dart\nEXPERIENCE_DEFINE=unset\n' "$PROOF_SOURCE_SHA" > reports/kelime_avi_runtime/STANDARD_APK_METADATA.txt
+          sha256sum "$RUNNER_TEMP/harbor-standard/app-debug.apk" >> reports/kelime_avi_runtime/STANDARD_APK_METADATA.txt
+
+      - name: Explicit legacy rollback debug APK for Journey head
+        if: github.event.pull_request.head.ref == 'feat/kelime-avi-infinite-journey-v1-slice1'
+        shell: bash
+        run: |
+          set -euo pipefail
+          (cd apps/kelime_avi_standalone && flutter build apk --debug --target lib/main.dart --dart-define=WORD_HUNT_EXPERIENCE=legacy)
+          mkdir -p "$RUNNER_TEMP/legacy-rollback"
+          cp apps/kelime_avi_standalone/build/app/outputs/flutter-apk/app-debug.apk "$RUNNER_TEMP/legacy-rollback/app-debug.apk"
+          printf 'SOURCE_HEAD=%s\nENTRY=lib/main.dart\nEXPERIENCE_DEFINE=legacy\n' "$PROOF_SOURCE_SHA" > reports/kelime_avi_runtime/LEGACY_APK_METADATA.txt
+          sha256sum "$RUNNER_TEMP/legacy-rollback/app-debug.apk" >> reports/kelime_avi_runtime/LEGACY_APK_METADATA.txt
 
       - name: Harbor Segment 2 and 3 debug proof APK
         shell: bash
@@ -116,6 +135,10 @@ jobs:
           cp "$apk" reports/kelime_avi_runtime/HARBOR_CHECKPOINT_A_DEBUG.apk
           sha256sum "$apk" \
             | tee reports/kelime_avi_runtime/HARBOR_DEBUG_APK_SHA256.txt
+          mkdir -p "$RUNNER_TEMP/harbor-proof"
+          cp "$apk" "$RUNNER_TEMP/harbor-proof/app-debug.apk"
+          printf 'SOURCE_HEAD=%s\nENTRY=lib/harbor_visual_proof_main.dart\nEXPERIENCE_DEFINE=unset\n' "$PROOF_SOURCE_SHA" > reports/kelime_avi_runtime/HARBOR_APK_METADATA.txt
+          sha256sum "$RUNNER_TEMP/harbor-proof/app-debug.apk" >> reports/kelime_avi_runtime/HARBOR_APK_METADATA.txt
 
       - name: APK içindeki onaylı Harbor assetlerini doğrula
         shell: bash
@@ -248,7 +271,7 @@ jobs:
               print('kvm_open_read_write=success')
           PY
 
-      - name: Android 16 standard app and six Harbor captures
+      - name: Android 16 default, rollback and ten Harbor captures
         id: harbor_runtime
         continue-on-error: true
         uses: reactivecircus/android-emulator-runner@v2
@@ -265,12 +288,14 @@ jobs:
           script: |
             : > reports/kelime_avi_runtime/STANDARD_PROBE_EXIT_CODE.txt
             : > reports/kelime_avi_runtime/HARBOR_PROBE_EXIT_CODE.txt
-            cp apps/kelime_avi_standalone/build/app/outputs/flutter-apk/app-debug.apk "$RUNNER_TEMP/harbor-proof.apk"
+            : > reports/kelime_avi_runtime/DEFAULT_JOURNEY_PROBE_EXIT_CODE.txt
+            : > reports/kelime_avi_runtime/LEGACY_ROLLBACK_PROBE_EXIT_CODE.txt
             cp "$RUNNER_TEMP/harbor-standard/app-debug.apk" apps/kelime_avi_standalone/build/app/outputs/flutter-apk/app-debug.apk
-            python3 tools/kelime_avi_android_runtime_probe.py; probe_status=$?; printf '%s\n' "$probe_status" > reports/kelime_avi_runtime/STANDARD_PROBE_EXIT_CODE.txt
-            cp "$RUNNER_TEMP/harbor-proof.apk" apps/kelime_avi_standalone/build/app/outputs/flutter-apk/app-debug.apk
+            if [ "$HEAD_BRANCH" = 'feat/kelime-avi-infinite-journey-v1-slice1' ]; then JOURNEY_APK="$RUNNER_TEMP/harbor-standard/app-debug.apk" python3 tools/kelime_avi_journey_runtime_probe.py; probe_status=$?; printf '%s\n' "$probe_status" > reports/kelime_avi_runtime/DEFAULT_JOURNEY_PROBE_EXIT_CODE.txt; cp reports/kelime_avi_runtime/DEFAULT_JOURNEY_PROBE_EXIT_CODE.txt reports/kelime_avi_runtime/STANDARD_PROBE_EXIT_CODE.txt; else python3 tools/kelime_avi_android_runtime_probe.py; probe_status=$?; printf '%s\n' "$probe_status" > reports/kelime_avi_runtime/STANDARD_PROBE_EXIT_CODE.txt; fi
+            if [ "$HEAD_BRANCH" = 'feat/kelime-avi-infinite-journey-v1-slice1' ]; then cp "$RUNNER_TEMP/legacy-rollback/app-debug.apk" apps/kelime_avi_standalone/build/app/outputs/flutter-apk/app-debug.apk && python3 tools/kelime_avi_android_runtime_probe.py; probe_status=$?; printf '%s\n' "$probe_status" > reports/kelime_avi_runtime/LEGACY_ROLLBACK_PROBE_EXIT_CODE.txt; fi
+            cp "$RUNNER_TEMP/harbor-proof/app-debug.apk" apps/kelime_avi_standalone/build/app/outputs/flutter-apk/app-debug.apk
             python3 tools/kelime_avi_harbor_runtime_probe.py; probe_status=$?; printf '%s\n' "$probe_status" > reports/kelime_avi_runtime/HARBOR_PROBE_EXIT_CODE.txt
-            printf '0\n' | cmp -s - reports/kelime_avi_runtime/STANDARD_PROBE_EXIT_CODE.txt && printf '0\n' | cmp -s - reports/kelime_avi_runtime/HARBOR_PROBE_EXIT_CODE.txt
+            printf '0\n' | cmp -s - reports/kelime_avi_runtime/STANDARD_PROBE_EXIT_CODE.txt && printf '0\n' | cmp -s - reports/kelime_avi_runtime/HARBOR_PROBE_EXIT_CODE.txt && { [ "$HEAD_BRANCH" != 'feat/kelime-avi-infinite-journey-v1-slice1' ] || { printf '0\n' | cmp -s - reports/kelime_avi_runtime/DEFAULT_JOURNEY_PROBE_EXIT_CODE.txt && printf '0\n' | cmp -s - reports/kelime_avi_runtime/LEGACY_ROLLBACK_PROBE_EXIT_CODE.txt; }; }
 
       - name: Harbor Android kanıt paketini yükle
         if: always()
@@ -287,7 +312,11 @@ jobs:
         run: |
           set -euo pipefail
           test "${{ steps.harbor_runtime.outcome }}" = 'success'
-          for probe in STANDARD HARBOR; do
+          probes='STANDARD HARBOR'
+          if [ "$HEAD_BRANCH" = 'feat/kelime-avi-infinite-journey-v1-slice1' ]; then
+            probes="$probes DEFAULT_JOURNEY LEGACY_ROLLBACK"
+          fi
+          for probe in $probes; do
             status_file="reports/kelime_avi_runtime/${probe}_PROBE_EXIT_CODE.txt"
             if ! printf '0\n' | cmp -s - "$status_file"; then
               echo "::error::$probe probe exit code is missing, invalid or nonzero."
