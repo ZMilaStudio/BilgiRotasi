@@ -5,7 +5,7 @@ enum JourneyScenery { coast, forest, sky, night }
 
 enum JourneyLandmarkKind { minor, major, prestige }
 
-/// Future art metadata only. No image is decoded by the procedural prototype.
+/// Integrity is checked at installation/build time, not on animation frames.
 class JourneyArtAsset {
   JourneyArtAsset({
     required this.path,
@@ -15,6 +15,12 @@ class JourneyArtAsset {
     this.focalPoint = const Alignment(0, 0),
   }) {
     if (path.isEmpty ||
+        !intrinsicSize.width.isFinite ||
+        !intrinsicSize.height.isFinite ||
+        !focalPoint.x.isFinite ||
+        !focalPoint.y.isFinite ||
+        focalPoint.x.abs() > 1 ||
+        focalPoint.y.abs() > 1 ||
         intrinsicSize.width <= 0 ||
         intrinsicSize.height <= 0 ||
         !RegExp(r'^[a-f0-9]{64}$').hasMatch(sha256)) {

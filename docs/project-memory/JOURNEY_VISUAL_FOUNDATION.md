@@ -88,3 +88,10 @@ L1/20/21/50/75/100/101 proofs use metadata-only inspection, not unlocked new
 production payloads. Local widget proof does not establish Android/physical
 memory, performance, or owner visual acceptance. Final premium raster art and
 physical-device aesthetic/readability review remain separate gates.
+
+## Phase 2 adapter continuation
+
+The raster integration gap above is now addressed by `word_hunt_journey_art.dart`.
+See `JOURNEY_FENER_ART_PACK_SPEC.md` for exact layer/slot/validation/resource
+contracts. The production registry remains empty until actual owner-approved
+raster artwork arrives; the foundation is still fallback, not premium final art.
