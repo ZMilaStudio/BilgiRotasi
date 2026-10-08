@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart' show ScrollCacheExtent;
 import 'word_hunt_journey_geometry.dart';
 import 'word_hunt_journey_background.dart';
+import 'word_hunt_journey_art.dart';
 import 'word_hunt_journey_theme.dart';
 
 enum WordHuntJourneyNodeState {
@@ -59,6 +60,8 @@ class WordHuntInfiniteJourneyMapScreen extends StatefulWidget {
     this.controller,
     this.showContinueControl = true,
     this.themeSchedule,
+    this.artRegistry,
+    this.artProvider,
   }) : assert(publishedLevelCount >= 1),
        assert(initialOrdinal >= 1),
        assert(currentOrdinal >= 1),
@@ -69,6 +72,8 @@ class WordHuntInfiniteJourneyMapScreen extends StatefulWidget {
   final WordHuntJourneyMapController? controller;
   final bool showContinueControl;
   final JourneyThemeSchedule? themeSchedule;
+  final JourneyArtRegistry? artRegistry;
+  final JourneyArtProvider? artProvider;
   @override
   State<WordHuntInfiniteJourneyMapScreen> createState() => _JourneyMapState();
 }
@@ -181,6 +186,8 @@ class _JourneyMapState extends State<WordHuntInfiniteJourneyMapScreen> {
                           resolver: widget.stateForOrdinal,
                           onTap: widget.onLevelTap,
                           themeSchedule: widget.themeSchedule,
+                          artRegistry: widget.artRegistry,
+                          artProvider: widget.artProvider,
                         ),
                   );
                 },
@@ -215,6 +222,8 @@ class _JourneyChunk extends StatelessWidget {
     required this.resolver,
     this.onTap,
     this.themeSchedule,
+    this.artRegistry,
+    this.artProvider,
   });
   final WordHuntJourneyGeometry geometry;
   final int chunk, count;
@@ -223,6 +232,8 @@ class _JourneyChunk extends StatelessWidget {
   final WordHuntJourneyStateResolver resolver;
   final ValueChanged<int>? onTap;
   final JourneyThemeSchedule? themeSchedule;
+  final JourneyArtRegistry? artRegistry;
+  final JourneyArtProvider? artProvider;
   @override
   Widget build(BuildContext context) {
     final first = chunk * geometry.levelsPerChunk + 1;
@@ -239,6 +250,37 @@ class _JourneyChunk extends StatelessWidget {
                 firstOrdinal: first,
                 rows: last - first + 1,
                 rowPitch: geometry.rowPitch,
+              ),
+            ),
+          if (themeSchedule != null)
+            Positioned.fill(
+              child: JourneyRasterBackground(
+                registry: artRegistry ?? JourneyArtRegistry.production,
+                provider: artProvider,
+                schedule: themeSchedule!,
+                geometry: geometry,
+                chunk: chunk,
+                count: count,
+                width: width,
+                visible: visible,
+              ),
+            ),
+          if (themeSchedule != null)
+            Positioned.fill(
+              child: IgnorePointer(
+                child: ExcludeSemantics(
+                  child: CustomPaint(
+                    key: ValueKey('journey_readability_corridor_$chunk'),
+                    painter: JourneyReadabilityCorridor(
+                      geometry: geometry,
+                      chunk: chunk,
+                      count: count,
+                      width: width,
+                      schedule: themeSchedule!,
+                      registry: artRegistry ?? JourneyArtRegistry.production,
+                    ),
+                  ),
+                ),
               ),
             ),
           Positioned.fill(
@@ -318,14 +360,22 @@ class _JourneyChunk extends StatelessWidget {
                     const Icon(
                       Icons.lock_rounded,
                       color: Colors.white,
-                      size: 18,
+                      size: 24,
                     ),
-                  Text(
-                    '$ordinal',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w800,
-                      fontSize: 14,
+                  SizedBox(
+                    width: 60,
+                    height: 20,
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(
+                        '$ordinal',
+                        maxLines: 1,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w800,
+                          fontSize: 16,
+                        ),
+                      ),
                     ),
                   ),
                   if (model.stars > 0)
@@ -335,9 +385,11 @@ class _JourneyChunk extends StatelessWidget {
                         for (var i = 0; i < 3; i++)
                           Icon(
                             i < model.stars ? Icons.star : Icons.star_outline,
-                            size: 12,
+                            size: 14,
                             color:
-                                i < model.stars ? Colors.amber : Colors.white54,
+                                i < model.stars
+                                    ? Colors.amber
+                                    : const Color(0xFFB4BFC9),
                           ),
                       ],
                     ),
@@ -371,7 +423,7 @@ class _JourneyRoutePainter extends CustomPainter {
         Paint()
           ..color = const Color(0xFFD9C79A)
           ..style = PaintingStyle.stroke
-          ..strokeWidth = 4
+          ..strokeWidth = 5
           ..strokeCap = StrokeCap.butt;
     final path = Path();
     for (final curve in geometry.curvesForChunk(chunk, count, width)) {
@@ -390,7 +442,7 @@ class _JourneyRoutePainter extends CustomPainter {
       Paint()
         ..color = const Color(0xFF08121D)
         ..style = PaintingStyle.stroke
-        ..strokeWidth = 8
+        ..strokeWidth = 9
         ..strokeCap = StrokeCap.butt,
     );
     canvas.drawPath(path, paint);

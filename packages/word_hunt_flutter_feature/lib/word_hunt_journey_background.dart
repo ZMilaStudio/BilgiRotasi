@@ -78,6 +78,9 @@ class JourneyBackgroundPainter extends CustomPainter {
   final int firstOrdinal, rows;
   final double rowPitch;
   static const maxDecorPerRow = 2;
+  // Geometry guarantees a minimum 34px outer gap at supported phone widths.
+  // Art is clipped inside 28px edge strips; numbers/path/hitboxes stay clear.
+  static const edgeArtWidth = 28.0;
   Color _middle(JourneyThemeTransition t) => Color.lerp(t.top, t.bottom, .5)!;
   @override
   void paint(Canvas canvas, Size size) {
@@ -98,24 +101,36 @@ class JourneyBackgroundPainter extends CustomPainter {
             colors: [_middle(prior), _middle(frame)],
           ).createShader(rect),
       );
-      final far = Paint()..color = frame.to.accent.withValues(alpha: .07);
-      canvas.drawOval(
-        Rect.fromCenter(
-          center: Offset(size.width * .5, rect.center.dy),
-          width: size.width * 1.5,
-          height: rowPitch * .6,
-        ),
-        far,
-      );
+      // Do not repeat bright row-sized disks under nodes: a quiet continuous
+      // center is shared by all biomes, with environment motifs at the edges.
       final landmark = schedule.landmarkForOrdinal(ordinal);
       if (landmark != null) {
-        final x = ordinal.isEven ? size.width * .91 : size.width * .09;
-        paintLandmark(
-          canvas,
-          Offset(x, rect.center.dy),
-          landmark,
-          frame.to.accent,
+        final x = ordinal.isEven ? size.width - 14 : 14.0;
+        canvas.save();
+        canvas.clipRect(
+          Rect.fromLTWH(
+            ordinal.isEven ? size.width - edgeArtWidth : 0,
+            rect.top,
+            edgeArtWidth,
+            rowPitch,
+          ),
         );
+        if (frame.to.scenery == JourneyScenery.coast) {
+          paintCoastalLandmark(
+            canvas,
+            Offset(x, rect.center.dy),
+            landmark,
+            frame.to.accent,
+          );
+        } else {
+          paintLandmark(
+            canvas,
+            Offset(x, rect.center.dy),
+            landmark,
+            frame.to.accent,
+          );
+        }
+        canvas.restore();
       }
     }
     for (final decor in JourneyDecor.forChunk(
@@ -125,6 +140,15 @@ class JourneyBackgroundPainter extends CustomPainter {
       rowPitch,
     )) {
       final frame = schedule.transitionForOrdinal(decor.ordinal);
+      canvas.save();
+      canvas.clipRect(
+        Rect.fromLTWH(
+          decor.side == 0 ? 0 : size.width - edgeArtWidth,
+          0,
+          edgeArtWidth,
+          size.height,
+        ),
+      );
       // Cross-fade small vector motifs only. Never decode two large images.
       paintMotif(
         canvas,
@@ -142,6 +166,7 @@ class JourneyBackgroundPainter extends CustomPainter {
         frame.to.scenery,
         frame.to.accent.withValues(alpha: .26 * frame.mix * frame.decorDensity),
       );
+      canvas.restore();
     }
     canvas.restore();
   }
@@ -152,6 +177,53 @@ class JourneyBackgroundPainter extends CustomPainter {
       old.firstOrdinal != firstOrdinal ||
       old.rows != rows ||
       old.rowPitch != rowPitch;
+}
+
+/// Replaceable vector foundation, not final painted/raster artwork.
+void paintCoastalLandmark(
+  Canvas canvas,
+  Offset center,
+  JourneyLandmarkKind kind,
+  Color accent,
+) {
+  final tall = kind != JourneyLandmarkKind.minor;
+  final height = switch (kind) {
+    JourneyLandmarkKind.minor => 24.0,
+    JourneyLandmarkKind.major => 54.0,
+    JourneyLandmarkKind.prestige => 78.0,
+  };
+  final stone = Paint()..color = const Color(0xFF8A9BA5);
+  final tower =
+      Path()
+        ..moveTo(center.dx - 9, center.dy + 28)
+        ..lineTo(center.dx - 5, center.dy + 28 - height)
+        ..lineTo(center.dx + 5, center.dy + 28 - height)
+        ..lineTo(center.dx + 9, center.dy + 28)
+        ..close();
+  canvas.drawPath(tower, stone);
+  canvas.drawRect(
+    Rect.fromCenter(
+      center: center + Offset(0, 24 - height),
+      width: 16,
+      height: 9,
+    ),
+    Paint()..color = accent,
+  );
+  if (tall) {
+    canvas.drawCircle(
+      center + Offset(0, 24 - height),
+      13,
+      Paint()..color = accent.withValues(alpha: .18),
+    );
+  }
+  canvas.drawOval(
+    Rect.fromCenter(
+      center: center + const Offset(0, 31),
+      width: 27,
+      height: 10,
+    ),
+    Paint()..color = const Color(0xFF263843),
+  );
 }
 
 void paintMotif(

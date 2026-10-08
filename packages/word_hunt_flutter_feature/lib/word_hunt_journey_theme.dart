@@ -5,7 +5,7 @@ enum JourneyScenery { coast, forest, sky, night }
 
 enum JourneyLandmarkKind { minor, major, prestige }
 
-/// Future art metadata only. No image is decoded by the procedural prototype.
+/// Integrity is checked at installation/build time, not on animation frames.
 class JourneyArtAsset {
   JourneyArtAsset({
     required this.path,
@@ -15,6 +15,12 @@ class JourneyArtAsset {
     this.focalPoint = const Alignment(0, 0),
   }) {
     if (path.isEmpty ||
+        !intrinsicSize.width.isFinite ||
+        !intrinsicSize.height.isFinite ||
+        !focalPoint.x.isFinite ||
+        !focalPoint.y.isFinite ||
+        focalPoint.x.abs() > 1 ||
+        focalPoint.y.abs() > 1 ||
         intrinsicSize.width <= 0 ||
         intrinsicSize.height <= 0 ||
         !RegExp(r'^[a-f0-9]{64}$').hasMatch(sha256)) {
@@ -89,6 +95,13 @@ class JourneyThemeTransition {
       from.decorDensity + (to.decorDensity - from.decorDensity) * mix;
 }
 
+/// Presentation ranges only: never publish content or unlock a level.
+class JourneyThemeBand {
+  const JourneyThemeBand(this.first, this.last, this.theme);
+  final int first, last;
+  final JourneyThemeDefinition theme;
+}
+
 /// Constant-size cyclic configuration; no catalog/progress/save dependency.
 class JourneyThemeSchedule {
   JourneyThemeSchedule({
@@ -96,8 +109,10 @@ class JourneyThemeSchedule {
     this.levelsPerTheme = 100,
     this.transitionLevels = 10,
     Map<int, JourneyLandmarkKind> landmarks = const {},
+    List<JourneyThemeBand> bands = const [],
   }) : themes = List.unmodifiable(themes),
-       landmarks = Map.unmodifiable(landmarks) {
+       landmarks = Map.unmodifiable(landmarks),
+       bands = List.unmodifiable(bands) {
     if (themes.isEmpty ||
         levelsPerTheme < 1 ||
         transitionLevels < 0 ||
@@ -106,28 +121,118 @@ class JourneyThemeSchedule {
         themes.map((t) => t.id).toSet().length != themes.length) {
       throw ArgumentError('Invalid theme schedule.');
     }
+    for (var i = 0; i < bands.length; i++) {
+      final band = bands[i];
+      if (band.first < 1 ||
+          band.last < band.first ||
+          (i > 0 && bands[i - 1].last + 1 != band.first)) {
+        throw ArgumentError('Visual bands must be ordered, contiguous ranges.');
+      }
+    }
   }
   final List<JourneyThemeDefinition> themes;
   final int levelsPerTheme, transitionLevels;
   final Map<int, JourneyLandmarkKind> landmarks;
+  final List<JourneyThemeBand> bands;
   JourneyThemeDefinition themeForOrdinal(int ordinal) {
     if (ordinal < 1) throw RangeError.range(ordinal, 1, null);
+    for (final band in bands) {
+      if (ordinal >= band.first && ordinal <= band.last) return band.theme;
+    }
     return themes[((ordinal - 1) ~/ levelsPerTheme) % themes.length];
   }
 
   JourneyThemeTransition transitionForOrdinal(int ordinal) {
     final to = themeForOrdinal(ordinal);
+    for (final band in bands) {
+      if (ordinal >= band.first && ordinal <= band.last) {
+        final local = ordinal - band.first;
+        final window = transitionLevels.clamp(0, band.last - band.first + 1);
+        final blending = band.first > 1 && local < window;
+        return JourneyThemeTransition(
+          blending ? themeForOrdinal(band.first - 1) : to,
+          to,
+          blending ? (local + 1) / window : 1,
+        );
+      }
+    }
     final block = (ordinal - 1) ~/ levelsPerTheme;
     final local = (ordinal - 1) % levelsPerTheme;
     final transitioning = block > 0 && local < transitionLevels;
     return JourneyThemeTransition(
-      transitioning ? themes[(block - 1) % themes.length] : to,
+      transitioning ? themeForOrdinal(block * levelsPerTheme) : to,
       to,
       transitioning ? (local + 1) / transitionLevels : 1,
     );
   }
 
   JourneyLandmarkKind? landmarkForOrdinal(int ordinal) => landmarks[ordinal];
+
+  /// Procedural production foundation. No final raster art is claimed here.
+  /// Future biomes reuse the same schedule/background/landmark contract.
+  static final production = JourneyThemeSchedule(
+    themes: synthetic.themes,
+    bands: [
+      JourneyThemeBand(
+        1,
+        20,
+        _theme(
+          'fener_shore_v1',
+          JourneyScenery.coast,
+          const Color(0xFF102E47),
+          const Color(0xFF155067),
+          const Color(0xFFFFCB70),
+          .35,
+        ),
+      ),
+      JourneyThemeBand(
+        21,
+        50,
+        _theme(
+          'fener_cliffs_v1',
+          JourneyScenery.coast,
+          const Color(0xFF142D48),
+          const Color(0xFF17445B),
+          const Color(0xFFFFCB70),
+          .5,
+        ),
+      ),
+      JourneyThemeBand(
+        51,
+        75,
+        _theme(
+          'fener_approach_v1',
+          JourneyScenery.coast,
+          const Color(0xFF151F3D),
+          const Color(0xFF19374F),
+          const Color(0xFFFFCB70),
+          .65,
+        ),
+      ),
+      JourneyThemeBand(
+        76,
+        100,
+        _theme(
+          'fener_beacon_v1',
+          JourneyScenery.coast,
+          const Color(0xFF131C36),
+          const Color(0xFF183246),
+          const Color(0xFFFFD78A),
+          .75,
+        ),
+      ),
+    ],
+    landmarks: const {
+      1: JourneyLandmarkKind.minor,
+      20: JourneyLandmarkKind.minor,
+      50: JourneyLandmarkKind.major,
+      75: JourneyLandmarkKind.major,
+      100: JourneyLandmarkKind.prestige,
+      250: JourneyLandmarkKind.minor,
+      500: JourneyLandmarkKind.major,
+      1000: JourneyLandmarkKind.prestige,
+    },
+  );
 
   static final synthetic = JourneyThemeSchedule(
     themes: [

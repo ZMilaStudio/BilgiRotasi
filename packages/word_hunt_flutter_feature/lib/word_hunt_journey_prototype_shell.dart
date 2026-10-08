@@ -190,7 +190,7 @@ class _ShellState extends State<WordHuntJourneyPrototypeShell> {
                       : WordHuntJourneySyntheticLevelScreen(
                         ordinal: ordinal,
                         theme: (widget.themeSchedule ??
-                                JourneyThemeSchedule.synthetic)
+                                JourneyThemeSchedule.production)
                             .themeForOrdinal(ordinal),
                         onComplete:
                             (stars, bonus) => _persist(
@@ -318,7 +318,7 @@ class _ShellState extends State<WordHuntJourneyPrototypeShell> {
                             showContinueControl: false,
                             themeSchedule:
                                 widget.themeSchedule ??
-                                JourneyThemeSchedule.synthetic,
+                                JourneyThemeSchedule.production,
                           )
                           : Center(
                             child: SingleChildScrollView(
