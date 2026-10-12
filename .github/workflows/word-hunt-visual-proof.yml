@@ -104,7 +104,7 @@ jobs:
             reports/WORD_HUNT_REUSABLE_MAP_WIDGET_ORMAN_PRODUCTION.png
             reports/WORD_HUNT_REUSABLE_MAP_WIDGET_ORMAN_PRODUCTION.txt
           if-no-files-found: error
-          retention-days: 30
+          retention-days: 21
 
       - name: Reusable Orman Yolu Android proof APK'sını üret
         shell: bash
@@ -318,7 +318,7 @@ jobs:
             reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_PIXEL_CHECK.txt
             reports/word-hunt-android16-attempt-1/**
           if-no-files-found: error
-          retention-days: 30
+          retention-days: 21
 
       - name: Wave 5 gameplay Android kanıtlarını yükle
         if: always()
@@ -334,7 +334,7 @@ jobs:
             reports/WORD_HUNT_WAVE5_GAMEPLAY_APK_SHA256.txt
             reports/wave5-gameplay/**
           if-no-files-found: error
-          retention-days: 30
+          retention-days: 21
 
       - name: MASTER ART karşılaştırma kanıtlarını üret
         shell: bash
@@ -380,4 +380,4 @@ jobs:
             reports/WORD_HUNT_REUSABLE_MAP_ANDROID16_LAUNCH.txt
             reports/word-hunt-android16-attempt-1/**
           if-no-files-found: error
-          retention-days: 30
+          retention-days: 21

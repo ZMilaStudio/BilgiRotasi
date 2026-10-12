@@ -131,7 +131,7 @@ jobs:
           name: KelimeAvi-Journey-Runtime-Test-${{ env.PROOF_SHA }}
           path: owner-delivery/
           if-no-files-found: error
-          retention-days: 30
+          retention-days: 21
 
       - name: Build real production entry with default Journey (no define)
         working-directory: apps/kelime_avi_standalone
@@ -174,7 +174,7 @@ jobs:
           name: KelimeAvi-Journey-Default-Cutover-${{ env.PROOF_SHA }}
           path: integration-delivery/
           if-no-files-found: error
-          retention-days: 30
+          retention-days: 21
 
       - name: Build explicit legacy rollback entry
         working-directory: apps/kelime_avi_standalone
@@ -217,4 +217,4 @@ jobs:
           name: KelimeAvi-Legacy-Rollback-Proof-${{ env.PROOF_SHA }}
           path: rollback-delivery/
           if-no-files-found: error
-          retention-days: 30
+          retention-days: 21
