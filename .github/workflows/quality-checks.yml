@@ -13,7 +13,7 @@ jobs:
 
     steps:
       - name: Depoyu al
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Flutter kur
         uses: subosito/flutter-action@v2

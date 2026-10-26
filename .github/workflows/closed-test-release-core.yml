@@ -42,7 +42,7 @@ jobs:
           test "$CLOSED_TEST_CONFIRMATION" = "CLOSED_TEST"
 
       - name: Depoyu indir
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Java 17 kur
         uses: actions/setup-java@v4

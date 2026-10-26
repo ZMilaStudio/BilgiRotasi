@@ -40,7 +40,7 @@ jobs:
           test "$CONFIRMATION" = "PRODUCTION_AAB"
 
       - name: Exact release kaynağını indir
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           ref: ${{ env.SOURCE_SHA }}
           fetch-depth: 0
