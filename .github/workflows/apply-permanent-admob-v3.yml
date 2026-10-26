@@ -406,7 +406,7 @@ jobs:
           git push origin main
 
       - name: Reklamlı APK, AAB ve raporları yükle
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: BilgiRotasi-AdMob-V3-1.68.0-90
           path: |

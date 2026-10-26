@@ -496,7 +496,7 @@ jobs:
 
       - name: AAB ve doğrulama kanıtlarını yükle
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: BilgiRotasi-${{ env.VERSION_LABEL }}-closed-test-release
           path: |

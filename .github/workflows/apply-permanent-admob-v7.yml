@@ -208,7 +208,7 @@ jobs:
             | tee reports/ADMOB_PRODUCTION_AAB_SHA256.txt
 
       - name: Production APK artifact yükle
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: BilgiRotasi-Production-APK-1.68.6-96
           path: |
@@ -221,7 +221,7 @@ jobs:
           retention-days: 30
 
       - name: Production AAB artifact yükle
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: BilgiRotasi-Production-AAB-1.68.6-96
           path: |

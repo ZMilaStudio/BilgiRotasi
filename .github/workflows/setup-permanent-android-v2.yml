@@ -199,7 +199,7 @@ jobs:
           git push origin main
 
       - name: Doğrulama APK ve raporlarını yükle
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: BilgiRotasi-Kalici-Android-V2-1.67.1-89
           path: |

@@ -240,7 +240,7 @@ jobs:
           git push origin main
 
       - name: Kurtarma APK, AAB ve raporları yükle
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: BilgiRotasi-Kurtarma-1.68.2-92
           path: |

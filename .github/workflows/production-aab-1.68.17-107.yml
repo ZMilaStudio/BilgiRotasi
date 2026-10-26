@@ -235,7 +235,7 @@ jobs:
           } > reports/PRODUCTION_CONFIGURATION.txt
 
       - name: Production AAB kanıtlarını yükle
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: BilgiRotasi-1.68.17-107-production-aab
           path: |

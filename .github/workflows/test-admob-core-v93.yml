@@ -296,7 +296,7 @@ jobs:
           test ! -f android/app/bilgi_rotasi_upload.jks
 
       - name: Test APK, AAB ve raporları yükle
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: BilgiRotasi-AdMob-Cekirdek-Test-1.68.3-93
           path: |

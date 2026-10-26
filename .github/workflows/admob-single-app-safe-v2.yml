@@ -716,7 +716,7 @@ jobs:
             adb shell am force-stop "$PACKAGE"
 
       - name: Tek normal APK'yı yükle
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: BilgiRotasi-AdMob-Tek-APK-V2-1.67.2-90
           path: |

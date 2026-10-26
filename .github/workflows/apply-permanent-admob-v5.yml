@@ -383,7 +383,7 @@ jobs:
           git diff --check
 
       - name: APK, AAB ve doğrulama raporlarını yükle
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: BilgiRotasi-AdMob-V5-1.68.0-90
           path: |
