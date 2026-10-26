@@ -65,7 +65,7 @@ jobs:
           echo "AAB_FILE=BilgiRotasi-${VERSION_NAME}-${VERSION_CODE}-production.aab" >> "$GITHUB_ENV"
 
       - name: Java 17 kur
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: "17"
