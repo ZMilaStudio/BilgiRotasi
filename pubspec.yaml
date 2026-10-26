@@ -11,7 +11,7 @@ dependencies:
   audioplayers: ^6.8.1
   share_plus: 10.1.2
   url_launcher: ^6.3.2
-  firebase_core: ^4.12.1
+  firebase_core: ^4.13.0
   firebase_auth: ^6.5.6
   cloud_firestore: ^6.7.1
   cloud_functions: ^6.3.5
