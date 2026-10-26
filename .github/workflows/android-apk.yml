@@ -46,7 +46,7 @@ jobs:
           echo "ARTIFACT_NAME=BilgiRotasi-${VERSION_NAME}-${VERSION_CODE}-closed-test-release" >> "$GITHUB_ENV"
 
       - name: Kapalı test artifactını indir
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: ${{ env.ARTIFACT_NAME }}
           path: release-artifact
